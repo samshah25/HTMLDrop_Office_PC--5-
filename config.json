@@ -1,0 +1,25 @@
+{
+  "port": 8150,
+  "admin_username": "admin",
+  "admin_password": "80sBqY4zQlMD",
+  "allow_signup": true,
+  "max_upload_mb": 200,
+  "keep_versions": 10,
+  "hub_categories": {
+    "geo": "Geography",
+    "hr": "Workforce",
+    "funnel": "Sales Funnel",
+    "renew": "Renewals",
+    "ecs": "Collections"
+  },
+  "master_dashboard_url": "http://172.29.65.188:8075/Master_dashboard.html",
+  "members": [
+    "Ayush",
+    "Ganesh",
+    "Mohit",
+    "Muskan",
+    "Priyal",
+    "Sarvesh",
+    "Sounak"
+  ]
+}

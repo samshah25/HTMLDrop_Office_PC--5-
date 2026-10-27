@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Drop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #f4efe6; --paper: #fbf8f2; --field: #ffffff; --tint: #efe9dd;
+    --ink: #1f1c17; --ink-2: #3d372e; --muted: #5a5347; --faint: #6b6457;
+    --line: #d9d0bf; --line-2: #e6dfd1; --edge: #c9bfab; --dash: #b8ad97;
+    --accent: #1f5f4a; --accent-hover: #15463a; --accent-soft: #eef3ef; --on-accent: #ffffff;
+    --err: #9a2a1e; --err-soft: #fbece8;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --sans: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171512; --paper: #1f1c18; --field: #25221d; --tint: #2a261f;
+      --ink: #f1ebe0; --ink-2: #ddd5c6; --muted: #b8ae9c; --faint: #a39986;
+      --line: #3a342b; --line-2: #332e26; --edge: #4a4337; --dash: #5c5445;
+      --accent: #5fb393; --accent-hover: #7cc7a9; --accent-soft: #1f2b25; --on-accent: #0f1a15;
+      --err: #f0a293; --err-soft: #3a211c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171512; --paper: #1f1c18; --field: #25221d; --tint: #2a261f;
+    --ink: #f1ebe0; --ink-2: #ddd5c6; --muted: #b8ae9c; --faint: #a39986;
+    --line: #3a342b; --line-2: #332e26; --edge: #4a4337; --dash: #5c5445;
+    --accent: #5fb393; --accent-hover: #7cc7a9; --accent-soft: #1f2b25; --on-accent: #0f1a15;
+    --err: #f0a293; --err-soft: #3a211c;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans);
+         -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); }
+  a:hover { color: var(--accent-hover); }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px 64px; }
+
+  /* header */
+  header { height: 76px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+  .mark { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--ink);
+          display: grid; place-items: center; }
+  .brand { font-family: var(--serif); font-weight: 600; font-size: 21px; letter-spacing: -.3px; }
+  header .sp { flex: 1; }
+  header nav { display: flex; gap: 4px; }
+  header nav a { display: flex; align-items: center; min-height: 44px; padding: 0 12px;
+                 color: var(--ink); text-decoration: none; font-weight: 500; font-size: 14.5px; border-radius: 6px; }
+  header nav a:hover { background: var(--tint); color: var(--ink); }
+
+  /* hero */
+  .hero { display: flex; align-items: flex-end; gap: 48px; padding: 48px 0 36px; }
+  .hero h1 { margin: 0; flex: 1; font-family: var(--serif); font-weight: 500; font-size: 58px;
+             line-height: 1.02; letter-spacing: -1.6px; }
+  .hero p { margin: 0; max-width: 400px; font-size: 16.5px; color: var(--muted); }
+
+  .cols { display: flex; gap: 40px; align-items: flex-start; }
+
+  /* form card */
+  .card { flex: 1; min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+  .step { display: flex; gap: 24px; padding: 28px 32px; border-bottom: 1px solid var(--line-2); }
+  .step .n { width: 28px; flex: 0 0 auto; font-family: var(--serif); font-size: 26px; line-height: 1; color: var(--accent); }
+  .step .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .step h2 { margin: 0; font-size: 17px; font-weight: 600; }
+  .step h2 small { font-size: 13.5px; font-weight: 400; color: var(--faint); margin-left: 10px; }
+
+  .drop { display: flex; align-items: center; gap: 16px; padding: 18px; border: 1.5px dashed var(--dash);
+          border-radius: 6px; background: var(--bg); cursor: pointer; transition: background .15s, border-color .15s; }
+  .drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop svg { flex: 0 0 auto; color: var(--ink); }
+  .drop .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .drop .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .drop.has .name { font-family: var(--mono); font-size: 14px; font-weight: 500; }
+  .drop .sub { font-size: 13px; color: var(--faint); }
+
+  /* Upload card layout: keep the file label readable and move help text below. */
+  .drop { flex-wrap: wrap; align-items: center; }
+  .drop .t { flex: 1 1 220px; min-width: 220px; }
+  .drop > p.muted {
+    flex: 0 0 calc(100% - 46px);
+    width: calc(100% - 46px);
+    min-width: 0;
+    margin: 8px 0 0 46px;
+  }
+  @media (max-width: 680px) {
+    .drop .t { flex-basis: 180px; min-width: 180px; }
+    .drop > p.muted { flex-basis: 100%; width: 100%; margin-left: 0; }
+  }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px;
+         border-radius: 6px; border: 1px solid var(--ink); background: transparent; font-size: 14px; font-weight: 500;
+         text-decoration: none; color: var(--ink); white-space: nowrap; }
+  .btn:hover { background: var(--tint); color: var(--ink); }
+  .btn.quiet { border-color: var(--line); }
+  .btn.primary { border: 0; background: var(--accent); color: var(--on-accent); font-weight: 600;
+                 min-height: 50px; padding: 0 30px; font-size: 15.5px; }
+  .btn.primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .icon-btn { width: 44px; padding: 0; }
+
+  label.l { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+  label.l span { font-weight: 400; color: var(--faint); }
+  .input { width: 100%; height: 46px; padding: 0 12px; border: 1px solid var(--edge); border-radius: 6px;
+           background: var(--field); font-size: 14.5px; }
+  .input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+  .input::placeholder { color: var(--faint); }
+  .prefixed { display: flex; height: 46px; border: 1px solid var(--edge); border-radius: 6px; overflow: hidden; background: var(--field); }
+  .prefixed:focus-within { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+  .prefixed .pre { display: flex; align-items: center; padding: 0 12px; background: var(--tint); border-right: 1px solid var(--line);
+                   font-family: var(--mono); font-size: 13px; color: var(--faint); white-space: nowrap; }
+  .prefixed input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 0 12px; background: transparent;
+                    font-family: var(--mono); font-size: 14px; }
+  .hint { font-size: 13px; color: var(--faint); margin-top: 6px; min-height: 20px; }
+  .hint.update { color: var(--accent); font-weight: 500; }
+  .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .wrap[hidden], .enter[hidden] { display: none; }
+
+  /* login screen */
+  .enter { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+  .enter-card { width: min(400px, 100%); display: flex; flex-direction: column; gap: 16px; padding: 36px 32px;
+                background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+  .enter-card h1 { margin: 4px 0 0; font-family: var(--serif); font-weight: 500; font-size: 38px; letter-spacing: -1px; line-height: 1; }
+  .enter-lead { margin: -8px 0 4px; color: var(--muted); }
+  .enter-card .btn.primary { width: 100%; margin-top: 4px; }
+  .enter-note { margin: 0; font-size: 13.5px; color: var(--faint); text-align: center; }
+  .pick { display: flex; gap: 8px; }
+  .pick .input { flex: 1; min-width: 0; }
+  .pick[hidden] { display: none; }
+  select.input { cursor: pointer; }
+  .derr { padding: 10px 12px; border-radius: 6px; background: var(--err-soft); color: var(--err); font-size: 14px; font-weight: 500; }
+  .derr:empty { display: none; }
+
+  .choices { border: 1px solid var(--edge); border-radius: 6px; overflow: hidden; background: var(--field); }
+  .choice { display: flex; align-items: center; gap: 14px; min-height: 60px; padding: 12px 16px; cursor: pointer; }
+  .choice + .choice { border-top: 1px solid var(--line-2); }
+  .choice:hover { background: var(--bg); }
+  .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .choice .dot { width: 20px; height: 20px; flex: 0 0 auto; border-radius: 50%; border: 2px solid var(--dash);
+                 display: grid; place-items: center; }
+  .choice .dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transform: scale(0); transition: transform .12s; }
+  .choice .lbl { width: 230px; flex: 0 0 auto; font-weight: 600; }
+  .choice .desc { font-size: 13.5px; color: var(--muted); }
+  .choice:has(input:checked) { background: var(--accent-soft); }
+  .choice:has(input:checked) .dot { border-color: var(--accent); }
+  .choice:has(input:checked) .dot::after { transform: scale(1); }
+  .choice:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .foot { display: flex; align-items: center; gap: 20px; padding: 20px 32px 20px 84px; background: var(--tint);
+          border-radius: 0 0 6px 6px; }
+  .foot .live { font-size: 13.5px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .foot .live b { font-family: var(--mono); font-weight: 400; color: var(--ink); }
+  progress { display: none; width: 100%; height: 4px; border: 0; appearance: none; background: var(--line); }
+  progress::-webkit-progress-bar { background: var(--line); }
+  progress::-webkit-progress-value { background: var(--accent); }
+  progress::-moz-progress-bar { background: var(--accent); }
+
+  .err { margin: 0 32px 20px 84px; padding: 12px 14px; border-radius: 6px; background: var(--err-soft); color: var(--err);
+         font-size: 14px; font-weight: 500; }
+  .err:empty { display: none; }
+
+  /* success */
+  .done { padding: 36px 32px 28px 84px; display: flex; flex-direction: column; gap: 18px; }
+  .done .tick { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; }
+  .done h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 34px; letter-spacing: -.8px; }
+  .done p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .linkbox { display: flex; height: 50px; border: 1px solid var(--edge); border-radius: 6px; overflow: hidden; background: var(--field); }
+  .linkbox span { flex: 1; min-width: 0; display: flex; align-items: center; padding: 0 14px; font-family: var(--mono); font-size: 14px;
+                  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .linkbox button { display: flex; align-items: center; gap: 8px; padding: 0 18px; border: 0; border-left: 1px solid var(--edge);
+                    background: var(--tint); font-size: 14px; font-weight: 600; }
+  .facts { border-top: 1px solid var(--line-2); }
+  .facts div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line-2); font-size: 14px; }
+  .facts dt { color: var(--faint); } .facts dd { margin: 0; font-weight: 600; text-align: right; }
+  .done .acts { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* list */
+  aside { width: 440px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .ahead { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+  .ahead h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 24px; letter-spacing: -.4px; }
+  .ahead span { font-size: 13.5px; color: var(--faint); }
+  .search { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid var(--edge);
+            border-radius: 6px; background: var(--paper); color: var(--faint); }
+  .search:focus-within { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 14px; color: var(--ink); }
+  .search input::placeholder { color: var(--faint); }
+  .item { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .item .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .item a { font-weight: 600; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item a:hover { text-decoration: underline; }
+  .item .m { font-size: 12px; line-height: 1.4; color: var(--faint); }
+  .item .btn { border-color: var(--line); font-size: 13px; padding: 0 10px; height: 38px; min-height: 38px; }
+  .item .icon-btn { width: 38px; height: 38px; min-height: 38px; padding: 0; }
+  .item .del:hover { color: var(--err); border-color: var(--err); background: var(--err-soft); }
+  .list-msg { font-size: 14px; font-weight: 500; padding: 10px 12px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); }
+  .list-msg.err { background: var(--err-soft); color: var(--err); }
+  .list-msg:empty { display: none; }
+  .more { position: relative; }
+  .more summary { list-style: none; cursor: pointer; }
+  .more summary::-webkit-details-marker { display: none; }
+  .more .menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; min-width: 200px; padding: 4px;
+                background: var(--paper); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 14px 30px -18px rgba(0,0,0,.45); }
+  .more .menu button { display: block; width: 100%; min-height: 40px; padding: 0 12px; border: 0; border-radius: 4px;
+                       background: none; text-align: left; font-size: 14px; color: var(--ink); }
+  .more .menu button:hover { background: var(--tint); }
+  .more .menu button.danger { color: var(--err); }
+  .dynamic-list-section { margin-top: 30px; }
+  .dynamic-ahead { margin-bottom: 8px; }
+  .dynamic-row .m { font-size: 12px; line-height: 1.45; color: var(--faint); word-break: normal; overflow-wrap: normal; }
+  .dynamic-row .menu { min-width: 190px; }
+  .off-tag { display: inline-block; padding: 0 7px; border-radius: 999px; background: var(--err-soft); color: var(--err);
+             font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .item.is-off a { color: var(--faint); }
+  .empty { padding: 28px 0; color: var(--faint); font-size: 14px; }
+  .empty b { display: block; font-family: var(--serif); font-weight: 500; font-size: 19px; color: var(--ink); margin-bottom: 4px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* account */
+  .acct { display: flex; align-items: center; gap: 4px; }
+  .acct .who { font-size: 14px; color: var(--muted); padding: 0 8px; white-space: nowrap; }
+  .acct .who b { color: var(--ink); font-weight: 600; }
+  .linkbtn { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; background: none;
+             color: var(--ink); font-weight: 500; font-size: 14.5px; border-radius: 6px; text-decoration: none; }
+  .linkbtn:hover { background: var(--tint); color: var(--ink); }
+  .linkbtn.solid { background: var(--ink); color: var(--bg); padding: 0 16px; }
+  .linkbtn.solid:hover { background: var(--ink-2); color: var(--bg); }
+  .signed-out { font-size: 13.5px; color: var(--muted); white-space: nowrap; }
+  .signed-out[hidden] { display: none; }
+  .signed-out button { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; text-decoration: underline; }
+
+  .tabs { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--edge); border-radius: 6px; background: var(--paper); }
+  .tabs button { flex: 1; min-height: 38px; border: 0; border-radius: 4px; background: none; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .tabs[hidden] { display: none; }
+
+  /* dialogs */
+  dialog { border: 1px solid var(--line); border-radius: 8px; padding: 0; width: min(420px, calc(100vw - 32px));
+           background: var(--paper); color: var(--ink); box-shadow: 0 30px 80px -30px rgba(0,0,0,.45); }
+  dialog::backdrop { background: rgba(31, 28, 23, .45); }
+  dialog form { position: relative; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  dialog h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 28px; letter-spacing: -.5px; }
+  dialog .lead { margin: -6px 0 4px; color: var(--muted); font-size: 14.5px; }
+  dialog .lead[hidden] { display: none; }
+  dialog .derr { padding: 10px 12px; border-radius: 6px; background: var(--err-soft); color: var(--err); font-size: 14px; font-weight: 500; }
+  dialog .derr:empty { display: none; }
+  dialog .dacts { display: flex; margin-top: 6px; }
+  dialog .dacts .btn.primary { flex: 1; }
+  dialog .swap { font-size: 14px; color: var(--muted); text-align: center; }
+  dialog .swap:empty { display: none; }
+  dialog .swap button { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; text-decoration: underline; }
+  dialog .x { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border: 0; background: none;
+              border-radius: 6px; color: var(--muted); display: grid; place-items: center; }
+  dialog .x:hover { background: var(--tint); color: var(--ink); }
+  .field[hidden] { display: none; }
+  .choice-card { border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper); cursor: pointer; display: flex; flex-direction: column; gap: 3px; transition: all .15s ease; user-select: none; }
+  .choice-card:hover { border-color: var(--muted); background: var(--tint); }
+  .choice-card.selected { border: 2px solid var(--accent); background: rgba(46, 125, 50, 0.08); }
+  .choice-card .card-title { font-weight: 600; font-size: 14px; color: var(--ink); }
+  .choice-card.selected .card-title { color: var(--accent); }
+  .choice-card .card-desc { font-size: 12px; color: var(--muted); }
+  .chip { border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 6px; padding: 7px 12px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s ease; user-select: none; }
+  .chip:hover { border-color: var(--muted); background: var(--tint); }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .ampm-btn { border: 0; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--paper); color: var(--muted); transition: all .15s ease; }
+  .ampm-btn.active { background: var(--accent); color: #fff; }
+
+  @media (max-width: 1020px) {
+    .cols { flex-direction: column; align-items: stretch; }
+    aside { width: auto; }
+    .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 40px; }
+    header { height: 60px; }
+    .acct .who { display: none; }
+    .signed-out { white-space: normal; }
+    .hero { padding: 28px 0 22px; }
+    .hero h1 { font-size: 38px; letter-spacing: -1px; }
+    .hero p { font-size: 15px; }
+    .step { gap: 12px; padding: 20px 18px; }
+    .step .n { width: 18px; font-size: 22px; }
+    .row2 { grid-template-columns: 1fr; gap: 12px; }
+    .prefixed .pre { display: none; }
+    .choice { align-items: flex-start; flex-wrap: wrap; row-gap: 2px; }
+    .choice .lbl { width: auto; flex: 1; }
+    .choice .desc { flex-basis: 100%; padding-left: 34px; }
+    .foot { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 10px; }
+    .foot .live { white-space: normal; }
+    .err { margin: 0 18px 16px; }
+    .done { padding: 28px 18px 22px; }
+    .linkbox button .w { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main class="enter" id="gate" hidden>
+  <form class="enter-card" id="enterForm" novalidate>
+    <div class="mark" aria-hidden="true">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M6 11l6 6 6-6"/><path d="M5 20h14"/></svg>
+    </div>
+    <h1>HTML Drop</h1>
+    <p class="enter-lead">Put a report on the office network.</p>
+    <div class="derr" id="enterErr" role="alert"></div>
+    <div>
+      <label class="l" for="eUserSel" id="eUserLabel">User</label>
+      <div class="pick" id="pickRow">
+        <select class="input" id="eUserSel" autocomplete="username"></select>
+        <button type="button" class="btn" id="addBtn">Add</button>
+      </div>
+      <div class="pick" id="newRow" hidden>
+        <input class="input" id="eUser" spellcheck="false" placeholder="Type your name">
+        <button type="button" class="btn" id="backBtn">Cancel</button>
+      </div>
+    </div>
+    <div><label class="l" for="ePin" id="ePinLabel">PIN</label>
+      <input class="input" id="ePin" type="password" autocomplete="current-password" placeholder="4+ characters"></div>
+    <button class="btn primary" id="enterGo" type="submit">Enter</button>
+    <p class="enter-note" id="enterNote">First time? You'll choose your PIN now and use it every time after.</p>
+  </form>
+</main>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M6 11l6 6 6-6"/><path d="M5 20h14"/></svg>
+    </div>
+    <div class="brand">HTML Drop</div>
+    <div class="sp"></div>
+    <nav class="acct" id="acct" aria-label="Account"></nav>
+  </header>
+
+  <div class="hero">
+    <h1>Put a report<br>on the network.</h1>
+    <p>Upload an HTML file and get one link the whole office can open. Upload again under the same link name to update it. The link never changes.</p>
+  </div>
+
+  <div class="cols">
+    <section class="card" id="uploadCard" aria-label="Publish a page">
+      <div id="formView">
+        <div class="step">
+          <span class="n">1</span>
+          <div class="body">
+            <h2>The file<small>.html for static dashboards, or .zip for dynamic projects</small></h2>
+            <div style="margin-bottom: 12px; padding: 10px 14px; border-radius: 6px; background: var(--accent-soft); color: var(--ink); font-size: 13.5px; border-left: 3px solid var(--accent);">
+              <strong>Note:</strong> Data refresh file name should be <code>main.py</code>
+            </div>
+            <div class="drop" id="drop" role="button" tabindex="0" aria-label="Choose a file to upload">
+              <svg width="30" height="36" viewBox="0 0 30 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 2h16l8 8v24H3z"/><path d="M19 2v8h8"/><path d="M9 22l-3 3 3 3M21 22l3 3-3 3M16 20l-2 10"/></svg>
+              <div class="t">
+                <span class="name" id="dropText">Drop a file here, or click to choose</span>
+                <span class="sub" id="dropSub">One .html file, or a .zip of the report's folder</span>
+              </div>
+              <span class="btn" id="dropBtn" aria-hidden="true">Choose file</span>
+              <p class="muted">Upload a single .html/.htm file for a static dashboard, or a .zip project for automatic deployment as a dynamic project. Both are managed on this page.</p>
+      <input type="file" id="file" accept=".html,.htm,.zip" hidden>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="n">2</span>
+          <div class="body">
+            <h2>The details</h2>
+            <div>
+              <label class="l" for="slug">Link name</label>
+              <div class="prefixed">
+                <span class="pre" id="prefix">yourpc:8150/s/</span>
+                <input type="text" id="slug" placeholder="sales-dashboard" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+            <input type="hidden" id="title" value="">
+            <div class="hint" id="hint">Filled in from the file name. Lowercase letters, numbers and dashes.</div>
+          </div>
+        </div>
+
+        <div class="step" style="border-bottom: 0">
+          <span class="n">3</span>
+          <div class="body">
+            <h2 id="placeLabel">Show on master dashboard?</h2>
+            <div class="choices" role="radiogroup" aria-labelledby="placeLabel">
+              <label class="choice"><input type="radio" name="place" value="off" checked>
+                <span class="dot"></span><span class="lbl">No, just host it</span>
+                <span class="desc">Only people with the link will find it.</span></label>
+              <label class="choice"><input type="radio" name="place" value="general">
+                <span class="dot"></span><span class="lbl">Yes, in General</span>
+                <span class="desc">On the General tab everyone sees first.</span></label>
+              <label class="choice"><input type="radio" name="place" value="all">
+                <span class="dot"></span><span class="lbl">Yes, in All dashboards only</span>
+                <span class="desc">Kept off General; shown under All dashboards.</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="err" id="msg" role="alert"></div>
+        <progress id="progress" max="100" value="0"></progress>
+        <div class="foot">
+          <button class="btn primary" id="publish">Publish page</button>
+          <span class="live" id="live">Pick a file to get started.</span>
+        </div>
+      </div>
+
+      <div class="done" id="doneView" hidden>
+        <div class="tick" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </div>
+        <div>
+          <h2>It’s live.</h2>
+          <p id="doneText"></p>
+        </div>
+        <div class="linkbox">
+          <span id="doneUrl"></span>
+          <button type="button" id="doneCopy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            <span class="w">Copy link</span>
+          </button>
+        </div>
+        <dl class="facts">
+          <div><dt>Master dashboard</dt><dd id="donePlace"></dd></div>
+          <div><dt>To update it</dt><dd>Upload again with the same link name and your PIN</dd></div>
+        </dl>
+        <div class="acts">
+          <a class="btn primary" id="doneOpen" href="#" target="_blank" rel="noopener">Open page</a>
+          <button type="button" class="btn primary" id="doneScheduleRefresh" style="display:none">Schedule refresh</button>
+          <button type="button" class="btn" id="again">Publish another</button>
+        </div>
+      </div>
+    </section>
+
+    <aside aria-label="My pages">
+      <div class="ahead"><h2>Static dashboards</h2><span id="count"></span></div>
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <span class="sr">Search pages</span>
+        <input type="search" id="search" placeholder="Search my pages">
+      </label>
+      <div class="list-msg" id="listMsg" role="status"></div>
+      <div id="rows"><div class="empty">Loading…</div></div>
+      <input type="file" id="replaceFile" accept=".html,.htm" hidden>
+      <section class="dynamic-list-section" aria-label="Dynamic projects">
+        <div class="ahead dynamic-ahead"><h2>Dynamic projects</h2><span id="dynamicCount"></span></div>
+        <div class="list-msg" id="dynamicMsg" role="status"></div>
+        <div id="dynamicRows"><div class="empty">Loading dynamic projects…</div></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<dialog id="auth" aria-labelledby="authTitle">
+  <form method="dialog" id="authForm" novalidate>
+    <button type="button" class="x" id="authClose" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 id="authTitle">Log in</h2>
+    <p class="lead" id="authLead">Log in to publish and manage your pages.</p>
+    <div class="derr" id="authErr" role="alert"></div>
+    <div class="field" id="fUser"><label class="l" for="aUser">User</label>
+      <input class="input" id="aUser" autocomplete="username" spellcheck="false" placeholder="e.g. Muskan"></div>
+    <div class="field" id="fOld"><label class="l" for="aOld">Current PIN</label>
+      <input class="input" id="aOld" type="password" autocomplete="current-password"></div>
+    <div class="field" id="fPass"><label class="l" for="aPass" id="aPassLabel">PIN</label>
+      <input class="input" id="aPass" type="password" autocomplete="current-password"></div>
+    <div class="dacts"><button class="btn primary" id="authGo" type="submit">Log in</button></div>
+    <div class="swap" id="authSwap"></div>
+  </form>
+</dialog>
+
+<dialog id="rename" aria-labelledby="renameTitle">
+  <form method="dialog" id="renameForm" novalidate>
+    <button type="button" class="x" id="renameClose" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 id="renameTitle">Rename</h2>
+    <p class="lead">Only the name shown in My pages changes. The link stays exactly the same.</p>
+    <div class="derr" id="renameErr" role="alert"></div>
+    <div class="field"><label class="l" for="renameInput">Name</label>
+      <input class="input" id="renameInput" maxlength="120" autocomplete="off" spellcheck="false"></div>
+    <div class="field"><label class="l" for="renameLink">Link (unchanged)</label>
+      <input class="input" id="renameLink" readonly tabindex="-1" style="color:var(--muted)"></div>
+    <div class="dacts"><button class="btn primary" id="renameGo" type="submit">Save name</button></div>
+  </form>
+</dialog>
+
+<dialog id="refreshModal" aria-labelledby="refreshModalTitle" style="width:min(490px, calc(100vw - 32px))">
+  <form method="dialog" id="refreshForm" novalidate>
+    <button type="button" class="x" id="refreshClose" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 id="refreshModalTitle">Refresh settings</h2>
+    <p class="lead" id="refreshModalLead">Choose when this dashboard automatically updates in Windows Task Scheduler.</p>
+    <div class="derr" id="refreshErr" role="alert"></div>
+
+    <div class="field">
+      <label class="l">Frequency</label>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div class="choice-card selected" id="card-daily" onclick="setRefreshFreq('daily')">
+          <span class="card-title">Daily</span>
+          <span class="card-desc">Every day (all 7 days)</span>
+        </div>
+        <div class="choice-card" id="card-weekdays" onclick="setRefreshFreq('weekdays')">
+          <span class="card-title">Weekdays</span>
+          <span class="card-desc">Monday to Friday</span>
+        </div>
+        <div class="choice-card" id="card-weekly" onclick="setRefreshFreq('weekly')">
+          <span class="card-title">Specific days</span>
+          <span class="card-desc">Pick custom weekdays</span>
+        </div>
+        <div class="choice-card" id="card-hourly" onclick="setRefreshFreq('hourly')">
+          <span class="card-title">Hourly</span>
+          <span class="card-desc">Repeat throughout day</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="weeklyDaysField" hidden>
+      <label class="l">Select Days</label>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button type="button" class="chip active" data-day="Mon" onclick="toggleDayChip(this)">Mon</button>
+        <button type="button" class="chip active" data-day="Tue" onclick="toggleDayChip(this)">Tue</button>
+        <button type="button" class="chip active" data-day="Wed" onclick="toggleDayChip(this)">Wed</button>
+        <button type="button" class="chip active" data-day="Thu" onclick="toggleDayChip(this)">Thu</button>
+        <button type="button" class="chip active" data-day="Fri" onclick="toggleDayChip(this)">Fri</button>
+        <button type="button" class="chip" data-day="Sat" onclick="toggleDayChip(this)">Sat</button>
+        <button type="button" class="chip" data-day="Sun" onclick="toggleDayChip(this)">Sun</button>
+      </div>
+    </div>
+
+    <div class="field" id="hourlyIntervalField" hidden>
+      <label class="l">Repeat Interval</label>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="chip active" data-hours="1" onclick="selectHourlyInterval(this, 1)">Every 1 hr</button>
+        <button type="button" class="chip" data-hours="2" onclick="selectHourlyInterval(this, 2)">Every 2 hrs</button>
+        <button type="button" class="chip" data-hours="4" onclick="selectHourlyInterval(this, 4)">Every 4 hrs</button>
+        <button type="button" class="chip" data-hours="6" onclick="selectHourlyInterval(this, 6)">Every 6 hrs</button>
+      </div>
+    </div>
+
+    <div class="field" id="timeField">
+      <label class="l">Start Time</label>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select class="input" id="timeHour" style="flex:1;">
+          <option value="12">12</option>
+          <option value="1">01</option>
+          <option value="2">02</option>
+          <option value="3">03</option>
+          <option value="4">04</option>
+          <option value="5">05</option>
+          <option value="6" selected>06</option>
+          <option value="7">07</option>
+          <option value="8">08</option>
+          <option value="9">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+        </select>
+        <span style="font-weight:bold; font-size:18px;">:</span>
+        <select class="input" id="timeMin" style="flex:1;">
+          <option value="00" selected>00</option>
+          <option value="05">05</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="35">35</option>
+          <option value="40">40</option>
+          <option value="45">45</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+        </select>
+        <div style="display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden;">
+          <button type="button" id="timeAm" class="ampm-btn active" onclick="setAmPm('AM')">AM</button>
+          <button type="button" id="timePm" class="ampm-btn" onclick="setAmPm('PM')">PM</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dacts" style="display:flex; gap:10px; margin-top:8px;">
+      <button type="button" class="btn" id="refreshDisableBtn" onclick="disableRefreshModal()" style="color:#be123c; border-color:#fecdd3; background:#fff1f2;">Turn off schedule</button>
+      <button class="btn primary" id="refreshSaveBtn" type="submit" style="flex:1;">Save schedule</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+let sites = [];
+let me = null;            // { username, name, role } when logged in
+let allowSignup = true;
+let masterUrl = "";
+let chosen = null;
+let slugTouched = false;
+let prefilledFor = "";
+
+$("prefix").textContent = location.host + "/s/";
+const store = {
+  get(k) { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+/* ---------- login screen: pick your name, then PIN ---------- */
+let members = [];        // [{ name, has_pin }] from /api/me
+let adding = false;      // typing a name that isn't in the list
+const userName = () => adding ? $("eUser").value.trim().split(/\s+/).join(" ") : $("eUserSel").value;
+const memberFor = name => members.find(m => m.name.toLowerCase() === name.toLowerCase());
+
+function renderMembers() {
+  // Alphabetical, with the admin account last.
+  const isAdmin = m => m.name.toLowerCase() === "admin";
+  const list = [...members].sort((a, b) => isAdmin(a) - isAdmin(b) || a.name.localeCompare(b.name));
+  $("eUserSel").innerHTML = `<option value="">Choose your name</option>` +
+    list.map(m => `<option value="${esc(m.name)}">${esc(m.name)}</option>`).join("");
+  const last = memberFor(store.get("user"));
+  if (last) $("eUserSel").value = last.name;
+  pinMode();
+}
+function pinMode() {
+  const name = userName(), m = memberFor(name);
+  const first = !!name && (!m || !m.has_pin);
+  $("ePinLabel").textContent = first ? "Choose your PIN (4+ characters)" : "PIN";
+  $("ePin").autocomplete = first ? "new-password" : "current-password";
+  $("enterGo").textContent = first ? "Set PIN and enter" : "Enter";
+  $("enterNote").textContent = first
+    ? `First time for ${name}. This PIN is yours from now on, so remember it.`
+    : "First time? You'll choose your PIN now and use it every time after.";
+}
+function showAdd(on) {
+  adding = on;
+  $("pickRow").hidden = on; $("newRow").hidden = !on;
+  $("eUserLabel").htmlFor = on ? "eUser" : "eUserSel";
+  if (on) { $("eUser").value = ""; setTimeout(() => $("eUser").focus(), 10); }
+  pinMode();
+}
+$("eUserSel").addEventListener("change", () => { pinMode(); if ($("eUserSel").value) $("ePin").focus(); });
+$("eUser").addEventListener("input", pinMode);
+$("addBtn").onclick = () => showAdd(true);
+$("backBtn").onclick = () => showAdd(false);
+async function refreshMembers() {
+  try { members = (await (await fetch("/api/me")).json()).members || []; } catch {}
+  renderMembers();
+}
+
+$("enterForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("enterErr").textContent = "";
+  if (!userName()) { $("enterErr").textContent = adding ? "Type your name." : "Choose your name."; return; }
+  $("enterGo").disabled = true;
+  try {
+    const res = await api("/api/enter", { username: userName(), password: $("ePin").value });
+    me = res.user;
+    store.set("user", res.user.name);
+    showAdd(false);
+    $("ePin").value = "";
+    await load();
+    afterAuthChange();
+  } catch (err) {
+    $("enterErr").textContent = err.message;
+  } finally {
+    $("enterGo").disabled = false;
+  }
+});
+
+// Logged out mid-way (session ended): back to the login screen.
+function loggedOut() {
+  me = null; afterAuthChange();
+  $("enterErr").textContent = "You were logged out. Enter your user and PIN again.";
+}
+
+const PLACE_TEXT = { off: "Not shown (link only)", general: "Shown in General", all: "Shown in All dashboards only" };
+const getPlace = () => document.querySelector('input[name="place"]:checked').value;
+const setPlace = v => { const r = document.querySelector(`input[name="place"][value="${v}"]`); if (r) r.checked = true; };
+const canManage = s => !!me && (me.role === "admin" || s.user === me.username);
+
+// Every change request carries X-HD; the server refuses POSTs without it.
+async function api(path, body, extra) {
+  const r = await fetch(path, {
+    method: "POST", headers: { "Content-Type": "application/json", "X-HD": "1", ...(extra || {}) },
+    body: JSON.stringify(body || {}),
+  });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(res.error || "Something went wrong (" + r.status + ")."), { status: r.status });
+  return res;
+}
+
+function slugify(s) {
+  return s.toLowerCase().replace(/\.(html?|zip)$/, "").replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "").slice(0, 63);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function ago(iso) {
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.floor(s / 60) + " min ago";
+  if (s < 86400) return Math.floor(s / 3600) + " h ago";
+  if (s < 86400 * 2) return "yesterday";
+  if (s < 86400 * 7) return Math.floor(s / 86400) + " d ago";
+  return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+function fullUrl(path) { return /^https?:/.test(path) ? path : location.origin + path; }
+function kb(n) { return n < 1024 * 1024 ? Math.max(1, Math.round(n / 1024)) + " KB" : (n / 1048576).toFixed(1) + " MB"; }
+
+/* ---------- account ---------- */
+
+function renderAccount() {
+  const a = $("acct");
+  if (me) {
+    a.innerHTML = `<span class="who">Hi, <b>${esc(me.name)}</b></span>` +
+      (masterUrl ? `<a class="linkbtn" href="${esc(masterUrl)}" target="_blank" rel="noopener">Master dashboard</a>` : "") +
+      (me.role === "admin" ? `<a class="linkbtn" href="/admin">Admin</a>` : "") +
+      `<button type="button" class="linkbtn" id="pwBtn">Change PIN</button>` +
+      `<button type="button" class="linkbtn" id="outBtn">Log out</button>`;
+    $("pwBtn").onclick = () => openAuth("password");
+    $("outBtn").onclick = logOut;
+  } else {
+    a.innerHTML = "";
+  }
+  $("app").hidden = !me;
+  $("gate").hidden = !!me;
+  if (!me) setTimeout(() => $(memberFor(store.get("user")) ? "ePin" : "eUserSel").focus(), 20);
+}
+
+function afterAuthChange() { renderAccount(); render(); updateHint(); }
+async function logOut() {
+  try { await api("/api/logout"); } catch {}
+  me = null; $("ePin").value = ""; $("enterErr").textContent = ""; afterAuthChange();
+  refreshMembers();
+}
+
+let authMode = "login";
+let afterLogin = null;   // runs once after a successful log in / sign up
+
+const AUTH = {
+  login:    { title: "Log in", lead: "To see and change your pages.", go: "Log in",
+              fields: ["fUser", "fPass"], passLabel: "PIN", passAuto: "current-password" },
+  signup:   { title: "New user", lead: "", go: "Create",
+              fields: ["fUser", "fPass"], passLabel: "Choose a PIN (4+ characters)", passAuto: "new-password" },
+  password: { title: "Change PIN", lead: "", go: "Save new PIN",
+              fields: ["fOld", "fPass"], passLabel: "New PIN (4+ characters)", passAuto: "new-password" },
+};
+
+function openAuth(mode, then) {
+  authMode = mode;
+  if (then !== undefined) afterLogin = then;
+  const m = AUTH[mode];
+  $("authTitle").textContent = m.title;
+  $("authLead").textContent = m.lead;
+  $("authLead").hidden = !m.lead;
+  $("authGo").textContent = m.go;
+  $("aPassLabel").textContent = m.passLabel;
+  $("aPass").autocomplete = m.passAuto;
+  ["fUser", "fOld", "fPass"].forEach(f => $(f).hidden = !m.fields.includes(f));
+  $("authErr").textContent = "";
+  $("aPass").value = ""; $("aOld").value = "";
+  $("authSwap").innerHTML = mode === "login" ? "New here? Just fill in User and PIN on the form when you publish." : "";
+  const d = $("auth");
+  if (!d.open) d.showModal();
+  setTimeout(() => $(m.fields[0] === "fOld" ? "aOld" : "aUser").focus(), 20);
+}
+$("authClose").onclick = () => { afterLogin = null; $("auth").close(); };
+$("auth").addEventListener("cancel", () => { afterLogin = null; });
+
+$("authForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("authErr").textContent = "";
+  $("authGo").disabled = true;
+  try {
+    if (authMode === "password") {
+      await api("/api/password", { old: $("aOld").value, new: $("aPass").value });
+      $("auth").close();
+      alert("PIN changed.");
+      return;
+    }
+    const body = { username: $("aUser").value.trim(), password: $("aPass").value };
+    const res = await api(authMode === "signup" ? "/api/signup" : "/api/login", body);
+    me = res.user;
+    $("auth").close();
+    await load();
+    afterAuthChange();
+    const next = afterLogin; afterLogin = null;
+    if (next) next();
+  } catch (err) {
+    $("authErr").textContent = err.message;
+  } finally {
+    $("authGo").disabled = false;
+  }
+});
+
+/* ---------- file + form ---------- */
+
+function setFile(f) {
+  if (!f) return;
+  chosen = f;
+  $("drop").classList.add("has");
+  $("dropText").textContent = f.name;
+  $("dropSub").textContent = kb(f.size) + " · ready";
+  $("dropBtn").textContent = "Choose another";
+  if (!slugTouched || !$("slug").value) $("slug").value = slugify(f.name);
+  const prettyName = f.name.replace(/\.(html?|zip)$/i, "").replace(/[_-]+/g, " ");
+  $("title").value = prettyName;
+  $("msg").textContent = "";
+  updateHint();
+}
+function clearFile() {
+  chosen = null; $("file").value = "";
+  $("drop").classList.remove("has");
+  $("dropText").textContent = "Drop a file here, or click to choose";
+  $("dropSub").textContent = "One .html file, or a .zip of the report's folder";
+  $("dropBtn").textContent = "Choose file";
+}
+$("drop").onclick = () => $("file").click();
+$("drop").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } });
+$("file").onchange = e => setFile(e.target.files[0]);
+["dragenter", "dragover"].forEach(ev => $("drop").addEventListener(ev, e => {
+  e.preventDefault(); $("drop").classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => $("drop").addEventListener(ev, e => {
+  e.preventDefault(); $("drop").classList.remove("over"); }));
+$("drop").addEventListener("drop", e => setFile(e.dataTransfer.files[0]));
+$("slug").addEventListener("input", () => { slugTouched = true; updateHint(); });
+
+// "new", "mine" (can update), "taken" (someone else's)
+function slugState() {
+  const s = $("slug").value.trim().toLowerCase();
+  const hit = sites.find(x => x.slug === s);
+  return { s, hit, kind: !hit ? "new" : (hit.linked || (me && !canManage(hit))) ? "taken" : "mine" };
+}
+
+function updateHint() {
+  const { s, hit, kind } = slugState();
+  // Updating an existing page: start from its current dashboard settings.
+  if (hit && prefilledFor !== s) { prefilledFor = s; setPlace(hit.placement); }
+  if (!hit && prefilledFor) { prefilledFor = ""; setPlace("off"); }
+  const h = $("hint");
+  h.className = "hint" + (kind === "mine" ? " update" : "");
+  h.textContent = !s ? "Filled in from the file name. Lowercase letters, numbers and dashes."
+    : kind === "taken" ? (hit.linked ? `“${s}” is an existing dashboard on its own server. Choose a different link name.`
+                                       : `“${s}” is already used by ${hit.owner || "someone else"}. Choose a different link name.`)
+    : kind === "mine" ? `Updates “${hit.title}” (now v${hit.version}).` + (chosen ? "" : " Choose a new file, or just change the title or dashboard option and save.")
+    : "New page.";
+  const saveOnly = kind === "mine" && !chosen;
+  $("publish").textContent = saveOnly ? "Save changes" : kind === "mine" ? "Update page" : "Publish page";
+  $("publish").disabled = kind === "taken";
+  $("live").innerHTML = s ? `Live at <b>${esc(location.host)}/s/${esc(s)}/</b>` : (chosen ? "Enter a link name." : "Pick a file to get started.");
+}
+
+function showErr(text) { $("msg").textContent = text; }
+
+function showDone(res, verb) {
+  const url = fullUrl(res.url);
+  $("doneText").textContent = verb === "saved"
+    ? `Changes to ${res.title} are saved.`
+    : `${res.title} is published as version ${res.version}. Anyone on the office network can open this link.`;
+  $("doneUrl").textContent = url;
+  $("doneOpen").href = url;
+  $("donePlace").textContent = PLACE_TEXT[res.placement] || PLACE_TEXT.off;
+  $("formView").hidden = true; $("doneView").hidden = false;
+  clearFile(); slugTouched = false;
+  load();
+}
+
+function submit() {
+  const { s: slug, kind } = slugState();
+  if (kind === "taken") return;
+  if (!chosen && kind !== "mine") return showErr("Choose a file first.");
+  if (!slug) return showErr("Enter a link name.");
+  if (!me) return loggedOut();
+  showErr("");
+
+  if (!chosen) {   // settings-only change to your own page
+    $("publish").disabled = true;
+    api("/api/page?" + new URLSearchParams({ slug }), { title: $("title").value.trim(), placement: getPlace() })
+      .then(res => showDone(res, "saved"))
+      .catch(err => err.status === 401 ? loggedOut() : showErr(err.message))
+      .finally(() => { $("publish").disabled = false; });
+    return;
+  }
+
+  // One uploader, automatic routing by file type:
+  // standalone HTML/HTM => static page; ZIP => analyze/deploy as a dynamic project.
+  if (/\.zip$/i.test(chosen.name)) {
+    const placement = getPlace();
+    const qs = new URLSearchParams({
+      slug,
+      title: $("title").value.trim(),
+      placement: placement === "off" ? "off" : placement === "general" ? "general" : "all"
+    });
+    $("publish").disabled = true;
+    $("progress").style.display = "block";
+    $("progress").value = 0;
+    fetch("/api/dynamic/upload?" + qs, {
+      method: "POST",
+      headers: { "Content-Type": "application/zip", "X-HD": "1" },
+      body: chosen
+    }).then(async r => {
+      const res = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error(res.error || "Dynamic project upload failed (" + r.status + ")."), { status: r.status });
+      $("doneText").textContent = `${res.title || $("title").value || slug} was published as a dynamic project.`;
+      $("doneUrl").textContent = res.url || "";
+      $("doneOpen").href = res.url || "#";
+      $("donePlace").textContent = "Dynamic project";
+      if (res.refresh_available) {
+        $("doneScheduleRefresh").style.display = "inline-flex";
+        $("doneScheduleRefresh").onclick = () => configureDynamicRefresh(res.slug);
+      } else {
+        $("doneScheduleRefresh").style.display = "none";
+      }
+      $("formView").hidden = true;
+      $("doneView").hidden = false;
+      await Promise.all([loadDynamicProjects(), load()]);
+
+      setTimeout(() => {
+        if (res.refresh_available) {
+          if (confirm(`"${res.title || slug}" has been published with main.py.\n\nWould you like to setup a refresh task on Windows Task Scheduler now?`)) {
+            configureDynamicRefresh(res.slug);
+          }
+        } else {
+          alert(`"${res.title || slug}" was published as a dynamic project.\n\nNote: Automated refresh requires a file named "main.py" at the project root. You can add it later via "Change ZIP" to configure Windows Task Scheduler.`);
+        }
+      }, 350);
+    }).catch(err => {
+      if (err.status === 401) loggedOut();
+      else showErr(err.message);
+    }).finally(() => {
+      $("publish").disabled = false;
+      $("progress").style.display = "none";
+    });
+    return;
+  }
+
+  if (!/\.(html|htm)$/i.test(chosen.name)) {
+    return showErr("Only .html or .htm files are supported for static dashboards. For dynamic projects, upload a .zip file.");
+  }
+
+  const qs = new URLSearchParams({ slug, title: $("title").value.trim(), filename: chosen.name, hub: getPlace() });
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "/api/upload?" + qs);
+  xhr.setRequestHeader("X-HD", "1");
+  $("publish").disabled = true;
+  $("progress").style.display = "block";
+  xhr.upload.onprogress = e => { if (e.lengthComputable) $("progress").value = e.loaded / e.total * 100; };
+  xhr.onloadend = () => {
+    $("publish").disabled = false;
+    $("progress").style.display = "none";
+    let res = {};
+    try { res = JSON.parse(xhr.responseText); } catch {}
+    if (xhr.status === 200) showDone(res, "published");
+    else if (xhr.status === 401) loggedOut();
+    else showErr(res.error || (xhr.status === 0 ? "Couldn't reach the server. Is it running?" : "Upload failed (" + xhr.status + ")."));
+  };
+  xhr.send(chosen);
+}
+$("publish").onclick = submit;
+
+$("doneCopy").onclick = () => copy($("doneUrl").textContent, $("doneCopy").querySelector(".w") || $("doneCopy"));
+$("again").onclick = () => {
+  $("slug").value = ""; $("title").value = ""; setPlace("off"); prefilledFor = "";
+  $("doneScheduleRefresh").style.display = "none";
+  $("doneView").hidden = true; $("formView").hidden = false; updateHint();
+};
+
+const ICON_OK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function copy(text, el) {
+  // Icon buttons flash a tick; text labels read "Copied".
+  const done = el.classList && el.classList.contains("icon-btn")
+    ? () => { const h = el.innerHTML; el.innerHTML = ICON_OK; el.style.color = "var(--accent)"; setTimeout(() => { el.innerHTML = h; el.style.color = ""; }, 1200); }
+    : () => { const t = el.textContent; el.textContent = "Copied"; setTimeout(() => el.textContent = t, 1200); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done);
+  else {  // plain http on LAN isn't a "secure context", so fall back
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand("copy"); ta.remove(); done();
+  }
+}
+
+function prefill(slug) {
+  const s = sites.find(x => x.slug === slug);
+  if (!s) return;
+  $("doneView").hidden = true; $("formView").hidden = false;
+  clearFile();
+  $("slug").value = s.slug; $("title").value = s.title; slugTouched = true;
+  prefilledFor = ""; showErr(""); updateHint();
+  $("uploadCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* Replace: pick a new file for one of your pages; same link, old version backed up. */
+let replacing = null;
+function replace(slug) {
+  replacing = sites.find(x => x.slug === slug);
+  $("replaceFile").accept = ".html,.htm";
+  $("replaceFile").value = "";
+  $("replaceFile").click();
+}
+function listMsg(text, bad) { $("listMsg").textContent = text; $("listMsg").className = "list-msg" + (bad ? " err" : ""); }
+$("replaceFile").onchange = async e => {
+  const f = e.target.files[0], s = replacing;
+  if (!f || !s) return;
+  if (!/\.(html|htm)$/i.test(f.name)) {
+    alert("Static dashboards only accept .html or .htm files. Upload a .zip for dynamic projects.");
+    e.target.value = "";
+    return;
+  }
+  if (!confirm(`Replace “${s.title}” with ${f.name}?\n\nThe link stays the same. The current version is kept as a backup.`)) return;
+  listMsg(s.linked && s.version === 1 ? `Replacing “${s.title}”… (the first time can take a minute while it finds the file)` : `Replacing “${s.title}”…`);
+  try {
+    const r = await fetch("/api/replace?" + new URLSearchParams({ slug: s.slug, filename: f.name }),
+                          { method: "POST", headers: { "X-HD": "1" }, body: f });
+    const res = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(res.error || "Replace failed (" + r.status + ").");
+    listMsg(res.disabled
+      ? `Replaced “${res.title}” (version ${res.version}). It stays hidden until you click Enable.`
+      : `Replaced “${res.title}”. Same link, now version ${res.version}. Viewers may need Ctrl+F5 once.`);
+    load();
+  } catch (err) { listMsg(err.message, true); }
+};
+
+async function del(slug) {
+  const s = sites.find(x => x.slug === slug);
+  if (!confirm(`Delete “${s ? s.title : slug}” for good?\n\nIts link will stop working and it will be removed from the master dashboard. ` +
+               `(To hide it only for a while, use “Disable temporarily” instead.)`)) return;
+  listMsg(`Deleting “${s ? s.title : slug}”…`);
+  try {
+    if (s && s.dynamic) {
+      await api("/api/dynamic/delete?" + new URLSearchParams({ slug }), { method: "POST" });
+      listMsg(`“${s.title}” and its project folder have been deleted.`);
+    } else {
+      await api("/api/delete?" + new URLSearchParams({ slug }));
+      listMsg(`“${s ? s.title : slug}” is deleted. The admin can still recover it from the trash if needed.`);
+    }
+  } catch (err) { listMsg(err.message, true); }
+  load();
+}
+
+/* ---------- list ---------- */
+
+const ICON_COPY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+// Hover text for the "..." menu.
+const TIP_DISABLE = "Hide for now. Link shows 'unavailable', off the master dashboard. Nothing is deleted.";
+const TIP_ENABLE = "Bring it back on the same link and the master dashboard.";
+const TIP_DELETE = "Remove for good. Link stops working, off the master dashboard. Admin keeps a backup.";
+const ICON_MORE ='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+// Close an open "..." menu when clicking anywhere else.
+document.addEventListener("click", e => {
+  document.querySelectorAll("details.more[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; });
+});
+
+/* Rename: changes the name shown here only; the link never changes. */
+let renaming = null;
+function renamePage(slug, isDynamic = false) {
+  const s = isDynamic
+    ? dynamicProjects.find(x => x.slug === slug)
+    : sites.find(x => x.slug === slug);
+  if (!s) return;
+  document.querySelectorAll("details.more[open]").forEach(d => d.open = false);
+  renaming = { ...s, isDynamic: !!isDynamic };
+  $("renameInput").value = s.title;
+  $("renameLink").value = fullUrl(s.url || "");
+  $("renameErr").textContent = "";
+  $("rename").showModal();
+  setTimeout(() => { $("renameInput").focus(); $("renameInput").select(); }, 20);
+}
+$("renameClose").onclick = () => $("rename").close();
+$("renameForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const s = renaming, title = $("renameInput").value.trim();
+  if (!s) return;
+  if (!title) { $("renameErr").textContent = "Type a name first."; return; }
+  if (title === s.title) { $("rename").close(); return; }
+  $("renameGo").disabled = true;
+  try {
+    const endpoint = (s.isDynamic && !s.external)
+      ? "/api/dynamic/rename?" + new URLSearchParams({ slug: s.slug })
+      : "/api/rename?" + new URLSearchParams({ slug: s.slug });
+    const res = await api(endpoint, { title });
+    $("rename").close();
+    if (s.isDynamic) {
+      dynamicMsg(`Renamed to “${res.title}”. The link is unchanged.`);
+      await loadDynamicProjects();
+    } else {
+      listMsg(`Renamed to “${res.title}”. The link is unchanged.`);
+    }
+    await load();
+  } catch (err) {
+    $("renameErr").textContent = err.message;
+  } finally {
+    $("renameGo").disabled = false;
+  }
+});
+
+/* Disable: link shows "temporarily unavailable", hidden from the master dashboard, nothing deleted. */
+async function toggleDisable(slug) {
+  const s = sites.find(x => x.slug === slug);
+  if (!s) return;
+  const on = !s.disabled;
+  if (on && !confirm(`Disable “${s.title}” for now?\n\nIts link will show “temporarily unavailable” and it will be hidden from the master dashboard. Nothing is deleted: Enable it again whenever you like, or Replace it first.`)) return;
+  listMsg(on ? `Disabling “${s.title}”…` : `Enabling “${s.title}”…`);
+  try {
+    const res = await api("/api/disable?" + new URLSearchParams({ slug, on: on ? "1" : "0" }));
+    listMsg(on ? `“${res.title}” is disabled. Enable it or Replace it whenever you like.`
+               : `“${res.title}” is live again on the same link. Viewers may need Ctrl+F5 once.`);
+  } catch (err) { listMsg(err.message, true); }
+  load();
+}
+
+const ICON_DEL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>';
+
+function render() {
+  // Only your own pages here; admins see everyone's on the Admin page.
+  const q = $("search").value.trim().toLowerCase();
+  const dynSlugs = new Set((dynamicProjects || []).map(p => (p.slug || "").toLowerCase()));
+  const pool = me ? sites.filter(s => !s.dynamic && !dynSlugs.has((s.slug || "").toLowerCase()) && (s.owners || [s.user]).includes(me.username)) : [];
+  const list = pool.filter(s => !q || (s.title + " " + s.slug + " " + s.owner).toLowerCase().includes(q));
+  $("count").textContent = pool.length === 1 ? "1 page" : pool.length + " pages";
+  $("rows").innerHTML = list.length ? list.map(s => `
+    <div class="item${s.disabled ? " is-off" : ""}">
+      <div class="t">
+        <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>
+        <span class="m">${s.disabled ? '<span class="off-tag">Disabled</span> · ' : ""}${(s.owners || []).length > 1 ? "Shared: " + esc(s.owner) + " · " : ""}${s.linked
+          ? "On its own server · " + esc(s.url.replace(/^https?:\/\//, "").split("/")[0]) + (s.version > 1 ? ` · v${s.version} · replaced ${ago(s.updated)}` : "")
+          : `v${s.version} · updated ${ago(s.updated)}`}</span>
+      </div>
+      <button class="btn icon-btn" aria-label="Copy link to ${esc(s.title)}" title="Copy link" onclick="copy('${esc(fullUrl(s.url))}', this)">${ICON_COPY}</button>
+      <button class="btn" onclick="replace('${esc(s.slug)}')">Replace</button>
+      <details class="more">
+        <summary class="btn icon-btn" aria-label="More actions for ${esc(s.title)}" title="More">${ICON_MORE}</summary>
+        <div class="menu">
+          <button type="button" onclick="renamePage('${esc(s.slug)}')" title="Change the name shown here. The link stays the same.">Rename</button>
+          <button type="button" onclick="toggleDisable('${esc(s.slug)}')" title="${s.disabled ? TIP_ENABLE : TIP_DISABLE}">${s.disabled ? "Enable" : "Disable temporarily"}</button>
+          ${s.linked ? "" : `<button type="button" onclick="prefill('${esc(s.slug)}')">Change settings</button>`}
+          <button type="button" class="danger" onclick="del('${esc(s.slug)}')" title="${TIP_DELETE}">Delete</button>
+        </div>
+      </details>
+    </div>`).join("")
+    : q ? `<div class="empty">No pages match “${esc(q)}”.</div>`
+    : `<div class="empty"><b>You haven't published anything yet.</b>Pages you publish will appear here.</div>`;
+}
+const ICON_REFRESH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2"/></svg>';
+let dynamicProjects = [];
+function dynamicMsg(message, error=false) { const el=$("dynamicMsg"); el.textContent=message||""; el.classList.toggle("err",!!error); }
+function renderDynamicProjects() {
+  const q = ($("search").value || "").trim().toLowerCase();
+  const rows = dynamicProjects.filter(p => !q || (p.title+" "+p.slug+" "+p.owner).toLowerCase().includes(q));
+  $("dynamicCount").textContent = dynamicProjects.length + (dynamicProjects.length===1 ? " project" : " projects");
+  $("dynamicRows").innerHTML = rows.length ? rows.map(p => `
+    <div class="item dynamic-row">
+      <div class="t"><a href="${esc(p.url||'#')}" target="_blank" rel="noopener">${esc(p.title)}</a>
+        <span class="m">${p.external ? 'On its own server' : (p.disabled ? 'Temporarily disabled' : esc(p.status||'uploaded'))}${p.port ? ' · Port '+esc(p.port) : ''}${p.external ? (p.refresh&&p.refresh.enabled ? ' · Refresh '+(p.refresh.task_name ? esc(p.refresh.task_name)+' · ' : '')+esc(p.refresh.frequency||'scheduled')+(p.refresh.time && p.refresh.time !== 'active' ? ' '+esc(p.refresh.time) : '') : (p.refresh_available ? ' · Refresh not configured' : '')) : ' · '+(p.refresh&&p.refresh.enabled ? 'Refresh '+esc(p.refresh.frequency||'scheduled')+' '+esc(p.refresh.time||'') : (p.refresh_available ? 'Refresh not configured' : 'Refresh unavailable: main.py missing'))}</span>
+      </div>
+      <button class="btn icon-btn" aria-label="Copy link to ${esc(p.title)}" title="Copy link" onclick="copy('${esc(fullUrl(p.url||''))}', this)">${ICON_COPY}</button>
+      <input type="file" accept=".html,.htm,text/html" hidden id="dynamic-html-${esc(p.slug)}" onchange="replaceDynamicHtml('${esc(p.slug)}',this)">
+      <button class="btn" onclick="document.getElementById('dynamic-html-${esc(p.slug)}').click()">Replace HTML</button>
+      <details class="more"><summary class="btn icon-btn" aria-label="More actions for ${esc(p.title)}" title="More">${ICON_MORE}</summary>
+        <div class="menu">
+          <button type="button" onclick="refreshDynamicNow('${esc(p.slug)}')">Refresh now</button>
+          <button type="button" onclick="configureDynamicRefresh('${esc(p.slug)}')">Refresh settings</button>
+          <button type="button" onclick="renamePage('${esc(p.slug)}', true)">Rename</button>
+          ${p.external ? `
+            <input type="file" accept=".zip,application/zip" hidden id="external-zip-${esc(p.slug)}" onchange="changeExternalZip('${esc(p.slug)}',this)">
+            <button type="button" onclick="document.getElementById('external-zip-${esc(p.slug)}').click()">Change ZIP</button>
+            <button type="button" onclick="toggleExternalDynamic('${esc(p.slug)}', ${p.disabled ? 'false' : 'true'})">${p.disabled ? 'Enable' : 'Disable temporarily'}</button>
+            <button type="button" class="danger" onclick="deleteExternalDynamic('${esc(p.slug)}','${esc(p.title)}')">Delete</button>
+          ` : `
+            <button type="button" onclick="document.getElementById('dynamic-zip-${esc(p.slug)}').click()">Change ZIP</button>
+            <button type="button" onclick="toggleDynamicDisabled('${esc(p.slug)}', ${p.disabled ? 'false' : 'true'})">${p.disabled ? 'Enable project' : 'Disable temporarily'}</button>
+            <button type="button" class="danger" onclick="deleteDynamicProject('${esc(p.slug)}')">Delete project</button>
+          `}
+        </div>
+      </details>
+      ${p.external ? '' : `
+      <input type="file" accept=".zip,application/zip" hidden id="dynamic-zip-${esc(p.slug)}" onchange="replaceDynamicZip('${esc(p.slug)}',this)">`}
+    </div>`).join("") : `<div class="empty">${q ? 'No dynamic projects match your search.' : 'No dynamic projects yet.'}</div>`;
+}
+async function loadDynamicProjects() {
+  try { const d=await (await fetch('/api/dynamic/projects')).json(); if(!d || !Array.isArray(d.projects)) throw Error(d.error||'Could not load dynamic projects'); dynamicProjects=d.projects; renderDynamicProjects(); }
+  catch(e) { $("dynamicRows").innerHTML='<div class="empty">Dynamic projects could not be loaded. Sign in again or check the server.</div>'; }
+}
+async function replaceDynamicHtml(slug,input) {
+  const file=input.files&&input.files[0]; if(!file)return;
+  if(!confirm('Replace only the HTML file for '+slug+'? Other project files and the dashboard link will be kept.')){input.value='';return;}
+  dynamicMsg('Replacing HTML for '+slug+'…');
+  try { const r=await fetch('/api/dynamic/replace-html?'+new URLSearchParams({slug,filename:file.name}),{method:'POST',headers:{'X-HD':'1'},body:file}); const d=await r.json().catch(()=>({})); if(!r.ok)throw Error(d.error||'HTML replacement failed.'); dynamicMsg(d.message||'HTML replaced; dashboard restart started.'); setTimeout(loadDynamicProjects,1200);setTimeout(loadDynamicProjects,4500); }
+  catch(e){dynamicMsg(e.message,true);} finally{input.value='';}
+}
+async function replaceDynamicZip(slug,input) {
+  const file=input.files&&input.files[0];if(!file)return;
+  const p=dynamicProjects.find(x=>x.slug===slug);const hasSchedule=!!(p&&p.refresh&&p.refresh.enabled);
+  const message=hasSchedule?'The existing Windows Task Scheduler schedule will be preserved. The replacement must include main.py to keep refresh working.':'The project files will be updated. Refresh can be configured if main.py is included.';
+  if(!confirm('Replace the project files for '+slug+' with '+file.name+'?\n\n(Any ZIP file name is supported)\n\n'+message)){input.value='';return;}
+  dynamicMsg('Replacing project ZIP…');
+  try{
+    let r=await fetch('/api/dynamic/replace?slug='+encodeURIComponent(slug),{method:'POST',headers:{'X-HD':'1','Content-Type':'application/zip'},body:file});
+    let d=await r.json().catch(()=>({}));
+    if(!r.ok){
+      if(r.status===409 && d.error && d.error.includes("HTML filename mismatch")){
+        if(confirm("⚠️ HTML Filename Warning:\n\n" + d.error + "\n\nDo you want to proceed and replace the files anyway?")){
+          r=await fetch('/api/dynamic/replace?force=1&slug='+encodeURIComponent(slug),{method:'POST',headers:{'X-HD':'1','Content-Type':'application/zip'},body:file});
+          d=await r.json().catch(()=>({}));
+          if(!r.ok) throw Error(d.error||'ZIP replacement failed.');
+        } else {
+          dynamicMsg('Upload canceled: HTML filename did not match.');
+          return;
+        }
+      } else {
+        throw Error(d.error||'ZIP replacement failed.');
+      }
+    }
+    dynamicMsg(d.message||'ZIP replaced; dashboard updated.');await loadDynamicProjects();setTimeout(loadDynamicProjects,1800);setTimeout(loadDynamicProjects,6000);
+  }
+  catch(e){dynamicMsg(e.message,true);}finally{input.value='';}
+}
+async function changeExternalZip(slug,input) {
+  const file=input.files&&input.files[0]; if(!file)return;
+  if(!/\.zip$/i.test(file.name)){alert("Choose a .zip file.");input.value="";return;}
+  if(!confirm("Update files in the existing dashboard folder from this ZIP? Existing files will be backed up. Files not included in the ZIP, the current URL/port, and existing cron jobs will be left unchanged.")){input.value="";return;}
+  try {
+    let r=await fetch("/api/dynamic/replace-zip?"+new URLSearchParams({slug}),{method:"POST",headers:{"X-HD":"1"},body:file});
+    let d=await r.json().catch(()=>({}));
+    if(!r.ok){
+      if(r.status===409 && d.error && d.error.includes("HTML filename mismatch")){
+        if(confirm("⚠️ HTML Filename Warning:\n\n" + d.error + "\n\nDo you want to proceed and update the dashboard anyway?")){
+          r=await fetch("/api/dynamic/replace-zip?"+new URLSearchParams({slug,force:"1"}),{method:"POST",headers:{"X-HD":"1"},body:file});
+          d=await r.json().catch(()=>({}));
+          if(!r.ok) throw Error(d.error||"Change ZIP failed.");
+        } else {
+          alert("Upload canceled: HTML filename did not match the older dashboard file.");
+          return;
+        }
+      } else {
+        throw Error(d.error||"Change ZIP failed.");
+      }
+    }
+    alert(d.message||"Dashboard files updated.");
+    await loadDynamicProjects(); await load();
+  } catch(e){alert(e.message);} finally {input.value="";}
+}
+async function renameExternalDynamic(slug, currentTitle) {
+  const title = prompt("New dashboard name:", currentTitle || "");
+  if (title === null) return;
+  if (!title.trim()) { alert("Type a name first."); return; }
+  try {
+    const r = await fetch("/api/rename?" + new URLSearchParams({slug}), {
+      method:"POST", headers:{"Content-Type":"application/json","X-HD":"1"},
+      body:JSON.stringify({title:title.trim()})
+    });
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok) throw Error(d.error || "Rename failed.");
+    await loadDynamicProjects(); await load();
+  } catch(e) { alert(e.message); }
+}
+async function toggleExternalDynamic(slug, disabled) {
+  const action = disabled ? "temporarily disable" : "enable";
+  if (!confirm("Do you want to " + action + " this dashboard? Its existing server and scheduled refresh job will not be changed.")) return;
+  try {
+    const r = await fetch("/api/disable?" + new URLSearchParams({slug,on:disabled?"1":"0"}), {
+      method:"POST", headers:{"X-HD":"1"}
+    });
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok) throw Error(d.error || "Could not update dashboard.");
+    await loadDynamicProjects(); await load();
+  } catch(e) { alert(e.message); }
+}
+async function deleteExternalDynamic(slug, title) {
+  if (!confirm("Delete the HTML Drop registration for “" + title + "”? This uses the same delete action as Static dashboards. Check the confirmation carefully before proceeding.")) return;
+  try {
+    const r = await fetch("/api/delete?" + new URLSearchParams({slug}), {
+      method:"POST", headers:{"X-HD":"1"}
+    });
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok) throw Error(d.error || "Delete failed.");
+    await loadDynamicProjects(); await load();
+  } catch(e) { alert(e.message); }
+}
+async function renameDynamicProject(slug) {
+  const project = dynamicProjects.find(p => p.slug === slug);
+  if (!project) return;
+  const title = prompt("New name for this dynamic project:", project.title || "");
+  if (title === null) return;
+  if (!title.trim()) { alert("Type a project name first."); return; }
+  try {
+    const r = await fetch("/api/dynamic/rename?" + new URLSearchParams({slug}), {
+      method: "POST", headers: {"Content-Type":"application/json","X-HD":"1"},
+      body: JSON.stringify({title:title.trim()})
+    });
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok) throw Error(d.error || "Could not rename project.");
+    await loadDynamicProjects();
+  } catch(e) { alert(e.message); }
+}
+async function toggleDynamicDisabled(slug, disabled) {
+  const action = disabled ? "temporarily disable" : "enable";
+  if (!confirm("Do you want to " + action + " this dynamic project? " + (disabled ? "Its files and link will be kept." : "The project will be started again."))) return;
+  try {
+    const r = await fetch("/api/dynamic/toggle-disabled?"+new URLSearchParams({slug,disabled:disabled?"1":"0"}), {method:"POST",headers:{"X-HD":"1"}});
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok) throw Error(d.error || "Could not update project.");
+    await loadDynamicProjects();
+  } catch(e) { alert(e.message); }
+}
+async function deleteDynamicProject(slug) {
+  const p=dynamicProjects.find(x=>x.slug===slug);if(!confirm('Permanently delete '+(p?p.title:slug)+' and its project folder from the HTML Drop host? Its scheduled refresh task will also be removed.'))return;
+  dynamicMsg('Deleting project…');
+  try{const r=await fetch('/api/dynamic/delete?slug='+encodeURIComponent(slug),{method:'POST',headers:{'X-HD':'1'}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Delete failed.');dynamicMsg('Project and folder deleted.');await loadDynamicProjects();await load();}
+  catch(e){dynamicMsg(e.message,true);}
+}
+async function refreshDynamicNow(slug) {
+  const p = dynamicProjects.find(x => x.slug === slug);
+  if (!p) return;
+  if (!confirm(`Run Task Scheduler refresh now for “${p.title}”?`)) return;
+  try {
+    const r = await fetch('/api/dynamic/refresh-now?slug=' + encodeURIComponent(slug), {method:'POST', headers:{'X-HD':'1'}});
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw Error(d.error || 'Could not start refresh.');
+    dynamicMsg(d.message || 'Refresh started.');
+  } catch (e) { dynamicMsg(e.message, true); }
+}
+
+let currentRefreshProject = null;
+let selectedRefreshFreq = 'daily';
+let selectedRefreshDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+let selectedRefreshHours = 1;
+let selectedAmPm = 'AM';
+
+function setRefreshFreq(freq) {
+  selectedRefreshFreq = freq;
+  ['daily', 'weekdays', 'weekly', 'hourly'].forEach(f => {
+    const el = $('card-' + f);
+    if (el) el.classList.toggle('selected', f === freq);
+  });
+  if ($('weeklyDaysField')) $('weeklyDaysField').hidden = (freq !== 'weekly');
+  if ($('hourlyIntervalField')) $('hourlyIntervalField').hidden = (freq !== 'hourly');
+}
+
+function toggleDayChip(btn) {
+  const d = btn.getAttribute('data-day');
+  if (!d) return;
+  const idx = selectedRefreshDays.indexOf(d);
+  if (idx >= 0) {
+    if (selectedRefreshDays.length > 1) selectedRefreshDays.splice(idx, 1);
+  } else {
+    selectedRefreshDays.push(d);
+  }
+  document.querySelectorAll('#weeklyDaysField .chip').forEach(b => {
+    b.classList.toggle('active', selectedRefreshDays.includes(b.getAttribute('data-day')));
+  });
+}
+
+function selectHourlyInterval(btn, hrs) {
+  selectedRefreshHours = hrs;
+  document.querySelectorAll('#hourlyIntervalField .chip').forEach(b => {
+    b.classList.toggle('active', parseInt(b.getAttribute('data-hours'), 10) === hrs);
+  });
+}
+
+function setAmPm(ampm) {
+  selectedAmPm = ampm;
+  if ($('timeAm')) $('timeAm').classList.toggle('active', ampm === 'AM');
+  if ($('timePm')) $('timePm').classList.toggle('active', ampm === 'PM');
+}
+
+function setTimeFrom24(hhmm) {
+  if (!hhmm || !/^\d{1,2}:\d{2}$/.test(hhmm)) hhmm = '06:00';
+  const parts = hhmm.split(':');
+  let h = parseInt(parts[0], 10);
+  const m = parts[1];
+  let ampm = 'AM';
+  if (h >= 12) {
+    ampm = 'PM';
+    if (h > 12) h -= 12;
+  } else if (h === 0) {
+    h = 12;
+  }
+  if ($('timeHour')) $('timeHour').value = String(h);
+  // Match closest 5-minute interval
+  if ($('timeMin')) {
+    const minVal = parseInt(m, 10);
+    const roundedMin = String(Math.round(minVal / 5) * 5 % 60).padStart(2, '0');
+    $('timeMin').value = $('timeMin').querySelector(`option[value="${roundedMin}"]`) ? roundedMin : m;
+  }
+  setAmPm(ampm);
+}
+
+
+function getSelectedTime24() {
+  let h = parseInt($('timeHour').value, 10);
+  const m = $('timeMin').value || '00';
+  if (selectedAmPm === 'AM') {
+    if (h === 12) h = 0;
+  } else {
+    if (h < 12) h += 12;
+  }
+  return String(h).padStart(2, '0') + ':' + m;
+}
+
+function configureDynamicRefresh(slug) {
+  const p = dynamicProjects.find(x => x.slug === slug);
+  if (!p) return;
+  currentRefreshProject = p;
+  $('refreshModalTitle').textContent = 'Refresh: ' + p.title;
+  $('refreshErr').textContent = '';
+
+  const ref = p.refresh || {};
+  let freq = ref.frequency || 'daily';
+  if (freq === 'scheduled') freq = 'daily';
+  setRefreshFreq(freq);
+
+  selectedRefreshDays = (Array.isArray(ref.days) && ref.days.length) ? [...ref.days] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  document.querySelectorAll('#weeklyDaysField .chip').forEach(b => {
+    b.classList.toggle('active', selectedRefreshDays.includes(b.getAttribute('data-day')));
+  });
+
+  selectedRefreshHours = ref.hours || 1;
+  document.querySelectorAll('#hourlyIntervalField .chip').forEach(b => {
+    b.classList.toggle('active', parseInt(b.getAttribute('data-hours'), 10) === selectedRefreshHours);
+  });
+
+  let t = (ref.time && ref.time !== 'active') ? ref.time : '06:00';
+  setTimeFrom24(t);
+
+  $('refreshDisableBtn').style.display = (ref && ref.enabled) ? 'inline-block' : 'none';
+  $('refreshModal').showModal();
+}
+
+if ($('refreshClose')) $('refreshClose').onclick = () => $('refreshModal').close();
+
+if ($('refreshForm')) {
+  $('refreshForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!currentRefreshProject) return;
+    const slug = currentRefreshProject.slug;
+    const timeStr = getSelectedTime24();
+
+    const payload = {
+      enabled: true,
+      frequency: selectedRefreshFreq,
+      time: timeStr,
+      catch_up: true,
+      wake_to_run: true
+    };
+
+    if (selectedRefreshFreq === 'weekly') {
+      if (!selectedRefreshDays.length) {
+        $('refreshErr').textContent = 'Please click to select at least one day.';
+        return;
+      }
+      payload.days = selectedRefreshDays;
+    } else if (selectedRefreshFreq === 'weekdays') {
+      payload.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    } else if (selectedRefreshFreq === 'hourly') {
+      payload.hours = selectedRefreshHours;
+    }
+
+    $('refreshSaveBtn').disabled = true;
+    $('refreshErr').textContent = '';
+    try {
+      const r = await fetch('/api/dynamic/refresh-settings?slug=' + encodeURIComponent(slug), {
+        method: 'POST',
+        headers: { 'X-HD': '1', 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Failed to update schedule.');
+      $('refreshModal').close();
+      dynamicMsg(d.message || 'Schedule updated in Windows Task Scheduler.');
+      await loadDynamicProjects();
+    } catch (err) {
+      $('refreshErr').textContent = err.message;
+    } finally {
+      $('refreshSaveBtn').disabled = false;
+    }
+  });
+}
+
+async function disableRefreshModal() {
+  if (!currentRefreshProject) return;
+  const slug = currentRefreshProject.slug;
+  if (!confirm(`Turn off the automatic refresh schedule for “${currentRefreshProject.title}”?`)) return;
+  $('refreshDisableBtn').disabled = true;
+  $('refreshErr').textContent = '';
+  try {
+    const r = await fetch('/api/dynamic/refresh-settings?slug=' + encodeURIComponent(slug), {
+      method: 'POST',
+      headers: { 'X-HD': '1', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled: false })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Failed to disable refresh schedule.');
+    $('refreshModal').close();
+    dynamicMsg(d.message || 'Automatic refresh schedule turned off.');
+    await loadDynamicProjects();
+  } catch (err) {
+    $('refreshErr').textContent = err.message;
+  } finally {
+    $('refreshDisableBtn').disabled = false;
+  }
+}
+
+$("search").addEventListener("input", () => { render(); renderDynamicProjects(); });
+
+async function load() {
+  try { sites = await (await fetch("/api/sites")).json(); } catch { sites = []; }
+  await loadDynamicProjects();
+  render(); updateHint();
+}
+
+(async () => {
+  try {
+    const r = await (await fetch("/api/me")).json();
+    me = r.user; allowSignup = r.allow_signup; masterUrl = r.master_url || "";
+    members = r.members || [];
+  } catch {}
+  renderMembers();
+  renderAccount();
+  await load();
+})();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

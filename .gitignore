@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Logs and runtime data
+logs/
+data/sessions.json
+data/tmp/
+data/trash/
+data/history/
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*~
+.DS_Store
+Thumbs.db

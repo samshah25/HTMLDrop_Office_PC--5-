@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Employee Headcount &amp; Tenure Dashboard — Sticker Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=DM+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+
+<style>
+/* Sleek, Minimal Collapsible Quick Guide */
+.user-manual-card {
+  margin-top: 2rem;
+  background: #FFFFFF;
+  border: 2.5px solid var(--ink, #14161A);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--ink, #14161A);
+  overflow: hidden;
+}
+
+.user-manual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.2rem;
+  background: #F8FAFC;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.user-manual-header:hover {
+  background: #F1F5F9;
+}
+
+.user-manual-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-manual-tag {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  background: var(--ink, #14161A);
+  color: var(--yellow, #FFD23F);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.user-manual-title {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink, #14161A);
+  margin: 0;
+}
+
+.user-manual-toggle-btn {
+  background: #FFFFFF;
+  border: 2px solid var(--ink, #14161A);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink, #14161A);
+  transition: all 0.15s ease;
+}
+
+.user-manual-header:hover .user-manual-toggle-btn {
+  background: var(--yellow, #FFD23F);
+}
+
+.user-manual-body {
+  padding: 1.1rem 1.2rem;
+  border-top: 2px solid var(--ink, #14161A);
+}
+
+.manual-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.manual-box {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 5px;
+  padding: 0.85rem 0.95rem;
+}
+
+.manual-box-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1.5px solid #E2E8F0;
+}
+
+.manual-box-title {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ink, #14161A);
+  margin: 0;
+}
+
+.manual-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.manual-item {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #334155;
+}
+
+.manual-item strong {
+  color: var(--ink, #14161A);
+}
+
+.manual-badge {
+  display: inline-block;
+  background: #E2E8F0;
+  color: #0F172A;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">WORKFORCE INSIGHTHS</div>
+    <h1 class="hero-title">Employee Headcount<br>&amp; Tenure Dashboard</h1>
+    <div class="hero-stats" id="heroStats"></div>
+  </div>
+
+  <!-- Filter toolbar -->
+  <div class="filter-bar" id="filterBar">
+
+    <div class="popover-wrap" id="popTime">
+      <button class="popover-btn" id="btnTime" type="button">🗓️ Time Period (MTD)</button>
+      <div class="popover-body" id="bodyTime">
+        <label>Select Time Mode</label>
+        <select id="selTimeMode">
+          <option value="Monthly (MTD)">Monthly</option>
+          <option value="Quarterly">Quarterly</option>
+          <option value="Yearly">Yearly</option>
+          <option value="MTD" selected>MTD</option>
+          <option value="QTD">QTD</option>
+          <option value="YTD">YTD</option>
+        </select>
+        <div id="timeSubFields"></div>
+        <div class="period-chip" id="periodChip"></div>
+      </div>
+    </div>
+
+    <div class="popover-wrap" id="popCity">
+      <button class="popover-btn" id="btnCity" type="button">🏢 Branch  (All 11 Cities)</button>
+      <div class="popover-body" id="bodyCity">
+        <div class="checkbox-list" id="cityCheckboxList"></div>
+      </div>
+    </div>
+
+    <div class="popover-wrap" id="popMainRemote">
+      <button class="popover-btn" id="btnMainRemote" type="button">🌐 Location (Main and Remote)</button>
+      <div class="popover-body" id="bodyMainRemote">
+        <select id="selMainRemote">
+          <option value="Main and Remote">Main and Remote</option>
+          <option value="Main">Main</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="popover-wrap" id="popEmp">
+      <button class="popover-btn" id="btnEmp" type="button">👤 Employee  (All EmpTypes)</button>
+      <div class="popover-body" id="bodyEmp">
+        <select id="selEmpType">
+          <option value="All EmpTypes">All EmpTypes</option>
+          <option value="JDA">JDA</option>
+          <option value="ME">ME</option>
+          <option value="TME">TME</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="popover-wrap" id="popTeam">
+      <button class="popover-btn" id="btnTeam" type="button">👥 Team  (All Teams)</button>
+      <div class="popover-body" id="bodyTeam">
+        <div class="checkbox-list" id="teamCheckboxList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- KPI sticker board -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- Main tabs -->
+  <div class="main-tabs" id="mainTabs">
+    <button class="main-tab active" data-tab="1">HEADCOUNT</button>
+    <button class="main-tab" data-tab="2">TENURE</button>
+    <button class="main-tab" data-tab="3">DRILL&#8209;DOWN</button>
+  </div>
+
+  <div id="tabContent"></div>
+
+  <!-- ===================================================================== -->
+  <!-- COMPACT COLLAPSED USER MANUAL                                         -->
+  <!-- ===================================================================== -->
+  <div class="user-manual-card" id="userManualCard">
+    <div class="user-manual-header" onclick="toggleManualCollapse()">
+      <div class="user-manual-title-wrap">
+        <span class="user-manual-tag">HELP &amp; GUIDE</span>
+        <h3 class="user-manual-title">🧭 Quick Dashboard Guide &amp; How to Use</h3>
+      </div>
+      <button class="user-manual-toggle-btn" id="btnToggleManual" type="button">+ Open Quick Guide</button>
+    </div>
+
+    <div class="user-manual-body" id="manualBody" style="display: none;">
+      <div class="manual-grid">
+
+        <!-- Column 1: Filters -->
+        <div class="manual-box">
+          <div class="manual-box-header">
+            <span>🔍</span>
+            <h4 class="manual-box-title">Filters</h4>
+          </div>
+          <ul class="manual-item-list">
+            <li class="manual-item"><strong>🗓️ Period:</strong> Pick MTD (active month), Monthly, Quarterly (Q1–Q4), or Yearly.</li>
+            <li class="manual-item"><strong>🏢 Branch:</strong> Select individual cities or <em>All 11 Cities</em> for Pan-India.</li>
+            <li class="manual-item"><strong>🌐 Location:</strong> Toggle between Main (Metro HQ), Remote, or Both.</li>
+            <li class="manual-item"><strong>👤 EmpType &amp; Team:</strong> JDA, ME, or TME (with specific call queues).</li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Metrics -->
+        <div class="manual-box">
+          <div class="manual-box-header">
+            <span>📊</span>
+            <h4 class="manual-box-title">Metrics &amp; Logic</h4>
+          </div>
+          <ul class="manual-item-list">
+            <li class="manual-item"><strong>Active Headcount:</strong> FTE capacity (<span class="manual-badge">active_days / 26</span>). Decimals = mid-month join/exit.</li>
+            <li class="manual-item"><strong>Total Exits:</strong> Employees whose leave date (<span class="manual-badge">dol</span>) fell in this period.</li>
+            <li class="manual-item"><strong>New Joiners:</strong> Staff whose join date (<span class="manual-badge">doj</span>) was in this period.</li>
+            <li class="manual-item"><strong>Growth:</strong> <span class="manual-badge">+% / -%</span> vs. previous month (MoM), quarter (QtQ), or year (YoY).</li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Tabs & Drills -->
+        <div class="manual-box">
+          <div class="manual-box-header">
+            <span>📑</span>
+            <h4 class="manual-box-title">Tabs &amp; Navigation</h4>
+          </div>
+          <ul class="manual-item-list">
+            <li class="manual-item"><strong>1. Headcount:</strong> Branch &amp; team summary. <em>Click any city to view its teams!</em></li>
+            <li class="manual-item"><strong>2. Tenure:</strong> Split across 6 experience stages (<span class="manual-badge">&lt;6M</span> to <span class="manual-badge">5+Y</span>).</li>
+            <li class="manual-item"><strong>3. Drill-Down:</strong> Search roster by name/ID, view exits, and export to Excel.</li>
+            <li class="manual-item"><strong>⚡ Fast Cache:</strong> Pre-cached in browser for instant ~200ms reload.</li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Graph Meanings -->
+        <div class="manual-box">
+          <div class="manual-box-header">
+            <span>📈</span>
+            <h4 class="manual-box-title">Graph Meanings</h4>
+          </div>
+          <ul class="manual-item-list">
+            <li class="manual-item"><strong>Branch Bar Chart:</strong> Gray = Prior, Blue = Current. <em>Taller blue = growth; shorter blue = attrition.</em></li>
+            <li class="manual-item"><strong>Trend Line Chart:</strong> 6–12 month headcount path showing hiring momentum &amp; seasonal peaks.</li>
+            <li class="manual-item"><strong>Tenure Donut:</strong> Visual % split of workforce across the 6 experience stages.</li>
+            <li class="manual-item"><strong>Stacked Bar Chart:</strong> 100% normalized view showing junior (&lt;6M) vs. veteran (3+Y) mix per city.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+// Toggle collapse for the user manual card
+function toggleManualCollapse() {
+  const body = document.getElementById("manualBody");
+  const btn = document.getElementById("btnToggleManual");
+  if (!body || !btn) return;
+  const isHidden = (body.style.display === "none" || body.style.display === "");
+  body.style.display = isHidden ? "block" : "none";
+  btn.textContent = isHidden ? "− Close Quick Guide" : "+ Open Quick Guide";
+}
+</script>
+
+<!-- INSTANT PRE-RENDERED SNAPSHOT: Paints cards, stats & tables in <10ms on ANY PC -->
+<script src="initial_snapshot.js"></script>
+<script>
+if (typeof window !== "undefined" && window.INITIAL_SNAPSHOT) {
+  try {
+    const s = window.INITIAL_SNAPSHOT;
+    if (s.heroStats && document.getElementById("heroStats")) document.getElementById("heroStats").innerHTML = s.heroStats;
+    if (s.kpiRow && document.getElementById("kpiRow")) document.getElementById("kpiRow").innerHTML = s.kpiRow;
+    if (s.tabContent && document.getElementById("tabContent")) document.getElementById("tabContent").innerHTML = s.tabContent;
+    if (s.periodChip && document.getElementById("periodChip")) document.getElementById("periodChip").textContent = s.periodChip;
+    console.log("⚡ [Instant Paint] Pre-rendered dashboard snapshot rendered to screen in 0ms!");
+  } catch (e) {
+    console.warn("Snapshot paint warning:", e);
+  }
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js?v=20261001_v5_clickfixed"></script>
+</body>
+</html>

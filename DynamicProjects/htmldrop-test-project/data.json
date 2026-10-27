@@ -1,0 +1,58 @@
+{
+  "title": "Pan-India Operations & Sales Tracker",
+  "last_refresh": "2026-10-23 16:00:12",
+  "total_revenue": 2847684,
+  "total_units": 6727,
+  "avg_achievement": 61.7,
+  "records": [
+    {
+      "region": "Kolkata",
+      "sales": 675599,
+      "units": 1453,
+      "target": 644041,
+      "achievement": 104.9
+    },
+    {
+      "region": "Mumbai",
+      "sales": 164177,
+      "units": 1304,
+      "target": 748051,
+      "achievement": 21.9
+    },
+    {
+      "region": "Delhi",
+      "sales": 245497,
+      "units": 907,
+      "target": 729054,
+      "achievement": 33.7
+    },
+    {
+      "region": "Bengaluru",
+      "sales": 696436,
+      "units": 657,
+      "target": 597788,
+      "achievement": 116.5
+    },
+    {
+      "region": "Chennai",
+      "sales": 511699,
+      "units": 724,
+      "target": 679074,
+      "achievement": 75.4
+    },
+    {
+      "region": "Hyderabad",
+      "sales": 321491,
+      "units": 980,
+      "target": 716622,
+      "achievement": 44.9
+    },
+    {
+      "region": "Pune",
+      "sales": 232785,
+      "units": 702,
+      "target": 679570,
+      "achievement": 34.3
+    }
+  ]
+}
