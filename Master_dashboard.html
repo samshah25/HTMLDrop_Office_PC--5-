@@ -2009,15 +2009,9 @@ function applyTitles(t) {
     const nt = (t.by_slug && t.by_slug[d.id]) || (t.by_link && t.by_link[d.url]);
     if (!nt || nt === d.title) return;
     d.title = nt; changed = true;
-    const card = document.querySelector(`.card[data-id="${d.id}"]`);
-    if (card) {
-      const h = card.querySelector("h3"); if (h) h.textContent = nt;
-      const ph = card.querySelector(".ph-label"); if (ph) ph.textContent = nt;
-      const fr = card.querySelector("iframe"); if (fr) fr.title = nt;
-    }
     if (viewer.classList.contains("open") && $("vswitch").value === d.id) $("vtitle").querySelector(".t").textContent = nt;
   });
-  if (changed) { renderAccordionDrawers(); refreshMeta(); }
+  if (changed) { render(); refreshMeta(); }
 }
 async function loadTitles() {
   const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 4000);
