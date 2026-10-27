@@ -2007,8 +2007,12 @@
 </div>
 
 <script>
-const HOST = "172.29.65.188";
-const DROP = new URLSearchParams(location.search).get("drop") || `http://${location.hostname || HOST}:8150`;
+const currentHost = (location.hostname && location.hostname !== "") ? location.hostname : "localhost";
+const DROP = new URLSearchParams(location.search).get("drop")
+  || (location.protocol.startsWith("http")
+       ? (location.port === "8150" ? location.origin : `http://${currentHost}:8150`)
+       : "http://localhost:8150");
+const HOST = currentHost;
 
 const DASHBOARDS = [
   // Location (3)

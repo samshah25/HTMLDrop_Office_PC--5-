@@ -12,7 +12,7 @@
     "renew": "Renewals",
     "ecs": "Collections"
   },
-  "master_dashboard_url": "http://172.29.65.188:8075/Master_dashboard.html",
+  "master_dashboard_url": "/Master_dashboard.html",
   "members": [
     "Ayush",
     "Ganesh",
