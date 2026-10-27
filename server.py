@@ -89,7 +89,7 @@ class UserError(Exception):
 DEFAULT_MEMBERS = ["Ayush", "Ganesh", "Mohit", "Muskan", "Priyal", "Sarvesh", "Sounak"]
 
 # Where the master dashboard is hosted (its own server); the upload page links to it.
-DEFAULT_MASTER_URL = "http://172.29.65.188:8075/Master_dashboard.html"
+DEFAULT_MASTER_URL = "/Master_dashboard.html"
 
 DEFAULT_HUB_CATEGORIES = {
     "geo": "Geography", "hr": "Workforce", "funnel": "Sales Funnel",
@@ -373,6 +373,7 @@ def is_migration_target(slug, record):
 
 
 def public_record(slug, r, users):
+    hub = hub_of(r)
     return {
         "slug": slug,
         "linked": bool(r.get("link")),
@@ -385,7 +386,8 @@ def public_record(slug, r, users):
         "created": r["created"],
         "updated": r["updated"],
         "url": r.get("link") or f"/s/{slug}/",
-        "placement": placement_of(hub_of(r)),
+        "placement": placement_of(hub),
+        "category": hub.get("category", "other"),
     }
 
 
@@ -768,14 +770,10 @@ def update_page(slug, user, data):
         if title:
             record["title"] = title
         if "placement" in data:
-<<<<<<< HEAD
             hub_up = placement_to_hub(data["placement"])
             if "category" in data and data["category"]:
                 hub_up["category"] = str(data["category"]).strip()[:40]
             record["hub"] = {**hub_of(record), **hub_up}
-=======
-            record["hub"] = {**hub_of(record), **placement_to_hub(data["placement"])}
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
         save_meta(meta)
         return public_record(slug, record, load_json(USERS_FILE))
 
@@ -1696,6 +1694,10 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path in ("/", "/index.html"):
                 return self.send_body(PORTAL_FILE.read_bytes(), "text/html; charset=utf-8")
+            if path in ("/Master_dashboard.html", "/master", "/master.html", "/Master_Dashboard.html"):
+                master_file = ROOT / "Master_dashboard.html"
+                if master_file.is_file():
+                    return self.send_body(master_file.read_bytes(), "text/html; charset=utf-8", cors=True)
             if path == "/admin":
                 return self.send_body(ADMIN_FILE.read_bytes(), "text/html; charset=utf-8")
             if path == "/dynamic":
@@ -1715,9 +1717,12 @@ class Handler(BaseHTTPRequestHandler):
                     page = page.replace(marker, replace_fn + marker)
                 return self.send_body(page.encode("utf-8"), "text/html; charset=utf-8")
             if path == "/api/me":
+                m_url = CONFIG.get("master_dashboard_url", DEFAULT_MASTER_URL)
+                if not m_url or "172.29.65.188" in str(m_url):
+                    m_url = "/Master_dashboard.html"
                 return self.send_json({"user": self.current_user(),
                                        "allow_signup": bool(CONFIG.get("allow_signup", True)),
-                                       "master_url": CONFIG.get("master_dashboard_url", DEFAULT_MASTER_URL),
+                                       "master_url": m_url,
                                        "members": member_list()})
             if path == "/api/sites":
                 users = load_json(USERS_FILE)
@@ -1976,11 +1981,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.check_not_taken(slug)
                 user, cookie = self.acting_user()
                 hub_choice = placement_to_hub(q["hub"]) if "hub" in q else None
-<<<<<<< HEAD
                 if hub_choice and "category" in q and q["category"]:
                     hub_choice["category"] = q["category"].strip()[:40]
-=======
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
                 rec = publish(slug, q.get("title", "").strip()[:120], user,
                               q.get("filename", ""), data, hub_choice)
                 self.log_message("%s published %s v%s", user["username"], slug, rec["version"])

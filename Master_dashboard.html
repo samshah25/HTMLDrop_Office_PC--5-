@@ -1260,7 +1260,6 @@
     font-weight: 600;
     color: var(--ink);
   }
-<<<<<<< HEAD
 
   /* ================= PHYSICAL FOLDER DARK THEME WITH LIVE DASHBOARDS ================= */
   .sections-flow {
@@ -1837,8 +1836,6 @@
     }
   }
   
-=======
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
 </style>
 </head>
 <body>
@@ -2011,7 +2008,7 @@
 
 <script>
 const HOST = "172.29.65.188";
-const DROP = new URLSearchParams(location.search).get("drop") || `http://${HOST}:8150`;
+const DROP = new URLSearchParams(location.search).get("drop") || `http://${location.hostname || HOST}:8150`;
 
 const DASHBOARDS = [
   // Location (3)
@@ -2230,37 +2227,25 @@ function showAllSections() {
   render();
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
 function render() {
   const container = $("sectionsFlow");
   if (!container) return;
   
   let totalVisible = 0;
-<<<<<<< HEAD
   // Order: Sales Funnel (4) & Location (3), Renewals (3) & Sales Operations (3), Collections (2) & Workforce (1)
-=======
-  // Symmetrical order: Sales Funnel (4) & Location (3), Renewals (3) & Sales Operations (3), Collections (2) & Workforce (1)
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   const catOrder = ["funnel", "geo", "renew", "other", "ecs", "hr"];
   
   container.innerHTML = "";
   
   // If a section is focused (isolated view), single full width column
   if (focusedSection) {
-<<<<<<< HEAD
     container.classList.add("isolated-mode");
     container.style.display = "block";
     container.style.gridTemplateColumns = "1fr";
   } else {
     container.classList.remove("isolated-mode");
     container.style.display = "";
-=======
-    container.style.gridTemplateColumns = "1fr";
-  } else {
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     container.style.gridTemplateColumns = "";
   }
   
@@ -2276,24 +2261,12 @@ function render() {
     
     totalVisible += catItems.length;
     
-<<<<<<< HEAD
     if (focusedSection === cat) {
       // ================= ISOLATED VIEW (FULL PREVIEW CARDS) =================
       const fullCardsHTML = catItems.map(cardHTML).join("");
       const sectionBox = document.createElement("div");
       sectionBox.className = "section-box";
       sectionBox.dataset.cat = cat;
-=======
-    // Assemble the Section Window Container
-    const sectionBox = document.createElement("div");
-    sectionBox.className = "section-box";
-    sectionBox.dataset.cat = cat;
-    
-    if (focusedSection === cat) {
-      // ================= ISOLATED VIEW (FULL PREVIEW CARDS AS IN SECOND PICTURE) =================
-      const fullCardsHTML = catItems.map(cardHTML).join("");
-      
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
       sectionBox.innerHTML = `
         <div class="section-banner" style="background: rgba(255, 255, 255, 0.05); padding: 16px 22px;">
           <div class="window-dots">
@@ -2313,15 +2286,10 @@ function render() {
           </button>
         </div>
         
-<<<<<<< HEAD
-=======
-        <!-- Full interactive live preview cards grid -->
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
         <div class="section-isolated-grid">
           ${fullCardsHTML}
         </div>
       `;
-<<<<<<< HEAD
       container.appendChild(sectionBox);
     } else {
       // ================= PHYSICAL FOLDER POCKET WITH LIVE DASHBOARD CARDS =================
@@ -2340,50 +2308,12 @@ function render() {
                   ${esc(authorName)}
                 </span>
                 <span class="folder-dash-dot" title="Status: Online"></span>
-=======
-    } else {
-      // ================= OVERVIEW (ORIGINAL MODERN WORKSPACE DECK) =================
-      const miniCardsHTML = catItems.map(d => {
-        const st = statuses[d.id] || "up";
-        const authorName = d.author || d.owner || "Team";
-        const glyphStyle = `style="background:color-mix(in srgb,${c.color} 14%,transparent);color:${c.color}"`;
-        
-        return `
-          <div class="dash-slate-card" onclick="openViewer('${esc(d.id)}')" title="Click to open ${esc(d.title)} alone">
-            <div class="slate-thumb" id="thumb-${d.id}">
-              <iframe data-thumb-for="${d.id}" src="${esc(d.url)}" title="${esc(d.title)}" tabindex="-1" loading="eager" sandbox="allow-scripts allow-same-origin" scrolling="no" onload="this.classList.add('ready'); this.parentElement.classList.add('loaded');"></iframe>
-              <div class="slate-ph" data-ph-for="${d.id}">
-                <div class="slate-ph-icon" ${glyphStyle}>${svg(c.icon)}</div>
-              </div>
-              
-              <span class="slate-status-dot" title="${STATUS_TEXT[st] || 'online'}"></span>
-              
-              <div class="slate-acts" onclick="event.stopPropagation()">
-                <button class="slate-btn" title="Open alone" onclick="openViewer('${esc(d.id)}')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/></svg>
-                </button>
-                <a class="slate-btn" href="${esc(d.url)}" target="${linkTarget}" title="Open in new tab">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              </div>
-            </div>
-            
-            <div class="slate-meta">
-              <h5 class="slate-title" title="${esc(d.title)}">${esc(d.title)}</h5>
-              <div class="slate-bottom-row">
-                <span class="slate-author-pill" title="Author: ${esc(authorName)}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  ${esc(authorName)}
-                </span>
-                ${d.branch ? `<span class="slate-branch-pill">${esc(d.branch)}</span>` : ""}
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
               </div>
             </div>
           </div>
         `;
       }).join("");
       
-<<<<<<< HEAD
       const folderCard = document.createElement("div");
       folderCard.className = "physical-folder";
       folderCard.dataset.cat = cat;
@@ -2419,40 +2349,6 @@ function render() {
       
       container.appendChild(folderCard);
     }
-=======
-      sectionBox.innerHTML = `
-        <div class="section-banner" onclick="focusSection('${cat}')" title="Click to expand section into full live view">
-          <div class="window-dots">
-            <span class="window-dot"></span>
-            <span class="window-dot"></span>
-            <span class="window-dot"></span>
-          </div>
-          <div class="deck-tab-pill">
-            ${svg(c.icon)}
-            <span>${esc(c.label)}</span>
-            <span class="deck-count-badge">${catItems.length}</span>
-          </div>
-          <span class="deck-action-hint">
-            Expand ↗
-          </span>
-        </div>
-        
-        <div class="deck-interior-grid">
-          ${miniCardsHTML}
-        </div>
-        
-        <div class="deck-footer-shelf" onclick="focusSection('${cat}')" title="Click to view full dashboards">
-          <span class="deck-footer-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            Open section
-          </span>
-          <span>${catItems.length} dashboards</span>
-        </div>
-      `;
-    }
-    
-    container.appendChild(sectionBox);
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   });
   
   $("allHead").hidden = false;
@@ -2461,7 +2357,6 @@ function render() {
   $("empty").hidden = totalVisible !== 0;
   
   fitThumbs();
-<<<<<<< HEAD
   setTimeout(fitThumbs, 80);
 }
 
@@ -2470,14 +2365,6 @@ function fitThumbs() {
   document.querySelectorAll(".thumb, .folder-dash-preview, .win-doc-preview, .mini-display-screen, .mini-file-thumb, .dash-file-preview, .slate-thumb").forEach(t => t.style.setProperty("--s", (t.clientWidth / 1280).toFixed(4)));
 }
 
-=======
-  setTimeout(fitThumbs, 50);
-}
-
-function fitThumbs() {
-  document.querySelectorAll(".thumb, .mini-display-screen, .mini-file-thumb, .dash-file-preview, .slate-thumb").forEach(t => t.style.setProperty("--s", (t.clientWidth / 1280).toFixed(4)));
-}
->>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
 addEventListener("resize", fitThumbs);
 
 document.addEventListener("click", e => {
@@ -2597,17 +2484,29 @@ function applyHub(items) {
   if (!Array.isArray(items)) return;
   const hidden = new Set();
   STATIC.forEach(d => Object.assign(d, STATIC_ORIG.get(d.id)));
+  const dynamicItems = [];
   items.forEach(it => {
     if (!it || !it.id) return;
-    // no hide
+    if (it.hidden) { hidden.add(it.id); return; }
     if (!it.url) return;
     const own = STATIC.find(d => d.id === it.id);
     if (own) {
       if (it.title) own.title = it.title;
       if (it.url) own.url = it.url;
+      if (it.category) own.category = it.category;
+    } else {
+      dynamicItems.push({
+        id: it.id,
+        url: it.url,
+        title: it.title || it.id,
+        category: it.category || "other",
+        author: it.author || it.owner || "Team",
+        branch: it.branch || "",
+        tags: it.tags || []
+      });
     }
   });
-  const next = STATIC.filter(d => !hidden.has(d.id));
+  const next = STATIC.filter(d => !hidden.has(d.id)).concat(dynamicItems);
   const sig = hubSigOf(next);
   if (sig !== hubSig) {
     hubSig = sig;
@@ -2619,15 +2518,25 @@ function applyHub(items) {
   applyTitles(store.get("titles", null));                            // keep renamed names on top
 }
 async function loadHub() {
-  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 4000);
-  try {
-    const r = await fetch(DROP + "/api/hub", { cache: "no-store", signal: ctrl.signal });
-    if (!r.ok) return;
-    const items = await r.json();
-    store.set("hub", items);
-    applyHub(items);
-  } catch (e) { /* HTML Drop not reachable: keep the list we have */ }
-  finally { clearTimeout(timer); }
+  const tryUrls = [
+    DROP + "/api/hub",
+    "http://localhost:8150/api/hub",
+    "http://127.0.0.1:8150/api/hub"
+  ];
+  const uniqueUrls = Array.from(new Set(tryUrls));
+  for (const u of uniqueUrls) {
+    try {
+      const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 3500);
+      const r = await fetch(u, { cache: "no-store", signal: ctrl.signal });
+      clearTimeout(timer);
+      if (r.ok) {
+        const items = await r.json();
+        store.set("hub", items);
+        applyHub(items);
+        return;
+      }
+    } catch (e) {}
+  }
 }
 
 /* RENAMES FROM HTML DROP
@@ -2646,15 +2555,25 @@ function applyTitles(t) {
   if (changed) { render(); refreshMeta(); }
 }
 async function loadTitles() {
-  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 4000);
-  try {
-    const r = await fetch(DROP + "/api/titles", { cache: "no-store", signal: ctrl.signal });
-    if (!r.ok) return;
-    const t = await r.json();
-    store.set("titles", t);
-    applyTitles(t);
-  } catch (e) { /* HTML Drop not reachable: keep the names we have */ }
-  finally { clearTimeout(timer); }
+  const tryUrls = [
+    DROP + "/api/titles",
+    "http://localhost:8150/api/titles",
+    "http://127.0.0.1:8150/api/titles"
+  ];
+  const uniqueUrls = Array.from(new Set(tryUrls));
+  for (const u of uniqueUrls) {
+    try {
+      const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 3500);
+      const r = await fetch(u, { cache: "no-store", signal: ctrl.signal });
+      clearTimeout(timer);
+      if (r.ok) {
+        const t = await r.json();
+        store.set("titles", t);
+        applyTitles(t);
+        return;
+      }
+    } catch (e) {}
+  }
 }
 
 /* INITIALIZE STATIC PRESENTATION */
