@@ -1,0 +1,604 @@
+[2026-10-16 19:42:59] ===== ME dashboards refresh =====
+[2026-10-16 19:42:59] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-17 08:00:02] ===== ME dashboards refresh =====
+[2026-10-17 08:00:02] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-18 08:00:02] ===== ME dashboards refresh =====
+[2026-10-18 08:00:02] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 08:00:02] ===== ME dashboards refresh =====
+[2026-10-19 08:00:02] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 11:35:01] ===== ME dashboards refresh =====
+[2026-10-19 11:35:01] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 11:37:01] ===== ME dashboards refresh =====
+[2026-10-19 11:37:01] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 11:38:29] ===== ME dashboards refresh =====
+[2026-10-19 11:38:29] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 12:13:46] ===== ME dashboards refresh =====
+[2026-10-19 12:13:46] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 12:14:42] ===== ME dashboards refresh =====
+[2026-10-19 12:14:42] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 12:15:07] ===== ME dashboards refresh =====
+[2026-10-19 12:15:07] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19 12:20:40] ===== ME dashboards refresh =====
+[2026-10-19 12:20:41] -- fetch_data.py
+[2026-10-19 12:21:04]    [12:21:00] mumbai: 46,785 appointments given and 5,515 not counted, 2026-04-01 to 2026-10-17 (17s)
+[2026-10-19 12:21:04]    [12:21:03] Saved cache\raw.pkl
+[2026-10-19 12:21:04]    ok (23s)
+[2026-10-19 12:21:04] -- fetch_api.py
+[2026-10-19 12:21:35]    [12:21:07] Appointment table runs to 2026-10-17; building 2026-10-18 to 2026-10-18 from the allocation API (cut-off 2026-10-19 00:00:00)
+[2026-10-19 12:21:35]    [12:21:11]   mumbai partition: 47,041 records since 2026-09-11 (4s)
+[2026-10-19 12:21:35]    [12:21:33]   remote: 335 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   delhi: 61 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   bangalore: 27 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   pune: 30 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   ahmedabad: 14 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   chennai: 6 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   hyderabad: 12 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:33]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-19 12:21:35]    [12:21:35] Provisional appointments given: 2026-10-18 52 (77 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-19 12:21:35]    ok (32s)
+[2026-10-19 12:21:35] -- fetch_deals.py
+[2026-10-19 12:23:47]    [12:23:29] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,425.96 since 2026-04-01 to 2026-10-18, 14,164 deal rows, 159 MEs (10s)
+[2026-10-19 12:23:47]    [12:23:29] Deals dump runs to 2026-10-17; the rolling table added 11 deal rows for 2026-10-18 to 2026-10-18
+[2026-10-19 12:23:47]    [12:23:30] Deals for 46,640 businesses: 11,991 deal rows since 2026-03-30 (111s). Saved cache\deals.pkl
+[2026-10-19 12:23:47]    [12:23:45] HR for 1,310 MEs: 1,250 with days present, 1,309 with joining dates (16s). Saved cache\hr.pkl
+[2026-10-19 12:23:47]    ok (131s)
+[2026-10-19 12:23:47] -- build_review.py --full
+[2026-10-19 12:24:22]    [12:23:55] 1 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-19 12:24:22]    [12:23:55] 3 earlier rows of this month replaced by a newer appointment of the same business; 3 new visits left out (the business already has a deal this month)
+[2026-10-19 12:24:22]    [12:23:55] Provisional days from the allocation API: 2026-10-18 (74 rows, pulled 19 Oct 12:21)
+[2026-10-19 12:24:22]    [12:23:57] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,126 Sunday appointments reported on the Saturday before
+[2026-10-19 12:24:22]    [12:24:12] Deals from the deals table: 11,458 appointments converted (the appointment table marks 11,634); 5 marked not deal there, 181 marked deal there but their business's deal went to another appointment
+[2026-10-19 12:24:22]    [12:24:13] Deals closed (Sales MIS rule): 11,425.96 from 11,497 deal rows
+[2026-10-19 12:24:22]    [12:24:14] 'Not available' appointments with the 30 days over: 6,972; customer attended within 30 days: 224
+[2026-10-19 12:24:22]    [12:24:16] Record checks since 1 April: pending 1,832, no_booking 3,222, deal_before_booked 249, na_early 268, same_day 319
+[2026-10-19 12:24:22]    [12:24:16] Not counted as given: 5,539 (Not Available (Online) 4,118, TME Cancelled 393, Call Back 255, Fake Appt 216, Bounced Collection 201, Appointment Refixed 134)
+[2026-10-19 12:24:22]    [12:24:16] HR: 1,300 of 1,300 MEs with a joining date
+[2026-10-19 12:24:22]    [12:24:17] Appointments 46,818 (left out: 0); attended 36,696; deals closed 11,425.96 (11,458 appointments with disposition Dealclosed)
+[2026-10-19 12:24:22]    [12:24:18] Data: 5.3 MB; 1,300 MEs, 983 TMEs
+[2026-10-19 12:24:22]    [12:24:20] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-19 12:24:22]    ok (35s)
+[2026-10-19 12:24:22] ===== done in 222s =====
+[2026-10-19 14:30:01] ===== ME dashboards refresh =====
+[2026-10-19 14:30:01] -- fetch_data.py
+[2026-10-19 14:30:18]    [14:30:15] mumbai: 46,834 appointments given and 5,523 not counted, 2026-04-01 to 2026-10-18 (13s)
+[2026-10-19 14:30:18]    [14:30:18] Saved cache\raw.pkl
+[2026-10-19 14:30:18]    ok (18s)
+[2026-10-19 14:30:18] -- fetch_api.py
+[2026-10-19 14:30:22]    [14:30:22] Check 2026-10-18: provisional (pulled 19 Oct 12:21) vs the appointment table - given 52 vs 51 (+1), attended 26 vs 22, deals 8 vs 8, same appointments 48 of 51 (deals from deals tables)
+[2026-10-19 14:30:22]    [14:30:22] The appointment table already runs to 2026-10-18: no provisional days (removed any earlier ones).
+[2026-10-19 14:30:22]    ok (4s)
+[2026-10-19 14:30:22] -- fetch_deals.py
+[2026-10-19 14:32:28]    [14:32:13] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,425.96 since 2026-04-01 to 2026-10-18, 14,164 deal rows, 159 MEs (9s)
+[2026-10-19 14:32:28]    [14:32:13] Deals dump runs to 2026-10-17; the rolling table added 11 deal rows for 2026-10-18 to 2026-10-18
+[2026-10-19 14:32:28]    [14:32:14] Deals for 46,637 businesses: 11,991 deal rows since 2026-03-30 (109s). Saved cache\deals.pkl
+[2026-10-19 14:32:28]    [14:32:28] HR for 1,310 MEs: 1,250 with days present, 1,309 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-19 14:32:28]    ok (126s)
+[2026-10-19 14:32:28] -- build_review.py --full
+[2026-10-19 14:32:39]    [14:32:31] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-19 14:32:39]    [14:32:34] Deals from the deals table: 11,458 appointments converted (the appointment table marks 11,632); 5 marked not deal there, 179 marked deal there but their business's deal went to another appointment
+[2026-10-19 14:32:39]    [14:32:35] Deals closed (Sales MIS rule): 11,425.96 from 11,497 deal rows
+[2026-10-19 14:32:39]    [14:32:36] 'Not available' appointments with the 30 days over: 6,972; customer attended within 30 days: 224
+[2026-10-19 14:32:39]    [14:32:37] Record checks since 1 April: pending 1,835, no_booking 3,218, deal_before_booked 249, na_early 271, same_day 319
+[2026-10-19 14:32:39]    [14:32:37] Not counted as given: 5,522 (Not Available (Online) 4,122, TME Cancelled 380, Call Back 255, Fake Appt 220, Bounced Collection 201, Appointment Refixed 122)
+[2026-10-19 14:32:39]    [14:32:37] HR: 1,300 of 1,300 MEs with a joining date
+[2026-10-19 14:32:39]    [14:32:37] Appointments 46,822 (left out: 0); attended 36,699; deals closed 11,425.96 (11,458 appointments with disposition Dealclosed)
+[2026-10-19 14:32:39]    [14:32:38] Data: 5.3 MB; 1,300 MEs, 983 TMEs
+[2026-10-19 14:32:39]    [14:32:38] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-19 14:32:39]    ok (11s)
+[2026-10-19 14:32:39] ===== done in 158s =====
+[2026-10-20 08:00:03] ===== ME dashboards refresh =====
+[2026-10-20 08:00:03] -- fetch_data.py
+[2026-10-20 08:00:30]    [08:00:27] mumbai: 46,834 appointments given and 5,523 not counted, 2026-04-01 to 2026-10-18 (14s)
+[2026-10-20 08:00:30]    [08:00:29] Saved cache\raw.pkl
+[2026-10-20 08:00:30]    ok (27s)
+[2026-10-20 08:00:30] -- fetch_api.py
+[2026-10-20 08:01:02]    [08:00:35] Appointment table runs to 2026-10-18; building 2026-10-19 to 2026-10-19 from the allocation API (cut-off 2026-10-20 00:00:00)
+[2026-10-20 08:01:02]    [08:00:37]   mumbai partition: 48,462 records since 2026-09-11 (3s)
+[2026-10-20 08:01:02]    [08:00:58]   remote: 359 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   delhi: 64 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   bangalore: 27 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   pune: 34 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   ahmedabad: 14 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   chennai: 6 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   hyderabad: 15 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:00:58]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-20 08:01:02]    [08:01:00]   deals tables run to 2026-10-18: deals for 2026-10-19 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-20 08:01:02]    [08:01:01]   2 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-20 08:01:02]    [08:01:01] Provisional appointments given: 2026-10-19 290 (394 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-20 08:01:02]    ok (32s)
+[2026-10-20 08:01:02] -- fetch_deals.py
+[2026-10-20 08:03:09]    [08:02:54] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,425.96 since 2026-04-01 to 2026-10-18, 14,164 deal rows, 159 MEs (9s)
+[2026-10-20 08:03:09]    [08:02:54] Deals dump runs to 2026-10-17; the rolling table added 11 deal rows for 2026-10-18 to 2026-10-18
+[2026-10-20 08:03:09]    [08:02:54] Deals for 46,942 businesses: 11,991 deal rows since 2026-03-30 (109s). Saved cache\deals.pkl
+[2026-10-20 08:03:09]    [08:03:09] HR for 1,310 MEs: 1,250 with days present, 1,309 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-20 08:03:09]    ok (127s)
+[2026-10-20 08:03:09] -- build_review.py --full
+[2026-10-20 08:03:21]    [08:03:12] 4 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-20 08:03:21]    [08:03:12] 18 earlier rows of this month replaced by a newer appointment of the same business; 1 new visits left out (the business already has a deal this month)
+[2026-10-20 08:03:21]    [08:03:12] Provisional days from the allocation API: 2026-10-19 (393 rows, pulled 20 Oct 08:01)
+[2026-10-20 08:03:21]    [08:03:12] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,113 Sunday appointments reported on the Saturday before
+[2026-10-20 08:03:21]    [08:03:16] Deals from the deals table: 11,458 appointments converted (the appointment table marks 11,696); 5 marked not deal there, 179 marked deal there but their business's deal went to another appointment
+[2026-10-20 08:03:21]    [08:03:17] Deals closed (Sales MIS rule): 11,488.96 from 11,560 deal rows; after 2026-10-18 from the Dealclosed appointments
+[2026-10-20 08:03:21]    [08:03:18] 'Not available' appointments with the 30 days over: 7,033; customer attended within 30 days: 227
+[2026-10-20 08:03:21]    [08:03:19] Record checks since 1 April: pending 1,844, no_booking 3,235, deal_before_booked 249, na_early 269, same_day 319
+[2026-10-20 08:03:21]    [08:03:19] Not counted as given: 5,626 (Not Available (Online) 4,143, TME Cancelled 447, Call Back 255, Fake Appt 224, Bounced Collection 201, Appointment Refixed 132)
+[2026-10-20 08:03:21]    [08:03:19] HR: 1,300 of 1,303 MEs with a joining date
+[2026-10-20 08:03:21]    [08:03:19] Appointments 47,089 (left out: 0); attended 36,906; deals closed 11,488.96 (11,522 appointments with disposition Dealclosed)
+[2026-10-20 08:03:21]    [08:03:20] Data: 5.4 MB; 1,303 MEs, 984 TMEs
+[2026-10-20 08:03:21]    [08:03:21] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-20 08:03:21]    ok (12s)
+[2026-10-20 08:03:21] ===== done in 199s =====
+[2026-10-20 14:30:02] ===== ME dashboards refresh =====
+[2026-10-20 14:30:02] -- fetch_data.py
+[2026-10-20 14:30:23]    [14:30:20] mumbai: 47,116 appointments given and 5,543 not counted, 2026-04-01 to 2026-10-20 (14s)
+[2026-10-20 14:30:23]    [14:30:22] Saved cache\raw.pkl
+[2026-10-20 14:30:23]    ok (21s)
+[2026-10-20 14:30:23] -- fetch_api.py
+[2026-10-20 14:30:28]    [14:30:28] Check 2026-10-19: provisional (pulled 20 Oct 08:01) vs the appointment table - given 290 vs 276 (+14), attended 223 vs 212, deals 64 vs 56, same appointments 268 of 276 (deals from API deal records)
+[2026-10-20 14:30:28]    [14:30:28] The appointment table already runs to 2026-10-20: no provisional days (removed any earlier ones).
+[2026-10-20 14:30:28]    ok (6s)
+[2026-10-20 14:30:28] -- fetch_deals.py
+[2026-10-20 14:32:34]    [14:32:20] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,475.96 since 2026-04-01 to 2026-10-19, 14,216 deal rows, 160 MEs (7s)
+[2026-10-20 14:32:34]    [14:32:20] Deals dump runs to 2026-10-19; the rolling table added 0 deal rows (nothing newer)
+[2026-10-20 14:32:34]    [14:32:20] Deals for 46,894 businesses: 12,037 deal rows since 2026-03-30 (109s). Saved cache\deals.pkl
+[2026-10-20 14:32:34]    [14:32:34] HR for 1,312 MEs: 1,252 with days present, 1,311 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-20 14:32:34]    ok (126s)
+[2026-10-20 14:32:34] -- build_review.py --full
+[2026-10-20 14:32:46]    [14:32:38] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,110 Sunday appointments reported on the Saturday before
+[2026-10-20 14:32:46]    [14:32:41] Deals from the deals table: 11,513 appointments converted (the appointment table marks 11,688); 5 marked not deal there, 180 marked deal there but their business's deal went to another appointment
+[2026-10-20 14:32:46]    [14:32:42] Deals closed (Sales MIS rule): 11,475.96 from 11,547 deal rows; after 2026-10-19 from the Dealclosed appointments
+[2026-10-20 14:32:46]    [14:32:43] 'Not available' appointments with the 30 days over: 7,033; customer attended within 30 days: 227
+[2026-10-20 14:32:46]    [14:32:44] Record checks since 1 April: pending 1,851, no_booking 3,230, deal_before_booked 248, na_early 269, same_day 321
+[2026-10-20 14:32:46]    [14:32:44] Not counted as given: 5,542 (Not Available (Online) 4,138, TME Cancelled 382, Call Back 255, Fake Appt 223, Bounced Collection 200, Appointment Refixed 120)
+[2026-10-20 14:32:46]    [14:32:44] HR: 1,302 of 1,302 MEs with a joining date
+[2026-10-20 14:32:46]    [14:32:45] Appointments 47,104 (left out: 0); attended 36,884; deals closed 11,475.96 (11,513 appointments with disposition Dealclosed)
+[2026-10-20 14:32:46]    [14:32:45] Data: 5.3 MB; 1,302 MEs, 983 TMEs
+[2026-10-20 14:32:46]    [14:32:45] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-20 14:32:46]    ok (11s)
+[2026-10-20 14:32:46] ===== done in 164s =====
+[2026-10-21 08:00:03] ===== ME dashboards refresh =====
+[2026-10-21 08:00:03] -- fetch_data.py
+[2026-10-21 08:00:34]    [08:00:28] mumbai: 47,116 appointments given and 5,543 not counted, 2026-04-01 to 2026-10-20 (15s)
+[2026-10-21 08:00:35]    [08:00:31] Saved cache\raw.pkl
+[2026-10-21 08:00:35]    ok (32s)
+[2026-10-21 08:00:35] -- fetch_api.py
+[2026-10-21 08:00:41]    [08:00:40] The appointment table already runs to 2026-10-20: no provisional days (removed any earlier ones).
+[2026-10-21 08:00:41]    ok (6s)
+[2026-10-21 08:00:41] -- fetch_deals.py
+[2026-10-21 08:02:49]    [08:02:34] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,475.96 since 2026-04-01 to 2026-10-19, 14,216 deal rows, 160 MEs (7s)
+[2026-10-21 08:02:49]    [08:02:34] Deals dump runs to 2026-10-19; the rolling table added 0 deal rows (nothing newer)
+[2026-10-21 08:02:49]    [08:02:34] Deals for 46,894 businesses: 12,037 deal rows since 2026-03-30 (111s). Saved cache\deals.pkl
+[2026-10-21 08:02:49]    [08:02:49] HR for 1,312 MEs: 1,252 with days present, 1,311 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-21 08:02:49]    ok (129s)
+[2026-10-21 08:02:49] -- build_review.py --full
+[2026-10-21 08:03:03]    [08:02:53] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,110 Sunday appointments reported on the Saturday before
+[2026-10-21 08:03:03]    [08:02:57] Deals from the deals table: 11,513 appointments converted (the appointment table marks 11,688); 5 marked not deal there, 180 marked deal there but their business's deal went to another appointment
+[2026-10-21 08:03:03]    [08:02:58] Deals closed (Sales MIS rule): 11,475.96 from 11,547 deal rows; after 2026-10-19 from the Dealclosed appointments
+[2026-10-21 08:03:03]    [08:02:58] 'Not available' appointments with the 30 days over: 7,033; customer attended within 30 days: 227
+[2026-10-21 08:03:03]    [08:02:59] Record checks since 1 April: pending 1,851, no_booking 3,230, deal_before_booked 248, na_early 269, same_day 321
+[2026-10-21 08:03:03]    [08:02:59] Not counted as given: 5,542 (Not Available (Online) 4,138, TME Cancelled 382, Call Back 255, Fake Appt 223, Bounced Collection 200, Appointment Refixed 120)
+[2026-10-21 08:03:03]    [08:02:59] HR: 1,302 of 1,302 MEs with a joining date
+[2026-10-21 08:03:03]    [08:03:00] Appointments 47,104 (left out: 0); attended 36,884; deals closed 11,475.96 (11,513 appointments with disposition Dealclosed)
+[2026-10-21 08:03:03]    [08:03:00] Data: 5.3 MB; 1,302 MEs, 983 TMEs
+[2026-10-21 08:03:03]    [08:03:03] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-21 08:03:03]    ok (14s)
+[2026-10-21 08:03:03] ===== done in 181s =====
+[2026-10-21 14:30:02] ===== ME dashboards refresh =====
+[2026-10-21 14:30:02] -- fetch_data.py
+[2026-10-21 14:30:22]    [14:30:18] mumbai: 47,129 appointments given and 5,548 not counted, 2026-04-01 to 2026-10-20 (14s)
+[2026-10-21 14:30:22]    [14:30:22] Saved cache\raw.pkl
+[2026-10-21 14:30:22]    ok (20s)
+[2026-10-21 14:30:22] -- fetch_api.py
+[2026-10-21 14:30:25]    [14:30:25] The appointment table already runs to 2026-10-20: no provisional days (removed any earlier ones).
+[2026-10-21 14:30:25]    ok (3s)
+[2026-10-21 14:30:25] -- fetch_deals.py
+[2026-10-21 14:32:34]    [14:32:18] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,486.96 since 2026-04-01 to 2026-10-19, 14,229 deal rows, 160 MEs (7s)
+[2026-10-21 14:32:34]    [14:32:18] Deals dump runs to 2026-10-20; the rolling table added 0 deal rows (nothing newer)
+[2026-10-21 14:32:34]    [14:32:19] Deals for 46,905 businesses: 12,054 deal rows since 2026-03-30 (111s). Saved cache\deals.pkl
+[2026-10-21 14:32:34]    [14:32:34] HR for 1,313 MEs: 1,252 with days present, 1,312 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-21 14:32:34]    ok (129s)
+[2026-10-21 14:32:34] -- build_review.py --full
+[2026-10-21 14:32:45]    [14:32:37] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,112 Sunday appointments reported on the Saturday before
+[2026-10-21 14:32:45]    [14:32:41] Deals from the deals table: 11,529 appointments converted (the appointment table marks 11,709); 5 marked not deal there, 185 marked deal there but their business's deal went to another appointment
+[2026-10-21 14:32:45]    [14:32:42] Deals closed (Sales MIS rule): 11,486.96 from 11,558 deal rows
+[2026-10-21 14:32:45]    [14:32:42] 'Not available' appointments with the 30 days over: 7,033; customer attended within 30 days: 227
+[2026-10-21 14:32:45]    [14:32:43] Record checks since 1 April: pending 1,855, no_booking 3,241, deal_before_booked 246, na_early 270, same_day 323
+[2026-10-21 14:32:45]    [14:32:43] Not counted as given: 5,547 (Not Available (Online) 4,148, TME Cancelled 381, Call Back 255, Fake Appt 223, Bounced Collection 200, Appointment Refixed 116)
+[2026-10-21 14:32:45]    [14:32:43] HR: 1,303 of 1,303 MEs with a joining date
+[2026-10-21 14:32:45]    [14:32:44] Appointments 47,117 (left out: 0); attended 36,912; deals closed 11,486.96 (11,529 appointments with disposition Dealclosed)
+[2026-10-21 14:32:45]    [14:32:44] Data: 5.4 MB; 1,303 MEs, 983 TMEs
+[2026-10-21 14:32:45]    [14:32:44] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.8 MB, built from the design files)
+[2026-10-21 14:32:45]    ok (11s)
+[2026-10-21 14:32:45] ===== done in 163s =====
+[2026-10-22 08:00:02] ===== ME dashboards refresh =====
+[2026-10-22 08:00:02] -- fetch_data.py
+[2026-10-22 08:00:25]    [08:00:22] mumbai: 47,129 appointments given and 5,548 not counted, 2026-04-01 to 2026-10-20 (15s)
+[2026-10-22 08:00:25]    [08:00:25] Saved cache\raw.pkl
+[2026-10-22 08:00:25]    ok (23s)
+[2026-10-22 08:00:25] -- fetch_api.py
+[2026-10-22 08:00:55]    [08:00:28] Appointment table runs to 2026-10-20; building 2026-10-21 to 2026-10-21 from the allocation API (cut-off 2026-10-22 00:00:00)
+[2026-10-22 08:00:55]    [08:00:31]   mumbai partition: 50,239 records since 2026-09-11 (3s)
+[2026-10-22 08:00:55]    [08:00:52]   remote: 380 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   delhi: 65 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   bangalore: 28 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   pune: 36 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   chennai: 6 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   hyderabad: 16 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:52]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-22 08:00:55]    [08:00:54]   deals tables run to 2026-10-20: deals for 2026-10-21 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-22 08:00:55]    [08:00:54]   6 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-22 08:00:55]    [08:00:55] Provisional appointments given: 2026-10-21 288 (374 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-22 08:00:55]    ok (30s)
+[2026-10-22 08:00:55] -- fetch_deals.py
+[2026-10-22 08:03:01]    [08:02:46] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,486.96 since 2026-04-01 to 2026-10-19, 14,229 deal rows, 160 MEs (6s)
+[2026-10-22 08:03:01]    [08:02:46] Deals dump runs to 2026-10-20; the rolling table added 0 deal rows (nothing newer)
+[2026-10-22 08:03:01]    [08:02:46] Deals for 47,191 businesses: 12,054 deal rows since 2026-03-30 (109s). Saved cache\deals.pkl
+[2026-10-22 08:03:01]    [08:03:01] HR for 1,313 MEs: 1,252 with days present, 1,312 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-22 08:03:01]    ok (126s)
+[2026-10-22 08:03:01] -- build_review.py --full
+[2026-10-22 08:03:13]    [08:03:04] 4 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-22 08:03:13]    [08:03:04] 15 earlier rows of this month replaced by a newer appointment of the same business; 0 new visits left out (the business already has a deal this month)
+[2026-10-22 08:03:13]    [08:03:04] Provisional days from the allocation API: 2026-10-21 (374 rows, pulled 22 Oct 08:00)
+[2026-10-22 08:03:13]    [08:03:04] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,112 Sunday appointments reported on the Saturday before
+[2026-10-22 08:03:13]    [08:03:08] Deals from the deals table: 11,529 appointments converted (the appointment table marks 11,773); 5 marked not deal there, 185 marked deal there but their business's deal went to another appointment
+[2026-10-22 08:03:13]    [08:03:09] Deals closed (Sales MIS rule): 11,550.96 from 11,622 deal rows; after 2026-10-20 from the Dealclosed appointments
+[2026-10-22 08:03:13]    [08:03:10] 'Not available' appointments with the 30 days over: 7,084; customer attended within 30 days: 230
+[2026-10-22 08:03:13]    [08:03:11] Record checks since 1 April: pending 1,865, no_booking 3,264, deal_before_booked 246, na_early 270, same_day 323
+[2026-10-22 08:03:13]    [08:03:11] Not counted as given: 5,633 (Not Available (Online) 4,179, TME Cancelled 428, Call Back 255, Fake Appt 224, Bounced Collection 200, Appointment Refixed 122)
+[2026-10-22 08:03:13]    [08:03:11] HR: 1,303 of 1,306 MEs with a joining date
+[2026-10-22 08:03:13]    [08:03:11] Appointments 47,386 (left out: 0); attended 37,137; deals closed 11,550.96 (11,593 appointments with disposition Dealclosed)
+[2026-10-22 08:03:13]    [08:03:12] Data: 5.4 MB; 1,306 MEs, 992 TMEs
+[2026-10-22 08:03:13]    [08:03:13] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-22 08:03:13]    ok (12s)
+[2026-10-22 08:03:13] ===== done in 191s =====
+[2026-10-22 14:30:02] ===== ME dashboards refresh =====
+[2026-10-22 14:30:02] -- fetch_data.py
+[2026-10-22 14:30:26]    [14:30:23] mumbai: 47,402 appointments given and 5,567 not counted, 2026-04-01 to 2026-10-21 (17s)
+[2026-10-22 14:30:26]    [14:30:25] Saved cache\raw.pkl
+[2026-10-22 14:30:26]    ok (23s)
+[2026-10-22 14:30:26] -- fetch_api.py
+[2026-10-22 14:30:30]    [14:30:30] Check 2026-10-21: provisional (pulled 22 Oct 08:00) vs the appointment table - given 288 vs 291 (-3), attended 236 vs 237, deals 64 vs 73, same appointments 275 of 291 (deals from API deal records)
+[2026-10-22 14:30:30]    [14:30:30] The appointment table already runs to 2026-10-21: no provisional days (removed any earlier ones).
+[2026-10-22 14:30:30]    ok (4s)
+[2026-10-22 14:30:30] -- fetch_deals.py
+[2026-10-22 14:32:44]    [14:32:29] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,571.96 since 2026-04-01 to 2026-10-21, 14,315 deal rows, 160 MEs (7s)
+[2026-10-22 14:32:44]    [14:32:29] Deals dump runs to 2026-10-21; the rolling table added 0 deal rows (nothing newer)
+[2026-10-22 14:32:44]    [14:32:29] Deals for 47,158 businesses: 12,143 deal rows since 2026-03-30 (117s). Saved cache\deals.pkl
+[2026-10-22 14:32:44]    [14:32:44] HR for 1,315 MEs: 1,254 with days present, 1,314 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-22 14:32:44]    ok (134s)
+[2026-10-22 14:32:44] -- build_review.py --full
+[2026-10-22 14:32:55]    [14:32:47] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-22 14:32:55]    [14:32:51] Deals from the deals table: 11,615 appointments converted (the appointment table marks 11,798); 5 marked not deal there, 188 marked deal there but their business's deal went to another appointment
+[2026-10-22 14:32:55]    [14:32:52] Deals closed (Sales MIS rule): 11,571.96 from 11,643 deal rows
+[2026-10-22 14:32:55]    [14:32:52] 'Not available' appointments with the 30 days over: 7,084; customer attended within 30 days: 230
+[2026-10-22 14:32:55]    [14:32:53] Record checks since 1 April: pending 1,870, no_booking 3,272, deal_before_booked 249, na_early 271, same_day 325
+[2026-10-22 14:32:55]    [14:32:53] Not counted as given: 5,566 (Not Available (Online) 4,170, TME Cancelled 382, Call Back 255, Fake Appt 222, Bounced Collection 200, Appointment Refixed 113)
+[2026-10-22 14:32:55]    [14:32:54] HR: 1,305 of 1,305 MEs with a joining date
+[2026-10-22 14:32:55]    [14:32:54] Appointments 47,390 (left out: 0); attended 37,143; deals closed 11,571.96 (11,615 appointments with disposition Dealclosed)
+[2026-10-22 14:32:55]    [14:32:54] Data: 5.4 MB; 1,305 MEs, 993 TMEs
+[2026-10-22 14:32:55]    [14:32:55] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-22 14:32:55]    ok (11s)
+[2026-10-22 14:32:55] ===== done in 173s =====
+[2026-10-23 08:00:03] ===== ME dashboards refresh =====
+[2026-10-23 08:00:03] -- fetch_data.py
+[2026-10-23 08:00:29]    [08:00:26] mumbai: 47,402 appointments given and 5,567 not counted, 2026-04-01 to 2026-10-21 (14s)
+[2026-10-23 08:00:29]    [08:00:28] Saved cache\raw.pkl
+[2026-10-23 08:00:29]    ok (26s)
+[2026-10-23 08:00:29] -- fetch_api.py
+[2026-10-23 08:01:02]    [08:00:34] Appointment table runs to 2026-10-21; building 2026-10-22 to 2026-10-22 from the allocation API (cut-off 2026-10-23 00:00:00)
+[2026-10-23 08:01:02]    [08:00:37]   mumbai partition: 51,768 records since 2026-09-11 (3s)
+[2026-10-23 08:01:02]    [08:00:58]   remote: 392 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:58]   delhi: 67 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:58]   bangalore: 29 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:58]   pune: 37 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:58]   ahmedabad: 17 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:59]   chennai: 6 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:59]   hyderabad: 19 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:00:59]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-23 08:01:02]    [08:01:01]   deals tables run to 2026-10-21: deals for 2026-10-22 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-23 08:01:02]    [08:01:01]   2 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-23 08:01:02]    [08:01:01] Provisional appointments given: 2026-10-22 303 (417 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-23 08:01:02]    ok (33s)
+[2026-10-23 08:01:02] -- fetch_deals.py
+[2026-10-23 08:03:34]    [08:03:17] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,571.96 since 2026-04-01 to 2026-10-21, 14,315 deal rows, 160 MEs (7s)
+[2026-10-23 08:03:34]    [08:03:17] Deals dump runs to 2026-10-21; the rolling table added 0 deal rows (nothing newer)
+[2026-10-23 08:03:34]    [08:03:18] Deals for 47,486 businesses: 12,144 deal rows since 2026-03-30 (124s). Saved cache\deals.pkl
+[2026-10-23 08:03:34]    [08:03:33] HR for 1,315 MEs: 1,254 with days present, 1,314 with joining dates (16s). Saved cache\hr.pkl
+[2026-10-23 08:03:34]    ok (152s)
+[2026-10-23 08:03:34] -- build_review.py --full
+[2026-10-23 08:03:56]    [08:03:44] 7 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-23 08:03:56]    [08:03:44] 14 earlier rows of this month replaced by a newer appointment of the same business; 0 new visits left out (the business already has a deal this month)
+[2026-10-23 08:03:56]    [08:03:44] Provisional days from the allocation API: 2026-10-22 (417 rows, pulled 23 Oct 08:01)
+[2026-10-23 08:03:56]    [08:03:44] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-23 08:03:56]    [08:03:49] Deals from the deals table: 11,615 appointments converted (the appointment table marks 11,869); 5 marked not deal there, 188 marked deal there but their business's deal went to another appointment
+[2026-10-23 08:03:56]    [08:03:51] Deals closed (Sales MIS rule): 11,641.96 from 11,713 deal rows; after 2026-10-21 from the Dealclosed appointments
+[2026-10-23 08:03:56]    [08:03:51] 'Not available' appointments with the 30 days over: 7,136; customer attended within 30 days: 230
+[2026-10-23 08:03:56]    [08:03:52] Record checks since 1 April: pending 1,874, no_booking 3,298, deal_before_booked 249, na_early 271, same_day 331
+[2026-10-23 08:03:56]    [08:03:53] Not counted as given: 5,680 (Not Available (Online) 4,195, TME Cancelled 453, Call Back 255, Fake Appt 224, Bounced Collection 200, Appointment Refixed 126)
+[2026-10-23 08:03:56]    [08:03:53] HR: 1,305 of 1,311 MEs with a joining date
+[2026-10-23 08:03:56]    [08:03:53] Appointments 47,672 (left out: 0); attended 37,359; deals closed 11,641.96 (11,686 appointments with disposition Dealclosed)
+[2026-10-23 08:03:56]    [08:03:54] Data: 5.4 MB; 1,311 MEs, 993 TMEs
+[2026-10-23 08:03:56]    [08:03:55] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-23 08:03:56]    ok (22s)
+[2026-10-23 08:03:56] ===== done in 234s =====
+[2026-10-23 14:30:03] ===== ME dashboards refresh =====
+[2026-10-23 14:30:03] -- fetch_data.py
+[2026-10-23 14:30:24]    [14:30:21] mumbai: 47,669 appointments given and 5,606 not counted, 2026-04-01 to 2026-10-22 (15s)
+[2026-10-23 14:30:24]    [14:30:24] Saved cache\raw.pkl
+[2026-10-23 14:30:24]    ok (21s)
+[2026-10-23 14:30:24] -- fetch_api.py
+[2026-10-23 14:30:30]    [14:30:29] Check 2026-10-22: provisional (pulled 23 Oct 08:01) vs the appointment table - given 303 vs 298 (+5), attended 229 vs 222, deals 71 vs 71, same appointments 285 of 298 (deals from API deal records)
+[2026-10-23 14:30:30]    [14:30:29] The appointment table already runs to 2026-10-22: no provisional days (removed any earlier ones).
+[2026-10-23 14:30:30]    ok (5s)
+[2026-10-23 14:30:30] -- fetch_deals.py
+[2026-10-23 14:32:43]    [14:32:27] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,642.96 since 2026-04-01 to 2026-10-22, 14,389 deal rows, 160 MEs (8s)
+[2026-10-23 14:32:43]    [14:32:27] Deals dump runs to 2026-10-22; the rolling table added 0 deal rows (nothing newer)
+[2026-10-23 14:32:43]    [14:32:28] Deals for 47,417 businesses: 12,221 deal rows since 2026-03-30 (116s). Saved cache\deals.pkl
+[2026-10-23 14:32:43]    [14:32:43] HR for 1,318 MEs: 1,256 with days present, 1,317 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-23 14:32:43]    ok (133s)
+[2026-10-23 14:32:43] -- build_review.py --full
+[2026-10-23 14:32:54]    [14:32:46] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-23 14:32:54]    [14:32:50] Deals from the deals table: 11,687 appointments converted (the appointment table marks 11,873); 5 marked not deal there, 191 marked deal there but their business's deal went to another appointment
+[2026-10-23 14:32:54]    [14:32:51] Deals closed (Sales MIS rule): 11,642.96 from 11,714 deal rows
+[2026-10-23 14:32:54]    [14:32:51] 'Not available' appointments with the 30 days over: 7,136; customer attended within 30 days: 230
+[2026-10-23 14:32:54]    [14:32:52] Record checks since 1 April: pending 1,877, no_booking 3,290, deal_before_booked 251, na_early 272, same_day 331
+[2026-10-23 14:32:54]    [14:32:52] Not counted as given: 5,605 (Not Available (Online) 4,195, TME Cancelled 382, Call Back 255, Fake Appt 224, Bounced Collection 200, Appointment Refixed 123)
+[2026-10-23 14:32:54]    [14:32:52] HR: 1,308 of 1,308 MEs with a joining date
+[2026-10-23 14:32:54]    [14:32:53] Appointments 47,657 (left out: 0); attended 37,348; deals closed 11,642.96 (11,687 appointments with disposition Dealclosed)
+[2026-10-23 14:32:54]    [14:32:53] Data: 5.4 MB; 1,308 MEs, 992 TMEs
+[2026-10-23 14:32:54]    [14:32:54] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-23 14:32:54]    ok (11s)
+[2026-10-23 14:32:54] ===== done in 171s =====
+[2026-10-24 08:00:02] ===== ME dashboards refresh =====
+[2026-10-24 08:00:02] -- fetch_data.py
+[2026-10-24 08:00:26]    [08:00:23] mumbai: 47,669 appointments given and 5,606 not counted, 2026-04-01 to 2026-10-22 (15s)
+[2026-10-24 08:00:26]    [08:00:26] Saved cache\raw.pkl
+[2026-10-24 08:00:26]    ok (24s)
+[2026-10-24 08:00:26] -- fetch_api.py
+[2026-10-24 08:01:01]    [08:00:31] Appointment table runs to 2026-10-22; building 2026-10-23 to 2026-10-23 from the allocation API (cut-off 2026-10-24 00:00:00)
+[2026-10-24 08:01:01]    [08:00:34]   mumbai partition: 53,310 records since 2026-09-11 (3s)
+[2026-10-24 08:01:01]    [08:00:57]   remote: 405 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   delhi: 68 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   bangalore: 32 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   pune: 41 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   ahmedabad: 19 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   chennai: 7 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   hyderabad: 20 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:57]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-24 08:01:01]    [08:00:59]   deals tables run to 2026-10-22: deals for 2026-10-23 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-24 08:01:01]    [08:00:59]   1 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-24 08:01:01]    [08:01:00] Provisional appointments given: 2026-10-23 274 (391 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-24 08:01:01]    ok (34s)
+[2026-10-24 08:01:01] -- fetch_deals.py
+[2026-10-24 08:03:24]    [08:03:08] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,642.96 since 2026-04-01 to 2026-10-22, 14,389 deal rows, 160 MEs (7s)
+[2026-10-24 08:03:24]    [08:03:08] Deals dump runs to 2026-10-22; the rolling table added 0 deal rows (nothing newer)
+[2026-10-24 08:03:24]    [08:03:08] Deals for 47,707 businesses: 12,222 deal rows since 2026-03-30 (124s). Saved cache\deals.pkl
+[2026-10-24 08:03:24]    [08:03:24] HR for 1,318 MEs: 1,256 with days present, 1,317 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-24 08:03:24]    ok (143s)
+[2026-10-24 08:03:24] -- build_review.py --full
+[2026-10-24 08:03:36]    [08:03:27] 7 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-24 08:03:36]    [08:03:27] 16 earlier rows of this month replaced by a newer appointment of the same business; 1 new visits left out (the business already has a deal this month)
+[2026-10-24 08:03:36]    [08:03:27] Provisional days from the allocation API: 2026-10-23 (390 rows, pulled 24 Oct 08:01)
+[2026-10-24 08:03:36]    [08:03:27] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-24 08:03:36]    [08:03:31] Deals from the deals table: 11,687 appointments converted (the appointment table marks 11,928); 5 marked not deal there, 191 marked deal there but their business's deal went to another appointment
+[2026-10-24 08:03:36]    [08:03:32] Deals closed (Sales MIS rule): 11,697.96 from 11,769 deal rows; after 2026-10-22 from the Dealclosed appointments
+[2026-10-24 08:03:36]    [08:03:33] 'Not available' appointments with the 30 days over: 7,178; customer attended within 30 days: 230
+[2026-10-24 08:03:36]    [08:03:34] Record checks since 1 April: pending 1,882, no_booking 3,306, deal_before_booked 251, na_early 272, same_day 331
+[2026-10-24 08:03:36]    [08:03:34] Not counted as given: 5,720 (Not Available (Online) 4,222, TME Cancelled 462, Call Back 255, Fake Appt 224, Bounced Collection 200, Appointment Refixed 129)
+[2026-10-24 08:03:36]    [08:03:34] HR: 1,308 of 1,310 MEs with a joining date
+[2026-10-24 08:03:36]    [08:03:34] Appointments 47,909 (left out: 0); attended 37,560; deals closed 11,697.96 (11,742 appointments with disposition Dealclosed)
+[2026-10-24 08:03:36]    [08:03:35] Data: 5.4 MB; 1,310 MEs, 994 TMEs
+[2026-10-24 08:03:36]    [08:03:36] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-24 08:03:36]    ok (12s)
+[2026-10-24 08:03:36] ===== done in 214s =====
+[2026-10-24 14:30:01] ===== ME dashboards refresh =====
+[2026-10-24 14:30:01] -- fetch_data.py
+[2026-10-24 14:30:20]    [14:30:18] mumbai: 47,920 appointments given and 5,619 not counted, 2026-04-01 to 2026-10-23 (15s)
+[2026-10-24 14:30:20]    [14:30:20] Saved cache\raw.pkl
+[2026-10-24 14:30:20]    ok (19s)
+[2026-10-24 14:30:20] -- fetch_api.py
+[2026-10-24 14:30:24]    [14:30:24] Check 2026-10-23: provisional (pulled 24 Oct 08:01) vs the appointment table - given 274 vs 287 (-13), attended 227 vs 199, deals 55 vs 57, same appointments 261 of 287 (deals from API deal records)
+[2026-10-24 14:30:24]    [14:30:24] The appointment table already runs to 2026-10-23: no provisional days (removed any earlier ones).
+[2026-10-24 14:30:24]    ok (4s)
+[2026-10-24 14:30:24] -- fetch_deals.py
+[2026-10-24 14:32:31]    [14:32:16] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,703.96 since 2026-04-01 to 2026-10-23, 14,468 deal rows, 160 MEs (6s)
+[2026-10-24 14:32:31]    [14:32:16] Deals dump runs to 2026-10-23; the rolling table added 0 deal rows (nothing newer)
+[2026-10-24 14:32:31]    [14:32:17] Deals for 47,628 businesses: 12,285 deal rows since 2026-03-30 (110s). Saved cache\deals.pkl
+[2026-10-24 14:32:31]    [14:32:30] HR for 1,321 MEs: 1,259 with days present, 1,320 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-24 14:32:31]    ok (127s)
+[2026-10-24 14:32:31] -- build_review.py --full
+[2026-10-24 14:32:42]    [14:32:34] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-24 14:32:42]    [14:32:37] Deals from the deals table: 11,747 appointments converted (the appointment table marks 11,935); 5 marked not deal there, 193 marked deal there but their business's deal went to another appointment
+[2026-10-24 14:32:42]    [14:32:38] Deals closed (Sales MIS rule): 11,703.96 from 11,775 deal rows
+[2026-10-24 14:32:42]    [14:32:39] 'Not available' appointments with the 30 days over: 7,178; customer attended within 30 days: 230
+[2026-10-24 14:32:42]    [14:32:40] Record checks since 1 April: pending 1,883, no_booking 3,300, deal_before_booked 254, na_early 272, same_day 335
+[2026-10-24 14:32:42]    [14:32:40] Not counted as given: 5,618 (Not Available (Online) 4,208, TME Cancelled 382, Call Back 255, Fake Appt 225, Bounced Collection 200, Appointment Refixed 120)
+[2026-10-24 14:32:42]    [14:32:40] HR: 1,311 of 1,311 MEs with a joining date
+[2026-10-24 14:32:42]    [14:32:41] Appointments 47,907 (left out: 0); attended 37,527; deals closed 11,703.96 (11,747 appointments with disposition Dealclosed)
+[2026-10-24 14:32:42]    [14:32:41] Data: 5.4 MB; 1,311 MEs, 993 TMEs
+[2026-10-24 14:32:42]    [14:32:42] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.9 MB, built from the design files)
+[2026-10-24 14:32:42]    ok (11s)
+[2026-10-24 14:32:42] ===== done in 160s =====
+[2026-10-25 08:00:03] ===== ME dashboards refresh =====
+[2026-10-25 08:00:03] -- fetch_data.py
+[2026-10-25 08:00:30]    [08:00:27] mumbai: 47,920 appointments given and 5,619 not counted, 2026-04-01 to 2026-10-23 (15s)
+[2026-10-25 08:00:30]    [08:00:29] Saved cache\raw.pkl
+[2026-10-25 08:00:30]    ok (27s)
+[2026-10-25 08:00:30] -- fetch_api.py
+[2026-10-25 08:01:04]    [08:00:35] Appointment table runs to 2026-10-23; building 2026-10-24 to 2026-10-24 from the allocation API (cut-off 2026-10-25 00:00:00)
+[2026-10-25 08:01:04]    [08:00:38]   mumbai partition: 54,762 records since 2026-09-11 (3s)
+[2026-10-25 08:01:04]    [08:01:00]   remote: 426 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:00]   delhi: 75 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:00]   bangalore: 33 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:00]   pune: 42 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:00]   ahmedabad: 19 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:00]   chennai: 7 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:01]   hyderabad: 20 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:01]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-25 08:01:04]    [08:01:03]   deals tables run to 2026-10-23: deals for 2026-10-24 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-25 08:01:04]    [08:01:03]   5 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-25 08:01:04]    [08:01:04] Provisional appointments given: 2026-10-24 288 (382 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-25 08:01:04]    ok (34s)
+[2026-10-25 08:01:04] -- fetch_deals.py
+[2026-10-25 08:03:11]    [08:02:55] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,703.96 since 2026-04-01 to 2026-10-23, 14,468 deal rows, 160 MEs (6s)
+[2026-10-25 08:03:11]    [08:02:55] Deals dump runs to 2026-10-23; the rolling table added 0 deal rows (nothing newer)
+[2026-10-25 08:03:11]    [08:02:56] Deals for 47,926 businesses: 12,286 deal rows since 2026-03-30 (108s). Saved cache\deals.pkl
+[2026-10-25 08:03:11]    [08:03:10] HR for 1,321 MEs: 1,259 with days present, 1,320 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-25 08:03:11]    ok (126s)
+[2026-10-25 08:03:11] -- build_review.py --full
+[2026-10-25 08:03:23]    [08:03:14] 3 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-25 08:03:23]    [08:03:14] 9 earlier rows of this month replaced by a newer appointment of the same business; 0 new visits left out (the business already has a deal this month)
+[2026-10-25 08:03:23]    [08:03:14] Provisional days from the allocation API: 2026-10-24 (382 rows, pulled 25 Oct 08:01)
+[2026-10-25 08:03:23]    [08:03:14] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,114 Sunday appointments reported on the Saturday before
+[2026-10-25 08:03:23]    [08:03:18] Deals from the deals table: 11,747 appointments converted (the appointment table marks 11,996); 5 marked not deal there, 193 marked deal there but their business's deal went to another appointment
+[2026-10-25 08:03:23]    [08:03:19] Deals closed (Sales MIS rule): 11,764.96 from 11,836 deal rows; after 2026-10-23 from the Dealclosed appointments
+[2026-10-25 08:03:23]    [08:03:19] 'Not available' appointments with the 30 days over: 7,228; customer attended within 30 days: 232
+[2026-10-25 08:03:23]    [08:03:21] Record checks since 1 April: pending 1,898, no_booking 3,328, deal_before_booked 254, na_early 272, same_day 335
+[2026-10-25 08:03:23]    [08:03:21] Not counted as given: 5,711 (Not Available (Online) 4,220, TME Cancelled 455, Call Back 255, Fake Appt 226, Bounced Collection 201, Appointment Refixed 125)
+[2026-10-25 08:03:23]    [08:03:21] HR: 1,311 of 1,313 MEs with a joining date
+[2026-10-25 08:03:23]    [08:03:21] Appointments 48,184 (left out: 0); attended 37,754; deals closed 11,764.96 (11,808 appointments with disposition Dealclosed)
+[2026-10-25 08:03:23]    [08:03:22] Data: 5.5 MB; 1,313 MEs, 996 TMEs
+[2026-10-25 08:03:23]    [08:03:23] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.0 MB, built from the design files)
+[2026-10-25 08:03:23]    ok (13s)
+[2026-10-25 08:03:23] ===== done in 201s =====
+[2026-10-25 14:30:02] ===== ME dashboards refresh =====
+[2026-10-25 14:30:02] -- fetch_data.py
+[2026-10-25 14:30:20]    [14:30:17] mumbai: 48,166 appointments given and 5,629 not counted, 2026-04-01 to 2026-10-24 (14s)
+[2026-10-25 14:30:20]    [14:30:20] Saved cache\raw.pkl
+[2026-10-25 14:30:20]    ok (19s)
+[2026-10-25 14:30:20] -- fetch_api.py
+[2026-10-25 14:30:24]    [14:30:24] Check 2026-10-24: provisional (pulled 25 Oct 08:01) vs the appointment table - given 288 vs 279 (+9), attended 234 vs 225, deals 61 vs 54, same appointments 261 of 279 (deals from API deal records)
+[2026-10-25 14:30:24]    [14:30:24] The appointment table already runs to 2026-10-24: no provisional days (removed any earlier ones).
+[2026-10-25 14:30:24]    ok (4s)
+[2026-10-25 14:30:24] -- fetch_deals.py
+[2026-10-25 14:32:49]    [14:32:33] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,775.96 since 2026-04-01 to 2026-10-24, 14,551 deal rows, 162 MEs (7s)
+[2026-10-25 14:32:49]    [14:32:33] Deals dump runs to 2026-10-24; the rolling table added 0 deal rows (nothing newer)
+[2026-10-25 14:32:49]    [14:32:33] Deals for 47,841 businesses: 12,350 deal rows since 2026-03-30 (127s). Saved cache\deals.pkl
+[2026-10-25 14:32:49]    [14:32:49] HR for 1,323 MEs: 1,260 with days present, 1,322 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-25 14:32:49]    ok (145s)
+[2026-10-25 14:32:49] -- build_review.py --full
+[2026-10-25 14:33:00]    [14:32:52] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,112 Sunday appointments reported on the Saturday before
+[2026-10-25 14:33:00]    [14:32:56] Deals from the deals table: 11,804 appointments converted (the appointment table marks 11,994); 4 marked not deal there, 194 marked deal there but their business's deal went to another appointment
+[2026-10-25 14:33:00]    [14:32:57] Deals closed (Sales MIS rule): 11,775.96 from 11,847 deal rows
+[2026-10-25 14:33:00]    [14:32:57] 'Not available' appointments with the 30 days over: 7,228; customer attended within 30 days: 232
+[2026-10-25 14:33:00]    [14:32:58] Record checks since 1 April: pending 1,898, no_booking 3,323, deal_before_booked 255, na_early 271, same_day 337
+[2026-10-25 14:33:00]    [14:32:58] Not counted as given: 5,628 (Not Available (Online) 4,212, TME Cancelled 383, Call Back 255, Fake Appt 225, Bounced Collection 201, Appointment Refixed 123)
+[2026-10-25 14:33:00]    [14:32:59] HR: 1,313 of 1,313 MEs with a joining date
+[2026-10-25 14:33:00]    [14:32:59] Appointments 48,153 (left out: 0); attended 37,738; deals closed 11,775.96 (11,804 appointments with disposition Dealclosed)
+[2026-10-25 14:33:00]    [14:32:59] Data: 5.5 MB; 1,313 MEs, 995 TMEs
+[2026-10-25 14:33:00]    [14:33:00] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.0 MB, built from the design files)
+[2026-10-25 14:33:00]    ok (11s)
+[2026-10-25 14:33:00] ===== done in 179s =====
+[2026-10-26 08:00:02] ===== ME dashboards refresh =====
+[2026-10-26 08:00:02] -- fetch_data.py
+[2026-10-26 08:00:29]    [08:00:26] mumbai: 48,166 appointments given and 5,629 not counted, 2026-04-01 to 2026-10-24 (17s)
+[2026-10-26 08:00:29]    [08:00:29] Saved cache\raw.pkl
+[2026-10-26 08:00:29]    ok (27s)
+[2026-10-26 08:00:29] -- fetch_api.py
+[2026-10-26 08:01:01]    [08:00:34] Appointment table runs to 2026-10-24; building 2026-10-25 to 2026-10-25 from the allocation API (cut-off 2026-10-26 00:00:00)
+[2026-10-26 08:01:01]    [08:00:37]   mumbai partition: 54,869 records since 2026-09-11 (3s)
+[2026-10-26 08:01:01]    [08:00:57]   remote: 426 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   delhi: 76 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   bangalore: 33 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   pune: 42 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   ahmedabad: 19 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   chennai: 7 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   hyderabad: 20 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:57]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-26 08:01:01]    [08:00:59]   deals tables run to 2026-10-24: deals for 2026-10-25 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-26 08:01:01]    [08:00:59]   1 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-26 08:01:01]    [08:01:00] Provisional appointments given: 2026-10-25 30 (42 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-26 08:01:01]    ok (32s)
+[2026-10-26 08:01:01] -- fetch_deals.py
+[2026-10-26 08:03:18]    [08:03:02] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,775.96 since 2026-04-01 to 2026-10-24, 14,551 deal rows, 162 MEs (7s)
+[2026-10-26 08:03:18]    [08:03:02] Deals dump runs to 2026-10-24; the rolling table added 0 deal rows (nothing newer)
+[2026-10-26 08:03:18]    [08:03:03] Deals for 47,868 businesses: 12,350 deal rows since 2026-03-30 (118s). Saved cache\deals.pkl
+[2026-10-26 08:03:18]    [08:03:17] HR for 1,323 MEs: 1,260 with days present, 1,322 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-26 08:03:18]    ok (137s)
+[2026-10-26 08:03:18] -- build_review.py --full
+[2026-10-26 08:03:30]    [08:03:21] 0 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-26 08:03:30]    [08:03:21] 1 earlier rows of this month replaced by a newer appointment of the same business; 0 new visits left out (the business already has a deal this month)
+[2026-10-26 08:03:30]    [08:03:21] Provisional days from the allocation API: 2026-10-25 (42 rows, pulled 26 Oct 08:01)
+[2026-10-26 08:03:30]    [08:03:21] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,153 Sunday appointments reported on the Saturday before
+[2026-10-26 08:03:30]    [08:03:25] Deals from the deals table: 11,804 appointments converted (the appointment table marks 12,005); 4 marked not deal there, 205 marked deal there but their business's deal went to another appointment
+[2026-10-26 08:03:30]    [08:03:26] Deals closed (Sales MIS rule): 11,775.96 from 11,847 deal rows; after 2026-10-24 from the Dealclosed appointments
+[2026-10-26 08:03:30]    [08:03:27] 'Not available' appointments with the 30 days over: 7,264; customer attended within 30 days: 235
+[2026-10-26 08:03:30]    [08:03:28] Record checks since 1 April: pending 1,954, no_booking 3,323, deal_before_booked 255, na_early 271, same_day 337
+[2026-10-26 08:03:30]    [08:03:28] Not counted as given: 5,640 (Not Available (Online) 4,214, TME Cancelled 385, Call Back 255, Fake Appt 227, Bounced Collection 201, Appointment Refixed 129)
+[2026-10-26 08:03:30]    [08:03:28] HR: 1,313 of 1,313 MEs with a joining date
+[2026-10-26 08:03:30]    [08:03:28] Appointments 48,182 (left out: 0); attended 37,762; deals closed 11,775.96 (11,804 appointments with disposition Dealclosed)
+[2026-10-26 08:03:30]    [08:03:29] Data: 5.5 MB; 1,313 MEs, 996 TMEs
+[2026-10-26 08:03:30]    [08:03:30] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.0 MB, built from the design files)
+[2026-10-26 08:03:30]    ok (13s)
+[2026-10-26 08:03:30] ===== done in 208s =====
+[2026-10-26 14:30:02] ===== ME dashboards refresh =====
+[2026-10-26 14:30:02] -- fetch_data.py
+[2026-10-26 14:30:21]    [14:30:18] mumbai: 48,193 appointments given and 5,644 not counted, 2026-04-01 to 2026-10-25 (15s)
+[2026-10-26 14:30:21]    [14:30:20] Saved cache\raw.pkl
+[2026-10-26 14:30:21]    ok (19s)
+[2026-10-26 14:30:21] -- fetch_api.py
+[2026-10-26 14:30:25]    [14:30:24] Check 2026-10-25: provisional (pulled 26 Oct 08:01) vs the appointment table - given 30 vs 28 (+2), attended 24 vs 18, deals 11 vs 5, same appointments 24 of 28 (deals from API deal records)
+[2026-10-26 14:30:25]    [14:30:25] The appointment table already runs to 2026-10-25: no provisional days (removed any earlier ones).
+[2026-10-26 14:30:25]    ok (4s)
+[2026-10-26 14:30:25] -- fetch_deals.py
+[2026-10-26 14:32:36]    [14:32:21] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,784.96 since 2026-04-01 to 2026-10-24, 14,560 deal rows, 162 MEs (7s)
+[2026-10-26 14:32:36]    [14:32:21] Deals dump runs to 2026-10-24; the rolling table added 0 deal rows (nothing newer)
+[2026-10-26 14:32:36]    [14:32:22] Deals for 47,876 businesses: 12,357 deal rows since 2026-03-30 (115s). Saved cache\deals.pkl
+[2026-10-26 14:32:36]    [14:32:36] HR for 1,323 MEs: 1,260 with days present, 1,322 with joining dates (14s). Saved cache\hr.pkl
+[2026-10-26 14:32:36]    ok (131s)
+[2026-10-26 14:32:36] -- build_review.py --full
+[2026-10-26 14:32:48]    [14:32:39] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,152 Sunday appointments reported on the Saturday before
+[2026-10-26 14:32:48]    [14:32:43] Deals from the deals table: 11,809 appointments converted (the appointment table marks 11,999); 4 marked not deal there, 194 marked deal there but their business's deal went to another appointment
+[2026-10-26 14:32:48]    [14:32:44] Deals closed (Sales MIS rule): 11,784.96 from 11,856 deal rows; after 2026-10-24 from the Dealclosed appointments
+[2026-10-26 14:32:48]    [14:32:45] 'Not available' appointments with the 30 days over: 7,264; customer attended within 30 days: 235
+[2026-10-26 14:32:48]    [14:32:46] Record checks since 1 April: pending 1,956, no_booking 3,328, deal_before_booked 256, na_early 274, same_day 337
+[2026-10-26 14:32:48]    [14:32:46] Not counted as given: 5,643 (Not Available (Online) 4,215, TME Cancelled 385, Call Back 255, Fake Appt 234, Bounced Collection 201, Appointment Refixed 124)
+[2026-10-26 14:32:48]    [14:32:46] HR: 1,313 of 1,313 MEs with a joining date
+[2026-10-26 14:32:48]    [14:32:46] Appointments 48,180 (left out: 0); attended 37,756; deals closed 11,784.96 (11,809 appointments with disposition Dealclosed)
+[2026-10-26 14:32:48]    [14:32:47] Data: 5.5 MB; 1,313 MEs, 995 TMEs
+[2026-10-26 14:32:48]    [14:32:47] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.0 MB, built from the design files)
+[2026-10-26 14:32:48]    ok (12s)
+[2026-10-26 14:32:48] ===== done in 167s =====
+[2026-10-27 08:00:02] ===== ME dashboards refresh =====
+[2026-10-27 08:00:02] -- fetch_data.py
+[2026-10-27 08:00:26]    [08:00:23] mumbai: 48,193 appointments given and 5,644 not counted, 2026-04-01 to 2026-10-25 (13s)
+[2026-10-27 08:00:26]    [08:00:26] Saved cache\raw.pkl
+[2026-10-27 08:00:26]    ok (24s)
+[2026-10-27 08:00:26] -- fetch_api.py
+[2026-10-27 08:00:59]    [08:00:30] Appointment table runs to 2026-10-25; building 2026-10-26 to 2026-10-26 from the allocation API (cut-off 2026-10-27 00:00:00)
+[2026-10-27 08:00:59]    [08:00:33]   mumbai partition: 56,438 records since 2026-09-11 (3s)
+[2026-10-27 08:00:59]    [08:00:56]   remote: 473 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   delhi: 78 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   bangalore: 34 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   pune: 47 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   ahmedabad: 19 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   chennai: 8 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   hyderabad: 23 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:56]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-27 08:00:59]    [08:00:58]   deals tables run to 2026-10-24: deals for 2026-10-26 from the system's Dealclosed records in the allocation API (103) until they arrive
+[2026-10-27 08:00:59]    [08:00:58]   3 Dealclosed records of Mumbai MEs found in other cities' partitions
+[2026-10-27 08:00:59]    [08:00:59] Provisional appointments given: 2026-10-26 294 (425 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-27 08:00:59]    ok (33s)
+[2026-10-27 08:00:59] -- fetch_deals.py
+[2026-10-27 08:03:27]    [08:03:11] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,784.96 since 2026-04-01 to 2026-10-24, 14,560 deal rows, 162 MEs (7s)
+[2026-10-27 08:03:27]    [08:03:11] Deals dump runs to 2026-10-24; the rolling table added 0 deal rows (nothing newer)
+[2026-10-27 08:03:27]    [08:03:11] Deals for 48,188 businesses: 12,359 deal rows since 2026-03-30 (128s). Saved cache\deals.pkl
+[2026-10-27 08:03:27]    [08:03:26] HR for 1,323 MEs: 1,260 with days present, 1,322 with joining dates (15s). Saved cache\hr.pkl
+[2026-10-27 08:03:27]    ok (147s)
+[2026-10-27 08:03:27] -- build_review.py --full
+[2026-10-27 08:03:39]    [08:03:29] 3 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-27 08:03:39]    [08:03:30] 19 earlier rows of this month replaced by a newer appointment of the same business; 2 new visits left out (the business already has a deal this month)
+[2026-10-27 08:03:40]    [08:03:30] Provisional days from the allocation API: 2026-10-26 (423 rows, pulled 27 Oct 08:00)
+[2026-10-27 08:03:40]    [08:03:30] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,150 Sunday appointments reported on the Saturday before
+[2026-10-27 08:03:40]    [08:03:34] Deals from the deals table: 11,809 appointments converted (the appointment table marks 12,059); 4 marked not deal there, 194 marked deal there but their business's deal went to another appointment
+[2026-10-27 08:03:40]    [08:03:35] Deals closed (Sales MIS rule): 11,843.96 from 11,915 deal rows; after 2026-10-24 from the Dealclosed appointments
+[2026-10-27 08:03:40]    [08:03:35] 'Not available' appointments with the 30 days over: 7,374; customer attended within 30 days: 240
+[2026-10-27 08:03:40]    [08:03:36] Record checks since 1 April: pending 1,970, no_booking 3,348, deal_before_booked 256, na_early 274, same_day 337
+[2026-10-27 08:03:40]    [08:03:37] Not counted as given: 5,774 (Not Available (Online) 4,244, TME Cancelled 469, Call Back 255, Fake Appt 236, Bounced Collection 202, Appointment Refixed 135)
+[2026-10-27 08:03:40]    [08:03:37] HR: 1,313 of 1,319 MEs with a joining date
+[2026-10-27 08:03:40]    [08:03:37] Appointments 48,450 (left out: 0); attended 37,972; deals closed 11,843.96 (11,869 appointments with disposition Dealclosed)
+[2026-10-27 08:03:40]    [08:03:38] Data: 5.5 MB; 1,319 MEs, 996 TMEs
+[2026-10-27 08:03:40]    [08:03:39] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.0 MB, built from the design files)
+[2026-10-27 08:03:40]    ok (13s)
+[2026-10-27 08:03:40] ===== done in 217s =====

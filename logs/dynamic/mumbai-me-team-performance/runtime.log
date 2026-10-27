@@ -1,0 +1,122 @@
+
+[2026-10-13T20:32:01] Running data generation (main.py)...
+[2026-10-13 20:32:02] ===== ME dashboards refresh =====
+[2026-10-13 20:32:02] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-13T20:32:02] Data generation returned code 2.
+
+[2026-10-14T09:43:59] Running data generation (main.py)...
+[2026-10-14 09:44:00] ===== ME dashboards refresh =====
+[2026-10-14 09:44:00] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-14T09:44:00] Data generation returned code 2.
+
+[2026-10-14T14:20:23] Running data generation (main.py)...
+[2026-10-14 14:20:23] ===== ME dashboards refresh =====
+[2026-10-14 14:20:24] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-14T14:20:24] Data generation returned code 2.
+
+[2026-10-14T15:40:51] Running data generation (main.py)...
+[2026-10-14 15:40:51] ===== ME dashboards refresh =====
+[2026-10-14 15:40:51] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-14T15:40:51] Data generation returned code 2.
+
+[2026-10-15T09:10:19] Running data generation (main.py)...
+[2026-10-15 09:10:20] ===== ME dashboards refresh =====
+[2026-10-15 09:10:20] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-15T09:10:20] Data generation returned code 2.
+
+[2026-10-15T16:37:32] Running data generation (main.py)...
+[2026-10-15 16:37:33] ===== ME dashboards refresh =====
+[2026-10-15 16:37:33] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-15T16:37:33] Data generation returned code 2.
+
+[2026-10-15T17:22:37] Running data generation (main.py)...
+[2026-10-15 17:22:38] ===== ME dashboards refresh =====
+[2026-10-15 17:22:38] -- fetch_data.py
+[2026-10-15 17:22:56]    [17:22:53] mumbai: 45,981 appointments given and 5,416 not counted, 2026-04-01 to 2026-10-14 (14s)
+[2026-10-15 17:22:56]    [17:22:56] Saved cache\raw.pkl
+[2026-10-15 17:22:56]    ok (19s)
+[2026-10-15 17:22:56] -- fetch_api.py
+[2026-10-15 17:22:59]    [17:22:59] The appointment table already runs to 2026-10-14: no provisional days (removed any earlier ones).
+[2026-10-15 17:22:59]    ok (2s)
+[2026-10-15 17:22:59] -- fetch_deals.py
+[2026-10-15 17:25:14]    [17:24:58] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,152.96 since 2026-04-01 to 2026-10-14, 13,852 deal rows, 158 MEs (7s)
+[2026-10-15 17:25:14]    [17:24:58] Deals dump runs to 2026-10-14; the rolling table added 0 deal rows (nothing newer)
+[2026-10-15 17:25:14]    [17:24:58] Deals for 45,853 businesses: 11,722 deal rows since 2026-03-30 (117s). Saved cache\deals.pkl
+[2026-10-15 17:25:14]    [17:25:14] HR for 1,302 MEs: 1,243 with days present, 1,301 with joining dates (16s). Saved cache\hr.pkl
+[2026-10-15 17:25:14]    ok (136s)
+[2026-10-15 17:25:14] -- build_review.py --full
+[2026-10-15 17:25:24]    [17:25:17] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,054 Sunday appointments reported on the Saturday before
+[2026-10-15 17:25:24]    [17:25:21] Deals from the deals table: 11,225 appointments converted (the appointment table marks 11,396); 4 marked not deal there, 175 marked deal there but their business's deal went to another appointment
+[2026-10-15 17:25:24]    [17:25:22] Deals closed (Sales MIS rule): 11,152.96 from 11,222 deal rows
+[2026-10-15 17:25:24]    [17:25:22] 'Not available' appointments with the 30 days over: 6,821; customer attended within 30 days: 221
+[2026-10-15 17:25:24]    [17:25:23] Record checks since 1 April: pending 1,804, no_booking 3,171, deal_before_booked 239, na_early 262, same_day 311
+[2026-10-15 17:25:24]    [17:25:23] Not counted as given: 5,415 (Not Available (Online) 4,048, TME Cancelled 372, Call Back 255, Fake Appt 202, Bounced Collection 199, Appointment Refixed 121)
+[2026-10-15 17:25:24]    [17:25:23] HR: 1,292 of 1,292 MEs with a joining date
+[2026-10-15 17:25:25]    [17:25:24] Appointments 45,969 (left out: 0); attended 36,027; deals closed 11,152.96 (11,225 appointments with disposition Dealclosed)
+[2026-10-15 17:25:25]    [17:25:24] Data: 4.9 MB; 1,292 MEs, 981 TMEs
+[2026-10-15 17:25:25]    [17:25:24] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.3 MB, built from the design files)
+[2026-10-15 17:25:25]    ok (10s)
+[2026-10-15 17:25:25] ===== done in 167s =====
+[2026-10-15T17:25:25] Data generation completed successfully.
+
+[2026-10-16T12:48:38] Running data generation (main.py)...
+[2026-10-16 12:48:39] ===== ME dashboards refresh =====
+[2026-10-16 12:48:39] -- fetch_data.py
+[2026-10-16 12:49:05]    [12:49:01] mumbai: 45,981 appointments given and 5,416 not counted, 2026-04-01 to 2026-10-14 (20s)
+[2026-10-16 12:49:05]    [12:49:04] Saved cache\raw.pkl
+[2026-10-16 12:49:05]    ok (26s)
+[2026-10-16 12:49:05] -- fetch_api.py
+[2026-10-16 12:49:47]    [12:49:11] Appointment table runs to 2026-10-14; building 2026-10-15 to 2026-10-15 from the allocation API (cut-off 2026-10-16 00:00:00)
+[2026-10-16 12:49:47]    [12:49:16]   mumbai partition: 43,743 records since 2026-09-11 (5s)
+[2026-10-16 12:49:47]    [12:49:43]   remote: 312 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   delhi: 52 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   bangalore: 24 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   pune: 26 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   ahmedabad: 12 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   chennai: 6 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   hyderabad: 12 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:43]   kolkata: 6 appointments by Mumbai TMEs
+[2026-10-16 12:49:47]    [12:49:46] Provisional appointments given: 2026-10-15 310 (428 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-10-16 12:49:47]    ok (42s)
+[2026-10-16 12:49:47] -- fetch_deals.py
+[2026-10-16 12:51:57]    [12:51:41] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 11,235.96 since 2026-04-01 to 2026-10-15, 13,949 deal rows, 158 MEs (7s)
+[2026-10-16 12:51:57]    [12:51:41] Deals dump runs to 2026-10-15; the rolling table added 0 deal rows (nothing newer)
+[2026-10-16 12:51:57]    [12:51:41] Deals for 46,186 businesses: 11,801 deal rows since 2026-03-30 (110s). Saved cache\deals.pkl
+[2026-10-16 12:51:57]    [12:51:57] HR for 1,302 MEs: 1,243 with days present, 1,301 with joining dates (16s). Saved cache\hr.pkl
+[2026-10-16 12:51:57]    ok (130s)
+[2026-10-16 12:51:57] -- build_review.py --full
+[2026-10-16 12:52:10]    [12:52:00] 3 earlier appointment rows moved to their deal day (deals closed later, as the table does)
+[2026-10-16 12:52:10]    [12:52:00] Provisional days from the allocation API: 2026-10-15 (428 rows, pulled 16 Oct 12:49)
+[2026-10-16 12:52:10]    [12:52:01] Sales MIS rules: 13 rows of Corporate / Sales (Training) MEs left out; 1,054 Sunday appointments reported on the Saturday before
+[2026-10-16 12:52:10]    [12:52:05] Deals from the deals table: 11,299 appointments converted (the appointment table marks 11,473); 4 marked not deal there, 178 marked deal there but their business's deal went to another appointment
+[2026-10-16 12:52:10]    [12:52:06] Deals closed (Sales MIS rule): 11,235.96 from 11,306 deal rows
+[2026-10-16 12:52:10]    [12:52:07] 'Not available' appointments with the 30 days over: 6,831; customer attended within 30 days: 221
+[2026-10-16 12:52:10]    [12:52:08] Record checks since 1 April: pending 1,807, no_booking 3,193, deal_before_booked 239, na_early 262, same_day 313
+[2026-10-16 12:52:10]    [12:52:08] Not counted as given: 5,533 (Not Available (Online) 4,075, TME Cancelled 452, Call Back 255, Fake Appt 205, Bounced Collection 200, Appointment Refixed 126)
+[2026-10-16 12:52:10]    [12:52:09] HR: 1,292 of 1,294 MEs with a joining date
+[2026-10-16 12:52:10]    [12:52:09] Appointments 46,276 (left out: 0); attended 36,265; deals closed 11,235.96 (11,299 appointments with disposition Dealclosed)
+[2026-10-16 12:52:10]    [12:52:09] Data: 4.9 MB; 1,294 MEs, 982 TMEs
+[2026-10-16 12:52:10]    [12:52:10] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (5.3 MB, built from the design files)
+[2026-10-16 12:52:10]    ok (13s)
+[2026-10-16 12:52:10] ===== done in 212s =====
+[2026-10-16T12:52:11] Data generation completed successfully.
+
+[2026-10-16T13:08:19] Running data generation (main.py)...
+[2026-10-16 13:08:20] ===== ME dashboards refresh =====
+[2026-10-16 13:08:20] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-16T13:08:20] Data generation returned code 2.
+
+[2026-10-16T15:45:53] Running data generation (main.py)...
+[2026-10-16 15:45:54] ===== ME dashboards refresh =====
+[2026-10-16 15:45:54] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-16T15:45:54] Data generation returned code 2.
+
+[2026-10-16T19:42:58] Running data generation (main.py)...
+[2026-10-16 19:42:59] ===== ME dashboards refresh =====
+[2026-10-16 19:42:59] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-16T19:42:59] Data generation returned code 2.
+
+[2026-10-19T11:38:29] Running data generation (main.py)...
+[2026-10-19 11:38:29] ===== ME dashboards refresh =====
+[2026-10-19 11:38:29] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-10-19T11:38:29] Data generation returned code 2.

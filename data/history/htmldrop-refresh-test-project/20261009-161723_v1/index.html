@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML Drop Refresh Test</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:760px;margin:48px auto;padding:0 20px;color:#20242a}
+.card{border:1px solid #ddd;border-radius:14px;padding:22px;margin-top:18px}
+button{padding:10px 14px;border:0;border-radius:8px;background:#1f6feb;color:white;cursor:pointer}
+pre{background:#f6f8fa;padding:14px;border-radius:8px;overflow:auto}
+.muted{color:#666}
+</style>
+</head>
+<body>
+<h1>HTML Drop — Refresh Test Project</h1>
+<p class="muted">Use this project to test the scheduled refresh flow. It only creates local demo JSON and logs.</p>
+<div class="card">
+  <h2>Latest data snapshot</h2>
+  <button id="refresh">Reload snapshot</button>
+  <pre id="output">Loading…</pre>
+</div>
+<script>
+async function load(){
+  const out=document.getElementById("output");
+  try{
+    const r=await fetch("/api/data",{cache:"no-store"});
+    const data=await r.json();
+    out.textContent=JSON.stringify(data,null,2);
+  }catch(e){out.textContent="Could not load data: "+e.message;}
+}
+document.getElementById("refresh").addEventListener("click",load);
+load();
+</script>
+</body>
+</html>

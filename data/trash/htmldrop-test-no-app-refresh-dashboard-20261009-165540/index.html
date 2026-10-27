@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTML Drop — No app.py Test</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 850px; margin: 3rem auto; padding: 0 1rem; color: #222; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 1.25rem; margin: 1rem 0; }
+    code { background: #f3f3f3; padding: .15rem .35rem; border-radius: 4px; }
+    button { padding: .6rem .9rem; border-radius: 8px; border: 1px solid #aaa; cursor: pointer; }
+    #result { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>HTML Drop: no <code>app.py</code> test</h1>
+  <p>This is a static HTML dashboard bundled with <code>refresh_dashboard.py</code>. It intentionally has no <code>app.py</code>.</p>
+  <div class="card">
+    <h2>Refresh status</h2>
+    <p id="status">Last refresh: not yet shown in this browser.</p>
+    <p>This page is a static demonstration. The refresh script writes a status snapshot to <code>data/refresh_status.json</code> on the server; this page will show the latest snapshot if HTML Drop serves that JSON file.</p>
+    <button onclick="loadStatus()">Reload refresh status</button>
+    <pre id="result">Waiting for status…</pre>
+  </div>
+  <div class="card">
+    <h2>What this test validates</h2>
+    <ul>
+      <li>ZIP contains an <code>index.html</code>.</li>
+      <li>ZIP contains <code>refresh_dashboard.py</code> at the project root.</li>
+      <li>ZIP does not contain <code>app.py</code>.</li>
+      <li>HTML Drop should launch the static page without requiring <code>app.py</code>.</li>
+      <li>Refresh Now / Task Scheduler should execute the refresh script if the host supports it.</li>
+    </ul>
+  </div>
+<script>
+async function loadStatus() {
+  const result = document.getElementById('result');
+  const status = document.getElementById('status');
+  try {
+    const response = await fetch('./data/refresh_status.json', {cache: 'no-store'});
+    if (!response.ok) throw new Error('No refresh status file yet (HTTP ' + response.status + ')');
+    const data = await response.json();
+    status.textContent = 'Last refresh: ' + (data.refreshed_at || 'unknown');
+    result.textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    result.textContent = e.message + '\nRun Refresh now, then reload this status.';
+  }
+}
+loadStatus();
+</script>
+</body>
+</html>

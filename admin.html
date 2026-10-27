@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Drop Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #f4efe6; --paper: #fbf8f2; --field: #ffffff; --tint: #efe9dd;
+    --ink: #1f1c17; --ink-2: #3d372e; --muted: #5a5347; --faint: #6b6457;
+    --line: #d9d0bf; --line-2: #e6dfd1; --edge: #c9bfab;
+    --accent: #1f5f4a; --accent-hover: #15463a; --accent-soft: #eef3ef; --on-accent: #ffffff;
+    --err: #9a2a1e; --err-soft: #fbece8; --new: #9a4a0e;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --sans: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171512; --paper: #1f1c18; --field: #25221d; --tint: #2a261f;
+      --ink: #f1ebe0; --ink-2: #ddd5c6; --muted: #b8ae9c; --faint: #a39986;
+      --line: #3a342b; --line-2: #332e26; --edge: #4a4337;
+      --accent: #5fb393; --accent-hover: #7cc7a9; --accent-soft: #1f2b25; --on-accent: #0f1a15;
+      --err: #f0a293; --err-soft: #3a211c; --new: #f2b37a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171512; --paper: #1f1c18; --field: #25221d; --tint: #2a261f;
+    --ink: #f1ebe0; --ink-2: #ddd5c6; --muted: #b8ae9c; --faint: #a39986;
+    --line: #3a342b; --line-2: #332e26; --edge: #4a4337;
+    --accent: #5fb393; --accent-hover: #7cc7a9; --accent-soft: #1f2b25; --on-accent: #0f1a15;
+    --err: #f0a293; --err-soft: #3a211c; --new: #f2b37a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14.5px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); } a:hover { color: var(--accent-hover); }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px 64px; }
+
+  header { height: 76px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+  .mark { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; }
+  .brand { font-family: var(--serif); font-weight: 600; font-size: 21px; letter-spacing: -.3px; }
+  .brand span { font-family: var(--sans); font-weight: 500; font-size: 14px; color: var(--faint); margin-left: 8px; letter-spacing: 0; }
+  header .sp { flex: 1; }
+  .linkbtn { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--ink);
+             font-weight: 500; font-size: 14.5px; border-radius: 6px; text-decoration: none; }
+  .linkbtn:hover { background: var(--tint); color: var(--ink); }
+
+  h1 { margin: 40px 0 6px; font-family: var(--serif); font-weight: 500; font-size: 44px; letter-spacing: -1.2px; line-height: 1.05; }
+  .sub { margin: 0 0 24px; color: var(--muted); max-width: 720px; }
+
+  .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .tabs { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--edge); border-radius: 6px; background: var(--paper); }
+  .tabs button { min-height: 38px; padding: 0 16px; border: 0; border-radius: 4px; background: none; font-weight: 500; color: var(--muted); }
+  .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; font-size: 13.5px; color: var(--muted); }
+  .chip[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); font-weight: 600; }
+  .bar .sp { flex: 1; }
+  .search { width: 260px; height: 40px; padding: 0 12px; border: 1px solid var(--edge); border-radius: 6px; background: var(--paper); }
+
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 12px 14px; border-top: 1px solid var(--line-2); vertical-align: middle; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 600; border-top: 0; background: var(--tint); }
+  td a { font-weight: 600; text-decoration: none; } td a:hover { text-decoration: underline; }
+  .meta { font-size: 12.5px; color: var(--faint); }
+  select, .input { height: 40px; padding: 0 10px; border: 1px solid var(--edge); border-radius: 6px; background: var(--field); width: 100%; }
+  .badge { display: inline-flex; align-items: center; min-height: 24px; margin-left: 8px; padding: 0 8px; border-radius: 999px;
+           border: 1px solid currentColor; background: none; color: var(--new); font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+  .role { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--tint); color: var(--ink-2); }
+  .role.admin { background: var(--accent-soft); color: var(--accent); }
+  .btn { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line);
+         background: transparent; font-size: 13.5px; font-weight: 500; white-space: nowrap; }
+  .btn:hover { background: var(--tint); }
+  .btn.danger:hover { color: var(--err); border-color: var(--err); background: var(--err-soft); }
+  .acts { display: flex; gap: 6px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+  .saved { font-size: 12.5px; }
+  .saved.ok { color: var(--accent); } .saved.err { color: var(--err); }
+  .empty { padding: 32px; text-align: center; color: var(--faint); }
+  .gate { max-width: 520px; margin: 64px auto; padding: 32px; text-align: center; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+  .gate h2 { margin: 0 0 8px; font-family: var(--serif); font-weight: 500; font-size: 28px; }
+  .gate p { margin: 0 0 18px; color: var(--muted); }
+  .primary { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 6px; background: var(--accent);
+             color: var(--on-accent); font-weight: 600; text-decoration: none; }
+  .primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) {
+    .wrap { padding: 0 16px 40px; }
+    h1 { font-size: 34px; margin-top: 28px; }
+    .search { width: 100%; }
+    thead { display: none; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tr { border-top: 1px solid var(--line); padding: 10px 0; }
+    td { border: 0; padding: 4px 14px; }
+    td[data-l]::before { content: attr(data-l); display: block; font-size: 12px; color: var(--faint); margin-bottom: 2px; }
+    .acts { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M6 11l6 6 6-6"/><path d="M5 20h14"/></svg>
+    </div>
+    <div class="brand">HTML Drop<span>Admin</span></div>
+    <div class="sp"></div>
+    <a class="linkbtn" href="/">Upload page</a>
+    <button class="linkbtn" id="outBtn" hidden>Log out</button>
+  </header>
+
+  <div class="gate" id="gate" hidden>
+    <h2 id="gateTitle">Admins only</h2>
+    <p id="gateText">Log in with an admin account on the upload page, then come back here.</p>
+    <a class="primary" href="/">Go to the upload page</a>
+  </div>
+
+  <main id="panel" hidden>
+    <h1>Admin</h1>
+    <p class="sub">Every page and every account. Uploaders choose where their page appears on the master dashboard,
+       and you can change it here. <b>NEW</b> marks uploads you haven't checked yet.</p>
+
+    <div class="bar">
+      <div class="tabs" id="tabs">
+        <button type="button" data-tab="pages" aria-pressed="true">Pages</button>
+        <button type="button" data-tab="users" aria-pressed="false">Users</button>
+      </div>
+      <div class="chips" id="filters">
+        <button type="button" class="chip" data-f="all">All</button>
+        <button type="button" class="chip" data-f="new">New</button>
+        <button type="button" class="chip" data-f="on">On master dashboard</button>
+        <button type="button" class="chip" data-f="off">Not shown</button>
+      </div>
+      <div class="sp"></div>
+      <input type="search" class="search" id="search" placeholder="Search" aria-label="Search">
+    </div>
+
+    <section class="card" id="pagesCard">
+      <table>
+        <thead><tr><th>Page</th><th style="width: 200px">Master dashboard</th><th style="width: 170px">Category</th>
+                   <th style="width: 220px">Title on dashboard</th><th style="width: 150px"></th></tr></thead>
+        <tbody id="pageRows"></tbody>
+      </table>
+    </section>
+
+    <section class="card" id="usersCard" hidden>
+      <table>
+        <thead><tr><th>User</th><th>Role</th><th>Pages</th><th>Joined</th><th></th></tr></thead>
+        <tbody id="userRows"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let me = null, sites = [], users = [], cats = {}, tab = "pages", filter = "all";
+
+// GET when body is undefined; otherwise POST with the X-HD header the server requires.
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? {} : {
+    method: "POST", headers: { "Content-Type": "application/json", "X-HD": "1" }, body: JSON.stringify(body),
+  });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(res.error || "Request failed (" + r.status + ")");
+  return res;
+}
+
+async function boot() {
+  try { me = (await api("/api/me")).user; } catch {}
+  if (!me || me.role !== "admin") {
+    $("gate").hidden = false;
+    if (me) {
+      $("gateTitle").textContent = "You're not an admin";
+      $("gateText").textContent = `You're logged in as ${me.name}. Ask an admin to give your account admin rights.`;
+    }
+    return;
+  }
+  $("outBtn").hidden = false;
+  $("panel").hidden = false;
+  await Promise.all([loadPages(), loadUsers()]);
+  if (sites.some(s => !s.hub.reviewed)) filter = "new";
+  render();
+}
+$("outBtn").onclick = async () => { try { await api("/api/logout", {}); } catch {} location.href = "/"; };
+
+async function loadPages() { const r = await api("/api/admin/sites"); sites = r.sites; cats = r.categories; }
+async function loadUsers() { users = await api("/api/admin/users"); }
+
+$("tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) { tab = b.dataset.tab; render(); } });
+$("filters").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if (b) { filter = b.dataset.f; render(); } });
+$("search").addEventListener("input", () => render());
+
+const PLACES = { off: "Not shown", general: "General", all: "All dashboards only" };
+function placeOptions(h) {
+  const cur = h.show ? h.scope : "off";
+  return Object.entries(PLACES).map(([k, v]) => `<option value="${k}" ${k === cur ? "selected" : ""}>${v}</option>`).join("");
+}
+function catOptions(sel) {
+  const keys = Object.keys(cats);
+  if (sel && !keys.includes(sel)) keys.push(sel);
+  return `<option value="">Other</option>` +
+    keys.map(k => `<option value="${esc(k)}" ${k === sel ? "selected" : ""}>${esc(cats[k] || k)}</option>`).join("");
+}
+const when = iso => new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+
+function render() {
+  document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tab === tab));
+  document.querySelectorAll("#filters [data-f]").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === filter));
+  $("filters").hidden = tab !== "pages";
+  $("pagesCard").hidden = tab !== "pages";
+  $("usersCard").hidden = tab !== "users";
+  const q = $("search").value.trim().toLowerCase();
+
+  if (tab === "pages") {
+    const list = sites.filter(s =>
+      (filter === "all" || (filter === "new" && !s.hub.reviewed) || (filter === "on" && s.hub.show) || (filter === "off" && !s.hub.show)) &&
+      (!q || (s.title + " " + s.slug + " " + s.owner).toLowerCase().includes(q)));
+    $("pageRows").innerHTML = list.length ? list.map(s => s.linked ? `
+      <tr data-slug="${esc(s.slug)}">
+        <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>
+            <div class="meta">${s.disabled ? "<b>Disabled</b> · " : ""}${esc(s.owner || "No owner")} · on its own server</div></td>
+        <td colspan="3" class="meta">Existing dashboard; its link and spot on the master dashboard stay as they are.
+          ${s.file ? "File: " + esc(s.file) : "Its file is found the first time an owner clicks Replace."}</td>
+        <td><div class="acts"><button class="btn danger" data-del>Delete</button></div></td>
+      </tr>` : `
+      <tr data-slug="${esc(s.slug)}">
+        <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>${s.hub.reviewed ? "" : '<button class="badge" data-seen title="Mark as checked">NEW ✓</button>'}
+            <div class="meta">${s.disabled ? "<b>Disabled</b> · " : ""}${esc(s.owner || "No owner")} · v${s.version} · ${when(s.updated)}</div></td>
+        <td data-l="Master dashboard"><select data-k="placement" aria-label="Master dashboard">${placeOptions(s.hub)}</select></td>
+        <td data-l="Category"><select data-k="category" aria-label="Category">${catOptions(s.hub.category)}</select></td>
+        <td data-l="Title on dashboard"><input class="input" data-k="title" value="${esc(s.hub.title)}" placeholder="${esc(s.title)}" aria-label="Title on dashboard"></td>
+        <td><div class="acts"><span class="saved" data-saved></span><button class="btn danger" data-del>Delete</button></div></td>
+      </tr>`).join("")
+      : `<tr><td colspan="5" class="empty">${sites.length ? "Nothing in this view." : "No pages uploaded yet."}</td></tr>`;
+  } else {
+    const list = users.filter(u => !q || (u.name + " " + u.username).toLowerCase().includes(q));
+    $("userRows").innerHTML = list.map(u => `
+      <tr data-user="${esc(u.username)}">
+        <td><b>${esc(u.name)}</b>${u.username === me.username ? ' <span class="meta">(you)</span>' : ""}</td>
+        <td data-l="Role"><span class="role ${u.role}">${u.role === "admin" ? "Admin" : "User"}</span></td>
+        <td data-l="Pages">${u.pages}</td>
+        <td data-l="Joined">${when(u.created)}</td>
+        <td><div class="acts">
+          <button class="btn" data-act="reset">Reset PIN</button>
+          <button class="btn" data-act="role">${u.role === "admin" ? "Make user" : "Make admin"}</button>
+          ${u.username === me.username ? "" : '<button class="btn danger" data-act="delete">Remove</button>'}
+        </div></td>
+      </tr>`).join("") || `<tr><td colspan="5" class="empty">No matches.</td></tr>`;
+  }
+}
+
+async function savePage(tr) {
+  const slug = tr.dataset.slug, get = k => tr.querySelector(`[data-k="${k}"]`);
+  const out = tr.querySelector("[data-saved]");
+  out.className = "saved"; out.textContent = "Saving…";
+  try {
+    const hub = await api("/api/admin/hub?slug=" + encodeURIComponent(slug),
+      { placement: get("placement").value, category: get("category").value, title: get("title").value });
+    sites.find(s => s.slug === slug).hub = hub;
+    const b = tr.querySelector(".badge"); if (b) b.remove();
+    out.className = "saved ok"; out.textContent = "Saved";
+  } catch (e) { out.className = "saved err"; out.textContent = e.message; }
+}
+// selects save at once; the title field saves when you leave it
+$("pageRows").addEventListener("change", e => { const tr = e.target.closest("tr[data-slug]"); if (tr) savePage(tr); });
+$("pageRows").addEventListener("click", async e => {
+  const tr = e.target.closest("tr[data-slug]"); if (!tr) return;
+  if (e.target.closest("[data-seen]")) return savePage(tr);
+  if (e.target.closest("[data-del]")) {
+    const s = sites.find(x => x.slug === tr.dataset.slug);
+    if (!confirm(`Delete “${s.title}” by ${s.owner || "no owner"} for good? Its link will stop working and it leaves the master dashboard. A copy stays in data\\trash.`)) return;
+    try { await api("/api/delete?slug=" + encodeURIComponent(s.slug), {}); await Promise.all([loadPages(), loadUsers()]); render(); }
+    catch (err) { alert(err.message); }
+  }
+});
+
+$("userRows").addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const username = b.closest("tr").dataset.user, u = users.find(x => x.username === username);
+  let value = "";
+  if (b.dataset.act === "reset") {
+    value = prompt(`New PIN for ${u.name} (4+ characters). Tell them; they can change it after logging in.`);
+    if (!value) return;
+  } else if (b.dataset.act === "role") {
+    value = u.role === "admin" ? "user" : "admin";
+    if (!confirm(value === "admin"
+      ? `Give ${u.name} admin rights? They'll be able to change or delete any page and any account.`
+      : `Remove admin rights from ${u.name}?`)) return;
+  } else if (!confirm(`Remove the user ${u.name}? Their ${u.pages} page(s) stay online, but only admins can change them.`)) return;
+  try {
+    await api("/api/admin/user", { action: b.dataset.act, username, value });
+    if (b.dataset.act === "reset") alert("PIN reset.");
+    await loadUsers(); render();
+  } catch (err) { alert(err.message); }
+});
+
+boot();
+</script>
+</body>
+</html>

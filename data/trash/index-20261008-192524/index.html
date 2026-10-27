@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytics Hub</title>
+<style>
+  :root{
+    --bg:#f3f4f6; --surface:#ffffff; --surface-2:#f6f7f9; --surface-3:#eceef2;
+    --line:#e4e6ea; --line-2:#d0d4db;
+    --ink:#15181e; --ink-2:#4a5060; --ink-3:#7b8290; --ink-4:#aeb4bf;
+    --accent:#4f5bd5; --accent-ink:#fff; --accent-soft:#eef0fb;
+    --good:#1f9a67; --bad:#d1483e; --warn:#c08a1a;
+    --side:#111318; --side-2:#181b22; --side-ink:#e9ebf0; --side-ink-2:rgba(233,235,240,.62); --side-ink-3:rgba(233,235,240,.38);
+    --side-line:rgba(255,255,255,.08); --side-glass:rgba(255,255,255,.06); --side-glass-2:rgba(255,255,255,.1);
+    --r:12px; --r-sm:8px;
+    --shadow:0 1px 2px rgba(15,18,25,.06), 0 8px 24px -18px rgba(15,18,25,.3);
+    --shadow-2:0 2px 4px rgba(15,18,25,.06), 0 20px 40px -20px rgba(15,18,25,.35);
+    --font:"Inter","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    --mono:"Cascadia Code",ui-monospace,Consolas,monospace;
+    --sbw:250px; --side-accent:#8b95ee;
+  }
+  :root[data-theme="dark"]{
+    --bg:#101217; --surface:#171a21; --surface-2:#1d212a; --surface-3:#252a35;
+    --line:#252a34; --line-2:#343a47;
+    --ink:#e8eaef; --ink-2:#aeb4c0; --ink-3:#767d8b; --ink-4:#4a5060;
+    --accent:#8b95ee; --accent-ink:#0f1116; --accent-soft:#232744;
+    --good:#41b784; --bad:#e26b62; --warn:#d9a648;
+    --side:#0b0d11; --side-2:#111318;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.8);
+    --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 24px 48px -22px rgba(0,0,0,.9);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;font-size:14px;display:flex}
+  a{color:inherit;text-decoration:none}
+  button,input,select{font:inherit;color:inherit}
+  button{cursor:pointer}
+  kbd{font-family:var(--font);font-size:10.5px;padding:1px 5px;border-radius:4px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink-3);line-height:1.4}
+  .spacer{flex:1 1 auto}
+
+  /* ================= sidebar ================= */
+  .side{
+    width:var(--sbw);flex:0 0 auto;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;
+    background:linear-gradient(180deg,var(--side),var(--side-2));color:var(--side-ink);
+    border-right:1px solid var(--side-line);display:flex;flex-direction:column;padding:16px 12px 14px;gap:14px;
+  }
+  .side::-webkit-scrollbar{width:8px}
+  .side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:99px;border:2px solid transparent;background-clip:content-box}
+  .side::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2);background-clip:content-box}
+
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px;font-weight:600;font-size:14.5px;border-bottom:1px solid var(--side-line)}
+  .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(160deg,color-mix(in srgb,var(--side-accent) 80%,#fff),var(--side-accent));display:grid;place-items:center;
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 6px 16px -8px var(--side-accent);flex:0 0 auto}
+  .mark:after{content:"";width:10px;height:10px;border-radius:3px;background:#fff}
+
+  .sbtn{
+    display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:9px;
+    background:var(--side-glass);border:1px solid var(--side-line);color:var(--side-ink-2);font-size:13px;text-align:left;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .sbtn:hover{background:var(--side-glass-2);border-color:rgba(255,255,255,.18);color:var(--side-ink)}
+  .sbtn svg{width:15px;height:15px;flex:0 0 auto;opacity:.8}
+  .sbtn span{flex:1}
+  .sbtn kbd{border-color:var(--side-line);background:transparent;color:var(--side-ink-3)}
+
+  .nav h4{
+    display:flex;align-items:center;gap:9px;margin:0 0 8px;padding:0 10px;
+    font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--side-ink-3);font-weight:600;
+  }
+  .nav h4:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--side-line),transparent)}
+  .nav+.nav{margin-top:4px}
+
+  .ni{
+    position:relative;display:flex;align-items:center;gap:11px;width:100%;padding:9px 10px;border-radius:9px;border:0;background:transparent;
+    color:var(--side-ink-2);font-size:13px;text-align:left;transition:background .16s,color .16s;
+  }
+  .ni:before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:0;border-radius:0 3px 3px 0;background:var(--side-accent);transition:height .2s}
+  .ni:hover{background:var(--side-glass);color:var(--side-ink)}
+  .ni svg{width:17px;height:17px;flex:0 0 auto;opacity:.7;transition:opacity .16s,color .16s}
+  .ni .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ni[aria-pressed="true"]{background:color-mix(in srgb,var(--side-accent) 20%,transparent);color:#fff;font-weight:550}
+  .ni[aria-pressed="true"]:before{height:18px}
+  .ni[aria-pressed="true"] svg{opacity:1;color:var(--side-accent)}
+
+  /* dashboard links */
+  .ni.dash{gap:12px;padding:8px 10px;font-size:12.8px}
+  .ni.dash .pulse{width:7px;height:7px;margin:0 5px;flex:0 0 auto}
+  .ni.dash .arw{width:13px;height:13px;opacity:0;margin-left:auto;transition:opacity .16s,transform .2s}
+  .ni.dash:hover .arw{opacity:.6;transform:translate(1px,-1px)}
+  .ni.dash .star{width:12px;height:12px;opacity:.85;color:var(--side-accent);margin-left:auto;flex:0 0 auto}
+  .ni.dash:hover .star{display:none}
+
+  .side .foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--side-line);display:flex;flex-direction:column;gap:9px}
+  .seg{display:flex;background:var(--side-glass);border:1px solid var(--side-line);border-radius:9px;padding:3px;gap:2px}
+  .seg button{flex:1;padding:6px 8px;border:0;border-radius:6px;background:transparent;font-size:12px;color:var(--side-ink-3);transition:background .15s,color .15s}
+  .seg button:hover{color:var(--side-ink)}
+  .seg button[aria-pressed="true"]{background:#fff;color:#111;font-weight:500}
+  .row{display:flex;gap:8px}
+  .row .sbtn{width:auto;flex:1;justify-content:center;padding:8px;white-space:nowrap}
+  .row .sbtn span{flex:0}
+  .row #theme{flex:0 0 42px}
+
+  .stat[data-s="up"] svg{color:#5fd3a5;opacity:1}
+  .stat[data-s="mixed"] svg{color:#e6bd5a;opacity:1}
+  .stat[data-s="down"] svg{color:#ef7f75;opacity:1}
+  .stat[data-s="checking"] svg{animation:spin .9s linear infinite}
+  .stat b{font-weight:600;color:var(--side-ink)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .pulse{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--ink-4);flex:0 0 auto}
+  .pulse[data-s="up"]{background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 20%,transparent)}
+  .pulse[data-s="down"]{background:var(--bad)}
+  .pulse[data-s="checking"]{animation:blink 1s ease-in-out infinite}
+  @keyframes blink{50%{opacity:.25}}
+
+  /* ================= main ================= */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{
+    position:sticky;top:0;z-index:10;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:12px 28px;
+    background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  }
+  .top .right{justify-self:end;display:flex;align-items:center;gap:10px}
+
+  .tabs{display:inline-flex;background:var(--surface-3);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+  .tabs button{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border:0;border-radius:9px;background:transparent;
+    font-size:13.5px;font-weight:500;color:var(--ink-3);transition:background .18s,color .18s,box-shadow .18s;
+  }
+  .tabs button svg{width:16px;height:16px;opacity:.75;transition:color .18s,opacity .18s}
+  .tabs button:hover{color:var(--ink)}
+  .tabs button:hover svg{opacity:1}
+  .tabs button[aria-pressed="true"]{
+    background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 88%,#fff),var(--accent));
+    color:#fff;font-weight:600;
+    box-shadow:0 1px 2px rgba(15,18,25,.12),0 6px 16px -6px color-mix(in srgb,var(--accent) 65%,transparent);
+  }
+  .tabs button[aria-pressed="true"]:hover{color:#fff}
+  .tabs button[aria-pressed="true"] svg{color:#fff;opacity:1}
+  .chips{display:none;gap:6px;flex-wrap:wrap}
+  .chip{padding:5px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line-2);font-size:12.5px;color:var(--ink-2)}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .view{display:inline-flex;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;padding:2px;gap:2px}
+  .view button{width:30px;height:26px;border:0;border-radius:6px;background:transparent;color:var(--ink-3);display:grid;place-items:center}
+  .view button[aria-pressed="true"]{background:var(--surface-3);color:var(--ink)}
+  .view svg{width:14px;height:14px}
+
+  .content{padding:24px 28px 48px;display:flex;flex-direction:column;gap:28px}
+  h2.sec{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:11.5px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  h2.sec .n{color:var(--ink-4);font-weight:500;letter-spacing:0}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+  .content[data-view="list"] .grid{grid-template-columns:1fr;gap:8px}
+
+  /* ================= card ================= */
+  .card{
+    position:relative;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);
+    display:flex;flex-direction:column;overflow:hidden;
+    transition:border-color .2s,box-shadow .25s,transform .25s cubic-bezier(.2,.8,.2,1);
+  }
+  .card:hover{border-color:var(--line-2);box-shadow:var(--shadow-2);transform:translateY(-3px)}
+  .card:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+  .card .stretch{position:absolute;inset:0;z-index:1;border-radius:inherit}
+  .card>*:not(.stretch){position:relative;z-index:2;pointer-events:none}
+  .card .acts,.card .acts *{pointer-events:auto}
+
+  /* live miniature of the dashboard */
+  .thumb{position:relative;aspect-ratio:16/9;background:var(--surface-2);border-bottom:1px solid var(--line);overflow:hidden}
+  .thumb iframe{position:absolute;left:0;top:0;width:1280px;height:720px;border:0;transform-origin:0 0;transform:scale(var(--s,.25));pointer-events:none;background:#fff;opacity:0;transition:opacity .4s}
+  .thumb iframe.ready{opacity:1}
+  .thumb .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-4);text-align:center;font-size:12px;
+    background:
+      radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 60%),
+      repeating-linear-gradient(0deg,transparent 0 23px,var(--line) 23px 24px),
+      repeating-linear-gradient(90deg,transparent 0 23px,var(--line) 23px 24px)}
+  .thumb .ph svg{width:26px;height:26px;color:var(--ink-4);margin-bottom:6px}
+  .thumb .ph .g{display:grid;place-items:center}
+  .thumb iframe.ready+.ph{display:none}
+  .thumb:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.05));pointer-events:none}
+  .thumb .badges{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 90px)}
+  .thumb .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:500;
+    background:color-mix(in srgb,var(--surface) 85%,transparent);border:1px solid var(--line);color:var(--ink-2);backdrop-filter:blur(6px)}
+  .thumb .badge.br{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+  .thumb .acts{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+  .card:hover .acts,.card:focus-within .acts,.card:has(.ib[aria-pressed="true"]) .acts{opacity:1}
+  .ib{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(6px);display:grid;place-items:center;color:var(--ink-2)}
+  .ib:hover{background:var(--surface);color:var(--ink)}
+  .ib[aria-pressed="true"]{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+  .ib svg{width:14px;height:14px}
+
+  .body{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .glyph{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto;color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line))}
+  .glyph svg{width:18px;height:18px}
+  .tt{flex:1;min-width:0}
+  .tt h3{margin:0;font-size:14.5px;font-weight:600;letter-spacing:-.2px;line-height:1.35;transition:color .15s;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+  .card:hover .tt h3{color:var(--accent)}
+  .tt .sub{display:flex;align-items:center;gap:8px;margin-top:3px;font-size:12px;color:var(--ink-3)}
+  .tt .sub .host{font-family:var(--mono);font-size:11px;color:var(--ink-4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+  .status[data-s="up"]{color:var(--good)} .status[data-s="down"]{color:var(--bad)}
+  .go{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--ink-3);border:1px solid var(--line);background:var(--surface-2);transition:all .2s;flex:0 0 auto}
+  .go svg{width:14px;height:14px;transition:transform .25s}
+  .card:hover .go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .card:hover .go svg{transform:translate(1px,-1px)}
+
+  /* list view */
+  .content[data-view="list"] .card{flex-direction:row;align-items:center}
+  .content[data-view="list"] .thumb{width:168px;aspect-ratio:16/9;border-bottom:0;border-right:1px solid var(--line);flex:0 0 auto}
+  .content[data-view="list"] .thumb .badges{display:none}
+  .content[data-view="list"] .body{flex:1}
+  .content[data-view="list"] .card:hover{transform:none}
+
+  .empty{border:1px dashed var(--line-2);border-radius:var(--r);padding:48px 20px;text-align:center;color:var(--ink-3);background:var(--surface)}
+
+  /* ================= command palette ================= */
+  .pal{position:fixed;inset:0;z-index:60;display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;background:rgba(10,12,16,.55);backdrop-filter:blur(6px)}
+  .pal.open{display:flex}
+  .pal .box{width:min(600px,100%);border-radius:var(--r);background:var(--surface);border:1px solid var(--line-2);box-shadow:0 30px 80px -20px rgba(0,0,0,.5);overflow:hidden}
+  .pal .head{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .pal .head svg{width:16px;height:16px;color:var(--ink-3)}
+  .pal input{flex:1;background:transparent;border:0;outline:0;font-size:15px;color:var(--ink)}
+  .pal input::placeholder{color:var(--ink-3)}
+  .pal .list{max-height:52vh;overflow:auto;padding:6px}
+  .pal .item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:9px;cursor:pointer}
+  .pal .item[aria-selected="true"]{background:var(--surface-2)}
+  .pal .item .g{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:0 0 auto}
+  .pal .item .g svg{width:15px;height:15px}
+  .pal .item .t{flex:1;min-width:0}
+  .pal .item .t b{display:block;font-weight:500;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pal .item .t span{display:block;font-size:11.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pal .foot{display:flex;gap:14px;padding:9px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3)}
+  .pal .none{padding:24px;text-align:center;color:var(--ink-3)}
+
+  /* ================= preview ================= */
+  .viewer{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column}
+  .viewer.open{display:flex}
+  .vbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--side);border-bottom:1px solid var(--side-line);flex:0 0 auto;color:var(--side-ink)}
+  .vbar .btn{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:8px;background:var(--side-glass);border:1px solid var(--side-line);font-size:13px;color:var(--side-ink-2)}
+  .vbar .btn:hover{background:var(--side-glass-2);color:var(--side-ink)}
+  .vbar .btn svg{width:15px;height:15px}
+  .vbar .btn.primary{background:#fff;border-color:#fff;color:#111;font-weight:500}
+  .vbar .vtitle{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px;min-width:0}
+  .vbar .vtitle span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vbar select{padding:7px 10px;border-radius:8px;background:var(--side-glass);border:1px solid var(--side-line);font-size:13px;max-width:40vw;outline:0;color:var(--side-ink)}
+  .vbar select option{color:#111;background:#fff}
+  .viewer iframe{flex:1 1 auto;width:100%;border:0;background:#fff}
+
+  @media (max-width:860px){
+    body{display:block}
+    .side{display:none}
+    .chips{display:flex}
+    .top{grid-template-columns:1fr;justify-items:center;padding:12px 16px}
+    .top .left{display:none}
+    .top .right{justify-self:center}
+    .tabs button{padding:8px 12px;font-size:13px}
+    .content{padding:16px 16px 40px}
+  }
+  @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<aside class="side">
+  <div class="brand"><div class="mark"></div><div>Analytics Hub</div></div>
+
+  <button class="sbtn" id="cmdkBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <span>Search</span><kbd>Ctrl K</kbd>
+  </button>
+
+  <div class="nav" id="catNav"><h4>Browse</h4></div>
+  <div class="nav" id="dashNav"><h4>Dashboards</h4></div>
+
+  <div class="foot">
+    <div class="seg" id="seg" title="Where a dashboard opens">
+      <button data-target="_blank">New tab</button>
+      <button data-target="_self">Same tab</button>
+    </div>
+    <div class="row">
+      <button class="sbtn stat" id="recheck" data-s="unknown" title="Check status">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+        <span><b id="kUp">0</b>/<span id="kTotal">0</span> online</span>
+      </button>
+      <button class="sbtn" id="theme" title="Light / dark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="top">
+    <div class="left"></div>
+
+    <div class="tabs" id="scopeTabs">
+      <button data-scope="general" title="Company-wide dashboards only">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M15 10h2a2 2 0 0 1 2 2v9"/><path d="M8.5 8h3M8.5 12h3M8.5 16h3"/></svg>
+        General
+      </button>
+      <button data-scope="all" title="Everything, including branch-specific dashboards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
+        All dashboards
+      </button>
+    </div>
+
+    <div class="right">
+    <div class="chips" id="chips"></div>
+    <div class="view" id="view">
+      <button data-view="grid" title="Grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></button>
+      <button data-view="list" title="List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    </div>
+    </div>
+  </header>
+
+  <div class="content" id="content" data-view="grid">
+    <section id="pinnedSec" hidden>
+      <h2 class="sec">Pinned <span class="n" id="pinN"></span></h2>
+      <div class="grid" id="pinnedGrid"></div>
+    </section>
+    <section>
+      <h2 class="sec" id="allHead"><span id="allLbl">All</span> <span class="n" id="allN"></span></h2>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>Nothing here.</div>
+    </section>
+  </div>
+</div>
+
+<div class="pal" id="pal" role="dialog" aria-modal="true" aria-label="Search dashboards">
+  <div class="box">
+    <div class="head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="palIn" placeholder="Search dashboards" autocomplete="off" spellcheck="false">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="list" id="palList" role="listbox"></div>
+    <div class="foot"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd></span><span><kbd>Enter</kbd> open</span><span><kbd>Shift</kbd><kbd>Enter</kbd> preview</span></div>
+  </div>
+</div>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Dashboard preview">
+  <div class="vbar">
+    <button class="btn" id="vback" title="Back (Esc)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+    </button>
+    <div class="vtitle" id="vtitle"><span class="t">&mdash;</span></div>
+    <span class="spacer"></span>
+    <select id="vswitch" aria-label="Switch dashboard"></select>
+    <button class="btn" id="vreload" title="Reload">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+    </button>
+    <a class="btn primary" id="vnew" target="_blank" rel="noopener">Open full page</a>
+  </div>
+  <iframe id="vframe" title="Dashboard preview" src="about:blank"></iframe>
+</div>
+
+<script>
+/* =====================================================================
+   DASHBOARD REGISTRY  —  the only part you edit when a dashboard is added.
+   Copy a line, change the fields. "category" must be a key of CATEGORIES.
+   The name shown is taken straight from the file name in the URL, so it always
+   matches the hosted dashboard. (Add `title: "..."` to a line only if you ever
+   want a different label.)
+   Add `branch: "<city>"` to anything that covers only one branch / city — those
+   are hidden under the "General" tab and appear under "All dashboards".
+
+   Pages uploaded through HTML Drop don't need a line here: tick "Show on hub"
+   at http://<HOST>:8150/admin and they are added below automatically, with the
+   category and branch chosen there.
+   ===================================================================== */
+const HOST = "172.29.65.188";
+// HTML Drop on the office PC. Add ?drop=http://localhost:8150 to the page address to try it
+// against a copy running on your own PC.
+const DROP = new URLSearchParams(location.search).get("drop") || `http://${HOST}:8150`;
+
+const DASHBOARDS = [
+  { id: "mumbai-pincode",      url: `http://${HOST}:8080/JDA_JDS_Mumbai_Pincode_Dashboard.html`,    category: "geo",    branch: "Mumbai",  tags: ["mumbai", "pincode", "jda", "jds", "city"] },
+  { id: "kolkata-pincode",     url: `http://${HOST}:8085/JDA_JDS_Kolkata_Pincode_Dashboard.html`,   category: "geo",    branch: "Kolkata", tags: ["kolkata", "pincode", "jda", "jds", "city"] },
+  { id: "headcount-tenure",    url: `http://${HOST}:8090/Employee_Headcount_Tenure_Dashboard.html`,  category: "hr",     tags: ["headcount", "tenure", "attrition", "employee", "people"] },
+  { id: "supercat-funnel",     url: `http://${HOST}:8000/Supercat-funnel-Aug26.html`,                category: "funnel", tags: ["supercat", "funnel", "sales", "conversion", "leads"] },
+  { id: "renewal-funnel-fy27", url: `http://${HOST}:8095/Renewal_funnel_Apr_Aug_fy27.html`,          category: "renew",  tags: ["renewal", "funnel", "fy27", "retention", "churn"] },
+  { id: "rv-vintage-tracker",  url: `http://${HOST}:8070/RV_Vintage_Tracker.html`,                   category: "renew",  tags: ["rv", "vintage", "tracker", "renewal", "cohort"] },
+  { id: "chennai-rv-drop",     url: `http://${HOST}:8050/Chennai_RV_drop_analysis_Aug26.html`,       category: "renew",  tags: ["chennai", "rv", "drop", "renewal", "aug26", "city"] },
+  { id: "ecs-billed-cleared",  url: `http://${HOST}:8045/ECS_billed_vs_cleared_Mar22_to_Aug26.html`, category: "ecs",    tags: ["ecs", "billed", "cleared", "collections", "payments", "mandate"] },
+  { id: "deal-retouch-timing", url: `http://${HOST}:8055/Deal_Retouch_Timing.html`,                  category: "funnel", tags: ["deal", "retouch", "timing", "follow-up", "sales", "conversion"] },
+  { id: "cos-vs-revenue",    url: `http://${HOST}:8060/Cost_vs_Sale.html`,                         category: "funnel", tags: ["cos", "revenue", "cost", "sales"] },
+  { id: "appointment-funnel",  url: `http://${HOST}:8010/appointment_funnel_dashboard.html`,         category: "funnel", title: "Appointment_funnel", tags: ["appointment", "funnel", "meeting", "booking", "sales", "conversion"] },
+  { id: "callable-representation", url: `http://${HOST}:8025/Justdial_callable_representation.html`, category: "other", tags: ["callable", "representation", "3cr", "justdial", "priyal"] }
+];
+
+/* the label is the hosted file's own name, unchanged */
+DASHBOARDS.forEach(d => {
+  if (!d.title) {
+    try { d.title = decodeURIComponent(new URL(d.url).pathname.split("/").pop()).replace(/\.html?$/i, ""); }
+    catch (e) { d.title = d.id; }
+  }
+});
+
+const CATEGORIES = {
+  geo:    { label: "Geography",    icon: '<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.3"/>' },
+  hr:     { label: "Workforce",    icon: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2a5 5 0 0 1 6 4.8"/>' },
+  funnel: { label: "Sales Funnel", icon: '<path d="M3 4h18l-7 8.5V20l-4-2v-5.5z"/>' },
+  renew:  { label: "Renewals",     icon: '<path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/>' },
+  ecs:    { label: "Collections",  icon: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/>' },
+  other:  { label: "Other",        icon: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>' }
+};
+const ALL_ICON = '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>';
+
+/* ---------- storage (never throws) ---------- */
+const store = {
+  get(k, fb) { try { const v = localStorage.getItem("hub:" + k); return v === null ? fb : JSON.parse(v); } catch (e) { return fb; } },
+  set(k, v)  { try { localStorage.setItem("hub:" + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+let pinned      = store.get("pinned", []);
+let linkTarget  = store.get("target", "_blank");
+let viewMode    = store.get("view", "grid");
+let scope       = store.get("scope", "general");   // general = hide branch-specific
+let activeCat   = "all";
+let lastChecked = null;
+const statuses  = {};
+const STATUS_TEXT = { checking: "checking", up: "online", down: "offline", unknown: "—" };
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const byId = id => DASHBOARDS.find(d => d.id === id) || null;
+const isPinned = id => pinned.includes(id);
+const catOf = d => CATEGORIES[d.category] || { label: d.category, icon: "" };
+const svg = paths => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+const shortUrl = u => u.replace(/^https?:\/\//, "");
+
+/* ---------- theme / target / view ---------- */
+const root = document.documentElement;
+root.dataset.theme = store.get("theme", matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+$("theme").addEventListener("click", () => { root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark"; store.set("theme", root.dataset.theme); });
+
+const seg = $("seg");
+const paintSeg = () => seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.target === linkTarget));
+seg.addEventListener("click", e => { const b = e.target.closest("button[data-target]"); if (!b) return; linkTarget = b.dataset.target; store.set("target", linkTarget); paintSeg(); render(); });
+function go(d) { if (linkTarget === "_self") location.href = d.url; else window.open(d.url, "_blank", "noopener"); }
+
+/* General vs All: "General" drops anything tied to a single branch */
+const inScope = d => scope === "all" || (!d.branch && d.scope !== "all");
+const scopeTabs = $("scopeTabs");
+const paintScope = () => scopeTabs.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.scope === scope));
+scopeTabs.addEventListener("click", e => {
+  const b = e.target.closest("button[data-scope]"); if (!b) return;
+  scope = b.dataset.scope; store.set("scope", scope);
+  if (activeCat !== "all" && !DASHBOARDS.some(d => inScope(d) && d.category === activeCat)) activeCat = "all";
+  paintScope(); render();
+});
+
+const view = $("view");
+const paintView = () => { view.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === viewMode)); $("content").dataset.view = viewMode; fitThumbs(); };
+view.addEventListener("click", e => { const b = e.target.closest("button[data-view]"); if (!b) return; viewMode = b.dataset.view; store.set("view", viewMode); paintView(); });
+
+/* ---------- sidebar ---------- */
+function renderNav() {
+  const pool = DASHBOARDS.filter(inScope);
+  const counts = { all: pool.length };
+  pool.forEach(d => counts[d.category] = (counts[d.category] || 0) + 1);
+  let cat = `<h4>Browse</h4><button class="ni" data-cat="all" aria-pressed="${activeCat === "all"}">${svg(ALL_ICON)}<span class="t">${scope === "all" ? "All dashboards" : "General"}</span></button>`;
+  for (const k in CATEGORIES) if (counts[k]) cat += `<button class="ni" data-cat="${k}" aria-pressed="${activeCat === k}">${svg(CATEGORIES[k].icon)}<span class="t">${esc(CATEGORIES[k].label)}</span></button>`;
+  $("catNav").innerHTML = cat;
+
+  const ordered = [...pool].sort((a, b) => (isPinned(b.id) ? 1 : 0) - (isPinned(a.id) ? 1 : 0));
+  $("dashNav").innerHTML = `<h4>Dashboards</h4>` + ordered.map(d =>
+    `<a class="ni dash" href="${esc(d.url)}" target="${linkTarget}"${linkTarget === "_blank" ? ' rel="noopener"' : ""} title="${esc(d.title)}">
+       <span class="pulse" data-s="${statuses[d.id] || "unknown"}" data-pulse-for="${d.id}"></span>
+       <span class="t">${esc(d.title)}</span>
+       ${isPinned(d.id) ? '<svg class="star" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>' : ""}
+       <svg class="arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>`).join("");
+
+  $("chips").innerHTML = `<button class="chip" data-cat="all" aria-pressed="${activeCat === "all"}">All</button>` +
+    Object.keys(CATEGORIES).filter(k => counts[k]).map(k => `<button class="chip" data-cat="${k}" aria-pressed="${activeCat === k}">${esc(CATEGORIES[k].label)}</button>`).join("");
+}
+
+/* ---------- cards ---------- */
+function cardHTML(d) {
+  const c = catOf(d), st = statuses[d.id] || "unknown", starred = isPinned(d.id);
+  return `
+  <article class="card" data-id="${d.id}">
+    <a class="stretch" href="${esc(d.url)}" target="${linkTarget}"${linkTarget === "_blank" ? ' rel="noopener"' : ""} aria-label="Open ${esc(d.title)}"></a>
+    <div class="thumb">
+      <iframe data-thumb-for="${d.id}" title="" tabindex="-1" loading="lazy" sandbox="allow-scripts" scrolling="no"></iframe>
+      <div class="ph"><div class="g">${svg(c.icon)}<span data-ph-for="${d.id}">${st === "down" ? "Server offline" : "Loading preview"}</span></div></div>
+      <div class="badges"><span class="badge">${esc(c.label)}</span>${d.branch ? `<span class="badge br">${esc(d.branch)}</span>` : ""}</div>
+      <div class="acts">
+        <button class="ib" data-preview="${d.id}" title="Preview here"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/></svg></button>
+        <button class="ib" data-pin="${d.id}" aria-pressed="${starred}" title="${starred ? "Unpin" : "Pin"}"><svg viewBox="0 0 24 24" fill="${starred ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg></button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="glyph">${svg(c.icon)}</div>
+      <div class="tt">
+        <h3>${esc(d.title)}</h3>
+        <div class="sub">
+          <span class="status" data-s="${st}" data-status-for="${d.id}"><span class="pulse" data-s="${st}"></span><span class="txt">${STATUS_TEXT[st]}</span></span>
+        </div>
+      </div>
+      <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const shown = DASHBOARDS.filter(d => inScope(d) && (activeCat === "all" || d.category === activeCat));
+  const pin = shown.filter(d => isPinned(d.id)), rest = shown.filter(d => !isPinned(d.id));
+  $("pinnedSec").hidden = pin.length === 0;
+  $("pinnedGrid").innerHTML = pin.map(cardHTML).join("");
+  $("pinN").textContent = pin.length;
+  $("grid").innerHTML = rest.map(cardHTML).join("");
+  $("allHead").hidden = pin.length === 0;
+  $("allLbl").textContent = "Others";
+  $("allN").textContent = rest.length;
+  $("empty").hidden = shown.length !== 0;
+  renderNav();
+  fitThumbs();
+  DASHBOARDS.forEach(loadThumb);
+}
+
+/* scale each 1280×720 iframe to its thumbnail box */
+function fitThumbs() {
+  document.querySelectorAll(".thumb").forEach(t => t.style.setProperty("--s", (t.clientWidth / 1280).toFixed(4)));
+}
+addEventListener("resize", fitThumbs);
+
+/* only load a miniature once its server is known to be up */
+function loadThumb(d) {
+  document.querySelectorAll(`[data-thumb-for="${d.id}"]`).forEach(f => {
+    const ph = f.parentElement.querySelector(`[data-ph-for="${d.id}"]`);
+    if (statuses[d.id] === "up") {
+      if (!f.getAttribute("src")) { f.addEventListener("load", () => f.classList.add("ready"), { once: true }); f.src = d.url; }
+    } else {
+      f.classList.remove("ready"); f.removeAttribute("src");
+      if (ph) ph.textContent = statuses[d.id] === "down" ? "Server offline" : "Loading preview";
+    }
+  });
+}
+
+/* ---------- global click ---------- */
+document.addEventListener("click", e => {
+  const cat = e.target.closest("[data-cat]");
+  if (cat) { activeCat = cat.dataset.cat; render(); return; }
+  const prev = e.target.closest("[data-preview]");
+  if (prev) { e.preventDefault(); openViewer(prev.dataset.preview); return; }
+  const pin = e.target.closest("[data-pin]");
+  if (pin) { e.preventDefault(); const id = pin.dataset.pin; pinned = isPinned(id) ? pinned.filter(x => x !== id) : [...pinned, id]; store.set("pinned", pinned); render(); }
+});
+
+/* ---------- command palette ---------- */
+const pal = $("pal"), palIn = $("palIn"), palList = $("palList");
+let palIdx = 0, palRows = [];
+function score(d, q) {
+  if (!q) return 1;
+  const hay = [d.title, catOf(d).label, d.tags.join(" ")].join(" ").toLowerCase();
+  let s = 0;
+  for (const t of q.toLowerCase().split(/\s+/).filter(Boolean)) {
+    if (d.title.toLowerCase().startsWith(t)) s += 5; else if (d.title.toLowerCase().includes(t)) s += 3; else if (hay.includes(t)) s += 1; else return 0;
+  }
+  return s;
+}
+function palRender() {
+  const q = palIn.value.trim();
+  palRows = DASHBOARDS.map(d => ({ d, s: score(d, q) })).filter(r => r.s > 0).sort((a, b) => b.s - a.s).map(r => r.d);
+  palIdx = Math.min(palIdx, Math.max(0, palRows.length - 1));
+  if (!palRows.length) { palList.innerHTML = `<div class="none">No match</div>`; return; }
+  palList.innerHTML = palRows.map((d, i) => {
+    const c = catOf(d), st = statuses[d.id] || "unknown";
+    return `<div class="item" role="option" data-i="${i}" aria-selected="${i === palIdx}">
+      <div class="g">${svg(c.icon)}</div>
+      <div class="t"><b>${esc(d.title)}</b><span>${esc(c.label)} · ${esc(shortUrl(d.url))}</span></div>
+      <span class="status" data-s="${st}"><span class="pulse" data-s="${st}"></span>${STATUS_TEXT[st]}</span></div>`;
+  }).join("");
+  const sel = palList.querySelector('[aria-selected="true"]'); if (sel) sel.scrollIntoView({ block: "nearest" });
+}
+function palOpen() { pal.classList.add("open"); palIn.value = ""; palIdx = 0; palRender(); setTimeout(() => palIn.focus(), 10); }
+function palClose() { pal.classList.remove("open"); }
+$("cmdkBtn").addEventListener("click", palOpen);
+pal.addEventListener("click", e => { if (e.target === pal) palClose(); });
+palIn.addEventListener("input", () => { palIdx = 0; palRender(); });
+palList.addEventListener("pointermove", e => { const it = e.target.closest(".item"); if (it && +it.dataset.i !== palIdx) { palIdx = +it.dataset.i; palRender(); } });
+palList.addEventListener("click", e => { const it = e.target.closest(".item"); if (!it) return; const d = palRows[+it.dataset.i]; palClose(); e.shiftKey ? openViewer(d.id) : go(d); });
+document.addEventListener("keydown", e => {
+  const open = pal.classList.contains("open");
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); open ? palClose() : palOpen(); return; }
+  if (e.key === "/" && !open && !/input|select|textarea/i.test(e.target.tagName)) { e.preventDefault(); palOpen(); return; }
+  if (e.key === "Escape") { if (open) palClose(); else if ($("viewer").classList.contains("open")) closeViewer(); return; }
+  if (!open) return;
+  if (e.key === "ArrowDown") { e.preventDefault(); palIdx = Math.min(palIdx + 1, palRows.length - 1); palRender(); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); palIdx = Math.max(palIdx - 1, 0); palRender(); }
+  else if (e.key === "Enter" && palRows[palIdx]) { e.preventDefault(); const d = palRows[palIdx]; palClose(); e.shiftKey ? openViewer(d.id) : go(d); }
+});
+
+/* ---------- preview viewer ---------- */
+const viewer = $("viewer");
+function openViewer(id) {
+  const d = byId(id); if (!d) return;
+  $("vtitle").querySelector(".t").textContent = d.title;
+  $("vnew").href = d.url; $("vswitch").value = d.id; $("vframe").src = d.url;
+  viewer.classList.add("open"); document.body.style.overflow = "hidden";
+  try { history.replaceState(null, "", "#" + d.id); } catch (e) {}
+}
+function closeViewer() {
+  viewer.classList.remove("open"); $("vframe").src = "about:blank"; document.body.style.overflow = "";
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+}
+$("vback").addEventListener("click", closeViewer);
+$("vswitch").addEventListener("change", e => openViewer(e.target.value));
+$("vreload").addEventListener("click", () => { const f = $("vframe"), s = f.src; f.src = "about:blank"; setTimeout(() => f.src = s, 60); });
+
+/* ---------- status checks ----------
+   A no-cors fetch can't read the body, but it does say whether the connection
+   succeeded — enough to flag a dashboard whose server is down. */
+function paintStatus(id) {
+  const st = statuses[id] || "unknown";
+  document.querySelectorAll(`[data-status-for="${id}"]`).forEach(el => { el.dataset.s = st; el.querySelector(".pulse").dataset.s = st; el.querySelector(".txt").textContent = STATUS_TEXT[st]; });
+  document.querySelectorAll(`[data-pulse-for="${id}"]`).forEach(el => el.dataset.s = st);
+  loadThumb(byId(id));
+  paintSummary();
+}
+function paintSummary() {
+  const n = DASHBOARDS.length, up = DASHBOARDS.filter(d => statuses[d.id] === "up").length;
+  const busy = DASHBOARDS.some(d => statuses[d.id] === "checking");
+  const btn = $("recheck");
+  $("kUp").textContent = up;
+  btn.dataset.s = busy ? "checking" : up === n ? "up" : up === 0 ? "down" : "mixed";
+  btn.title = busy ? "Checking dashboard servers…" : `${up} of ${n} dashboard servers are online` + (lastChecked ? " (checked " + lastChecked.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) + ")" : "") + ". Click to re-check.";
+}
+async function checkOne(d) {
+  statuses[d.id] = "checking"; paintStatus(d.id);
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 3000);
+  try {
+    await fetch(d.url, { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+    statuses[d.id] = "up";
+  } catch (e) {
+    try {
+      const fileName = d.url.split("/").pop();
+      const localCtrl = new AbortController(), localTimer = setTimeout(() => localCtrl.abort(), 2000);
+      await fetch("./" + fileName, { mode: "no-cors", cache: "no-store", signal: localCtrl.signal });
+      clearTimeout(localTimer);
+      d.url = "./" + fileName;
+      statuses[d.id] = "up";
+    } catch (err) {
+      statuses[d.id] = "down";
+    }
+  } finally {
+    clearTimeout(timer); paintStatus(d.id);
+  }
+}
+async function checkAll() { await Promise.all(DASHBOARDS.map(checkOne)); lastChecked = new Date(); paintSummary(); }
+$("recheck").addEventListener("click", checkAll);
+
+/* ---------- pages approved in HTML Drop ----------
+   Fetches the list ticked "Show on hub" at DROP/admin and merges it into
+   DASHBOARDS. Returns true when the list changed, so we only re-render then
+   (re-rendering reloads every thumbnail). If HTML Drop is unreachable the
+   dashboards from the last successful fetch stay. */
+// The dashboards listed above always keep their own links. HTML Drop only adds new pages;
+// anything it sends with the id of one of them is ignored.
+const FIXED = DASHBOARDS.slice();
+let dropSig = "";
+async function loadDrop() {
+  const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const items = await (await fetch(DROP + "/api/hub", { cache: "no-store", signal: ctrl.signal })).json();
+    const sig = JSON.stringify(items);
+    if (sig === dropSig) return false;
+    dropSig = sig;
+    const drop = items.map(d => ({ ...d, tags: d.tags || [], fromDrop: true }));
+    const merged = FIXED.concat(drop.filter(d => !FIXED.some(f => f.id === d.id)));
+    DASHBOARDS.splice(0, DASHBOARDS.length, ...merged);
+    return true;
+  } catch (e) { return false; }
+  finally { clearTimeout(timer); }
+}
+function refreshMeta() {
+  $("vswitch").innerHTML = DASHBOARDS.map(d => `<option value="${d.id}">${esc(d.title)}</option>`).join("");
+  $("kTotal").textContent = DASHBOARDS.length;
+  paintSummary();
+}
+
+/* ---------- boot ---------- */
+paintSeg(); paintScope(); paintView(); render(); refreshMeta();
+checkAll();
+loadDrop().then(changed => {
+  if (changed) { render(); refreshMeta(); DASHBOARDS.filter(d => d.fromDrop).forEach(checkOne); }
+  const deep = location.hash.slice(1); if (deep && byId(deep)) openViewer(deep);
+});
+setInterval(async () => { if (await loadDrop()) { render(); refreshMeta(); } checkAll(); }, 120000);
+</script>
+</body>
+</html>

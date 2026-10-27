@@ -1,0 +1,501 @@
+rank,sales_group
+1,Body Massage Centres
+2,Car Hire
+3,Civil & Construction Contractors
+4,Beauty Parlours
+5,Hotels
+6,Estate Agents
+7,Furniture & Fixtures Products & Services
+8,"Unclassified (No docid match, maybe closed)"
+9,Security System/CCTV
+10,Untagged (docid has no sales_group tag)
+11,Tutorials
+12,Interior Designers
+13,Pathology Labs
+14,Institutes
+15,Packers & Movers
+16,Computer Training Institutes
+17,Lawyers
+18,Ac Repair & Services
+19,Housekeeping Services
+20,PG Accommodation Services
+21,Banquet Halls
+22,Event Organisers
+23,Building Materials
+24,Car Repair & Services
+25,Dentists
+26,Tour Operators
+27,Hobby Classes
+28,Chartered Accountant
+29,Fabricators
+30,Photographers
+31,Schools
+32,Hostels
+33,Printing & Publishing Services
+34,Nursing Services
+35,Caterers
+36,Transporters
+37,Jewellery Showrooms
+38,Solar & Recycling Energy
+39,Dermatologists
+40,Astrologers
+41,"Apparels & Clothing - Manufactures, Distributors & Wholesalers"
+42,Doors
+43,Security Services
+44,Decorators
+45,Gynaecologist & Obstetrician Doctors
+46,Tiles
+47,Restaurants
+48,Hospitals
+49,Physiotherapists
+50,Courier Services
+51,Tools & Hardware Products & Services
+52,"Sign Boards - Manufactures, Dealers, Distributors & Wholesalers"
+53,Pest Control Services
+54,Pets & Accessories Product & Services
+55,Electricians
+56,Rehabilitation Centres
+57,Apparels & Clothing - Retailer
+58,Ayurvedic Doctors
+59,"Pipes - Manufacturers, Dealers, Distributors & Wholesalers"
+60,Orthopaedic Doctors
+61,Cranes On Hire
+62,Placement Services
+63,Painting Contractors
+64,Scrap Dealers & Buyers
+65,Education Consultants
+66,Computer & Laptop Repair & Services
+67,Architects
+68,Water Purifier Dealers
+69,Tempos On Hire
+70,Internet Service Providers
+71,Packing Materials
+72,Motorcycle Dealers
+73,Ac Dealers
+74,Internet Website Designers
+75,Ophthalmologists
+76,Beauty Spas
+77,Battery Dealers
+78,Playgroups
+79,Insurance Agents
+80,Resorts
+81,Homeopathic Doctors
+82,Motor Training Schools
+83,Waterproofing Contractors
+84,Gymnasiums
+85,Bus On Hire
+86,Colleges
+87,Computer & Laptop Dealers
+88,Pandits
+89,Electrical Goods Dealers
+90,Tv Repair & Services
+91,Computer Software Developers
+92,Consultants
+93,Towing Services
+94,Borewell Contractors
+95,Advertising Agencies
+96,Registration Consultants
+97,Ngos
+98,Home Tutors
+99,Ambulance Services
+100,Tyre Dealers
+101,Wedding Bands
+102,"Surgical Equipment - Dealers, Distributors, Wholesalers & Manufacturers"
+103,Bungalows On Hire
+104,Plumbers
+105,Visa Assistance
+106,Survey Services
+107,Water Purifier Repair & Services
+108,Scaffoldings
+109,Gifts
+110,Mobile Phone Repair & Services
+111,Generators On Hire
+112,Washing Machine Repair & Services
+113,Language Classes
+114,Net Dealers
+115,Car Dealers
+116,Travel Agents
+117,Marketing Services
+118,Home Loans
+119,Elevator Dealers
+120,Mobile Phone Dealers
+121,Agriculture Products & Services
+122,Laundry Services
+123,Ent Doctors
+124,Blind Dealers & Manufacturers
+125,Generator Dealers
+126,Documentation Services
+127,Neurologists
+128,Tattoo Artists
+129,Concretes
+130,Cements
+131,"Cabins - Manufacturers, Dealers, Distributors & Wholesalers"
+132,Hearing Aid Dealers & Repair
+133,"Bag - Manufacturers, Distributors & Wholesalers"
+134,Cake Shops
+135,"Wall Paper Dealers, Wholesalers & Contractors"
+136,Refrigerator Repair & Services
+137,Paediatricians
+138,Gastroenterologists
+139,Elevator Repair & Services
+140,Water Suppliers
+141,Fitness & Gym Equipments & Services
+142,Plywood Dealers
+143,Yoga Classes
+144,Share Brokers
+145,Water Pump Dealers
+146,Cutting Services
+147,Two Wheeler Repair & Services
+148,Paint Dealers
+149,Sexologist Doctors
+150,General Physician Doctors
+151,Counselling Services
+152,Gardening Services
+153,Detective Agencies
+154,Precast Wall
+155,Roofing Sheets
+156,Psychiatrists
+157,"Kitchen Equipment - Manufacturers, Dealers, Distributors & Wholesalers"
+158,Glass Dealers
+159,Grocery Retailers
+160,Stationeries
+161,Florists
+162,Floorings
+163,Urologist Doctors
+164,Matrimonial Bureaus
+165,Tiffin Services
+166,Second Hand Car Dealers
+167,Education & Training
+168,Piles Doctors
+169,Car Accessory Dealers
+170,Mehendi Artists
+171,Laboratory Testing Services
+172,Tailors
+173,Light Dealers
+174,Electric Consumer Vehicles
+175,Therapy Centres
+176,Cng Conversion Kit Dealers
+177,Fire Extinguisher Dealers & Refilling Services
+178,Statue Manufacturers
+179,Wig Dealers
+180,Carpenters
+181,"Granites, Marbles & Stones"
+182,Apparels & Clothing - On Hire
+183,Cardiologists
+184,Healthcare & Nutritional Supplements
+185,Sports Goods & Services
+186,Computers & Laptops On Hire
+187,Driver Service Agents
+188,Automobile Part & Spare Parts
+189,Personal Loans
+190,Mattress Dealers
+191,Duplicate Key Makers
+192,Tent House
+193,Meat & Poultry
+194,Rack Manufacturers
+195,Cancer Doctors
+196,Chair Dealers & Manufacturers
+197,Pulmonologists Doctors
+198,Film Production Houses
+199,Bricks
+200,Automobile Battery Dealers
+201,"Vending Machine Dealers, Distributors, Manufacturers & Wholesalers"
+202,Pump Repair & Services
+203,Alternative Therapy
+204,"Stainless Steel - Distributors, Manufacturers & Dealers"
+205,Clinics
+206,Sands
+207,Weighing Machine Dealers
+208,Curtain Dealers
+209,Doctors
+210,Mortgage Loans
+211,Ac On Hire
+212,Frames
+213,Fruits Vegetables & Dry Fruits
+214,Valuers
+215,Air Compressor Dealers
+216,UPS Dealers
+217,Bearing & Ball Bearing
+218,Veterinary Doctors
+219,Fan Dealers
+220,Security & Protection Services
+221,Wall Panels
+222,Logistic Services
+223,Cargo Agents
+224,Earthmovers On Hire
+225,Tv Dealers
+226,Business Loans
+227,"Shields, Trophies & Awards"
+228,Bike On Rent
+229,Water Treatment Plants
+230,Medical Supplies & Equipments On Hire
+231,Sweet Shops
+232,Sewing Machine Dealers
+233,Polishing Services
+234,Dietitians
+235,Bus Services
+236,Dth Tv Broadcast Service Providers
+237,Battery Operated Auto Rickshaws
+238,Packing Machines
+239,Control Panels
+240,Musical Instruments
+241,Oncologists
+242,Gas Pipe Line Installation Services
+243,Chemists
+244,Translators
+245,Gas Stove Repair & Services
+246,Cosmetic & Personal Care Products
+247,Chair Repair & Services
+248,Photocopier Dealers
+249,Truck Dealers
+250,Money Transfer Agencies
+251,Bicycle Dealers
+252,Projectors On Hire
+253,False Ceilings
+254,"Grocery - Dealers, Manufactures, Distributors & Wholesalers"
+255,Generator Repair & Services
+256,Computer Printer Repair & Services
+257,Mutual Fund Agents
+258,Tape Adhesives & Glues
+259,Painting Artists
+260,Cosmetic Dealers
+261,Awning Dealers
+262,Wedding Grounds
+263,Builders
+264,Car Loans
+265,Opticians
+266,Cosmetologists
+267,Sports Clubs
+268,Medical Product Retailers
+269,Nephrologists
+270,Pschologist Doctors
+271,Immigration Consultants
+272,Projector Dealers
+273,Fountains
+274,Switch Dealers
+275,Web & Mobile Application Software & Developers
+276,Business Services & Consultants
+277,Calibration Services
+278,Fire Cracker Dealers
+279,Diabetologist
+280,Elevator Manufacturers
+281,Infertility Clinics
+282,Geyser Repair & Services
+283,Office Automation Products
+284,Milk & Milk Products
+285,Auditors
+286,Chemical Dealers
+287,Foreign Exchange Agents
+288,Electrical Goods Manufacturers
+289,Inverter Dealers
+290,Rolling Shutter Manufacturers
+291,Swimming Pools
+292,Inverter Battery Dealers
+293,Database Providers
+294,Scooter Dealers
+295,Bag Dealers
+296,Amusement & Playground Equipments
+297,Loan Consultants
+298,Rubber & Rubber Product
+299,Labour Contractors
+300,Paper Plate Making Machine Manufacturers
+301,Tractor Dealers
+302,Garden Contractors
+303,Light Wholesalers
+304,Carpet Dealers
+305,Automobile Part Dealers
+306,Camera Dealers
+307,Singers
+308,Gas Dealers
+309,Forklifts
+310,Baby Sitters
+311,Wrist Watch Dealers
+312,Speaker Dealers
+313,Industrial Chemical & Supplies
+314,Stainless Steel Wholesalers
+315,Sunglass Dealers
+316,Orchestras
+317,Writing Services
+318,Libraries
+319,Wire Dealers
+320,Computer Printer Dealers
+321,Chimney Repair & Services
+322,Composite Panels
+323,Coating Services
+324,Currency Counting Machine
+325,Computer Networking Services & Solutions
+326,Water Level Controller
+327,Plywood Wholesalers
+328,Geyser Dealers
+329,Light Manufacturers
+330,Management Services
+331,Shoe Dealers
+332,Cable Trays
+333,Upvc Windows
+334,Pooja & Religious Items
+335,Crane Manufacturers
+336,Freezer Dealers
+337,Laparoscopists
+338,Chimney Dealers
+339,Tarpaulin Dealers
+340,Flour Mill Dealers
+341,Mineral Water
+342,"Fire Extinguisher Manufacturers, Distributors & Wholesalers"
+343,Product Testing Laboratory
+344,Tea & Coffee
+345,Animation Services
+346,Automobile Services
+347,Concrete Mixers On Hire
+348,Welding Machine Dealers
+349,Book Shops
+350,Gas Agencies
+351,Cooling & Heat Transfer Equipments
+352,Shoe Manufacturers & Wholesalers
+353,Crockery Dealers
+354,Sewage Treatment Plants
+355,Medicine Wholesalers
+356,Bulk SMS & Call Centre Services
+357,Embroidery Job Works
+358,Rolling Shutter Dealers
+359,Voltage Stabilizer Manufacturers
+360,Gypsum Boards & Plaster Of Paris
+361,Bird Netting Services
+362,Recording Studios
+363,Printer Dealers
+364,Funeral Undertaker
+365,Grocery Stores
+366,Automobile Oil & Lubricantes
+367,Laboratory Equipments & Products
+368,Advertisement Products Equipments & Accessories
+369,Refrigerator Dealers
+370,"Barcode Dealers, Maufacturers, Distributors & Wholesalers"
+371,Microwave Oven Repair & Services
+372,Chit Funds
+373,Amusement Parks
+374,Mattress Manufacturers
+375,AC Drive Products & Services
+376,Housekeeping Product Dealers
+377,Warehouses
+378,Sanitaryware Dealers
+379,Wire Mesh Manufacturers
+380,Lubricant Oil Dealers
+381,Digital Signature Services
+382,Transformer Dealers
+383,Choreographers
+384,EPABX Product & Services
+385,Second Hand Car Buyers
+386,Rack Dealers
+387,Sun Control Film Product & Services
+388,Life Insurance Agents
+389,Blind Wholesalers & Distrubutors
+390,Name Plate Dealers
+391,Paint Manufacturers
+392,Loan Against Credit Cards
+393,Motorcycle Part Dealers
+394,Water Tank Dealers
+395,License Consultants
+396,Provident Fund Consultants
+397,Medicine Manufacturers
+398,Wire Manufacturers
+399,Awning Manufacturers
+400,Second Hand Furniture Buyers
+401,Home Appliance Dealers
+402,Valet Parking Services
+403,Artists
+404,Wine Retailers
+405,Washing Machine Dealers
+406,Electro Plating
+407,Umbrella Manufacturers
+408,Glass Film Dealers
+409,Printing Machinery & Equipment
+410,Computer & Laptop Wholesalers
+411,Medical Implements
+412,Helmet Dealers
+413,Car Washing Services
+414,Data Recovery Services
+415,Inverter Repair & Services
+416,Vein Specialist Doctors
+417,Ups Repairs & Services
+418,Oven Manufacturers
+419,Oil Manufacturers
+420,Petroleum & Petrochemicals
+421,Second Hand Computer & Laptop Dealers
+422,Baby Care Product Dealers
+423,Pen Dealers
+424,Dead Body Freezer Box On Hire
+425,Gaming Console Dealers
+426,Dustbin Dealers
+427,Product Listing Services
+428,Cartridge Refilling Services
+429,Gas Stove Dealers
+430,"Tissue Paper - Manufacturers, Dealers, Distributors & Wholesalers"
+431,Agricultural Equipments
+432,Home Theatre System Dealers
+433,Electrical Goods Repair & Services
+434,Insulation Materials
+435,Endocrinologists
+436,Salon Chair
+437,Vacuum Cleaner Dealers
+438,Projector Repair & Services
+439,Switch Wholesalers
+440,Rolling Shutter Repair & Services
+441,Sound Systems On Hire
+442,Educational Loans
+443,Bathroom Fitting Dealers
+444,Publishers
+445,Loan Against Gold
+446,Auto Rickshaw Dealers
+447,Mobile Toilets On Hire
+448,Designing Services
+449,Polycarbonate Sheets
+450,Furnitures On Hire
+451,Massage Services At Home
+452,Rooms On Hire
+453,Ladder Dealers
+454,Electrical Goods On hire
+455,Mobile Phone Accessory Dealers
+456,Automobile Body Manufacturers
+457,Manhole Covers
+458,Fertilizer Dealers
+459,Mixer Grinder Dealers
+460,Display Counter Manufacturers
+461,Chiller Manufacturers
+462,Homeopathic Medicine Retailers
+463,Stem Cell Banks
+464,Rheumatologist Doctors
+465,Project Consultants
+466,Loans
+467,Mobile Phone & Part Wholesalers
+468,Lights On Hire
+469,Wire Wholesalers
+470,Balloon Dealers & Manufacturers
+471,Water Cooler Dealers
+472,Idol Manufacturers
+473,Billing Machine Dealers
+474,AC Wholesalers
+475,Blood Banks
+476,Fan Repair & Services
+477,Heater Manufacturers
+478,Hookah Dealers
+479,Electronic Appliances Dealers
+480,Cold Storage Services
+481,Water Cooler Repair & Services
+482,Video Conference Systems
+483,Hanger Dealers
+484,Bus Dealers
+485,Medical Equipment Dealers
+486,Hotel Reservations
+487,Three Wheeler Dealers
+488,Cereals Grains & Pulses
+489,Chemical Manufacturers
+490,Agricultural Tools Machines & Equipments
+491,Custom Clearing Agent
+492,Helicopter Charter Services
+493,Machinery Manufacturers
+494,Entertainment Centres
+495,Air Compressor Repair & Services
+496,Fertilizer Manufacturers
+497,Disc Jockey
+498,Automobile Part Repair & Services
+499,Medicine Distributors
+500,Container Manufacturers

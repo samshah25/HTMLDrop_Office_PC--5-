@@ -1,0 +1,597 @@
+{
+  "mumbai-pincode": {
+    "title": "JDA_JDS_Mumbai_Pincode_Dashboard",
+    "renamed": false,
+    "user": "sarvesh",
+    "editors": [],
+    "link": "http://172.29.65.188:8080/JDA_JDS_Mumbai_Pincode_Dashboard.html",
+    "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\JDA_Mumbai_Dashboard\\JDA_Mumbai_Dashboard_Kit\\JDA_JDS_Mumbai_Pincode_Dashboard.html",
+    "version": 3,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-13T14:50:40",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "kolkata-pincode": {
+    "title": "JDA_JDS_Kolkata_Pincode_Dashboard",
+    "renamed": false,
+    "user": "sarvesh",
+    "editors": [],
+    "link": "http://172.29.65.188:8085/JDA_JDS_Kolkata_Pincode_Dashboard.html",
+    "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\JDA_Kolkata_Dashboard\\JDA_Kolkata_Dashboard_Kit",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "headcount-tenure": {
+    "title": "Employee_Headcount_Tenure_Dashboard",
+    "renamed": false,
+    "user": "muskan",
+    "editors": [],
+    "link": "http://172.29.65.188:8090/Employee_Headcount_Tenure_Dashboard.html",
+    "file": "C:\\Users\\10179794\\Dashboardd\\dash\\Employee_Headcount_Tenure_Dashboard.html",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-09T18:02:20",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "supercat-funnel": {
+    "title": "Supercat-funnel-Aug26",
+    "renamed": false,
+    "user": "muskan",
+    "editors": [],
+    "link": "http://172.29.65.188:8000/Supercat-funnel-Aug26.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "renewal-funnel-fy27": {
+    "title": "Renewal_funnel_Apr_Aug_fy27",
+    "renamed": false,
+    "user": "muskan",
+    "editors": [],
+    "link": "http://172.29.65.188:8095/Renewal_funnel_Apr_Aug_fy27.html",
+    "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\renewal-funnel_apr_aug_fy27\\Renewal_funnel_Apr_Aug_fy27.html",
+    "version": 4,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-14T12:58:36",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "rv-vintage-tracker": {
+    "title": "RV_Vintage_Tracker",
+    "renamed": false,
+    "user": "sounak",
+    "editors": [],
+    "link": "http://172.29.65.188:8070/RV_Vintage_Tracker.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "chennai-rv-drop": {
+    "title": "Chennai_RV_drop_analysis_Aug26",
+    "renamed": false,
+    "user": "sounak",
+    "editors": [],
+    "link": "http://172.29.65.188:8050/Chennai_RV_drop_analysis_Aug26.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "ecs-billed-cleared": {
+    "title": "ECS_billed_vs_cleared_Mar22_to_Aug26",
+    "renamed": false,
+    "user": "sounak",
+    "editors": [],
+    "link": "http://172.29.65.188:8045/ECS_billed_vs_cleared_Mar22_to_Aug26.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "deal-retouch-timing": {
+    "title": "Deal_Retouch_Timing",
+    "renamed": false,
+    "user": "sounak",
+    "editors": [],
+    "link": "http://172.29.65.188:8055/Deal_Retouch_Timing.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "cos-vs-revenue": {
+    "title": "Cost_vs_Sale",
+    "renamed": false,
+    "user": "sounak",
+    "editors": [
+      "ganesh"
+    ],
+    "link": "http://172.29.65.188:8060/Cost_vs_Sale.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "appointment-funnel": {
+    "title": "Appointment_funnel",
+    "renamed": false,
+    "user": "ayush",
+    "editors": [],
+    "link": "http://172.29.65.188:8010/appointment_funnel_dashboard.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "Pan_india_JDA": {
+    "title": "Pan_India_JDA_Dashboard",
+    "renamed": false,
+    "user": "sarvesh",
+    "editors": [],
+    "link": "http://172.29.65.188:8020/Pan_India_JDA_Dashboard.html",
+    "file": "",
+    "version": 1,
+    "created": "2026-10-08T18:39:31",
+    "updated": "2026-10-08T18:39:31",
+    "entry": "",
+    "disabled": false,
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": true,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "callable-representation": {
+    "deleted": true,
+    "link": "http://172.29.65.188:8025/Justdial_callable_representation.html",
+    "title": "Justdial_callable_representation",
+    "user": "priyal",
+    "editors": [],
+    "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\Justdial callable representation\\Justdial_callable_representation.html",
+    "trash": "C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\data\\trash\\callable-representation-20261016-155911",
+    "deleted_at": "2026-10-16T15:59:11",
+    "deleted_by": "priyal"
+  },
+  "jd-india-sales-overview": {
+    "title": "JD India sales overview",
+    "user": "sarvesh",
+    "version": 2,
+    "created": "2026-10-08T18:41:45",
+    "updated": "2026-10-27T11:25:06",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "call-review": {
+    "title": "sales_calling_insight_report",
+    "user": "vaibhav",
+    "version": 19,
+    "created": "2026-10-12T15:20:06",
+    "updated": "2026-10-13T13:05:51",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "mumbai-ecs-collection-gaps": {
+    "title": "Mumbai ME ECS Collection Tracker",
+    "user": "muskan",
+    "version": 2,
+    "created": "2026-10-13T20:34:40",
+    "updated": "2026-10-16T17:48:17",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "customer-profile-mum-del": {
+    "title": "delhi mumbai full report",
+    "user": "vaibhav",
+    "version": 3,
+    "created": "2026-10-15T19:51:43",
+    "updated": "2026-10-19T18:27:18",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "apparel-gym-cohorts": {
+    "title": "Apparel & Gym Cohorts",
+    "user": "priyal",
+    "version": 9,
+    "created": "2026-10-16T16:03:38",
+    "updated": "2026-10-26T14:59:16",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "hobby-class-journeys": {
+    "title": "Dance Class Journeys - Hobby Classes",
+    "user": "priyal",
+    "version": 1,
+    "created": "2026-10-16T16:03:39",
+    "updated": "2026-10-16T16:03:39",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "reseller-onboarding-snapshot": {
+    "title": "Reseller Onboarding Snapshot",
+    "user": "priyal",
+    "version": 1,
+    "created": "2026-10-16T16:03:39",
+    "updated": "2026-10-16T16:03:39",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "jdtrust-vs-jdrr": {
+    "title": "JD Trust vs JDRR",
+    "user": "priyal",
+    "version": 2,
+    "created": "2026-10-16T16:31:45",
+    "updated": "2026-10-16T16:40:42",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "ecs-collection-tracker": {
+    "title": "ECS Collection Tracker",
+    "user": "muskan",
+    "version": 63,
+    "created": "2026-10-19T17:51:58",
+    "updated": "2026-10-26T13:17:40",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "reseller-performance-program": {
+    "title": "Reseller Performance Program",
+    "user": "priyal",
+    "version": 1,
+    "created": "2026-10-22T13:30:30",
+    "updated": "2026-10-22T13:30:30",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "reseller-partner-page": {
+    "title": "JustDial Reseller Partner Program - landing page",
+    "user": "priyal",
+    "version": 1,
+    "created": "2026-10-22T13:30:31",
+    "updated": "2026-10-22T13:30:31",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "reseller-partner-email": {
+    "title": "JustDial Reseller Partner Program - emailer",
+    "user": "priyal",
+    "version": 1,
+    "created": "2026-10-22T13:30:31",
+    "updated": "2026-10-22T13:30:31",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "tme-training-brief-levers": {
+    "title": "tme training brief easy",
+    "user": "vaibhav",
+    "version": 5,
+    "created": "2026-10-22T16:13:24",
+    "updated": "2026-10-26T14:14:43",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "tme-training-brief-levers-final": {
+    "title": "tme training brief levers",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-26T13:10:09",
+    "updated": "2026-10-26T13:10:09",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "tme-training-brief-easy": {
+    "title": "tme training brief easy",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-26T13:17:04",
+    "updated": "2026-10-26T13:17:04",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "apparel-gsc-analysis": {
+    "title": "Apparel Search Analysis",
+    "user": "priyal",
+    "version": 13,
+    "created": "2026-10-26T14:59:01",
+    "updated": "2026-10-26T19:12:58",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "sales-call-analysis": {
+    "title": "tme training brief easy",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-26T20:05:02",
+    "updated": "2026-10-26T20:05:02",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  }
+}

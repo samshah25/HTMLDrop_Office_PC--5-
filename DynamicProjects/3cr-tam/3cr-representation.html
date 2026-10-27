@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Overview | JustDial 3Cr Representation</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .flow-card { padding: 28px 28px 22px; position: relative; overflow: hidden; }
+  .flow-canvas { position: relative; width: 100%; margin-top: 10px; }
+  .flow-canvas svg.lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .flow-zone { position: absolute; border-radius: 22px; background: linear-gradient(180deg, rgba(227,73,72,0.04), rgba(227,73,72,0.07)); border: 1.5px dashed rgba(227,73,72,0.25); }
+  .flow-zone-label {
+    position: absolute; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--red-deep); background: var(--panel); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(227,73,72,0.28);
+  }
+  .flow-node {
+    position: absolute; transform: translate(-50%, -50%) scale(0.9); opacity: 0;
+    background: linear-gradient(135deg, var(--node-c1, var(--navy)), var(--node-c2, var(--navy-deep)));
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 13px; text-align: left;
+    box-shadow: 0 4px 14px rgba(17,24,39,0.14), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: box-shadow .18s ease, transform .18s cubic-bezier(.2,.8,.3,1.2), filter .18s ease;
+    animation: nodeIn .45s cubic-bezier(.2,.8,.3,1.2) forwards; animation-delay: var(--node-delay, 0s);
+  }
+  @keyframes nodeIn { to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+  .flow-node.root { padding: 17px 24px; }
+  .flow-node.clickable { cursor: pointer; }
+  .flow-node.clickable:hover {
+    box-shadow: 0 12px 26px rgba(17,24,39,0.22), inset 0 1px 0 rgba(255,255,255,0.24);
+    transform: translate(-50%, -50%) translateY(-3px) scale(1.02); filter: brightness(1.05);
+  }
+  .flow-icon {
+    flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.2); color: #fff;
+  }
+  .flow-node.root .flow-icon { width: 46px; height: 46px; }
+  .flow-icon svg { width: 20px; height: 20px; }
+  .flow-node.root .flow-icon svg { width: 24px; height: 24px; }
+  .flow-text { min-width: 0; }
+  .flow-num { font-size: 19px; font-weight: 800; color: #fff; line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .flow-node.root .flow-num { font-size: 24px; }
+  .flow-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.95); margin-top: 3px; line-height: 1.35; white-space: normal; }
+  .flow-node.root .flow-label { font-size: 13.5px; white-space: nowrap; }
+  .flow-sub { font-size: 10.5px; color: rgba(255,255,255,0.8); margin-top: 3px; line-height: 1.35; white-space: normal; }
+  .flow-revenue {
+    font-size: 10.5px; font-weight: 700; color: #fff; margin-top: 6px; padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.22); white-space: nowrap;
+  }
+  .flow-node.root .flow-revenue { font-size: 11.5px; }
+  .flow-lbc {
+    font-size: 10.5px; color: rgba(255,255,255,0.9); margin-top: 6px; padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.22); line-height: 1.45; white-space: nowrap;
+  }
+  .flow-lbc b { color: #fff; font-variant-numeric: tabular-nums; }
+  .lbc-more { font: inherit; font-size: 10.5px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.45); border-radius: 10px; padding: 1px 8px; margin-left: 6px; cursor: pointer; }
+  .lbc-more:hover { background: rgba(255,255,255,0.32); }
+  .lbc-modal { position: fixed; inset: 0; z-index: 1000; background: rgba(10,20,40,0.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .lbc-modal[hidden] { display: none; }
+  .lbc-dialog { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 14px; max-width: 640px; width: 100%;
+    max-height: calc(100vh - 32px); overflow: auto; padding: 20px 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+  .lbc-dialog h3 { margin: 0 0 4px; font-size: 16px; }
+  .lbc-dialog .lead { font-size: 13px; color: var(--text-dim); margin: 0 0 14px; line-height: 1.5; }
+  .lbc-dialog table { width: 100%; margin-bottom: 14px; font-size: 12.5px; }
+  .lbc-dialog td, .lbc-dialog th { text-align: right; }
+  .lbc-dialog td:first-child, .lbc-dialog th:first-child { text-align: left; }
+  .lbc-dialog ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+  .lbc-close { float: right; font-size: 20px; line-height: 1; background: none; border: none; color: var(--text-dim); cursor: pointer; }
+  .flow-bar { height: 6px; border-radius: 3px; overflow: hidden; margin-top: 6px; background: rgba(255,255,255,0.24); }
+  .flow-bar span { display: block; height: 100%; border-radius: 3px; background: #fff; }
+  .flow-pen { font-size: 11px; color: #fff; margin-top: 5px; white-space: nowrap; }
+  .flow-pen b { font-variant-numeric: tabular-nums; }
+  .flow-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .flow-legend-item { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-dim); }
+  .flow-legend-item b { color: var(--text); }
+  .flow-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .flow-legend-note { flex-basis: 100%; font-size: 11.5px; color: var(--text-dim); line-height: 1.5; }
+  .takeaway-card {
+    background: linear-gradient(120deg, rgba(12,95,201,0.08), rgba(30,142,90,0.08) 60%); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px; margin-top: 18px; display: flex; gap: 14px; align-items: flex-start;
+    box-shadow: 0 2px 10px rgba(17,24,39,0.04);
+  }
+  .takeaway-icon {
+    flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--success), #146138); color: #fff;
+    display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .takeaway-icon svg { width: 18px; height: 18px; }
+  .takeaway-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+  .takeaway-text b { color: var(--navy); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><img src="jd-icon.png" alt="JustDial" class="brand-logo"> JustDial 3Cr Representation</div>
+  <nav>
+    <a href="3cr-representation.html" class="active">Overview</a>
+    <a href="target-builder.html">Target Builder</a>
+    <a href="summary.html">Summary</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <h1>Overview</h1>
+  <p class="subtitle"><b>All data is Monetizable TAM: callable or paid businesses (not masked, frozen or closed).</b> Click any box to open it in <a href="target-builder.html" style="color:var(--navy);">Target Builder</a>. <button class="source-cta" type="button" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">Source</button><span class="source-detail" hidden><b>Monetizable TAM</b> = distinct docids in <code>db_paidcontracts.tbl_b2b_panindia_data</code> (server 216) WHERE <code>(callable_flag = 1 OR paid &lt;&gt; 0) AND mask = 0 AND freeze = 0 AND closedown_flag NOT IN (1,9,10)</code>, minus VFL docids: 3,11,29,461 &minus; 1,19,418 = 3,10,10,043. <b>Paid</b> = those docids with <code>paid = 1</code> (5,48,093); Penetration = Paid &divide; TAM. Every number is a distinct business (docid). <b>Sales group</b> = one per docid, the same for every dashboard (shared b2b master): the 25 Sep 2026 tie-break of <code>vertical_owner.tbl_sales_group_tagged</code> (server 216; most categories wins, a tie goes to the more common group, then alphabetical) for docids that existed then; newer docids get the same rule on the live table, then their hot_category &rarr; <code>Sales_Manual_Group_mapping</code>. No group, or a group outside this dashboard's list = Unmapped (1,66,200).<br><b>Data as of:</b> TAM, Paid and sales groups - pulled 26 Oct 2026; VFL - 26 Oct 2026; LBC - 24 Sep 2026; Revenue - FY26 file.</span></p>
+  <div class="pill-note" style="margin-top:-4px; margin-bottom:20px;">VFL (Verified Forever Listing) docids excluded from every TAM, Paid and Penetration number on this page. <button class="source-cta" type="button" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">Source</button><span class="source-detail" hidden><b>VFL (Verified Forever Listing) docids excluded:</b> every docid in <code>db_paidcontracts.tbl_daily_paid_contracts_dump</code> WHERE <code>vfl_flag = 1</code> (1,23,247 docids, pulled 26 Oct 2026). 1,19,418 of them were in the TAM query, all with paid = 1, so they are removed from both TAM and Paid - a VFL business never counts as unconverted opportunity.</span></div>
+
+  <div class="card flow-card">
+    <h3 style="margin-bottom:0;">Total TAM &rarr; Penetration Split &rarr; Storefront Status</h3>
+    <div class="flow-canvas" id="flow-canvas">
+      <svg class="lines" id="flow-lines"></svg>
+    </div>
+    <div class="flow-legend" id="flow-legend"></div>
+  </div>
+
+  <div class="takeaway-card">
+    <div class="takeaway-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    </div>
+    <div class="takeaway-text" id="takeaway-text">-</div>
+  </div>
+</div>
+
+<script>
+const TAM_TREE = {"groups": 2788, "total": 31010043, "total_paid": 548093, "total_revenue": 10198583215.9178, "platform_avg_pen": 0.01767469332435302, "above": {"callable": 9845476, "paid": 414939, "pen": 0.0421451436172309, "groups": 1206, "revenue": 7863287547.243502, "lbc_callable": 144445, "lbc_paid": 248}, "below": {"callable": 21164567, "paid": 133154, "pen": 0.006291364240997702, "groups": 1582, "revenue": 2335295668.6743, "lbc_callable": 6468561, "lbc_paid": 2563, "sf": {"Storefront": {"callable": 19407289, "paid": 117569, "pen": 0.006057981617113034, "groups": 1130, "revenue": 1959970638.8755, "lbc_callable": 6047272, "lbc_paid": 2298}, "Not-Storefront": {"callable": 1757278, "paid": 15585, "pen": 0.008868830088352554, "groups": 452, "revenue": 375325029.7988001, "lbc_callable": 421289, "lbc_paid": 265}, "Unmapped": {"callable": 0, "paid": 0, "pen": 0.0, "groups": 0, "revenue": 0, "lbc_callable": 0, "lbc_paid": 0}}}};
+const ABOVE_LBC = {"above": {"callable": 9845476, "paid": 414939, "groups": 1206, "lbc_callable": 144445, "lbc_paid": 248}, "below": {"callable": 21164567, "paid": 133154, "groups": 1582, "lbc_callable": 6468561, "lbc_paid": 2563}, "groups_with_lbc": 222, "top": [{"sg": "Motorcycle Dealers", "sf": "SF", "callable": 114057, "paid": 2145, "lbc_callable": 80980, "lbc_paid": 66}, {"sg": "", "sf": null, "callable": 166200, "paid": 2985, "lbc_callable": 30674, "lbc_paid": 29}, {"sg": "Homeopathic Doctors", "sf": "SF", "callable": 50209, "paid": 2055, "lbc_callable": 20752, "lbc_paid": 103}, {"sg": "Car Accessory Dealers", "sf": "SF", "callable": 33826, "paid": 884, "lbc_callable": 7314, "lbc_paid": 13}], "rest": {"groups": 218, "lbc_callable": 4725, "lbc_paid": 37, "max_lbc_callable": 1962}, "unmapped": {"callable": 166200, "paid": 2985, "side": "above"}};
+</script>
+<script>
+const fmt = n => Math.round(n).toLocaleString('en-IN');
+const fmtPct = p => (p*100).toFixed(2) + '%';
+const grp = n => `${fmt(n)} group${n === 1 ? '' : 's'}`;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+const ICONS = {
+  total: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  above: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  below: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  sf: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  nsf: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  unmapped: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+};
+// [c1, c2] gradient stops - vivid, matching the rest of the dashboard's category colors.
+const GRADIENT = {
+  total: ['#1670E0', '#073E85'],
+  above: ['#25A16A', '#146138'],
+  below: ['#EC5C51', '#C83A2B'],
+  sf: ['#1670E0', '#073E85'],
+  nsf: ['#FAA13F', '#C96F00'],
+  unmapped: ['#9179CE', '#5A3F94'],
+};
+const LEGEND_COLOR = { total: '#1670E0', above: '#25A16A', below: '#EC5C51', sf: '#1670E0', nsf: '#FAA13F', unmapped: '#9179CE' };
+
+// Lays out `count` sibling leaf boxes evenly spaced and centered under a parent's x.
+function leafRow(parentX, count, spacing, y) {
+  const start = parentX - (count - 1) * spacing / 2;
+  return Array.from({ length: count }, (_, i) => ({ x: start + i * spacing, y }));
+}
+
+// Layout is computed, not hand-picked: each leaf box is sized to fit its longest text,
+// each branch's cluster width is derived from its own content, and the whole canvas
+// width is exactly (margin + above-width + gap + below-cluster + margin) - so the left
+// and right margins come out equal by construction, not by trial and error. Above no
+// longer splits further, so its "cluster" is just its own box width.
+const M = 40;           // outer margin, left and right
+const GAP = 60;         // gap between the Above box and the Below-branch cluster
+const ABOVE_W = 330;
+const LEAF_W_BELOW = 305, LEAF_SPACING_BELOW = 330;
+const LEAF_W_UNMAPPED = 305;
+
+const aboveClusterW = ABOVE_W;
+// The Unmapped leaf is drawn only when below-average Unmapped businesses exist (2 or 3 leaves).
+const SHOW_UNMAPPED = ((TAM_TREE.below.sf || {}).Unmapped || {}).callable > 0;
+const N_LEAVES = SHOW_UNMAPPED ? 3 : 2;
+const belowClusterW = (N_LEAVES - 1) * LEAF_SPACING_BELOW + LEAF_W_BELOW;
+
+const ABOVE_X = M + aboveClusterW / 2;
+const BELOW_X = M + aboveClusterW + GAP + belowClusterW / 2;
+const VB_W = M + aboveClusterW + GAP + belowClusterW + M;
+const VB_H = 810;
+
+const belowLeaves = leafRow(BELOW_X, N_LEAVES, LEAF_SPACING_BELOW, 630);   // taller leaves (LBC lines), same top edge
+const POS = {
+  total: { x: (ABOVE_X + BELOW_X) / 2, y: 100, w: 320, h: 130 },
+  above: { x: ABOVE_X, y: 355, w: ABOVE_W, h: 94 },
+  below: { x: BELOW_X, y: 355, w: 330, h: 94 },
+  below_sf: { x: belowLeaves[0].x, y: belowLeaves[0].y, w: LEAF_W_BELOW, h: 114 },
+  below_nsf: { x: belowLeaves[1].x, y: belowLeaves[1].y, w: LEAF_W_BELOW, h: 114 },
+};
+if (SHOW_UNMAPPED) POS.below_unmapped = { x: belowLeaves[2].x, y: belowLeaves[2].y, w: LEAF_W_UNMAPPED, h: 114 };
+
+const DELAY = { total: 0, above: 0.1, below: 0.1, below_sf: 0.24, below_nsf: 0.28, below_unmapped: 0.32 };
+const fmtCr = n => `\u20b9${(n/1e7).toFixed(2)} Cr`;
+
+// LBC / non-LBC sub-split written inside a Storefront-status box (kept as text, not extra
+// boxes, so the diagram stays readable). Non-LBC = the remainder of the box's own totals.
+// Popup: LBC businesses that sit inside the above-average sales groups.
+function openAboveLbc() {
+  const A = ABOVE_LBC, pct = (a, b) => b ? (a / b * 100).toFixed(1) + '%' : '-', pen = (a, b) => b ? (a / b * 100).toFixed(2) + '%' : '-';
+  const totLbc = A.above.lbc_callable + A.below.lbc_callable;
+  const topSum = A.top.reduce((s, r) => s + r.lbc_callable, 0);
+  const row = (n, c, lc, lp) => `<tr><td>${n}</td><td>${fmt(c)}</td><td>${fmt(lc)}</td><td>${pct(lc, c)}</td><td>${fmt(lp)}</td><td>${pen(lp, lc)}</td></tr>`;
+  let m = document.getElementById('lbc-modal');
+  if (!m) {
+    m = document.createElement('div'); m.id = 'lbc-modal'; m.className = 'lbc-modal'; m.hidden = true;
+    m.addEventListener('click', e => { if (e.target === m || e.target.closest('.lbc-close')) m.hidden = true; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') m.hidden = true; });
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="lbc-dialog" role="dialog" aria-modal="true" aria-labelledby="lbc-title">
+    <button class="lbc-close" type="button" aria-label="Close">&times;</button>
+    <h3 id="lbc-title">LBC in the above-average groups</h3>
+    <p class="lead">Only <b>${pct(A.above.lbc_callable, totLbc)}</b> of all LBC TAM businesses sit in above-average groups; the other ${pct(A.below.lbc_callable, totLbc)} are in the below-average groups.</p>
+    <table><thead><tr><th></th><th>TAM</th><th>LBC TAM</th><th>LBC share</th><th>LBC paid</th><th>LBC pen.</th></tr></thead><tbody>
+      ${row(`Above average (${fmt(A.above.groups)} groups)`, A.above.callable, A.above.lbc_callable, A.above.lbc_paid)}
+      ${row('Below average', A.below.callable, A.below.lbc_callable, A.below.lbc_paid)}
+    </tbody></table>
+    <p class="lead" style="margin-bottom:8px;"><b>${fmt(A.groups_with_lbc)}</b> of the ${fmt(A.above.groups)} above-average groups have any LBC. These ${A.top.length} hold ${fmt(topSum)} of the ${fmt(A.above.lbc_callable)}:</p>
+    <table><thead><tr><th>Sales group</th><th>TAM</th><th>LBC TAM</th><th>LBC share</th><th>LBC paid</th><th>LBC pen.</th></tr></thead><tbody>
+      ${A.top.map(r => row(r.sg ? `<a href="target-builder.html?search=${encodeURIComponent(r.sg)}" style="color:var(--navy);">${r.sg}</a>` : 'Unmapped (no sales group tag)', r.callable, r.lbc_callable, r.lbc_paid)).join('')}
+    </tbody></table>
+    <ul>
+      <li>The other ${fmt(A.rest.groups)} groups hold only a few LBC businesses each (${fmt(A.rest.max_lbc_callable)} or fewer).</li>
+      <li>These groups are above average because of their non-LBC businesses. Their LBC businesses convert at just ${pen(A.above.lbc_paid, A.above.lbc_callable)} overall (${A.top.map(r => pen(r.lbc_paid, r.lbc_callable)).join(', ')} in the ${A.top.length} groups above), well below the platform average of ${fmtPct(TAM_TREE.platform_avg_pen)}.</li>
+    </ul>
+  </div>`;
+  m.hidden = false;
+  m.querySelector('.lbc-close').focus();
+}
+
+function lbcBlock(b) {
+  if (typeof b.lbc_callable !== 'number') return '';
+  const non = b.callable - b.lbc_callable;
+  const lp = b.callable ? b.lbc_callable / b.callable * 100 : 0;
+  return `<div class="flow-lbc">LBC: <b>${fmt(b.lbc_callable)}</b> (${lp.toFixed(1)}%)<br>Non-LBC: <b>${fmt(non)}</b> (${(100-lp).toFixed(1)}%)</div>`;
+}
+
+// Share of each box's parent, drawn as a bar under its sub line: Total TAM = 100%, Above/Below =
+// share of TAM, Storefront/Not-Storefront/Unmapped = share of the Below (opportunity) box.
+const SHARE = {};
+// Hover text for each box.
+const NODE_TIP = {
+  total: 'Monetizable TAM: every callable or paid business (not masked, frozen or closed), VFL removed.',
+  above: 'Sales groups whose paid penetration is at or above the platform average. Bar = share of TAM.',
+  below: 'Sales groups below the platform average: the growth opportunity. Bar = share of TAM.',
+  below_sf: 'Below-average groups where customers walk in (shop, clinic). Bar = share of the Below box.',
+  below_nsf: 'Below-average service groups that go to the customer. Bar = share of the Below box.',
+  below_unmapped: 'Below-average businesses whose sales group name is blank in the source data. Bar = share of the Below box.',
+};
+const PEN = {};   // paid penetration of each box's own cohort (paid / callable)
+function placeNode(kind, colorKind, label, value, sub, revenue, onClick, extraHtml = '') {
+  const share = Math.max(0, Math.min(100, (SHARE[kind] ?? 1) * 100));
+  const p = POS[kind];
+  const [c1, c2] = GRADIENT[colorKind];
+  const div = document.createElement('div');
+  div.className = 'flow-node' + (onClick ? ' clickable' : '') + (kind === 'total' ? ' root' : '');
+  div.style.cssText = `left:${p.x/VB_W*100}%; top:${p.y/VB_H*100}%; width:${p.w/VB_W*100}%; --node-c1:${c1}; --node-c2:${c2}; --node-delay:${DELAY[kind]}s;`;
+  div.innerHTML = `<div class="flow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[colorKind]}</svg></div>
+    <div class="flow-text"><div class="flow-num">${fmt(value)}</div><div class="flow-label">${label}</div><div class="flow-sub">${sub}</div><div class="flow-bar" title="${share.toFixed(1)}% of ${kind === 'total' ? 'TAM' : kind.startsWith('below_') ? 'the Below-average box' : 'Total TAM'}"><span style="width:${share}%"></span></div>${PEN[kind] !== undefined ? `<div class="flow-pen">Paid penetration: <b>${(PEN[kind] * 100).toFixed(2)}%</b></div>` : ''}<div class="flow-revenue">${fmtCr(revenue)} revenue</div>${extraHtml}</div>`;
+  if (NODE_TIP[kind]) div.title = NODE_TIP[kind] + (onClick ? '\nClick to open these groups in Target Builder.' : '');
+  if (onClick) div.addEventListener('click', onClick);
+  document.getElementById('flow-canvas').appendChild(div);
+}
+
+// A plain straight line from a parent's bottom-center to a child's top-center, with a
+// small filled arrowhead - deliberately simple, not a stylized curve.
+function straightLine(svg, fromKind, toKind, color) {
+  const a = POS[fromKind], b = POS[toKind];
+  const x1 = a.x, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y - b.h / 2 - 8;
+  svg.appendChild(el('line', { x1, y1, x2, y2, stroke: color, 'stroke-width': 1.75 }));
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const ax = x2 - Math.cos(angle) * 8, ay = y2 - Math.sin(angle) * 8;
+  svg.appendChild(el('path', {
+    d: `M ${x2} ${y2 + 8} L ${x2 - 5} ${ay} L ${x2 + 5} ${ay} Z`, fill: color,
+  }));
+}
+
+function zone(canvas, left, top, width, height, labelText) {
+  const z = document.createElement('div');
+  z.className = 'flow-zone';
+  z.style.cssText = `left:${left/VB_W*100}%; top:${top/VB_H*100}%; width:${width/VB_W*100}%; height:${height/VB_H*100}%;`;
+  canvas.appendChild(z);
+  const lbl = document.createElement('div');
+  lbl.className = 'flow-zone-label';
+  lbl.style.cssText = `left:${left/VB_W*100}%; top:${top/VB_H*100}%; transform: translate(14px, -50%);`;
+  lbl.textContent = labelText;
+  canvas.appendChild(lbl);
+}
+
+function build() {
+  const total = TAM_TREE.total;
+  const avgPen = TAM_TREE.platform_avg_pen;
+  const minpen = (avgPen * 100).toFixed(4);
+  const belowSf = TAM_TREE.below.sf;
+  const canvas = document.getElementById('flow-canvas');
+  canvas.style.aspectRatio = `${VB_W} / ${VB_H}`;
+  document.getElementById('flow-lines').setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
+
+  const zoneLeft = POS.below_sf.x - POS.below_sf.w / 2 - 25;
+  const lastLeaf = POS[SHOW_UNMAPPED ? 'below_unmapped' : 'below_nsf'];
+  const zoneRight = lastLeaf.x + lastLeaf.w / 2 + 25;
+  const zoneTop = POS.below.y - POS.below.h / 2 - 22;
+  const zoneBottom = POS.below_sf.y + POS.below_sf.h / 2 + 80;   // leaves render taller than h with the LBC lines
+  zone(canvas, zoneLeft, zoneTop, zoneRight - zoneLeft, zoneBottom - zoneTop, 'Opportunity Zone');
+
+  const svg = document.getElementById('flow-lines');
+  straightLine(svg, 'total', 'above', '#B7C3D6');
+  straightLine(svg, 'total', 'below', '#B7C3D6');
+  straightLine(svg, 'below', 'below_sf', 'rgba(227,73,72,0.45)');
+  straightLine(svg, 'below', 'below_nsf', 'rgba(227,73,72,0.45)');
+  if (SHOW_UNMAPPED) straightLine(svg, 'below', 'below_unmapped', 'rgba(227,73,72,0.45)');
+
+  const belowLabel = `Below Platform Paid Penetration Avg (${fmtPct(avgPen)})`;
+  const aboveLabel = `Above Platform Paid Penetration Avg (${fmtPct(avgPen)})`;
+
+  PEN.total = TAM_TREE.total_paid / TAM_TREE.total; PEN.above = TAM_TREE.above.pen; PEN.below = TAM_TREE.below.pen;
+  PEN.below_sf = belowSf.Storefront.pen; PEN.below_nsf = belowSf['Not-Storefront'].pen; PEN.below_unmapped = belowSf.Unmapped.pen;
+  SHARE.total = 1;
+  SHARE.above = TAM_TREE.above.callable / total;
+  SHARE.below = TAM_TREE.below.callable / total;
+  SHARE.below_sf = belowSf.Storefront.callable / TAM_TREE.below.callable;
+  SHARE.below_nsf = belowSf['Not-Storefront'].callable / TAM_TREE.below.callable;
+  SHARE.below_unmapped = belowSf.Unmapped.callable / TAM_TREE.below.callable;
+
+  placeNode('total', 'total', 'Total TAM', total, `100% of TAM \u00b7 ${grp(TAM_TREE.groups ?? (TAM_TREE.above.groups + TAM_TREE.below.groups))}`, TAM_TREE.total_revenue,
+    () => location.href = 'target-builder.html');
+  placeNode('above', 'above', aboveLabel, TAM_TREE.above.callable,
+    `${(TAM_TREE.above.callable/total*100).toFixed(1)}% of TAM \u00b7 ${grp(TAM_TREE.above.groups)}`, TAM_TREE.above.revenue,
+    () => location.href = `target-builder.html?minpen=${minpen}`,
+    `<div class="flow-lbc">LBC: <b>${fmt(ABOVE_LBC.above.lbc_callable)}</b> (${(ABOVE_LBC.above.lbc_callable/ABOVE_LBC.above.callable*100).toFixed(1)}%)<button class="lbc-more" type="button" id="above-lbc-btn" title="See where these LBC businesses are">Details</button></div>`);
+  document.getElementById('above-lbc-btn').addEventListener('click', e => { e.stopPropagation(); openAboveLbc(); });
+  placeNode('below', 'below', belowLabel, TAM_TREE.below.callable,
+    `${(TAM_TREE.below.callable/total*100).toFixed(1)}% of TAM \u00b7 ${grp(TAM_TREE.below.groups)}`, TAM_TREE.below.revenue,
+    () => location.href = `target-builder.html?maxpen=${minpen}`);
+
+  const hrefFor = (sf, maxOrMin) => `target-builder.html?sf=${sf}&${maxOrMin}=${minpen}`;
+  placeNode('below_sf', 'sf', 'Storefront', belowSf.Storefront.callable,
+    `${(belowSf.Storefront.callable/TAM_TREE.below.callable*100).toFixed(1)}% of opp. \u00b7 ${grp(belowSf.Storefront.groups)}`, belowSf.Storefront.revenue,
+    () => location.href = hrefFor('SF', 'maxpen'), lbcBlock(belowSf.Storefront));
+  placeNode('below_nsf', 'nsf', 'Not-Storefront', belowSf['Not-Storefront'].callable,
+    `${(belowSf['Not-Storefront'].callable/TAM_TREE.below.callable*100).toFixed(1)}% of opp. \u00b7 ${grp(belowSf['Not-Storefront'].groups)}`, belowSf['Not-Storefront'].revenue,
+    () => location.href = hrefFor('NSF', 'maxpen'), lbcBlock(belowSf['Not-Storefront']));
+  if (SHOW_UNMAPPED) placeNode('below_unmapped', 'unmapped', 'Unmapped', belowSf.Unmapped.callable,
+    `${(belowSf.Unmapped.callable/TAM_TREE.below.callable*100).toFixed(1)}% of opp. \u00b7 ${grp(belowSf.Unmapped.groups)}`, belowSf.Unmapped.revenue,
+    () => location.href = hrefFor('unknown', 'maxpen'), lbcBlock(belowSf.Unmapped));
+
+  document.getElementById('flow-legend').innerHTML = [
+    ['total', 'Total TAM'], ['above', 'Above avg'], ['below', 'Below avg (opportunity)'],
+    ['sf', 'Storefront'], ['nsf', 'Not-Storefront'], ...(SHOW_UNMAPPED ? [['unmapped', 'Unmapped (no sales group tag)']] : []),
+  ].map(([k, t]) => `<div class="flow-legend-item"><span class="flow-legend-dot" style="background:${LEGEND_COLOR[k]}"></span>${t}</div>`).join('')
+  + `<div class="flow-legend-note">Penetration = paid &divide; TAM. Above / Below compares each sales group to the platform rate of ${fmtPct(avgPen)}; the below-average groups are then split by Storefront status. Bars = share of the parent box. LBC = Low Budget Categories.${!SHOW_UNMAPPED && ABOVE_LBC.unmapped && ABOVE_LBC.unmapped.side === 'above' ? ` <b>Unmapped</b> (businesses with no sales group tag: ${fmt(ABOVE_LBC.unmapped.callable)} TAM, ${fmt(ABOVE_LBC.unmapped.paid)} paid, ${(ABOVE_LBC.unmapped.paid / ABOVE_LBC.unmapped.callable * 100).toFixed(2)}% penetration) is above the platform average, so it is counted inside the Above box.` : ''}
+    <button class="source-cta" type="button" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">Source</button><span class="source-detail" hidden>LBC = docid present in <code>datagrowth.tbl_lpd_tagged_data_v1</code>. Crossed at docid level with the TAM (VFL removed) and its paid = 1 docids, then summed over the same below-average sales groups each box already covers, using each group&#39;s Storefront tag. LBC + Non-LBC = the box's total. LBC list pulled 24 Sep 2026.</span></div>`;
+
+  const sfPenPct = (belowSf.Storefront.pen*100).toFixed(2);
+  const nsfPenPct = (belowSf['Not-Storefront'].pen*100).toFixed(2);
+  document.getElementById('takeaway-text').innerHTML = `<b>Not-Storefront converts better despite being far smaller:</b> within the opportunity zone it's only ${grp(belowSf['Not-Storefront'].groups)} (${(belowSf['Not-Storefront'].callable/TAM_TREE.below.callable*100).toFixed(1)}%) but converts at ${nsfPenPct}% vs Storefront's ${sfPenPct}% - a cleaner path to incremental paid accounts per business targeted.`;
+}
+build();
+</script>
+</body>
+</html>

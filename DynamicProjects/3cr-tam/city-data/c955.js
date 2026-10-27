@@ -1,0 +1,1 @@
+window.__CITY_DATA(955,{"Ac Dealers":"nquBBC","Apparels & Clothing - Retailer":"31wBBC","Bakeries":"rgzBDCC","Battery Dealers":"xulBBC","Cements":"_-yBBCxnMBC","Electrical Goods Dealers":"0jxBBC","Grocery Stores":"r68BDCC","Restaurants":"jruBDCCw2SDCC","Tools & Hardware Products & Services":"lquBBC","Transporters":"2w6BBE"});

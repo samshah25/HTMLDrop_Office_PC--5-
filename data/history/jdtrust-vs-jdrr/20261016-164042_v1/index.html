@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JD Trust vs JDRR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f0; --surface:#fff; --surface-2:#eef1ea; --line:#dde3d8;
+  --ink:#0f1f1a; --ink-2:#4a5a53; --ink-3:#7d8b84;
+  --forest:#06352b; --trust:#00896b; --trust-soft:#dcf1ea; --trust-ink:#05543f;
+  --jdrr:#7b5bd6; --jdrr-soft:#ece7fb; --jdrr-ink:#4b33a0;
+  --lime:#d4f36b; --amber:#e0892f; --amber-soft:#fcefdf; --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14.5px/1.6 'Poppins',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;letter-spacing:-.01em;margin:0}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.view{display:none;animation:rise .3s ease}.view.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* COVER */
+.cover{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.cl{background:var(--forest);color:#e8f2ec;padding:64px 52px;display:flex;flex-direction:column;justify-content:center}
+.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--lime)}
+.cl h1{font-size:clamp(34px,4.2vw,54px);line-height:1.06;margin:20px 0 18px;color:#fff}
+.cl h1 span{color:var(--lime)}
+.cl p{color:#b9cfc5;max-width:440px;margin:0}
+.duo{margin-top:34px;display:grid;gap:10px;max-width:440px}
+.duo div{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;font-size:13px;font-weight:600;color:#fff}
+.duo .tk{height:32px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden}
+.duo .fl{height:100%;border-radius:8px;display:flex;align-items:center;padding:0 10px;font-size:12.5px;font-weight:700;white-space:nowrap;transition:width 1s}
+.cr{padding:48px 44px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.cr .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ink-3);margin-bottom:4px}
+.ch{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-align:left;color:var(--ink);transition:all .15s}
+.ch:hover{border-color:var(--trust);transform:translateX(4px)}
+.ch .n{font-family:'Poppins';font-weight:700;font-size:20px;color:var(--trust)}
+.ch b{display:block;font-family:'Poppins';font-size:16px}
+.ch small{color:var(--ink-2);font-size:13px}
+.ch .ar{color:var(--trust);font-weight:700}
+
+/* SHELL */
+.top{position:sticky;top:0;z-index:20;background:rgba(243,245,240,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:none}
+.top .wrap{display:flex;align-items:center;gap:10px;height:54px}
+.home{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 12px;font-weight:700;font-size:13px}
+.steps{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.stp{border:0;background:none;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+.stp.on{background:var(--forest);color:#fff}
+.head{padding:36px 0 20px}
+.head .n{font-family:'Poppins';font-weight:700;color:var(--trust);font-size:13px;letter-spacing:.1em}
+.head h2{font-size:clamp(24px,3vw,32px);line-height:1.2;margin-top:4px}
+.head p{color:var(--ink-2);margin:8px 0 0;max-width:680px}
+.foot{display:flex;justify-content:space-between;gap:10px;margin:30px 0 56px}
+.fb{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 18px;font-weight:700;font-size:13.5px;color:var(--ink)}
+.fb.nx{background:var(--forest);border-color:var(--forest);color:#fff}
+
+/* BLOCKS */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card h3{font-size:16.5px;margin-bottom:4px}
+.card .sub{font-size:13px;color:var(--ink-2);margin:0 0 14px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.mt{margin-top:14px}
+.kpi .v{font-family:'Poppins';font-size:34px;font-weight:700;line-height:1.05}
+.kpi .l{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+.t{color:var(--trust)}.j{color:var(--jdrr)}.a{color:var(--amber)}
+.note{display:flex;gap:12px;align-items:flex-start;border-radius:12px;padding:14px 16px;background:var(--trust-soft);color:#0d3a2e;font-size:14px;margin-top:14px}
+.note i{font-style:normal;width:26px;height:26px;border-radius:8px;background:var(--trust);color:#fff;display:grid;place-items:center;flex:none;font-weight:700;font-size:13px}
+.note.am{background:var(--amber-soft);color:#5a3510}.note.am i{background:var(--amber)}
+.src{font-size:12px;color:var(--ink-3);margin-top:10px}
+#tip{position:fixed;pointer-events:none;z-index:99;background:var(--forest);color:#fff;font-size:12.5px;padding:7px 10px;border-radius:8px;opacity:0;transition:opacity .12s;line-height:1.4}
+#tip b{color:var(--lime)}
+
+/* MARKET */
+.pick{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:12px 16px;border-radius:12px;background:var(--forest);color:#cfe0d8;font-size:13px}
+.pick .bl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--lime)}
+.seg{display:inline-flex;background:rgba(255,255,255,.08);border-radius:9px;padding:3px;gap:2px;margin-left:6px}
+.seg button{border:0;background:none;color:#cfe0d8;padding:5px 10px;border-radius:7px;font-size:12.5px;font-weight:600}
+.seg button.on{background:var(--lime);color:var(--forest)}
+.hero{display:grid;grid-template-columns:1fr 1.7fr;grid-template-rows:auto 1fr;gap:14px;margin-top:14px}
+.hs.jd{grid-column:1;grid-row:1}.hs.mx{grid-column:1;grid-row:2}.hs.master{grid-column:2;grid-row:1/3;border:1.5px solid var(--trust)}
+.nb{margin-top:18px;border-radius:14px;background:var(--trust-soft);border-left:4px solid var(--trust);padding:16px 18px}
+.nbh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.nbt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--trust-ink)}
+.ychips{display:flex;gap:4px;flex-wrap:wrap}
+.ychips button{border:1px solid #bfe3d6;background:var(--surface);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:600;color:var(--trust-ink)}
+.ychips button.on{background:var(--trust);border-color:var(--trust);color:#fff}
+.nbv{font-size:40px;font-weight:700;color:var(--trust);line-height:1.1;margin-top:10px}
+.nbl{font-size:14px;color:#0d3a2e;margin-top:4px}
+.nbbar{height:10px;border-radius:99px;background:rgba(0,137,107,.18);margin-top:14px;overflow:hidden}
+.nbbar i{display:block;height:100%;border-radius:99px;background:var(--trust);transition:width .5s}
+.nbcap{font-size:12px;color:var(--trust-ink);margin-top:6px}
+.nbs3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.nbs3>div{background:var(--surface);border-radius:10px;padding:12px 14px}
+.nbs3 span{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.nbs3 b{display:block;font-size:26px;font-weight:700;color:var(--ink);line-height:1.2;margin-top:4px}
+.nbs3 b.t{color:var(--trust)}
+.nbs3 .pc b{color:var(--trust)}
+.nbs3 p{margin:4px 0 0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.nbs3 p b{display:inline;font-size:12.5px;margin:0;color:var(--trust-ink)}
+@media (max-width:760px){.nbs3{grid-template-columns:1fr}}
+.nbs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.nbs div{background:var(--surface);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--ink-2)}
+.nbs b{display:block;font-size:20px;color:var(--ink)}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.hs.jd,.hs.mx,.hs.master{grid-column:1;grid-row:auto}}
+.hs{border-radius:var(--r);padding:22px;background:var(--surface);border:1px solid var(--line)}
+.hs .v{font-family:'Poppins';font-weight:700;font-size:44px;line-height:1.05}
+.hs .l{font-size:13.5px;color:var(--ink-2);margin-top:8px}
+.hs .tg{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.hs.jd .v{color:var(--jdrr)}.hs.tr .v,.hs.mx .v{color:var(--trust)}
+.split{height:8px;border-radius:99px;overflow:hidden;display:flex;gap:2px;margin-top:14px}
+.split i{height:100%;transition:width .6s}
+.sub2{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink-2)}
+.sub2:empty{display:none}
+.sub2 b{display:block;font-size:22px;font-weight:700;color:var(--jdrr);line-height:1.2}
+.sub2.t b{color:var(--trust)}
+.split{background:var(--surface-2)}
+.gb{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:end;height:170px;border-bottom:1px solid var(--line);margin-top:10px}
+.gb .c{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+.gb .c b{font-size:13px;font-weight:700}
+.gb .c i{display:block;width:100%;max-width:56px;border-radius:6px 6px 0 0;background:var(--jdrr);transition:height .6s}
+.gbl{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px;text-align:center;font-size:12.5px;color:var(--ink-2)}
+.gbl small{display:block;color:var(--ink-3);font-size:11.5px}
+.bk{display:flex;height:28px;border-radius:10px;overflow:hidden;gap:2px;margin-top:12px}
+.bk div{display:flex;align-items:center;padding:0 10px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden}
+.bkl{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.bkl div{font-size:13.5px;color:var(--ink-2)}
+.bkl b{display:block;font-family:'Poppins';font-size:18px;color:var(--ink)}
+.bkl i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+@media (max-width:760px){.hero,.bkl{grid-template-columns:1fr}.gb{gap:6px}.gbl{gap:6px;font-size:11px}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:10px;height:10px;border-radius:3px;display:inline-block}
+.why{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.why div{background:var(--surface-2);border-radius:10px;padding:12px 14px;font-size:13.5px}
+.why b{font-family:'Poppins';display:block;font-size:15px}
+
+/* RESEARCH */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.tab.on{background:var(--trust);border-color:var(--trust);color:#fff}
+.pane{display:none}.pane.on{display:block;animation:rise .25s}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots i{width:16px;height:16px;border-radius:50%;background:#d6ddd6}
+.dots i.y{background:var(--trust)}
+.row{display:grid;grid-template-columns:1fr 180px 110px;gap:10px;align-items:center;font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--surface-2)}
+.row:last-child{border:0}
+.row .tk{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.row .tk i{display:block;height:100%;border-radius:99px;background:var(--trust);width:0;transition:width .8s}
+.row .tk i.lo{background:#b8c2bb}
+.row .tk{position:relative}
+.row .tk i.gp{position:absolute;left:0;top:0;background:#cfe3da}
+.row .tk i.cs{position:relative}
+.row b small{font-weight:500;color:var(--ink-3)}
+.row b{text-align:right;font-variant-numeric:tabular-nums}
+.quotes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-align:left;color:var(--ink)}
+.qc .q{font-family:'Poppins';font-weight:600;font-size:15.5px}
+.qc .q::before{content:"“";color:var(--amber)}.qc .q::after{content:"”";color:var(--amber)}
+.qc .h{font-size:12px;color:var(--trust);font-weight:700;margin-top:8px}
+.qc .ans{display:none;font-size:13.5px;color:var(--ink-2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.qc.open .ans{display:block}.qc.open .h{display:none}
+
+/* JOURNEY */
+.jsw{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.jb{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.jb.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.path{display:flex;gap:0;margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.pst{flex:1;min-width:120px;border:0;background:none;padding:0 4px;text-align:center;position:relative;color:var(--ink-2)}
+.pst::before{content:"";position:absolute;top:21px;left:0;right:0;height:3px;background:var(--line);z-index:0}
+.pst:first-child::before{left:50%}.pst:last-child::before{right:50%}
+.pst .d{position:relative;z-index:1;width:44px;height:44px;border-radius:50%;background:var(--surface);border:2px solid var(--line);display:grid;place-items:center;margin:0 auto 6px;font-size:19px;transition:all .15s}
+.pst .d.jd{box-shadow:0 0 0 3px var(--jdrr-soft)}
+.pst span{font-size:12.5px;font-weight:600;display:block;line-height:1.25}
+.pst.on .d{background:var(--trust);border-color:var(--trust);transform:scale(1.1)}
+.pst.on span{color:var(--trust-ink);font-weight:700}
+.stage{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.stage .w{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--trust)}
+.stage h3{font-size:22px;margin:4px 0 8px}
+.stage p{color:var(--ink-2);margin:0}
+.ev{margin-top:14px;border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:#4d2e0c}
+.cert{border-radius:14px;padding:14px 16px;border:1px solid var(--line);font-size:13.5px}
+.cert h4{font-size:14px;margin-bottom:2px}
+.cert.tr{background:var(--trust-soft);border-color:#bfe3d6}.cert.tr h4{color:var(--trust-ink)}
+.cert.jd{background:#f4f5f3;border-style:dashed;color:var(--ink-2)}.cert.jd h4{color:var(--ink-3)}
+.cert.jd.on{background:var(--jdrr-soft);border-style:solid;border-color:#d6ccf6}.cert.jd.on h4{color:var(--jdrr-ink)}
+.nav2{display:flex;gap:8px}
+.nav2 button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px;font-weight:700;font-size:13px}
+.nav2 button:disabled{opacity:.35;cursor:default}
+
+/* COMPARE */
+.cmp{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cmp .r{display:grid;grid-template-columns:170px 1fr 1fr;border-top:1px solid var(--line)}
+.cmp .r:first-child{border:0}
+.cmp .r div{padding:13px 16px;font-size:14px}
+.cmp .r div:first-child{font-weight:700;font-family:'Poppins'}
+.cmp .r div:nth-child(2){color:var(--ink-2)}
+.cmp .r div:nth-child(3){background:#f4faf7;font-weight:600;color:var(--trust-ink)}
+.cmp .hd div{font-size:12px!important;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.cmp .hd div:nth-child(2){color:var(--jdrr-ink);background:var(--jdrr-soft)}
+.cmp .hd div:nth-child(3){background:var(--trust-soft)!important}
+
+/* PLAN */
+.plan{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pl{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.pl .k{font-family:'Poppins';font-weight:700;color:var(--trust);font-size:13px}
+.pl h4{font-size:15.5px;margin:6px 0}
+.pl p{font-size:13.5px;color:var(--ink-2);margin:0}
+.ideas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.idea{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.idea .ic{font-size:22px}
+.idea h4{font-size:15.5px;margin:8px 0 6px}
+.idea p{font-size:13.5px;color:var(--ink-2);margin:0}
+.idea .fx{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--trust-ink);background:var(--trust-soft);border-radius:8px;padding:4px 9px}
+.bundles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+.bd{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column}
+.bd .bdt{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.bd h4{font-size:15.5px;margin:0}
+.bd .pr{font-weight:700;color:var(--trust);white-space:nowrap;font-size:15px}
+.bd .pr small{font-weight:500;color:var(--ink-3);font-size:11.5px}
+.bd .s{font-size:13.5px;color:var(--ink-2);margin:6px 0 10px}
+.bd ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink);display:grid;gap:3px}
+.bd .who{margin-top:10px;font-size:12.5px;color:var(--ink-2)}
+.bd .who b{color:var(--ink)}
+.bd .fx{margin-top:auto;padding-top:12px}
+.bd .fx span{display:inline-block;font-size:12px;font-weight:700;color:var(--trust-ink);background:var(--trust-soft);border-radius:8px;padding:4px 9px}
+.subsec{font-size:14px;color:var(--ink-2);margin:6px 0 0}
+@media (max-width:900px){.bundles{grid-template-columns:1fr}}
+.sec{font-family:'Poppins';font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:28px 0 0}
+@media (max-width:900px){.ideas{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.ideas{grid-template-columns:1fr}}
+
+@media (max-width:900px){.cover{grid-template-columns:1fr}.cl{padding:44px 24px}.cr{padding:28px 20px 44px}.plan{grid-template-columns:1fr 1fr}.stage{grid-template-columns:1fr}}
+@media (max-width:640px){
+  .wrap{padding:0 16px}.g2,.g3,.plan,.quotes,.why{grid-template-columns:1fr}
+  .cmp .r{grid-template-columns:1fr 1fr}.cmp .r div:first-child{grid-column:1/-1;padding-bottom:0}.cmp .hd div:first-child{display:none}
+  .row{grid-template-columns:1fr 90px 40px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+
+<!-- COVER -->
+<section class="view on" id="v-cover">
+  <div class="cover">
+    <div class="cl">
+      <div class="kicker">Strategy note · Certificates</div>
+      <h1>JDRR works best at 3.5★ and above. <span>JD Trust works for every business.</span></h1>
+      <p>A JDRR certificate shows the business's rating, so we recommend it for businesses rated 3.5★ or higher. 6 in 10 businesses on Justdial aren't, and every new listing starts with no rating.</p>
+      <div class="duo">
+        <div>JDRR<span class="tk"><span class="fl" id="cvJ" style="width:0;background:var(--jdrr);color:#fff"></span></span></div>
+        <div>JD Trust<span class="tk"><span class="fl" id="cvT" style="width:0;background:var(--lime);color:var(--forest)"></span></span></div>
+      </div>
+    </div>
+    <div class="cr">
+      <div class="lbl">Five short chapters</div>
+      <button class="ch" data-go="market"><span class="n">01</span><span><b>Market</b><small>How many businesses each certificate works for</small></span><span class="ar">→</span></button>
+      <button class="ch" data-go="research"><span class="n">02</span><span><b>Research</b><small>What 67 merchants told us</small></span><span class="ar">→</span></button>
+      <button class="ch" data-go="journey"><span class="n">03</span><span><b>Journey</b><small>Where each certificate helps, step by step</small></span><span class="ar">→</span></button>
+      <button class="ch" data-go="compare"><span class="n">04</span><span><b>Compare</b><small>JDRR vs JD Trust side by side</small></span><span class="ar">→</span></button>
+      <button class="ch" data-go="plan"><span class="n">05</span><span><b>Plan</b><small>What we should do</small></span><span class="ar">→</span></button>
+    </div>
+  </div>
+</section>
+
+<div class="top" id="top"><div class="wrap"><button class="home" data-go="cover">← Cover</button><div class="steps" id="steps"></div></div></div>
+
+<div class="wrap">
+
+<!-- 01 MARKET -->
+<section class="view" id="v-market">
+  <div class="head"><div class="n">01 · MARKET</div><h2>6 in 10 businesses fall below the recommended JDRR rating</h2><p>A JDRR certificate shows the business's rating, so we recommend it only for businesses rated <b>3.5★ or higher</b>. This is a recommendation, not a mandatory rule, and there is no minimum number of reviews. Most businesses don't reach 3.5★, and many have no rating at all.</p></div>
+
+  <div class="pick"><span class="bl">JDRR bar</span><span>Rating<span class="seg" id="segR"></span></span><span>Reviews<span class="seg" id="segV"></span></span></div>
+
+  <div class="hero">
+    <div class="hs jd"><span class="tg">★ Good fit for JDRR</span><div class="v" id="kA">—</div><div class="l" id="kAl"></div></div>
+    <div class="hs mx"><span class="tg">Difference</span><div class="v" id="kM">—</div><div class="l">more businesses for JD Trust than for JDRR</div></div>
+    <div class="hs tr master"><span class="tg">✓ Better fit for JD Trust</span><div class="v" id="kB">—</div><div class="l" id="kBl"></div>
+      <div class="split"><i id="spJ" style="background:var(--jdrr)"></i><i id="spT" style="background:var(--trust)"></i></div>
+      <div class="nb">
+        <div class="nbh"><span class="nbt" id="nbT">Subset</span></div>
+        <div class="ychips" id="segY" style="margin-top:8px"></div>
+        <div class="nbs3">
+          <div><span>New businesses a day</span><b id="nbDay">—</b><p id="nbDayP"></p></div>
+          <div><span>Businesses listed</span><b id="nbAll">—</b><p id="nbAllP"></p></div>
+          <div class="pc"><span>Below the bar</span><b class="t" id="nbB">—</b><p id="nbBP"></p></div>
+        </div>
+        <div class="nbbar"><i id="nbBar"></i></div>
+        <div class="nbcap" id="nbCap"></div>
+      </div>
+    </div>
+  </div>
+  <div class="note am" id="noBar" style="display:none"><i>!</i><div><b>No bar is set, so every business counts as a fit for JDRR.</b> But 1.75 Cr of them have no rating yet, so a JDRR certificate would have no rating to show.</div></div>
+
+  <div class="card mt">
+    <h3>Who JDRR doesn't suit today, and why</h3>
+    <p class="sub" id="bkSub"></p>
+    <div class="bk" id="bk"></div>
+    <div class="bkl" id="bkl"></div>
+    <p class="src">This changes with the JDRR bar above.</p>
+  </div>
+
+  <div class="card mt">
+    <h3>Do older businesses qualify more? Only a little.</h3>
+    <p class="sub">We grouped businesses by the year they were first listed on Justdial. Each bar shows the share of that group that <span style="background:var(--jdrr-soft);color:var(--jdrr-ink);font-weight:700;padding:1px 6px;border-radius:5px">clears the bar today</span>. If businesses naturally earned good ratings over time, the older groups on the left would be close to 100%. They aren't: most businesses stay below the bar however long they've been listed.</p>
+    <div class="gb" id="gb"></div>
+    <div class="gbl" id="gbl"></div>
+    <p class="src">Year first listed = <code>original_date</code>. Counts are TAM businesses today (VFL removed), from <code>sounak_db.priyal_3cr_temp</code>.</p>
+  </div>
+
+  <div class="grid g3 mt">
+    <div class="card kpi"><div class="v t">~3,200 <span style="font-size:18px;color:var(--ink-3)">a day</span></div><div class="l">new businesses listed in 2026 (<b>~97,000 a month</b>). 8.5 L were listed between 1 Jan and 24 Sep 2026.</div></div>
+    <div class="card kpi"><div class="v t" id="kSF">—</div><div class="l">of the JD Trust group are <b>storefront</b> businesses, where the physical certificate can hang on the wall</div></div>
+    <div class="card kpi"><div class="v" id="kP">—</div><div class="l">share of businesses already paying Justdial: businesses that clear the bar vs those below it</div></div>
+  </div>
+
+
+  <div class="foot"><button class="fb" data-go="cover">← Cover</button><button class="fb nx" data-go="research">02 · Research →</button></div>
+</section>
+
+<!-- 02 RESEARCH -->
+<section class="view" id="v-research">
+  <div class="head"><div class="n">02 · RESEARCH</div><h2>What 67 merchants told us about JD Trust</h2><p>Phone calls in Ahmedabad (29), Pune (18), Delhi (8), Mumbai (3), Surat (3), Vadodara (3), Navi Mumbai, Thane and Bhiwandi (1 each). Every question was about JD Trust.</p></div>
+  <div class="tabs">
+    <button class="tab on" data-p="demand">Would they buy?</button>
+    <button class="tab" data-p="price">Price</button>
+    <button class="tab" data-p="obj">Objections</button>
+  </div>
+
+  <div class="pane on" id="p-demand">
+    <div class="grid g3">
+      <div class="card kpi"><div class="v t">64%</div><div class="l">would consider buying at ₹2,000–2,500 (43 of 67)</div></div>
+      <div class="card kpi"><div class="v">2.6<span style="font-size:18px;color:var(--ink-3)">/5</span></div><div class="l">average intent score. 27 of 67 (40%) scored 3 or higher.</div></div>
+      <div class="card kpi"><div class="v">7 yrs</div><div class="l">typical age of the businesses we called</div></div>
+    </div>
+    <div class="card mt">
+      <h3>Who is keenest to buy</h3>
+      <p class="sub">All percentages are out of the 67 merchants called. Light bar = merchants in the group. Dark bar = merchants in the group who would consider buying.</p>
+      <div class="row"><span>Spend nothing on credibility tools <small style="color:var(--ink-3)">(32 of 67)</small></span><span class="tk"><i class="gp" data-w="48"></i><i class="cs" data-w="37"></i></span><b>25 of 67 <small>· 37%</small></b></div>
+      <div class="row"><span>A competitor displays a badge <small style="color:var(--ink-3)">(16 of 67)</small></span><span class="tk"><i class="gp" data-w="24"></i><i class="cs" data-w="18"></i></span><b>12 of 67 <small>· 18%</small></b></div>
+      <div class="row"><span>Lost a customer over trust <small style="color:var(--ink-3)">(11 of 67)</small></span><span class="tk"><i class="gp" data-w="16"></i><i class="cs" data-w="12"></i></span><b>8 of 67 <small>· 12%</small></b></div>
+      <div class="row"><span>Have seen the Amitabh certificate <small style="color:var(--ink-3)">(31 of 67)</small></span><span class="tk"><i class="gp" data-w="46"></i><i class="cs" data-w="33"></i></span><b>22 of 67 <small>· 33%</small></b></div>
+      <div class="row"><span><b style="font-weight:700">Overall</b> <small style="color:var(--ink-3)">(all 67 merchants called)</small></span><span class="tk"><i class="gp" data-w="100"></i><i class="cs" data-w="64"></i></span><b>43 of 67 <small>· 64%</small></b></div>
+      <p class="src">Within each group, most merchants would consider buying: 25 of 32, 12 of 16, 8 of 11 and 22 of 31.</p>
+    </div>
+    <div class="note"><i>→</i><div>Many merchants like the idea, but most haven't made up their mind yet. And the businesses we called have typically been running for 7 years, so businesses without a good rating aren't only new ones.</div></div>
+  </div>
+
+  <div class="pane" id="p-price">
+    <div class="grid g2">
+      <div class="card kpi"><div class="v a">45%</div><div class="l">of merchants called (30 of 67) guessed a price below ₹2,000. Most said about ₹1,000.</div></div>
+      <div class="card kpi"><div class="v t">64%</div><div class="l">would still consider it once we told them the ₹2,000–2,500 price</div></div>
+    </div>
+    <div class="note"><i>₹</i><div>Keep the price at <b>₹2,000 or more</b>. Merchants guess low until they understand the product, so explain what they get instead of lowering the price.</div></div>
+  </div>
+
+  <div class="pane" id="p-obj">
+    <p class="sub" style="margin:0 0 12px;color:var(--ink-2)">Why merchants said they might not buy. Click a card to see a suggested reply.</p>
+    <div class="quotes" id="quotes"></div>
+  </div>
+
+  <div class="foot"><button class="fb" data-go="market">← 01 · Market</button><button class="fb nx" data-go="journey">03 · Journey →</button></div>
+</section>
+
+<!-- 03 JOURNEY -->
+<section class="view" id="v-journey">
+  <div class="head"><div class="n">03 · JOURNEY</div><h2>Where each certificate helps, step by step</h2><p>Choose a journey, then click a step.</p></div>
+  <div class="jsw">
+    <button class="jb on" data-j="newbiz">🆕 New business</button>
+    <button class="jb" data-j="below">🏚️ Stuck below the bar</button>
+    <button class="jb" data-j="customer">🙋 The customer</button>
+  </div>
+  <div class="path" id="path"></div>
+  <div class="stage">
+    <div class="card">
+      <div class="w" id="sW"></div>
+      <h3 id="sT"></h3>
+      <p id="sD"></p>
+      <div class="ev" id="sE"></div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="cert tr"><h4>✓ JD Trust</h4><div id="sTr"></div></div>
+      <div class="cert jd" id="sJc"><h4 id="sJh"></h4><div id="sJ"></div></div>
+      <div class="nav2"><button id="pv">← Previous</button><button id="nx">Next →</button></div>
+    </div>
+  </div>
+  <div class="foot"><button class="fb" data-go="research">← 02 · Research</button><button class="fb nx" data-go="compare">04 · Compare →</button></div>
+</section>
+
+<!-- 04 COMPARE -->
+<section class="view" id="v-compare">
+  <div class="head"><div class="n">04 · COMPARE</div><h2>JDRR vs JD Trust</h2><p>Both are certificates a business can display. The difference is how many businesses each one works for.</p></div>
+  <div class="cmp" id="cmp"></div>
+  <div class="note"><i>=</i><div><b>They don't compete.</b> JD Trust is the certificate a business buys first. JDRR is the upgrade once it's rated 3.5★ or higher.</div></div>
+  <div class="foot"><button class="fb" data-go="journey">← 03 · Journey</button><button class="fb nx" data-go="plan">05 · Plan →</button></div>
+</section>
+
+<!-- 05 PLAN -->
+<section class="view" id="v-plan">
+  <div class="head"><div class="n">05 · PLAN</div><h2>Lead with JD Trust, and upgrade buyers to JDRR once they qualify</h2></div>
+  <div class="plan">
+    <div class="pl"><div class="k">01</div><h4>Sell during onboarding</h4><p>Offer JD Trust to every new listing in its first 30 days. That's about 3,200 a day (~97,000 a month) in 2026.</p></div>
+    <div class="pl"><div class="k">02</div><h4>Target the base below the bar</h4><p id="plB">—</p></div>
+    <div class="pl"><div class="k">03</div><h4>Upgrade to JDRR</h4><p>When a JD Trust holder reaches a 3.5★+ rating, offer JDRR at a discount. That makes two sales from one business.</p></div>
+  </div>
+  <div class="sec">How to sell it</div>
+  <div class="ideas">
+    <div class="idea"><div class="ic">🖼️</div><h4>Let merchants see and hold it</h4><p>Show the physical certificate at expos, trade fairs and merchant meets, so owners can see exactly what they'd get. Give resellers and field sales a demo certificate to carry to every pitch.</p><span class="fx">Fixes "don't know what the product is"</span></div>
+    <div class="idea"><div class="ic">🤝</div><h4>Bundle it with partner products</h4><p>Partner with software and service providers merchants already buy from. For example, Petpooja could offer JD Trust with its restaurant POS. The partner earns a share, and the merchant gets the certificate at the point of purchase.</p><span class="fx">Reaches merchants at the moment they buy</span></div>
+    <div class="idea"><div class="ic">💬</div><h4>WhatsApp and email campaigns</h4><p>Run campaigns aimed at storefront businesses that are new (listed 2025–26) or rated below 3.5★. Show a before-and-after of their listing with the badge, with a one-tap buy link.</p><span class="fx">50.8 L storefront businesses in this group</span></div>
+    <div class="idea"><div class="ic">🏆</div><h4>Recognition as a reward</h4><p>Give JD Trust buyers a chance to be recognised. A lucky winner each month could be featured in a newspaper, on Justdial's social media or in other media. That gives merchants a reason to buy now.</p><span class="fx">Taps into the wish to be recognised</span></div>
+    <div class="idea"><div class="ic">📱</div><h4>Business influencers</h4><p>Work with social media influencers who talk to small business owners (business tips, local business and trade creators). Have them show the certificate and explain what it does for customer trust.</p><span class="fx">Builds awareness: merchants who had seen it were more likely to consider it (33% of calls had seen it and would consider, vs 24% who hadn't seen it)</span></div>
+  </div>
+
+  <div class="sec">Bundles resellers can sell</div>
+  <p class="subsec">Field visits showed a certificate on its own can look like decoration, and merchants want more customers. These four bundles, based on the reseller offerings deck, pair the certificate with something that brings customers.</p>
+  <div class="bundles">
+    <div class="bd"><div class="bdt"><h4>Digital Dukaan All-in-One QR</h4></div>
+      <p class="s">One QR at the counter: customers pay, leave a review and see the shop's Justdial page.</p>
+      <ul><li>Payment solutions (UPI, cards)</li><li>Review prompt after every payment</li><li>Listing and catalogue on scan</li><li>Verified Seal and counter standee</li></ul>
+      <div class="who"><b>For:</b> counter shops (kirana, chemist, bakery, salon) and new listings with no reviews</div>
+      <div class="fx"><span>Every payment asks for a review, so the rating grows</span></div></div>
+    <div class="bd"><div class="bdt"><h4>Rating Rescue</h4></div>
+      <p class="s">A paid 90-day service that helps the business collect genuine ratings and reviews from its real customers.</p>
+      <ul><li>QR review standee</li><li>WhatsApp review requests</li><li>Help replying to reviews</li><li>Once rated 3.5★ or higher, JDRR is offered as a paid upgrade</li></ul>
+      <div class="who"><b>For:</b> the 1.94 Cr below the bar: rated under 3.5★ or with no rating yet</div>
+      <div class="fx"><span>A paid service now, and a JDRR sale later</span></div></div>
+    <div class="bd"><div class="bdt"><h4>New Business Launch Kit</h4></div>
+      <p class="s">JD Trust plus a week at the top of search, so a new business is trusted and seen from its first week.</p>
+      <ul><li>JD Trust certificate and digital badge</li><li>Premium Listing for 7 days</li><li>Mobile and website banners for 7 days</li><li>Report on calls and views at the end</li></ul>
+      <div class="who"><b>For:</b> new listings, ~3,200 a day in 2026, starting with no rating and no reviews</div>
+      <div class="fx"><span>Sold during onboarding, when trust matters most</span></div></div>
+    <div class="bd"><div class="bdt"><h4>JDRR + Banner</h4></div>
+      <p class="s">The JDRR certificate in the shop, plus the business's banner on competitors' listings online.</p>
+      <ul><li>JD Rating Certificate (framed)</li><li>Banner on competitor listings (mobile or website)</li><li>Digital JDRR badge for WhatsApp and Instagram</li><li>Results report at the end</li></ul>
+      <div class="who"><b>For:</b> businesses rated 3.5★ or higher, especially ones with close competitors nearby</div>
+      <div class="fx"><span>Gives the certificate a clear business benefit</span></div></div>
+  </div>
+
+
+  <div class="foot"><button class="fb" data-go="compare">← 04 · Compare</button><button class="fb nx" data-go="cover">Back to cover ↺</button></div>
+</section>
+
+</div>
+
+<script>
+const MKT={"total":31637509,"paid":545929,"grid":{"0|0":{"above":31637509,"paidAbove":545929,"below":0,"paidBelow":0,"unratedBelow":0,"ratedBelow":0,"sfBelow":0,"groups":[100.0,100.0,100.0,100.0,100.0],"yr":[[15730466,0],[842228,0],[936032,0],[1966638,0],[4766490,0],[3403811,0],[3133347,0],[854761,0]]},"0|1":{"above":14117129,"paidAbove":504068,"below":17520380,"paidBelow":41861,"unratedBelow":17520380,"ratedBelow":0,"sfBelow":14969875,"groups":[53.3,37.8,56.6,48.6,38.0],"yr":[[7697184,8033282],[434409,407819],[420113,515919],[966533,1000105],[1750999,3015491],[1411426,1992385],[1130798,2002549],[303834,550927]]},"0|10":{"above":4728646,"paidAbove":368291,"below":26908863,"paidBelow":177638,"unratedBelow":17520451,"ratedBelow":9388412,"sfBelow":23088565,"groups":[19.0,11.0,19.4,23.0,11.3],"yr":[[2531000,13199466],[177445,664783],[187620,748412],[496019,1470619],[534743,4231747],[398862,3004949],[341263,2792084],[61071,793690]]},"0|25":{"above":2846357,"paidAbove":266114,"below":28791152,"paidBelow":279815,"unratedBelow":17520451,"ratedBelow":11270701,"sfBelow":24694293,"groups":[12.2,6.7,11.4,14.9,6.6],"yr":[[1517584,14212882],[115964,726264],[124331,811701],[318072,1648566],[314629,4451861],[232718,3171093],[194943,2938404],[27730,827031]]},"0|50":{"above":1858894,"paidAbove":186116,"below":29778615,"paidBelow":359813,"unratedBelow":17520451,"ratedBelow":12258164,"sfBelow":25538800,"groups":[8.5,4.5,7.6,9.9,4.0],"yr":[[1016923,14713543],[77069,765159],[85809,850223],[207917,1758721],[198550,4567940],[143938,3259873],[114210,3019137],[14217,840544]]},"0|100":{"above":1163849,"paidAbove":120083,"below":30473660,"paidBelow":425846,"unratedBelow":17520451,"ratedBelow":12953209,"sfBelow":26141224,"groups":[5.8,3.0,4.9,6.1,2.3],"yr":[[663559,15066907],[47868,794360],[55373,880659],[126890,1839748],[117152,4649338],[83429,3320382],[62095,3071252],[7309,847452]]},"2.5|0":{"above":13530692,"paidAbove":502698,"below":18106817,"paidBelow":43231,"unratedBelow":17520452,"ratedBelow":586365,"sfBelow":15483594,"groups":[50.8,35.9,54.2,47.3,36.4],"yr":[[7352840,8377626],[421633,420595],[408882,527150],[942168,1024470],[1674163,3092327],[1350795,2053016],[1088556,2044791],[289894,564867]]},"2.5|1":{"above":13530692,"paidAbove":502698,"below":18106817,"paidBelow":43231,"unratedBelow":17520452,"ratedBelow":586365,"sfBelow":15483594,"groups":[50.8,35.9,54.2,47.3,36.4],"yr":[[7352840,8377626],[421633,420595],[408882,527150],[942168,1024470],[1674163,3092327],[1350795,2053016],[1088556,2044791],[289894,564867]]},"2.5|10":{"above":4709790,"paidAbove":368064,"below":26927719,"paidBelow":177865,"unratedBelow":17520452,"ratedBelow":9407267,"sfBelow":23105336,"groups":[18.9,10.9,19.3,22.9,11.2],"yr":[[2519858,13210608],[176723,665505],[187020,749012],[493871,1472767],[532639,4233851],[397674,3006137],[340436,2792911],[60948,793813]]},"2.5|25":{"above":2838959,"paidAbove":265988,"below":28798550,"paidBelow":279941,"unratedBelow":17520452,"ratedBelow":11278098,"sfBelow":24700896,"groups":[12.2,6.6,11.4,14.9,6.6],"yr":[[1512959,14217507],[115636,726592],[124084,811948],[317151,1649487],[313964,4452526],[232384,3171427],[194687,2938660],[27709,827052]]},"2.5|50":{"above":1855195,"paidAbove":186040,"below":29782314,"paidBelow":359889,"unratedBelow":17520452,"ratedBelow":12261862,"sfBelow":25542121,"groups":[8.5,4.5,7.5,9.9,4.0],"yr":[[1014474,14715992],[76892,765336],[85694,850338],[207463,1759175],[198303,4568187],[143798,3260013],[114104,3019243],[14206,840555]]},"2.5|100":{"above":1162203,"paidAbove":120044,"below":30475306,"paidBelow":425885,"unratedBelow":17520452,"ratedBelow":12954854,"sfBelow":26142721,"groups":[5.8,3.0,4.9,6.1,2.3],"yr":[[662385,15068081],[47801,794427],[55334,880698],[126702,1839936],[117071,4649419],[83377,3320434],[62055,3071292],[7304,847457]]},"3|0":{"above":13288239,"paidAbove":500000,"below":18349270,"paidBelow":45929,"unratedBelow":17520452,"ratedBelow":828818,"sfBelow":15697917,"groups":[49.7,35.1,53.1,46.8,35.9],"yr":[[7192370,8538096],[415986,426242],[404051,531981],[931782,1034856],[1648035,3118455],[1330109,2073702],[1076433,2056914],[287756,567005]]},"3|1":{"above":13288239,"paidAbove":500000,"below":18349270,"paidBelow":45929,"unratedBelow":17520452,"ratedBelow":828818,"sfBelow":15697917,"groups":[49.7,35.1,53.1,46.8,35.9],"yr":[[7192370,8538096],[415986,426242],[404051,531981],[931782,1034856],[1648035,3118455],[1330109,2073702],[1076433,2056914],[287756,567005]]},"3|10":{"above":4676460,"paidAbove":367448,"below":26961049,"paidBelow":178481,"unratedBelow":17520452,"ratedBelow":9440597,"sfBelow":23135591,"groups":[18.8,10.8,19.2,22.8,11.2],"yr":[[2496390,13234076],[175532,666696],[186110,749922],[491153,1475485],[530175,4236315],[396134,3007677],[339560,2793787],[60791,793970]]},"3|25":{"above":2824855,"paidAbove":265683,"below":28812654,"paidBelow":280246,"unratedBelow":17520452,"ratedBelow":11292202,"sfBelow":24713968,"groups":[12.1,6.6,11.3,14.8,6.5],"yr":[[1502857,14227609],[115007,727221],[123672,812360],[315978,1650660],[313040,4453450],[231856,3171955],[194386,2938961],[27678,827083]]},"3|50":{"above":1847409,"paidAbove":185859,"below":29790100,"paidBelow":360070,"unratedBelow":17520452,"ratedBelow":12269648,"sfBelow":25549428,"groups":[8.5,4.5,7.5,9.8,4.0],"yr":[[1008619,14721847],[76506,765722],[85474,850558],[206891,1759747],[197897,4568593],[143579,3260232],[113994,3019353],[14192,840569]]},"3|100":{"above":1158324,"paidAbove":119949,"below":30479185,"paidBelow":425980,"unratedBelow":17520452,"ratedBelow":12958733,"sfBelow":26146401,"groups":[5.7,2.9,4.8,6.1,2.3],"yr":[[659375,15071091],[47654,794574],[55237,880795],[126426,1840212],[116877,4649613],[83282,3320529],[62007,3071340],[7294,847467]]},"3.5|0":{"above":12204408,"paidAbove":490170,"below":19433101,"paidBelow":55759,"unratedBelow":17520452,"ratedBelow":1912649,"sfBelow":16662908,"groups":[44.1,31.5,48.3,43.3,33.7],"yr":[[6500203,9230263],[364815,477413],[382077,553955],[873353,1093285],[1534272,3232218],[1247346,2156465],[1026453,2106894],[274360,580401]]},"3.5|1":{"above":12204408,"paidAbove":490170,"below":19433101,"paidBelow":55759,"unratedBelow":17520452,"ratedBelow":1912649,"sfBelow":16662908,"groups":[44.1,31.5,48.3,43.3,33.7],"yr":[[6500203,9230263],[364815,477413],[382077,553955],[873353,1093285],[1534272,3232218],[1247346,2156465],[1026453,2106894],[274360,580401]]},"3.5|10":{"above":4466819,"paidAbove":363043,"below":27170690,"paidBelow":182886,"unratedBelow":17520452,"ratedBelow":9650238,"sfBelow":23328477,"groups":[17.8,10.2,18.1,21.9,10.9],"yr":[[2356577,13373889],[167792,674436],[180109,755923],[470389,1496249],[513800,4252690],[385103,3018708],[332707,2800640],[59762,794999]]},"3.5|25":{"above":2724384,"paidAbove":262956,"below":28913125,"paidBelow":282973,"unratedBelow":17520452,"ratedBelow":11392673,"sfBelow":24807567,"groups":[11.6,6.3,10.8,14.3,6.4],"yr":[[1437598,14292868],[110417,731811],[120051,815981],[305566,1661072],[305284,4461206],[226534,3177277],[191235,2942112],[27335,827426]]},"3.5|50":{"above":1789517,"paidAbove":184107,"below":29847992,"paidBelow":361822,"unratedBelow":17520452,"ratedBelow":12327540,"sfBelow":25603901,"groups":[8.2,4.3,7.2,9.6,3.9],"yr":[[970791,14759675],[73825,768403],[83156,852876],[201011,1765627],[193462,4573028],[140616,3263195],[112406,3020941],[14001,840760]]},"3.5|100":{"above":1126017,"paidAbove":118893,"below":30511492,"paidBelow":427036,"unratedBelow":17520452,"ratedBelow":12991040,"sfBelow":26177049,"groups":[5.5,2.9,4.7,6.0,2.3],"yr":[[637992,15092474],[46194,796034],[53809,882223],[123312,1843326],[114429,4652061],[81692,3322119],[61242,3072105],[7182,847579]]},"4|0":{"above":10490071,"paidAbove":453665,"below":21147438,"paidBelow":92264,"unratedBelow":17520452,"ratedBelow":3626986,"sfBelow":18207486,"groups":[35.5,26.0,40.1,37.7,30.5],"yr":[[5368505,10361961],[313479,528749],[328143,607889],[770598,1196040],[1370603,3395887],[1123874,2279937],[951439,2181908],[262152,592609]]},"4|1":{"above":10490071,"paidAbove":453665,"below":21147438,"paidBelow":92264,"unratedBelow":17520452,"ratedBelow":3626986,"sfBelow":18207486,"groups":[35.5,26.0,40.1,37.7,30.5],"yr":[[5368505,10361961],[313479,528749],[328143,607889],[770598,1196040],[1370603,3395887],[1123874,2279937],[951439,2181908],[262152,592609]]},"4|10":{"above":3762088,"paidAbove":336256,"below":27875421,"paidBelow":209673,"unratedBelow":17520452,"ratedBelow":10354969,"sfBelow":23973818,"groups":[13.3,8.0,14.6,19.0,9.9],"yr":[[1871619,13858847],[142896,699332],[158025,778007],[409346,1557292],[463176,4303314],[351353,3052458],[309011,2824336],[56194,798567]]},"4|25":{"above":2295419,"paidAbove":244165,"below":29342090,"paidBelow":301764,"unratedBelow":17520452,"ratedBelow":11821638,"sfBelow":25205819,"groups":[8.8,5.0,8.8,12.4,5.8],"yr":[[1145633,14584833],[93066,749162],[105076,830956],[266527,1700111],[275684,4490806],[206764,3197047],[176860,2956487],[25512,829249]]},"4|50":{"above":1501296,"paidAbove":171051,"below":30136213,"paidBelow":374878,"unratedBelow":17520452,"ratedBelow":12615761,"sfBelow":25874360,"groups":[6.3,3.4,5.8,8.2,3.6],"yr":[[774986,14955480],[61896,780332],[72020,864012],[174854,1791784],[173541,4592949],[127589,3276222],[103384,3029963],[12820,841941]]},"4|100":{"above":933811,"paidAbove":110440,"below":30703698,"paidBelow":435489,"unratedBelow":17520452,"ratedBelow":13183246,"sfBelow":26359490,"groups":[4.3,2.3,3.7,5.1,2.0],"yr":[[506680,15223786],[38268,803960],[45788,890244],[106211,1860427],[101316,4665174],[73155,3330656],[55774,3077573],[6480,848281]]},"4.5|0":{"above":6399954,"paidAbove":332240,"below":25237555,"paidBelow":213689,"unratedBelow":17520452,"ratedBelow":7717103,"sfBelow":21826275,"groups":[18.1,15.3,23.9,24.6,18.6],"yr":[[3143104,12587362],[202063,640165],[224513,711519],[495425,1471213],[802435,3964055],[669587,2734224],[633914,2499433],[228204,626557]]},"4.5|1":{"above":6399954,"paidAbove":332240,"below":25237555,"paidBelow":213689,"unratedBelow":17520452,"ratedBelow":7717103,"sfBelow":21826275,"groups":[18.1,15.3,23.9,24.6,18.6],"yr":[[3143104,12587362],[202063,640165],[224513,711519],[495425,1471213],[802435,3964055],[669587,2734224],[633914,2499433],[228204,626557]]},"4.5|10":{"above":2333853,"paidAbove":237671,"below":29303656,"paidBelow":308258,"unratedBelow":17520452,"ratedBelow":11783204,"sfBelow":25252609,"groups":[4.9,3.6,7.7,12.8,7.9],"yr":[[914032,14816434],[89302,752926],[112373,823659],[276052,1690586],[354560,4411930],[282403,3121408],[257193,2876154],[47743,807018]]},"4.5|25":{"above":1402244,"paidAbove":171304,"below":30235265,"paidBelow":374625,"unratedBelow":17520452,"ratedBelow":12714813,"sfBelow":26015595,"groups":[3.1,2.2,4.6,8.3,4.6],"yr":[[551070,15179396],[56377,785851],[73853,862179],[178786,1787852],[211417,4555073],[164829,3238982],[144776,2988571],[21022,833739]]},"4.5|50":{"above":896107,"paidAbove":120857,"below":30741402,"paidBelow":425072,"unratedBelow":17520452,"ratedBelow":13220950,"sfBelow":26429074,"groups":[2.2,1.6,3.0,5.4,2.8],"yr":[[371899,15358567],[36575,805653],[49563,886469],[115489,1851149],[130801,4635689],[99372,3304439],[82380,3050967],[9957,844804]]},"4.5|100":{"above":538264,"paidAbove":79238,"below":31099245,"paidBelow":466691,"unratedBelow":17520452,"ratedBelow":13578793,"sfBelow":26726283,"groups":[1.5,1.1,1.9,3.2,1.5],"yr":[[241415,15489051],[22215,820013],[30330,905702],[68267,1898371],[74010,4692480],[54784,3349027],[42523,3090824],[4677,850084]]}},"groupLabels":["Before 2010","2010\u201314","2015\u201319","2020\u201322","2023\u201325"],"groupCounts":[1570584,6144268,8015614,3744898,11303648],"yearLabels":["Before 2020","2020","2021","2022","2023","2024","2025","2026"],"yearCounts":[15730466,842228,936032,1966638,4766490,3403811,3133347,854761],"unrated":17520452,"noDate":3736,"sfTotal":27194912,"sfCampaign":5077262,"mon":[[2025,1,309900],[2025,2,281169],[2025,3,303281],[2025,4,206551],[2025,5,307821],[2025,6,282134],[2025,7,196700],[2025,8,189196],[2025,9,404451],[2025,10,148324],[2025,11,233174],[2025,12,270646],[2026,1,206916],[2026,2,124350],[2026,3,160492],[2026,4,96808],[2026,5,118172],[2026,6,81377],[2026,7,52826],[2026,8,8056],[2026,9,5764]],"meta":["2026-09-24","2026-09-25","31637509","545929"]};
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id),$$=s=>[...document.querySelectorAll(s)];
+const short=n=>n>=1e7?(n/1e7).toFixed(2)+' Cr':n>=1e5?(n/1e5).toFixed(1)+' L':Math.round(n).toLocaleString('en-IN');
+const tip=$('tip');
+const show=(e,h)=>{tip.innerHTML=h;tip.style.opacity=1;tip.style.left=Math.min(innerWidth-220,e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px'};
+const hide=()=>tip.style.opacity=0;
+
+/* bar */
+let bar={r:'3.5',v:0,y:'7'},S={};
+const key=()=>`${bar.r}|${bar.v}`;
+const lbl=()=>{const r=bar.r==='0'?'':parseFloat(bar.r).toFixed(1)+'★ or higher';const v=bar.v===0?'':bar.v+'+ reviews';return [r,v].filter(Boolean).join(', ')||'no bar'};
+function seg(el,items,get,set){el.innerHTML=items.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('');[...el.children].forEach(b=>b.onclick=()=>{set(b.dataset.v);update()});el.sync=()=>[...el.children].forEach(b=>b.classList.toggle('on',b.dataset.v==String(get())))}
+seg($('segR'),[['0','Any'],['2.5','2.5★'],['3','3.0★'],['3.5','3.5★'],['4','4.0★'],['4.5','4.5★']],()=>bar.r,v=>bar.r=v);
+seg($('segV'),[0,1,10,25,50,100].map(v=>[v,v?v+'+':'0 (any)']),()=>bar.v,v=>bar.v=+v);
+const YOPT=[['all','All'],...MKT.yearLabels.map((l,i)=>[String(i),l])];
+$('segY').innerHTML=YOPT.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('');
+$$('#segY button').forEach(b=>b.onclick=()=>{bar.y=b.dataset.v;update()});
+
+function groupChart(d){
+  const mx=Math.max(20,Math.ceil(Math.max(...d.groups)/10)*10);
+  $('gb').innerHTML=d.groups.map((v,i)=>`<div class="c" data-i="${i}"><b>${v.toFixed(0)}%</b><i style="height:${v/mx*80}%"></i></div>`).join('');
+  $('gbl').innerHTML=MKT.groupLabels.map((l,i)=>`<div>${l}<small>${short(MKT.groupCounts[i])} businesses</small></div>`).join('');
+  $$('#gb .c').forEach(c=>{const i=+c.dataset.i;c.onmousemove=e=>show(e,`Listed <b>${MKT.groupLabels[i]}</b><br>${d.groups[i].toFixed(1)}% clear the bar today<br>${(100-d.groups[i]).toFixed(1)}% are below it`);c.onmouseleave=hide});
+}
+function update(){
+  $('segR').sync();$('segV').sync();$$('#segY button').forEach(b=>b.classList.toggle('on',b.dataset.v===bar.y));
+  const d=MKT.grid[key()],tot=MKT.total,a=d.above/tot*100,none=d.below===0;
+  S={above:d.above,below:d.below,a,mult:none?0:d.below/d.above,old:d.groups[0],pa:d.paidAbove/d.above*100,pb:none?0:d.paidBelow/d.below*100};
+  $('kA').textContent=short(d.above);$('kB').textContent=none?'0':short(d.below);
+  $('kM').textContent=none?'—':S.mult.toFixed(1)+'×';
+  $('kAl').innerHTML=`businesses clear the bar (${lbl()}). That's <b>${a.toFixed(1)}%</b> of all businesses.`;
+  $('kBl').innerHTML=none?'No bar is set, so no business is below it.':`businesses are below the bar. That's <b>${(100-a).toFixed(1)}%</b> of all businesses.`;
+  $('spJ').style.width=a+'%';$('spT').style.width=(100-a)+'%';
+  const all=bar.y==='all',yi=+bar.y,yl=all?'':MKT.yearLabels[yi];
+  const nbT=all?tot:MKT.yearCounts[yi],nbB=all?d.below:d.yr[yi][1],pc=nbT?nbB/nbT*100:0;
+  const when=all?'on Justdial':yi===0?'listed before 2020':`listed in ${yl}`;
+  $('nbT').textContent=all?'All businesses':yi===0?'Subset · Businesses listed before 2020':`Subset · New businesses listed in ${yl}`;
+  $('nbAll').textContent=short(nbT);$('nbB').textContent=none?'0':short(nbB);
+  $('nbAllP').innerHTML=all?'on Justdial':yi===0?'before 2020':`in ${yl}`;
+  $('nbBP').innerHTML=`<b>${pc.toFixed(0)}%</b> of businesses listed ${all?'on Justdial':yi===0?'before 2020':'in '+yl}`;
+  const Y=all||yi===0?0:+yl,days=Y===2026?267:(Y%4===0?366:365);
+  if(Y){const pd=nbT/days;const r=pd>=1000?Math.round(pd/100)*100:Math.round(pd);$('nbDay').textContent='~'+r.toLocaleString('en-IN');
+    $('nbDayP').innerHTML=`~${short(Math.round(nbT/(days/30.44)/1000)*1000)} a month`;$('nbDayP').title=Y===2026?'2026 so far: 1 Jan to 24 Sep':'';}
+  else{$('nbDay').textContent='—';$('nbDayP').textContent='Pick a year from 2020 to 2026';}
+  $('nbBar').style.width=(none||all?0:nbB/d.below*100)+'%';
+  $('nbCap').textContent=none||all?'':`These ${short(nbB)} are ${(nbB/d.below*100).toFixed(0)}% of the ${short(d.below)} JD Trust businesses.`;
+  $('nbBar').parentElement.style.display=all?'none':'';
+  $('noBar').style.display=none?'flex':'none';
+  const bl=[];if(bar.r!=='0')bl.push(`rated below ${parseFloat(bar.r).toFixed(1)}★`);if(bar.v>0)bl.push(`with fewer than ${bar.v} reviews`);
+  $('bkSub').innerHTML=none?'No bar is set, so every business counts as eligible.':`A JDRR certificate shows the business's rating. With the recommended bar at <b>${lbl()}</b>, all 3.16 Cr businesses fall into three groups.`;
+  const parts=[[d.above,'var(--jdrr)',`Clear the bar (${lbl()})`,'Good fit for JDRR'],
+    [d.ratedBelow,'var(--amber)','Have a rating, but below the bar',bl.length?`Below the recommended bar: ${bl.join(' or ')}`:'—'],
+    [d.unratedBelow,'var(--trust)','No rating yet','Nothing to show on a JDRR certificate']];
+  $('bk').innerHTML=parts.map(p=>{const w=p[0]/tot*100;return `<div style="width:${w}%;background:${p[1]}">${w>=8?w.toFixed(1)+'%':''}</div>`}).join('');
+  $('bkl').innerHTML=parts.map(p=>`<div><i style="background:${p[1]}"></i>${p[2]}<b>${short(p[0])} <span style="font-size:13px;color:var(--ink-3);font-weight:500">${(p[0]/tot*100).toFixed(1)}%</span></b>${p[3]}</div>`).join('');
+  $('kSF').textContent=none?'—':(d.sfBelow/d.below*100).toFixed(0)+'%';
+  $('kP').innerHTML=none?'—':`<span class="j">${S.pa.toFixed(1)}%</span> <span style="font-size:18px;color:var(--ink-3)">vs</span> <span class="t">${S.pb.toFixed(1)}%</span>`;
+  groupChart(d);
+  $('cvJ').style.width=Math.max(a,8)+'%';$('cvJ').textContent=a.toFixed(0)+'%';
+  $('cvT').style.width=(100-a)+'%';$('cvT').textContent=(100-a).toFixed(0)+'% · '+short(d.below);
+  $('plB').textContent=`${short(d.below)} businesses. Start with the ${short(d.unratedBelow)} that have no rating yet, and with those who spend nothing on credibility tools (48% of merchants called).`;
+  buildCmp();if(cur==='journey')renderS(si);
+}
+
+/* research */
+const Q=[['Business is very small.','Small businesses are the ones customers trust least, so a trust badge helps them most. It\'s a one-time cost, not a monthly fee.'],
+ ['Don\'t know what the product is.','Explain what it verifies and where it appears. 33% of merchants called had seen it and would consider buying, against 24% who hadn\'t seen it.'],
+ ['Not a physical shop, I work from home.','Customers can\'t walk in to check them out, so verification matters even more. Offer a badge they can share on WhatsApp.'],
+ ['Just started the business, need some time.','This is when trust matters most. Make it part of onboarding.']];
+$('quotes').innerHTML=Q.map(q=>`<button class="qc"><div class="q">${q[0]}</div><div class="h">See reply ↓</div><div class="ans">${q[1]}</div></button>`).join('');
+$$('.qc').forEach(c=>c.onclick=()=>c.classList.toggle('open'));
+const anim=s=>s.querySelectorAll('[data-w]').forEach(i=>{i.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>i.style.width=i.dataset.w+'%'))});
+$$('.tab').forEach(t=>t.onclick=()=>{$$('.tab').forEach(x=>x.classList.toggle('on',x===t));$$('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t.dataset.p));anim($('p-'+t.dataset.p))});
+
+/* journey */
+const f=v=>typeof v==='function'?v():v;
+const J={
+ newbiz:[
+  {e:'🏪',w:'Day 0',t:'Listed on Justdial',d:'The business goes live with no reviews and no rating. To a customer, it could be anyone.',ev:'55% of all businesses on Justdial still have no rating.',tr:'Sell it now, during onboarding. The business has a badge from day one.',j:'Not a good fit. There\'s no rating to show.'},
+  {e:'📲',w:'Week 1–2',t:'Compared with rivals',d:'Customers compare it with a competitor that has lots of reviews and a certificate on the wall.',ev:'24% of merchants called (16 of 67) say a rival shows a badge they don\'t have. 12 of those 16 would consider JD Trust.',tr:'Gives the business a badge to match the competitor\'s.',j:'Not a good fit yet. Still no rating.'},
+  {e:'🐢',w:'Months to years',t:'Waiting for a good rating',d:'Reviews trickle in slowly, and some businesses end up rated below 3.5★. Many stay below the bar for years.',ev:()=>`Even among businesses listed before 2010, only ${S.old.toFixed(0)}% clear the bar today.`,tr:'Keeps the business looking credible while its rating builds up.',j:'Not recommended until the rating reaches 3.5★.'},
+  {e:'🏆',w:'Good reviews',t:'Crosses the bar',d:'The business reaches a rating of 3.5★ or higher. Now JDRR is a good fit.',ev:()=>`Only ${S.a.toFixed(1)}% of businesses (${short(S.above)}) are at this stage.`,tr:'Already bought, so JDRR is an easy upgrade.',j:'Available now. Offer it as an upgrade.',on:1}],
+ below:[
+  {e:'🏢',w:'3–15+ years',t:'Years in business',d:'A tailor, a trader or a lawyer. Loyal customers through word of mouth, but very few reviews online.',ev:'The median business we called has been running for 7 years.',tr:'Turns years of offline reputation into a badge customers can see.',j:'Not a good fit. Years in business don\'t give it a rating.'},
+  {e:'🔎',w:'Today',t:'Found by new customers',d:'It sits next to competitors with lots of reviews and looks like a new business.',ev:'In many categories customers rarely leave reviews. Only 0.5% of lawyers are rated 3.5★ or higher.',tr:'"Verified by Justdial" shows it\'s a real, established business.',j:'Not a good fit. No rating, or a rating below 3.5★.'},
+  {e:'🛡️',w:'Buys JD Trust',t:'Wins more customers',d:'More customers means more reviews, which moves the business toward the bar.',ev:'37% of merchants called (25 of 67) spend nothing on credibility tools and would consider JD Trust.',tr:'The first credibility tool this business pays for.',j:'Within reach, once reviews give it a 3.5★+ rating.',on:1}],
+ customer:[
+  {e:'💡',w:'Need',t:'Searches Justdial',d:'An AC breaks down or a wedding needs a decorator. The customer is worried about getting cheated.',ev:'Customers trust Justdial as a platform. JD Trust carries that trust over to each listing.',tr:'Builds on the trust customers already have in Justdial.',j:'Not relevant yet.'},
+  {e:'📋',w:'Results',t:'Scans the listings',d:'Most listings have few or no reviews. Small and new businesses look the same as dubious ones.',ev:()=>`About ${Math.round(S.a)} in 100 listings can show JDRR. JD Trust can appear on any verified listing.`,tr:'Can appear on any verified listing.',j:()=>`Shown on only about ${Math.round(S.a)} in 100 listings.`,on:1},
+  {e:'🤝',w:'Decision',t:'Calls and buys',d:'A certificate on the listing or in the shop tips a close decision.',ev:'43% of merchants called (29 of 67) say that as customers, a certificate makes them trust a business more.',tr:'Reassures the customer right when they decide.',j:'Only helps businesses rated 3.5★ or higher.'},
+  {e:'⭐',w:'After',t:'Leaves a review',d:'Each review moves the business toward the bar.',ev:'JD Trust helps win sales, sales bring reviews, and reviews lead to JDRR.',tr:'Helped win the sale that led to this review.',j:'One review closer to a 3.5★+ rating.'}]
+};
+let jk='newbiz',si=0,cur='cover';
+function buildPath(){$('path').innerHTML=J[jk].map((s,i)=>`<button class="pst" data-i="${i}"><span class="d ${s.on?'jd':''}">${s.e}</span><span>${s.t}</span></button>`).join('');$$('.pst').forEach(b=>b.onclick=()=>renderS(+b.dataset.i))}
+function renderS(i){si=i;const s=J[jk][i];
+  $$('.pst').forEach((b,k)=>b.classList.toggle('on',k===i));
+  $('sW').textContent=`Step ${i+1} of ${J[jk].length} · ${s.w}`;$('sT').textContent=s.t;$('sD').textContent=s.d;$('sE').textContent=f(s.ev);
+  $('sTr').textContent=f(s.tr);$('sJ').textContent=f(s.j);
+  $('sJc').classList.toggle('on',!!s.on);$('sJh').textContent=s.on?'★ JDRR':'★ JDRR (not a good fit yet)';
+  $('pv').disabled=i===0;$('nx').disabled=i===J[jk].length-1;}
+$$('.jb').forEach(b=>b.onclick=()=>{jk=b.dataset.j;$$('.jb').forEach(x=>x.classList.toggle('on',x===b));buildPath();renderS(0)});
+$('pv').onclick=()=>si>0&&renderS(si-1);$('nx').onclick=()=>si<J[jk].length-1&&renderS(si+1);
+
+/* compare */
+function buildCmp(){
+  const rows=[['','JDRR','JD Trust'],
+   ['Who it works for','Businesses rated 3.5★ or higher',`Any verified business, including the ${short(S.below)} below the bar`],
+   ['With no rating yet','Nothing to show','Still proves the business is real'],
+   ['How the market grows','Only as businesses earn 3.5★+ ratings','With every new listing (~97,000 a month in 2026)'],
+   ['Categories','Where customers leave reviews','All of them, including lawyers (only 0.5% rated 3.5★+)'],
+   ['Research','Not tested','64% would consider it']];
+  $('cmp').innerHTML=rows.map((r,i)=>`<div class="r ${i?'':'hd'}">${r.map(c=>`<div>${c}</div>`).join('')}</div>`).join('');
+}
+
+/* router */
+const CH=[['market','Market'],['research','Research'],['journey','Journey'],['compare','Compare'],['plan','Plan']];
+$('steps').innerHTML=CH.map(([k,l],i)=>`<button class="stp" data-go="${k}">${i+1} · ${l}</button>`).join('');
+function go(v){cur=v;$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$('top').style.display=v==='cover'?'none':'block';
+  $$('.stp').forEach(s=>s.classList.toggle('on',s.dataset.go===v));
+  if(v==='journey'){buildPath();renderS(si)} if(v==='research')anim($$('.pane.on')[0]);window.scrollTo(0,0)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+update();const h=location.hash.slice(1);if(h&&$('v-'+h))go(h);
+})();
+</script>
+</body>
+</html>

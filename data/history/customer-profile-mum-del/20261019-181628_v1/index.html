@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mumbai vs Delhi Customers</title>
+<style>
+:root{
+  --page:#f4f5f7;--card:#ffffff;--soft:#f7f8fa;--text:#141a26;--ink2:#3d4555;--muted:#6a7282;--line:#e4e7ec;--line2:#eef0f3;
+  --accent:#1d4f91;--accent-soft:#eaf0f9;--won:#17784a;--won-soft:#e6f4ed;--lost:#b33b2b;--lost-soft:#fbebe8;--cue:#a8650a;--cue-soft:#fcf1df;--on:#fff;
+  --delhi:#2a78d6;--delhi-soft:#e7f0fb;--mumbai:#eb6834;--mumbai-soft:#fdeee7;--grid:#e8eaee;--z:#c3c7cf;--n2:#c4452e;--p2:#2e8b57;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 16px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#0f1217;--card:#171b22;--soft:#1d222b;--text:#eceef2;--ink2:#c5cad3;--muted:#949cab;--line:#2a303b;--line2:#232934;
+  --accent:#86aae6;--accent-soft:#1c2738;--won:#6cc597;--won-soft:#16281e;--lost:#ec8e7d;--lost-soft:#2f1c19;--cue:#e3ad5d;--cue-soft:#2e2517;--on:#0f1217;
+  --delhi:#3987e5;--delhi-soft:#172638;--mumbai:#e0703f;--mumbai-soft:#33211a;--grid:#262c36;--z:#4b525e;--shadow:none;}}
+:root[data-theme="dark"]{
+  --page:#0f1217;--card:#171b22;--soft:#1d222b;--text:#eceef2;--ink2:#c5cad3;--muted:#949cab;--line:#2a303b;--line2:#232934;
+  --accent:#86aae6;--accent-soft:#1c2738;--won:#6cc597;--won-soft:#16281e;--lost:#ec8e7d;--lost-soft:#2f1c19;--cue:#e3ad5d;--cue-soft:#2e2517;--on:#0f1217;
+  --delhi:#3987e5;--delhi-soft:#172638;--mumbai:#e0703f;--mumbai-soft:#33211a;--grid:#262c36;--z:#4b525e;--shadow:none;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--text);font:15px/1.6 "Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:36px}
+.content{min-width:0;max-width:1040px;padding-bottom:40px}
+/* sidebar */
+aside.side{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:28px 0}
+.brand{font-weight:700;font-size:14px;margin:0 0 4px}.brand span{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.side .grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 6px}
+.side a{display:flex;gap:8px;font-size:13px;line-height:1.35;color:var(--ink2);text-decoration:none;padding:6px 10px;border-radius:8px}
+.side a .n{flex:none;font-size:11px;font-weight:700;color:var(--muted);width:20px;padding-top:1px}
+.side a:hover{background:var(--card);color:var(--text)}
+.side a.on{background:var(--card);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
+.side a.on .n{color:var(--accent)}
+@media (max-width:960px){.wrap{grid-template-columns:1fr;gap:0}aside.side{display:none}}
+/* header */
+header.top{padding:44px 0 8px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--delhi);display:inline-block}.eyebrow i+i{background:var(--mumbai);margin-left:-4px}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:10px 0 12px;letter-spacing:-.02em;max-width:820px}
+.scope{color:var(--muted);font-size:14.5px;max-width:780px;margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px;margin:26px 0 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.kpi .k{font-size:12.5px;color:var(--muted);margin:0 0 2px}.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.01em;margin:0;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--muted);margin-left:4px}
+.answer{margin:22px 0 0;padding:20px 22px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:16.5px;line-height:1.6;position:relative;overflow:hidden}
+.answer::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(var(--delhi),var(--mumbai))}
+.answer .lead{display:block;font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+/* summary */
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:16px;margin:16px 0 0}
+.sumcol{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.sumcol h3{margin:0;padding:14px 18px;font-size:15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.sumcol h3 .cnt{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.sumcol.differ h3{background:linear-gradient(90deg,var(--delhi-soft),var(--mumbai-soft))}
+.sumrow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--line2);text-decoration:none;color:var(--text)}
+.sumrow:last-child{border-bottom:0}.sumrow:hover{background:var(--soft)}
+.sumrow .n{font-size:12px;font-weight:700;color:var(--muted)}
+.sumrow .t{font-size:14px;line-height:1.35}
+.pair{display:flex;gap:6px;flex:none}
+.pv{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:70px;text-align:center}
+.sumcol h3 .pair .pv{background:none;padding:0 8px;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase}
+.pv.d{background:var(--delhi-soft);color:var(--delhi)}.pv.m{background:var(--mumbai-soft);color:var(--mumbai)}
+@media (max-width:560px){.sumrow{grid-template-columns:24px 1fr}.sumrow .pair{grid-column:2}}
+/* how-to */
+.howto{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);scroll-margin-top:16px}
+.howto h2{margin:0 0 8px;font-size:20px;letter-spacing:-.01em}
+.howto .intro{margin:0;color:var(--ink2);font-size:14.5px;max-width:860px}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:16px 0}
+@media (max-width:760px){.scale{grid-template-columns:1fr}}
+.sc{border-radius:12px;padding:12px;display:grid;gap:2px;align-content:start}
+.sc b{font-size:22px;line-height:1.1}.sc span{font-size:13px;font-weight:700}.sc i{font-size:12.5px;color:var(--ink2)}
+.sc.n2{background:var(--lost-soft)}.sc.n2 b,.sc.n2 span{color:var(--lost)}
+.sc.n1{background:color-mix(in srgb,var(--lost-soft) 55%,var(--card))}.sc.n1 b,.sc.n1 span{color:var(--lost)}
+.sc.z0{background:var(--soft)}.sc.z0 b,.sc.z0 span{color:var(--muted)}
+.sc.p1{background:color-mix(in srgb,var(--won-soft) 55%,var(--card))}.sc.p1 b,.sc.p1 span{color:var(--won)}
+.sc.p2{background:var(--won-soft)}.sc.p2 b,.sc.p2 span{color:var(--won)}
+.steps{margin:0 0 14px;padding-left:20px;font-size:14.5px;color:var(--ink2)}.steps li{margin:6px 0}.steps b{color:var(--text)}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;margin:8px 0 14px}
+.cstep{display:flex;gap:10px;background:var(--soft);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink2)}
+.cstep b{color:var(--text)}.cstep i{color:var(--muted)}
+.cn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on);font-size:12px;font-weight:700;display:grid;place-items:center}
+td.hl{background:var(--cue-soft)!important;color:var(--cue);font-weight:700}
+td.vs{font-weight:600}
+.f-head p b,.answer b{color:var(--text)}
+.pts{margin:6px 0 0;padding-left:20px}.pts li{margin:3px 0}
+.answer .pts{font-size:15.5px}
+.scale-key{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-top:6px;justify-content:flex-end}
+.scale-key i{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,hsla(0,65%,50%,.45),hsla(60,65%,50%,.45),hsla(125,65%,50%,.45))}
+.mx{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px}
+.mx-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}.mx-title.m{color:var(--mumbai)}.mx-title.d{color:var(--delhi)}
+.mx-grid{display:grid;grid-template-columns:90px 1fr 1fr;gap:6px}
+.mx-y{font-size:12px;color:var(--muted);display:flex;flex-direction:column;justify-content:center;line-height:1.3}
+.mx-x{font-size:12px;color:var(--muted);text-align:center}
+.mx-cell{border-radius:10px;padding:12px;min-height:74px;display:grid;align-content:center;gap:2px;text-align:center}
+.mx-cell.pos{background:hsla(125,55%,45%,var(--a))}.mx-cell.neg{background:hsla(0,65%,50%,var(--a))}
+.mx-cell b{font-size:20px}.mx-cell span{font-size:12px;color:var(--ink2)}
+.mx-neutral{margin-top:8px;font-size:12.5px;color:var(--muted)}
+:root{--n1c:#e8907c;--p1c:#7fbf95}
+.note-ml{margin:0;padding:10px 14px;border-radius:10px;background:var(--accent-soft);color:var(--ink2);font-size:13.5px}
+.note-ml b{color:var(--accent)}
+/* sections */
+.sec-group{margin:56px 0 0;scroll-margin-top:16px}
+.sec-group h2{font-size:24px;letter-spacing:-.01em;margin:0 0 4px}
+.sec-group p{margin:0;color:var(--muted);font-size:14.5px}
+.finding{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;scroll-margin-top:16px;box-shadow:var(--shadow)}
+.f-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;padding:22px 24px;border-bottom:1px solid var(--line);align-items:center}
+@media (max-width:760px){.f-head{grid-template-columns:1fr}}
+.f-num{display:inline-flex;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.f-head h3{margin:0 0 8px;font-size:21px;line-height:1.3;letter-spacing:-.01em}
+.f-head p{margin:0;color:var(--ink2);font-size:14.5px}
+.duels{display:grid;gap:12px}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:250px}
+.duel .lbl{grid-column:1/-1;font-size:12px;color:var(--muted);text-align:center;line-height:1.3}
+.duel .c{border-radius:12px;padding:10px 12px;text-align:center}
+.duel .c.d{background:var(--delhi-soft)}.duel .c.m{background:var(--mumbai-soft)}
+.duel .c span{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.duel .c.d span{color:var(--delhi)}.duel .c.m span{color:var(--mumbai)}
+.duel .c b{display:block;font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.f-body{padding:20px 24px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.f-body>*,.exs>*{min-width:0}
+.blk-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.blk-h h4{margin:0;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12.5px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.chart{background:var(--soft);border-radius:12px;padding:16px 18px 12px}
+svg.ch{display:block;width:100%;height:auto;overflow:visible}
+svg.ch text{fill:var(--muted);font-size:12px}svg.ch .cat{fill:var(--text);font-size:13px}svg.ch .val{fill:var(--text);font-size:12px;font-weight:600}
+.gl{stroke:var(--grid)}.ax{stroke:var(--z)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line2);white-space:nowrap}
+th{background:var(--soft);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.02em}
+td{font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}
+td:first-child{white-space:normal;min-width:200px;color:var(--ink2)}
+th:nth-child(2){color:var(--mumbai)}th:nth-child(3){color:var(--delhi)}
+.exs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px}
+.call{border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px;align-content:start;background:var(--card)}
+.call-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{display:inline-flex;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.tag.Delhi{background:var(--delhi-soft);color:var(--delhi)}.tag.Mumbai{background:var(--mumbai-soft);color:var(--mumbai)}
+.call-meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}.note{font-size:14px;color:var(--ink2)}
+#tip{position:fixed;pointer-events:none;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.15);display:none;z-index:9}
+#tip b{display:block}
+footer{margin-top:48px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;color:var(--muted);font-size:13px}
+footer b{color:var(--text)}footer ul{padding-left:18px;margin:8px 0 0}footer li{margin:4px 0}
+/* player (same design as call_review.html) */
+.player{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:10px;background:var(--soft)}
+.controls{display:flex;align-items:center;gap:10px}
+.btn-play{width:38px;height:38px;border-radius:50%;border:0;background:var(--accent);color:var(--on);cursor:pointer;display:grid;place-items:center;flex:none}
+.btn-play svg{width:13px;height:13px;fill:currentColor}
+.track{flex:1;position:relative;height:28px;cursor:pointer;touch-action:none;min-width:80px}
+.track .rail{position:absolute;left:0;right:0;top:11px;height:6px;background:var(--line);border-radius:3px}
+.track .fill{position:absolute;left:0;top:11px;height:6px;background:var(--accent);border-radius:3px;width:0}
+.track .zone{position:absolute;top:8px;height:12px;min-width:6px;background:color-mix(in srgb,var(--cue) 35%,transparent);border-radius:3px;cursor:pointer;border:0;padding:0}
+.track .head{position:absolute;top:7px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--accent);border:2px solid var(--card);left:0;pointer-events:none}
+.mk{position:absolute;top:0;width:18px;height:28px;margin-left:-9px;border:0;padding:0;background:transparent;cursor:pointer;color:var(--cue)}
+.mk::before{content:"";position:absolute;left:8px;top:4px;width:2px;height:20px;border-radius:1px;background:currentColor}
+.mk::after{content:"";position:absolute;left:4px;top:0;width:10px;height:10px;border-radius:50%;background:currentColor;border:2px solid var(--card)}
+.time{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.speed{font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:6px;padding:3px 4px;flex:none}
+.dl{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--on);background:var(--won);border:1px solid var(--won);border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none}
+.dl svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:1100px){.controls{flex-wrap:wrap}.controls .track{order:3;flex-basis:100%}.controls .time{margin-left:auto}}
+.moments{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.moments .lbl{font-size:12px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:4px 10px;cursor:pointer;font-family:inherit}
+.chip:hover{border-color:var(--accent)}.chip .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.chip .ts{color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.cue .dot{color:var(--cue)}.chip.good .dot{color:var(--won)}.chip.bad .dot{color:var(--lost)}
+.chip.key{background:var(--cue);color:var(--on);border-color:var(--cue);font-weight:700}.chip.key svg{width:10px;height:10px;fill:currentColor}
+.chip.key.on{background:var(--cue-soft);color:var(--cue)}
+.approx{font-size:11.5px;color:var(--muted)}
+.transcript{max-height:270px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;position:relative;background:var(--card)}
+.line{display:grid;grid-template-columns:44px 72px 1fr;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line2);cursor:pointer;font-size:13px;border-left:3px solid transparent}
+.line:last-child{border-bottom:0}.line:hover{background:var(--soft)}
+.line .ts{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;padding-top:1px}
+.line .who{font-size:11px;font-weight:700;padding-top:2px;text-transform:uppercase;letter-spacing:.03em}
+.line .who.agent{color:var(--accent)}.line .who.cust{color:var(--muted)}
+.line.active{background:var(--accent-soft);border-left-color:var(--accent)}
+.line.k-cue{border-left-color:var(--cue)}.line.k-good{border-left-color:var(--won)}.line.k-bad{border-left-color:var(--lost)}
+.tagm{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:3px;margin-left:6px;vertical-align:1px;text-transform:uppercase;letter-spacing:.03em}
+.tagm.cue{background:var(--cue-soft);color:var(--cue)}.tagm.good{background:var(--won-soft);color:var(--won)}.tagm.bad{background:var(--lost-soft);color:var(--lost)}
+@media (max-width:480px){.line{grid-template-columns:40px 1fr}.line .txt{grid-column:1/-1}.f-head,.f-body{padding-left:16px;padding-right:16px}.duel{min-width:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside class="side"><div class="brand">Mumbai vs Delhi<span>Customer response</span></div><nav id="toc"></nav></aside>
+<div class="content">
+<header class="top">
+  <div class="eyebrow"><i></i><i></i>Customer response · Mumbai vs Delhi</div>
+  <h1>Do Mumbai customers respond differently from Delhi customers?</h1>
+  <p class="scope" id="scope"></p>
+</header>
+<section id="summary">
+  <div class="answer" id="answer"></div>
+  <div class="sumgrid">
+    <div class="sumcol"><h3>Where they behave the same <span class="pair"><span class="pv m">Mumbai</span><span class="pv d">Delhi</span></span></h3><div id="sum-same"></div></div>
+    <div class="sumcol differ"><h3>Where they differ <span class="pair"><span class="pv m">Mumbai</span><span class="pv d">Delhi</span></span></h3><div id="sum-differ"></div></div>
+  </div>
+</section>
+<section class="howto" id="howto">
+  <h2>What is a valence score?</h2>
+  <p class="intro">A <b>valence score</b> measures <b>how positive or negative a customer's reply is</b> towards the agent, on a scale from <b>−2</b> (clearly negative) to <b>+2</b> (clearly positive). <i>A <b>call</b> is one conversation (2,060 in total); a <b>turn</b> is one reply by one speaker (34,575 customer turns).</i></p>
+  <div class="scale">
+    <div class="sc n2"><b>−2</b><span>Refuses or complains</span><i>“Humein yeh service nahi leni”<br>“Baar baar call karke pareshan kar rahe ho”</i></div>
+    <div class="sc n1"><b>−1</b><span>Objects or puts off</span><i>“Yeh bahut mehenga hai”<br>“Abhi busy hoon, baad mein call karna”</i></div>
+    <div class="sc z0"><b>0</b><span>Neutral</span><i>“Sector 24, Noida”<br>“Mera kapde ka kaam hai”</i></div>
+    <div class="sc p1"><b>+1</b><span>Agrees</span><i>“Theek hai, bataiye”<br>“Haan, samajh gaya”</i></div>
+    <div class="sc p2"><b>+2</b><span>Asks the price or commits</span><i>“Package kitne ka hai?”<br>“Kal 4 baje aa jaiye”</i></div>
+  </div>
+  <h2 style="margin-top:18px">How is it calculated?</h2>
+  <div class="calc">
+    <div class="cstep"><span class="cn">1</span><div><b>Score every customer turn</b> by matching its words to the scale above.<br><i>e.g. “Package kitne ka hai?” → <b>+2</b></i></div></div>
+    <div class="cstep"><span class="cn">2</span><div><b>Average the turns in each call.</b><br><i>e.g. turns +1, 0, 0, −1, +2 → (1 + 0 + 0 − 1 + 2) ÷ 5 = <b>+0.4</b></i></div></div>
+    <div class="cstep"><span class="cn">3</span><div><b>Average the calls in each city</b> (each call counts once). <b>Stage scores</b> use only the turns right after that stage.<br><i>e.g. calls +0.4, 0.0, +0.5 → <b>+0.300</b></i></div></div>
+  </div>
+  <p class="note-ml"><b>Dialect and language variations were accounted for:</b> Mumbai and Delhi were scored with separate word lists, so regional wording is scored on the same basis in both cities.</p>
+</section>
+<div class="sec-group" id="g-same"><h2>Where Delhi and Mumbai customers behave the same</h2></div>
+<div id="same"></div>
+<div class="sec-group" id="g-differ"><h2>Where they differ</h2></div>
+<div id="differ"></div>
+<footer>
+  <b>Notes</b>
+  <ul>
+    <li>Whiskers show the 95% range of each average. Valence score rules are keyword-based and not yet checked against human labels.</li>
+    <li>Loudness is measured on the whole recording (agent + customer). Player times are estimated; jump points may be a few seconds off.</li>
+    <li>368 calls are flagged for possible speaker-label swaps; examples use unflagged calls. No calls were excluded.</li>
+  </ul>
+</footer>
+</div>
+</div>
+<div id="tip"></div>
+<script>
+const DATA = {"F": [{"id": "f5", "group": "differ", "title": "Fewer Mumbai calls reach profile update and pitch", "claim": ["Profile update is reached in **55.3% of Mumbai calls** vs **65.6%** of Delhi calls.", "Pitch: **39.4%** vs **45.0%**.", "From the price onwards, both cities reach each stage in about the same share of calls."], "chart": [{"type": "reach", "title": "Share of calls that reach each stage", "rows": [{"label": "Opening", "d": 97.7324, "m": 96.0102, "dn": 862, "mn": 1131}, {"label": "Discovery", "d": 83.4467, "m": 80.7301, "dn": 736, "mn": 951}, {"label": "Profile update", "d": 65.6463, "m": 55.2632, "dn": 579, "mn": 651}, {"label": "Pitch", "d": 45.0113, "m": 39.3888, "dn": 397, "mn": 464}, {"label": "Price", "d": 50.0, "m": 47.5382, "dn": 441, "mn": 560}, {"label": "Objection handling", "d": 24.3764, "m": 24.618, "dn": 215, "mn": 290}, {"label": "Meeting ask", "d": 52.1542, "m": 53.1409, "dn": 460, "mn": 626}, {"label": "Close", "d": 28.3447, "m": 29.2869, "dn": 250, "mn": 345}]}], "table": {"cols": ["Stage", "Calls reaching stage: Mumbai", "Calls reaching stage: Delhi", "Reach gap (M − D)"], "rows": [["Opening", "96.0% (1,131)", "97.7% (862)", "-1.7 pts"], ["Discovery", "80.7% (951)", "83.4% (736)", "-2.7 pts"], ["Profile update", "55.3% (651)", "65.6% (579)", "!!-10.4 pts"], ["Pitch", "39.4% (464)", "45.0% (397)", "!!-5.6 pts"], ["Price", "47.5% (560)", "50.0% (441)", "-2.5 pts"], ["Objection handling", "24.6% (290)", "24.4% (215)", "+0.2 pts"], ["Meeting ask", "53.1% (626)", "52.2% (460)", "+1.0 pts"], ["Close", "29.3% (345)", "28.3% (250)", "+0.9 pts"]]}, "kpi": [{"label": "Calls reaching profile update", "d": "65.6%", "m": "55.3%"}, {"label": "Calls reaching pitch", "d": "45.0%", "m": "39.4%"}]}, {"id": "f6", "group": "differ", "title": "Mumbai calls are more energetic in tone", "claim": ["**More Mumbai calls are lively:** about 6 in 10 Mumbai calls sound energetic (57%), vs about 4 in 10 Delhi calls (41%).", "**Positive calls sound different:** in Mumbai, positive calls are more often energetic (44% vs 34%); in Delhi, positive calls are more often calm (51% vs 38%).", "*How “energetic” is decided: we measure the volume of the whole call (how loud it gets, how much it rises and falls, how often it spikes). Calls livelier than the middle call of all 2,060 count as energetic. The agent is assumed to speak in a steady tone, so the difference comes from the customer.*"], "chart": [{"type": "matrix", "rows": [{"key": "High energy, Positive", "label": "Energetic & positive", "d": 34.4587, "m": 43.6782}, {"key": "Low energy, Positive", "label": "Calm & positive", "d": 50.5239, "m": 37.7542}, {"key": "High energy, Negative", "label": "Energetic & negative", "d": 2.6775, "m": 5.5703}, {"key": "Low energy, Negative", "label": "Calm & negative", "d": 2.9104, "m": 2.2989}, {"key": "Neutral", "label": "Neutral", "d": 9.4296, "m": 10.6985}]}], "table": {"cols": ["Measure", "Mumbai", "Delhi"], "rows": [["High-energy tone (% of calls)", "56.7% (1,131 calls)", "41.2% (859 calls)"], ["Energetic & positive (% of calls)", "43.7% (1,131 calls)", "34.5% (859 calls)"], ["Calm & positive (% of calls)", "37.8% (1,131 calls)", "50.5% (859 calls)"], ["Energetic & negative (% of calls)", "5.6% (1,131 calls)", "2.7% (859 calls)"], ["Calm & negative (% of calls)", "2.3% (1,131 calls)", "2.9% (859 calls)"], ["Neutral valence (% of calls)", "10.7% (1,131 calls)", "9.4% (859 calls)"], ["Loudness range (dB)", "42.3 (1,178 calls)", "39.9 (882 calls)"], ["Loud moments (% of recording)", "14.4% (1,178 calls)", "12.6% (882 calls)"]]}, "kpi": [{"label": "Calls with a high-energy tone", "d": "41.2%", "m": "56.7%"}]}, {"id": "f2", "group": "differ", "title": "Mumbai customers speak a larger share of the call", "claim": ["Customers account for a **slightly larger share of the words in Mumbai calls**.", "Reply length is similar in both cities."], "chart": [{"type": "bars", "rows": [{"label": "Customer share of words, % per call", "d": 26.77, "m": 29.1666, "dci": 0.8754, "mci": 0.8683, "dn": 859, "mn": 1131, "p": 0.0001, "unit": "%", "dec": 1}, {"label": "Words per customer reply", "d": 7.2627, "m": 7.6569, "dci": 0.3615, "mci": 0.4526, "dn": 859, "mn": 1131, "p": 0.1822, "unit": "", "dec": 1}]}], "table": {"cols": ["Measure", "Mumbai (1,131 calls)", "Delhi (859 calls)"], "rows": [["Customer share of words (% per call)", "29.2%", "26.8%"], ["Words per customer reply", "7.7", "7.3"]]}, "kpi": [{"label": "Customer share of the words", "d": "26.8%", "m": "29.2%"}]}, {"id": "f3", "group": "differ", "title": "Delhi calls are about a minute longer", "claim": ["Average call length: **233 s in Delhi** vs **173 s in Mumbai**."], "chart": [{"type": "bars", "rows": [{"label": "Call length, seconds", "d": 233.0305, "m": 172.5739, "dci": 15.208, "mci": 9.91, "dn": 882, "mn": 1178, "p": 0.0, "unit": " s", "dec": 0}]}], "table": {"cols": ["Measure", "Mumbai (1,178 calls)", "Delhi (882 calls)"], "rows": [["Call length (s)", "173", "233"]]}, "kpi": [{"label": "Average call length", "d": "233 s", "m": "173 s"}]}, {"id": "s1", "group": "same", "title": "Overall valence scores are the same", "claim": ["**Same average valence score** in both cities.", "**Same mix of replies**: about two-thirds neutral, one in five agreeing, under 1 in 10 negative."], "chart": [{"type": "bars", "title": "Average valence score per call", "rows": [{"label": "Average valence score per call (−2 to +2)", "d": 0.2818, "m": 0.2778, "dci": 0.0169, "mci": 0.0158, "dn": 859, "mn": 1131, "p": 0.733, "unit": "", "dec": 3}]}, {"type": "stack", "title": "Mix of customer replies (average % of a call's replies)", "rows": [{"label": "Refuses / complains (−2)", "d": 1.1147, "m": 1.0994, "color": "var(--n2)"}, {"label": "Objects / puts off (−1)", "d": 4.2527, "m": 5.2244, "color": "var(--n1c)"}, {"label": "Neutral (0)", "d": 67.0528, "m": 66.2262, "color": "var(--z)"}, {"label": "Agrees (+1)", "d": 20.4971, "m": 19.6991, "color": "var(--p1c)"}, {"label": "Asks price / commits (+2)", "d": 7.0827, "m": 7.7508, "color": "var(--p2)"}]}], "table": {"cols": ["Measure", "Mumbai (1,131 calls)", "Delhi (859 calls)"], "rows": [["Average valence score", "+0.278", "+0.282"], ["Refuses / complains (−2) (% per call)", "1.1%", "1.1%"], ["Objects / puts off (−1) (% per call)", "5.2%", "4.3%"], ["Neutral (0) (% per call)", "66.2%", "67.1%"], ["Agrees (+1) (% per call)", "19.7%", "20.5%"], ["Asks price / commits (+2) (% per call)", "7.8%", "7.1%"], ["Calls with a refusal or complaint (%)", "10.0%", "11.5%"]]}, "kpi": [{"label": "Average valence score per call", "d": "+0.282", "m": "+0.278"}]}, {"id": "s2", "group": "same", "title": "Valence scores follow the same path through the call", "claim": ["Both cities are **lowest at discovery** and **highest from the price onwards**.", "Overall the two are within **0.004**; the largest stage gap is objection handling (+0.144)."], "chart": [{"type": "dots", "title": "By stage of the pitch", "rows": [{"label": "Opening", "d": 0.2974, "m": 0.256, "dn": 862, "mn": 1131, "dci": 0.0262, "mci": 0.0229, "p": 0.0198, "h0": [0.2898852553069421, 0.24126840040301575], "h1": [0.3043517630765953, 0.27102264660404196], "halves_agree": true, "status": "Likely", "reach": {"Delhi": 97.7324, "Mumbai": 96.0102}, "share": {"Delhi": 16.2049, "Mumbai": 18.7182}}, {"label": "Discovery", "d": 0.1554, "m": 0.1563, "dn": 736, "mn": 951, "dci": 0.031, "mci": 0.0285, "p": 0.9666, "h0": [0.15396830552829222, 0.1500885415060719], "h1": [0.15683804195601458, 0.16279874914164136], "halves_agree": false, "status": "No difference", "reach": {"Delhi": 83.4467, "Mumbai": 80.7301}, "share": {"Delhi": 27.7081, "Mumbai": 26.9417}}, {"label": "Profile update", "d": 0.2634, "m": 0.2326, "dn": 579, "mn": 651, "dci": 0.0415, "mci": 0.0422, "p": 0.308, "h0": [0.3095500571485113, 0.27104771733254707], "h1": [0.21825507636087838, 0.19468344155844156], "halves_agree": true, "status": "No difference", "reach": {"Delhi": 65.6463, "Mumbai": 55.2632}, "share": {"Delhi": 13.0328, "Mumbai": 9.1308}}, {"label": "Pitch", "d": 0.2955, "m": 0.237, "dn": 397, "mn": 464, "dci": 0.0684, "mci": 0.0651, "p": 0.2244, "h0": [0.2715554749818709, 0.25727852394519063], "h1": [0.31908928571428574, 0.21629744651483782], "halves_agree": true, "status": "No difference", "reach": {"Delhi": 45.0113, "Mumbai": 39.3888}, "share": {"Delhi": 5.5165, "Mumbai": 5.1549}}, {"label": "Price", "d": 0.4283, "m": 0.3789, "dn": 441, "mn": 560, "dci": 0.0663, "mci": 0.0657, "p": 0.2989, "h0": [0.4124558579269529, 0.3727723665223665], "h1": [0.44460505091239033, 0.38533045794075205], "halves_agree": true, "status": "No difference", "reach": {"Delhi": 50.0, "Mumbai": 47.5382}, "share": {"Delhi": 9.1838, "Mumbai": 7.8826}}, {"label": "Objection handling", "d": 0.502, "m": 0.646, "dn": 215, "mn": 290, "dci": 0.1317, "mci": 0.1094, "p": 0.0994, "h0": [0.39970501474926257, 0.5822374645222328], "h1": [0.615359477124183, 0.7152278177458032], "halves_agree": true, "status": "No difference", "reach": {"Delhi": 24.3764, "Mumbai": 24.618}, "share": {"Delhi": 1.7427, "Mumbai": 2.2423}}, {"label": "Meeting ask", "d": 0.5144, "m": 0.5491, "dn": 460, "mn": 626, "dci": 0.0634, "mci": 0.0602, "p": 0.4365, "h0": [0.5180606974724622, 0.506985014985015], "h1": [0.5109807440351373, 0.5945973738332542], "halves_agree": false, "status": "No difference", "reach": {"Delhi": 52.1542, "Mumbai": 53.1409}, "share": {"Delhi": 8.5193, "Mumbai": 9.0442}}, {"label": "Close", "d": 0.5159, "m": 0.5174, "dn": 250, "mn": 345, "dci": 0.0802, "mci": 0.0655, "p": 0.978, "h0": [0.5139830508474577, 0.5154142581888247], "h1": [0.5176767676767676, 0.5193798449612402], "halves_agree": true, "status": "No difference", "reach": {"Delhi": 28.3447, "Mumbai": 29.2869}, "share": {"Delhi": 1.8806, "Mumbai": 2.3983}}]}, {"type": "line", "title": "By point in the call (each call split into 10 equal parts)", "rows": [{"label": "0–10%", "d": 0.1658, "m": 0.1467, "dn": 821, "mn": 1096, "dci": 0.0203, "mci": 0.0172, "p": 0.1584, "h0": [0.16756027347966893, 0.14158930720302562], "h1": [0.1641930592991914, 0.15187284015697297], "halves_agree": true, "status": "No difference"}, {"label": "10–20%", "d": 0.2861, "m": 0.2645, "dn": 726, "mn": 941, "dci": 0.0303, "mci": 0.0283, "p": 0.3067, "h0": [0.26867573696145125, 0.2513975155279503], "h1": [0.3022511398176292, 0.2782387190684134], "halves_agree": true, "status": "No difference"}, {"label": "20–30%", "d": 0.2758, "m": 0.2467, "dn": 736, "mn": 981, "dci": 0.0319, "mci": 0.0314, "p": 0.202, "h0": [0.2910972110124653, 0.20960954340583973], "h1": [0.26159311892296183, 0.28303992303992304], "halves_agree": false, "status": "No difference"}, {"label": "30–40%", "d": 0.2682, "m": 0.2046, "dn": 728, "mn": 931, "dci": 0.0394, "mci": 0.0331, "p": 0.0153, "h0": [0.2537664783427495, 0.1834143870314083], "h1": [0.2818701723113488, 0.22618531143476914], "halves_agree": true, "status": "Likely"}, {"label": "40–50%", "d": 0.2321, "m": 0.2255, "dn": 694, "mn": 931, "dci": 0.0432, "mci": 0.0417, "p": 0.828, "h0": [0.2520238095238095, 0.2546316165951359], "h1": [0.21301452784503633, 0.19624679979518686], "halves_agree": false, "status": "No difference"}, {"label": "50–60%", "d": 0.2832, "m": 0.2689, "dn": 752, "mn": 990, "dci": 0.0432, "mci": 0.0428, "p": 0.6449, "h0": [0.30540588887696324, 0.27841645533953224], "h1": [0.26252601297588446, 0.2589618456078084], "halves_agree": true, "status": "No difference"}, {"label": "60–70%", "d": 0.2625, "m": 0.2984, "dn": 720, "mn": 965, "dci": 0.0482, "mci": 0.0471, "p": 0.2962, "h0": [0.2419960429875444, 0.26800136892539356], "h1": [0.2822304398598676, 0.32945556883841404], "halves_agree": true, "status": "No difference"}, {"label": "70–80%", "d": 0.2744, "m": 0.324, "dn": 707, "mn": 918, "dci": 0.0514, "mci": 0.0517, "p": 0.1824, "h0": [0.27562620423892104, 0.30247972551466], "h1": [0.2732357208811503, 0.3453830227743271], "halves_agree": true, "status": "No difference"}, {"label": "80–90%", "d": 0.3158, "m": 0.4183, "dn": 740, "mn": 981, "dci": 0.0566, "mci": 0.051, "p": 0.0084, "h0": [0.3242843951985226, 0.4305090094354508], "h1": [0.30779306445533355, 0.40538204821677626], "halves_agree": true, "status": "Likely"}, {"label": "90–100%", "d": 0.4747, "m": 0.4742, "dn": 799, "mn": 1047, "dci": 0.0475, "mci": 0.0386, "p": 0.9868, "h0": [0.4399850801939574, 0.47998554260413845], "h1": [0.5067450778388278, 0.46839514652014647], "halves_agree": false, "status": "No difference"}]}], "table": {"title": "By stage of the pitch", "cols": ["Stage", "Valence: Mumbai", "Valence: Delhi", "Valence gap (M − D)", "Share of customer turns: Mumbai", "Share of customer turns: Delhi"], "rows": [["Overall", "+0.278", "+0.282", "-0.004", "100%", "100%"], ["Opening", "+0.256", "+0.297", "-0.041", "18.7%", "16.2%"], ["Discovery", "+0.156", "+0.155", "+0.001", "26.9%", "27.7%"], ["Profile update", "+0.233", "+0.263", "-0.031", "9.1%", "13.0%"], ["Pitch", "+0.237", "+0.296", "-0.059", "5.2%", "5.5%"], ["Price", "+0.379", "+0.428", "-0.049", "7.9%", "9.2%"], ["Objection handling", "+0.646", "+0.502", "+0.144", "2.2%", "1.7%"], ["Meeting ask", "+0.549", "+0.514", "+0.035", "9.0%", "8.5%"], ["Close", "+0.517", "+0.516", "+0.001", "2.4%", "1.9%"], ["Outside the 8 stages", "", "", "", "18.5%", "16.2%"]]}, "table2": {"title": "By point in the call (each call split into 10 equal parts, from its first 10% of turns to its last 10%)", "cols": ["Point in call", "Valence: Mumbai", "Valence: Delhi", "Valence gap (M − D)"], "rows": [["0–10%", "+0.147", "+0.166", "-0.019"], ["10–20%", "+0.264", "+0.286", "-0.022"], ["20–30%", "+0.247", "+0.276", "-0.029"], ["30–40%", "+0.205", "+0.268", "-0.064"], ["40–50%", "+0.225", "+0.232", "-0.007"], ["50–60%", "+0.269", "+0.283", "-0.014"], ["60–70%", "+0.298", "+0.263", "+0.036"], ["70–80%", "+0.324", "+0.274", "+0.050"], ["80–90%", "+0.418", "+0.316", "+0.102"], ["90–100%", "+0.474", "+0.475", "-0.001"]]}, "kpi": [{"label": "Valence score after the price", "d": "+0.428", "m": "+0.379"}]}, {"id": "s3", "group": "same", "title": "Pushback is equally common", "claim": ["**Pushback** = any sign of resistance in the call: an objection, a put-off (“call me later”), a refusal or a complaint.", "**Explicit objection** = the customer gives a **specific reason** against the offer: price, trust, already covered (e.g. on Google), payment terms, or needing to ask someone else.", "Every explicit objection is pushback, but most pushback is a put-off rather than a stated reason.", "Both are **equally common** in Mumbai and Delhi."], "chart": [{"type": "bars", "rows": [{"label": "Calls with any pushback, %", "d": 47.619, "m": 47.2293, "dci": 3.298, "mci": 2.8582, "dn": 882, "mn": 1173, "p": 0.8611, "unit": "%", "dec": 1}, {"label": "Calls with an explicit objection, %", "d": 14.5125, "m": 15.7715, "dci": 2.3259, "mci": 2.0867, "dn": 882, "mn": 1173, "p": 0.4297, "unit": "%", "dec": 1}]}], "table": {"cols": ["Measure", "Mumbai (1,173 calls)", "Delhi (882 calls)"], "rows": [["Calls with any pushback (%)", "47.2%", "47.6%"], ["Calls with an explicit objection (%)", "15.8%", "14.5%"]]}, "kpi": [{"label": "Calls with any pushback", "d": "47.6%", "m": "47.2%"}]}, {"id": "s4", "group": "same", "title": "Questions are equally common", "claim": ["About **1 in 10 customer replies is a question** in both cities."], "chart": [{"type": "bars", "rows": [{"label": "Questions, % of customer replies per call", "d": 10.3788, "m": 11.1051, "dci": 0.7814, "mci": 0.7008, "dn": 882, "mn": 1173, "p": 0.175, "unit": "%", "dec": 1}]}], "table": {"cols": ["Measure", "Mumbai (1,173 calls)", "Delhi (882 calls)"], "rows": [["Questions (% of replies per call)", "11.1%", "10.4%"]]}, "kpi": [{"label": "Questions, share of customer replies", "d": "10.4%", "m": "11.1%"}]}, {"id": "s6", "group": "same", "title": "Calls follow the same shape", "claim": ["**About 2 in 3 calls stay flat** from start to end in both cities.", "About 1 in 4 rise and 1 in 10 fall."], "chart": [{"type": "stack", "rows": [{"label": "Valence score rises", "d": 25.7276, "m": 28.0283, "dk": 221, "mk": 317, "dn": 859, "mn": 1131, "p": 0.2524, "color": "var(--p2)"}, {"label": "Flat", "d": 63.6787, "m": 62.7763, "dk": 547, "mk": 710, "dn": 859, "mn": 1131, "p": 0.6793, "color": "var(--z)"}, {"label": "Valence score falls", "d": 10.5937, "m": 9.1954, "dk": 91, "mk": 104, "dn": 859, "mn": 1131, "p": 0.2987, "color": "var(--n2)"}]}], "table": {"cols": ["Shape", "Mumbai", "Delhi"], "rows": [["Valence score rises", "317 of 1,131 calls (28.0%)", "221 of 859 calls (25.7%)"], ["Flat", "710 of 1,131 calls (62.8%)", "547 of 859 calls (63.7%)"], ["Valence score falls", "104 of 1,131 calls (9.2%)", "91 of 859 calls (10.6%)"]]}, "kpi": [{"label": "Calls that stay flat", "d": "63.7%", "m": "62.8%"}]}], "summary": {"differ": [{"id": "f5", "title": "Fewer Mumbai calls reach profile update and pitch", "kpi": {"label": "Calls reaching profile update", "d": "65.6%", "m": "55.3%"}}, {"id": "f6", "title": "Mumbai calls are more energetic in tone", "kpi": {"label": "Calls with a high-energy tone", "d": "41.2%", "m": "56.7%"}}, {"id": "f2", "title": "Mumbai customers speak a larger share of the call", "kpi": {"label": "Customer share of the words", "d": "26.8%", "m": "29.2%"}}, {"id": "f3", "title": "Delhi calls are about a minute longer", "kpi": {"label": "Average call length", "d": "233 s", "m": "173 s"}}], "same": [{"id": "s1", "title": "Overall valence scores are the same", "kpi": {"label": "Average valence score per call", "d": "+0.282", "m": "+0.278"}}, {"id": "s2", "title": "Valence scores follow the same path through the call", "kpi": {"label": "Valence score after the price", "d": "+0.428", "m": "+0.379"}}, {"id": "s3", "title": "Pushback is equally common", "kpi": {"label": "Calls with any pushback", "d": "47.6%", "m": "47.2%"}}, {"id": "s4", "title": "Questions are equally common", "kpi": {"label": "Questions, share of customer replies", "d": "10.4%", "m": "11.1%"}}, {"id": "s6", "title": "Calls follow the same shape", "kpi": {"label": "Calls that stay flat", "d": "63.7%", "m": "62.8%"}}]}, "meta": {"dates": {"Mumbai": "8, 22 and 29 Sep 2026", "Delhi": "29 Sep 2026"}, "calls": 2060, "dcalls": 882, "mcalls": 1178, "dn": 859, "mn": 1131}};
+const NS = "http://www.w3.org/2000/svg", tip = document.getElementById("tip");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function el(n, a, p) { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; }
+function show(e, h) { tip.innerHTML = h; tip.style.display = "block"; tip.style.left = Math.min(e.clientX + 14, innerWidth - 260) + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+function hide() { tip.style.display = "none"; }
+const M = DATA.meta;
+// **bold** and *italic* in claims
+const md1 = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>");
+const md = s => Array.isArray(s) ? `<ul class="pts">${s.map(x => `<li>${md1(x)}</li>`).join("")}</ul>` : md1(s);
+// table cells: "!!" = highlighted difference; valence values get a red-grey-green colour scale
+function heat(v, rng) {
+  const f = Math.max(0, Math.min(1, (v - rng.min) / (rng.max - rng.min)));
+  const hue = Math.round(f * 125);               // 0 = red (lowest) ... 125 = green (highest)
+  return `background:hsla(${hue},65%,50%,0.28)`;
+}
+const VRX = /^([+\-\u2212]\d\.\d{3})(\s|$)/;
+function vrange(tb) {  // one fixed scale across the whole report so equal scores get equal colours
+  return { min: 0.0, max: 0.7 };
+  const vals = [];
+  tb.rows.forEach(r => r.forEach((c, i) => { const m = String(c).match(VRX); if (m && !/gap/i.test(tb.cols[i] || "")) vals.push(parseFloat(m[1].replace("\u2212", "-"))); }));
+  return vals.length ? { min: Math.min(...vals), max: Math.max(...vals) } : null;
+}
+function cell(c, i, cols, rng) {
+  c = String(c);
+  const isGap = cols && /gap/i.test(cols[i] || "");
+  if (c.startsWith("!!")) return `<td class="hl">${esc(c.slice(2))}</td>`;
+  const m = c.match(/^([+\-\u2212]\d\.\d{3})(\s|$)/);
+  if (m && isGap) return `<td${Math.abs(parseFloat(m[1].replace("\u2212", "-"))) >= 0.05 ? ' style="font-weight:700"' : ""}>${esc(c)}</td>`;
+  if (m) return `<td class="vs" style="${heat(parseFloat(m[1].replace("\u2212", "-")), rng)}">${esc(c)}</td>`;
+  return `<td>${esc(c)}</td>`;
+}
+const code = f => (f.group === "differ" ? "D" : "S") + (DATA.F.filter(g => g.group === f.group).indexOf(f) + 1);
+
+document.getElementById("scope").innerHTML = `<b>${M.calls.toLocaleString()} calls</b> · Mumbai ${M.mcalls.toLocaleString()} (${M.dates.Mumbai}) · Delhi ${M.dcalls.toLocaleString()} (${M.dates.Delhi})<br><i>Mumbai covers three days because it has fewer workable calls per day than Delhi.</i>`;
+document.getElementById("answer").innerHTML = `<span class="lead">Mumbai and Delhi customers respond to sales calls the same way.</span><ul class="pts">
+  <li>Average valence score is <b>${DATA.F.find(f => f.id === "s1").kpi[0].m}</b> in Mumbai and <b>${DATA.F.find(f => f.id === "s1").kpi[0].d}</b> in Delhi, with the same mix of replies, pushback and questions.</li>
+  <li>The differences are in <b>how the conversation runs</b>: <i>how far calls get into the pitch, energy of the call, share of talk and call length</i>.</li></ul>`;
+["differ", "same"].forEach(g => {
+  
+  document.getElementById("sum-" + g).innerHTML = DATA.summary[g].map((f, i) =>
+    `<a class="sumrow" href="#${f.id}"><span class="n">${g === "differ" ? "D" : "S"}${i + 1}</span><span class="t">${esc(f.title)}</span>
+     <span class="pair" title="${esc(f.kpi.label)}"><span class="pv m">${esc(f.kpi.m)}</span><span class="pv d">${esc(f.kpi.d)}</span></span></a>`).join("");
+});
+
+const legend = `<div class="legend"><span><span class="sw" style="background:var(--mumbai)"></span>Mumbai</span><span><span class="sw" style="background:var(--delhi)"></span>Delhi</span></div>`;
+
+// paired horizontal bars, each row on its own scale
+function bars(host, rows) {
+  const W = 760, L = 300, R = 70, bh = 15, gap = 4, rowH = bh * 2 + gap + 22, H = rows.length * rowH;
+  const s = el("svg", { class: "ch", viewBox: `0 0 ${W} ${H}` }, host);
+  rows.forEach((r, i) => {
+    const y0 = i * rowH + 4, lo = Math.min(0, r.d - r.dci, r.m - r.mci), hi = Math.max(r.d + r.dci, r.m + r.mci) * 1.08;
+    const x = v => L + (W - L - R) * (v - lo) / (hi - lo);
+    el("text", { x: L - 14, y: y0 + bh + 6, "text-anchor": "end", class: "cat" }, s).textContent = r.label;
+    el("line", { x1: x(0), x2: x(0), y1: y0 - 3, y2: y0 + bh * 2 + gap + 3, class: "ax" }, s);
+    [["m", "mci", "mn", "var(--mumbai)", "Mumbai", 0], ["d", "dci", "dn", "var(--delhi)", "Delhi", bh + gap]].forEach(([k, kc, kn, col, name, dy]) => {
+      const v = r[k], yy = y0 + dy, x0 = x(Math.min(0, v)), w = Math.abs(x(v) - x(0)), s4 = Math.max(w - 4, 0);
+      if (v >= 0) el("path", { d: `M${x0},${yy} h${s4} a4,4 0 0 1 4,4 v${bh - 8} a4,4 0 0 1 -4,4 h${-s4} z`, fill: col }, s);
+      else el("rect", { x: x0, y: yy, width: Math.max(w, 1), height: bh, rx: 4, fill: col }, s);
+      el("line", { x1: x(v - r[kc]), x2: x(v + r[kc]), y1: yy + bh / 2, y2: yy + bh / 2, stroke: "var(--text)", "stroke-width": 1.2, opacity: .45 }, s);
+      const txt = (r.unit === "" && r.dec >= 2 && v > 0 ? "+" : "") + v.toFixed(r.dec) + r.unit;
+      el("text", { x: x(Math.max(v + r[kc], 0)) + 7, y: yy + bh - 3, class: "val" }, s).textContent = txt;
+      const h = el("rect", { x: 0, y: yy - 2, width: W, height: bh + 4, fill: "transparent" }, s);
+      h.onmousemove = e => show(e, `<b>${esc(r.label)}</b>${name}: ${txt} (${r[kn].toLocaleString()} ${r.base || "calls"})`); h.onmouseleave = hide;
+    });
+  });
+}
+// dot plot for stages
+function dots(host, rows) {
+  const W = 760, L = 160, R = 20, rowH = 36, top = 6, H = top + rows.length * rowH + 26, lo = -0.1, hi = 0.85, x = v => L + (W - L - R) * (v - lo) / (hi - lo);
+  const s = el("svg", { class: "ch", viewBox: `0 0 ${W} ${H}` }, host);
+  [0, 0.2, 0.4, 0.6, 0.8].forEach(v => { el("line", { x1: x(v), x2: x(v), y1: top, y2: H - 22, class: v === 0 ? "ax" : "gl" }, s); el("text", { x: x(v), y: H - 4, "text-anchor": "middle" }, s).textContent = (v > 0 ? "+" : "") + v.toFixed(1); });
+  rows.forEach((r, i) => {
+    const y = top + i * rowH;
+    el("text", { x: L - 14, y: y + 20, "text-anchor": "end", class: "cat" }, s).textContent = r.label;
+    [["m", "mci", "mn", "var(--mumbai)", "Mumbai", 11], ["d", "dci", "dn", "var(--delhi)", "Delhi", 25]].forEach(([k, kc, kn, col, name, dy]) => {
+      el("line", { x1: x(r[k] - r[kc]), x2: x(r[k] + r[kc]), y1: y + dy, y2: y + dy, stroke: col, "stroke-width": 2, "stroke-linecap": "round", opacity: .45 }, s);
+      el("circle", { cx: x(r[k]), cy: y + dy, r: 5.5, fill: col, stroke: "var(--soft)", "stroke-width": 2 }, s);
+      const h = el("rect", { x: 0, y: y + dy - 7, width: W, height: 14, fill: "transparent" }, s);
+      h.onmousemove = e => show(e, `<b>${esc(r.label)} · ${name}</b>${(r[k] > 0 ? "+" : "") + r[k].toFixed(3)} (${r[kn].toLocaleString()} ${r.base || "calls"})`); h.onmouseleave = hide;
+    });
+  });
+}
+// line over call deciles
+function line(host, rows) {
+  const W = 760, L = 44, R = 16, T = 10, H = 290, B = 32, lo = 0, hi = 0.6, x = i => L + (W - L - R) * (i + 0.5) / rows.length, y = v => T + (H - T - B) * (hi - v) / (hi - lo);
+  const s = el("svg", { class: "ch", viewBox: `0 0 ${W} ${H}` }, host);
+  [0, 0.2, 0.4, 0.6].forEach(v => { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v === 0 ? "ax" : "gl" }, s); el("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end" }, s).textContent = (v > 0 ? "+" : "") + v.toFixed(1); });
+  rows.forEach((r, i) => el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, s).textContent = r.label);
+  [["m", "mci", "var(--mumbai)"], ["d", "dci", "var(--delhi)"]].forEach(([k, kc, col]) => {
+    const up = rows.map((r, i) => `${x(i)},${y(r[k] + r[kc])}`), dn = rows.slice().reverse().map((r, j) => `${x(rows.length - 1 - j)},${y(r[k] - r[kc])}`);
+    el("polygon", { points: up.concat(dn).join(" "), fill: col, opacity: .12 }, s);
+    el("polyline", { points: rows.map((r, i) => `${x(i)},${y(r[k])}`).join(" "), fill: "none", stroke: col, "stroke-width": 2.5, "stroke-linejoin": "round" }, s);
+    rows.forEach((r, i) => el("circle", { cx: x(i), cy: y(r[k]), r: 4, fill: col, stroke: "var(--soft)", "stroke-width": 2 }, s));
+  });
+  rows.forEach((r, i) => { const h = el("rect", { x: x(i) - (W - L - R) / rows.length / 2, y: T, width: (W - L - R) / rows.length, height: H - T - B, fill: "transparent" }, s);
+    h.onmousemove = e => show(e, `<b>${r.label} of the call</b>Mumbai ${(r.m > 0 ? "+" : "") + r.m.toFixed(3)} (${r.mn.toLocaleString()} ${r.base || "calls"})<br>Delhi ${(r.d > 0 ? "+" : "") + r.d.toFixed(3)} (${r.dn.toLocaleString()} ${r.base || "calls"})`); h.onmouseleave = hide; });
+}
+// 100% stacked bars for call shapes
+function stack(host, rows) {
+  const W = 760, L = 70, R = 10, bh = 28, H = 2 * (bh + 14) + 4, x = v => L + (W - L - R) * v / 100;
+  const s = el("svg", { class: "ch", viewBox: `0 0 ${W} ${H}` }, host);
+  [["m", "mk", "mn", "Mumbai"], ["d", "dk", "dn", "Delhi"]].forEach(([k, kk, kn, name], j) => {
+    const y0 = j * (bh + 14) + 2; let acc = 0;
+    el("text", { x: L - 12, y: y0 + bh / 2 + 5, "text-anchor": "end", class: "cat" }, s).textContent = name;
+    rows.forEach((r, i) => {
+      const w = x(acc + r[k]) - x(acc);
+      const rc = el("rect", { x: x(acc) + 1, y: y0, width: Math.max(w - 2, 1), height: bh, rx: 4, fill: r.color }, s);
+      rc.onmousemove = e => show(e, `<b>${name} · ${r.label}</b>${r[kk] !== undefined ? r[kk].toLocaleString() + " of " + r[kn].toLocaleString() + " calls (" + r[k].toFixed(1) + "%)" : r[k].toFixed(1) + "% of replies per call"}`); rc.onmouseleave = hide;
+      if (w > 22) el("text", { x: x(acc) + w / 2, y: y0 + bh / 2 + 5, "text-anchor": "middle", class: "val", style: r.color === "var(--z)" ? "" : "fill:#fff" }, s).textContent = `${r[k].toFixed(0)}%`;
+      acc += r[k];
+    });
+  });
+}
+// valence x arousal matrix, one 2x2 grid per city
+function matrix(host, rows) {
+  const g = Object.fromEntries(rows.map(r => [r.key, r]));
+  const cellH = (r, k) => {
+    const a = Math.min(r[k] / 30, 1);
+    return `<div class="mx-cell ${r.key.includes("Negative") ? "neg" : "pos"}" style="--a:${(0.12 + a * 0.6).toFixed(2)}"><b>${r[k].toFixed(1)}%</b><span>${esc(r.label)}</span></div>`;
+  };
+  host.innerHTML = `<div class="mx">${[["m", "Mumbai"], ["d", "Delhi"]].map(([k, name]) => `
+    <div class="mx-city"><div class="mx-title ${k}">${name}</div>
+      <div class="mx-grid">
+        <div class="mx-y">High arousal<br><i>energetic</i></div>${cellH(g["High energy, Negative"], k)}${cellH(g["High energy, Positive"], k)}
+        <div class="mx-y">Low arousal<br><i>calm</i></div>${cellH(g["Low energy, Negative"], k)}${cellH(g["Low energy, Positive"], k)}
+        <div></div><div class="mx-x">Negative valence</div><div class="mx-x">Positive valence</div>
+      </div>
+      <div class="mx-neutral">Neutral valence: <b>${g["Neutral"][k].toFixed(1)}%</b> of calls</div>
+    </div>`).join("")}</div>`;
+}
+// stage reach: two lines across the stages, gaps of 5+ points shaded and labelled
+function reach(host, rows) {
+  const W = 760, L = 44, R = 16, T = 22, H = 300, B = 46, x = i => L + (W - L - R) * (i + 0.5) / rows.length, y = v => T + (H - T - B) * (100 - v) / 100;
+  const s = el("svg", { class: "ch", viewBox: `0 0 ${W} ${H}` }, host);
+  [0, 25, 50, 75, 100].forEach(v => { el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v === 0 ? "ax" : "gl" }, s); el("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end" }, s).textContent = v + "%"; });
+  rows.forEach((r, i) => {
+    const t = el("text", { x: x(i), y: H - 26, "text-anchor": "middle", class: "cat", style: "font-size:12px" }, s); t.textContent = r.label;
+    const gap = r.m - r.d;
+    if (Math.abs(gap) >= 5) {
+      el("rect", { x: x(i) - 30, y: y(Math.max(r.m, r.d)), width: 60, height: y(Math.min(r.m, r.d)) - y(Math.max(r.m, r.d)), rx: 6, fill: "var(--cue-soft)" }, s);
+      el("text", { x: x(i), y: H - 8, "text-anchor": "middle", style: "fill:var(--cue);font-weight:700;font-size:12px" }, s).textContent = `${gap > 0 ? "+" : ""}${gap.toFixed(1)} pts`;
+    }
+  });
+  [["m", "var(--mumbai)", "Mumbai", -10], ["d", "var(--delhi)", "Delhi", 18]].forEach(([k, col, name, dy]) => {
+    el("polyline", { points: rows.map((r, i) => `${x(i)},${y(r[k])}`).join(" "), fill: "none", stroke: col, "stroke-width": 2.5, "stroke-linejoin": "round" }, s);
+    rows.forEach((r, i) => {
+      const c = el("circle", { cx: x(i), cy: y(r[k]), r: 5, fill: col, stroke: "var(--soft)", "stroke-width": 2 }, s);
+      const below = k === "d" ? r.d < r.m : r.m <= r.d;
+      el("text", { x: x(i), y: y(r[k]) + (below ? 18 : -10), "text-anchor": "middle", class: "val", style: `fill:${col}` }, s).textContent = r[k].toFixed(1) + "%";
+      c.onmousemove = e => show(e, `<b>${esc(r.label)} · ${name}</b>${r[k].toFixed(1)}% of calls (${r[k + "n"].toLocaleString()})`); c.onmouseleave = hide;
+    });
+  });
+}
+const CHART = { bars, dots, line, stack, matrix, reach };
+const stackLegend = rows => `<div class="legend">${rows.map(r => `<span><span class="sw" style="background:${r.color}"></span>${esc(r.label)}</span>`).join("")}</div>`;
+const shapeLegend = `<div class="legend"><span><span class="sw" style="background:var(--p2)"></span>Valence score rises</span><span><span class="sw" style="background:var(--z)"></span>Flat</span><span><span class="sw" style="background:var(--n2)"></span>Valence score falls</span></div>`;
+
+// player (from call_review.html; audio embedded)
+const ICON_PLAY = '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>', ICON_PAUSE = '<svg viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>';
+const players = [];
+function fmt(s) { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
+function buildPlayer(host, data) {
+  const audio = new Audio(); audio.preload = "metadata"; if (data.src) audio.src = data.src;
+  const keyStart = data.keyStart, keyEnd = data.keyEnd;
+  host.innerHTML = `
+    <div class="player">
+      <div class="controls">
+        <button type="button" class="btn-play" aria-label="Play">${ICON_PLAY}</button>
+        <div class="track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="${Math.round(data.duration)}" aria-valuenow="0">
+          <div class="rail"></div><div class="fill"></div>
+          <button type="button" class="zone" aria-label="Play the key moment"></button>
+          <button type="button" class="mk" aria-label="Jump to key moment"></button>
+          <div class="head"></div>
+        </div>
+        <div class="time">00:00 / ${fmt(data.duration)}</div>
+        <select class="speed" aria-label="Playback speed"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select>
+        <a class="dl" role="button" title="Download call recording"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Download call</span></a>
+      </div>
+      <div class="moments">
+        <button type="button" class="chip key"><svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>Play key moment only</button>
+        ${data.moments.length ? '<span class="lbl">Jump to:</span>' : ""}
+        ${data.moments.map((m, i) => `<button type="button" class="chip ${m.type}" data-i="${i}"><span class="dot"></span>${esc(m.label)}<span class="ts">${fmt(m.t)}</span></button>`).join("")}
+      </div>
+      <div class="approx">Times are estimated from the transcript; jump points may be a few seconds off.${data.src ? "" : " Recording not found on disk."}</div>
+    </div>
+    <div class="transcript">
+      ${data.lines.map((l, i) => `<div class="line${l.mark ? " k-" + l.mark : ""}" data-i="${i}"><div class="ts">${fmt(l.t)}</div><div class="who ${l.who}">${l.who === "agent" ? "Rep" : "Customer"}</div><div class="txt">${esc(l.text)}${l.markLabel ? `<span class="tagm ${l.mark}">${esc(l.markLabel)}</span>` : ""}</div></div>`).join("")}
+    </div>`;
+  const $ = s => host.querySelector(s);
+  $(".dl").addEventListener("click", async e => { e.preventDefault(); if (!data.src) return; const blob = await (await fetch(data.src)).blob(); const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `${data.docid}.mp3`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000); });
+  const btn = $(".btn-play"), track = $(".track"), fill = $(".fill"), head = $(".head"), time = $(".time"), keyBtn = $(".chip.key"), box = $(".transcript");
+  const lineEls = [...host.querySelectorAll(".line")];
+  let dur = data.duration, stopAt = null, active = -1;
+  const clearKey = () => { stopAt = null; keyBtn.classList.remove("on"); };
+  function place() { $(".mk").style.left = (keyStart / dur * 100) + "%"; const z = $(".zone"); z.style.left = (keyStart / dur * 100) + "%"; z.style.width = ((keyEnd - keyStart) / dur * 100) + "%"; }
+  place();
+  audio.addEventListener("loadedmetadata", () => { if (isFinite(audio.duration)) { dur = audio.duration; place(); render(); } });
+  function seek(t, play) { audio.currentTime = Math.min(Math.max(0, t), dur); render(); if (play) start(); }
+  function start() { players.forEach(p => { if (p !== audio) p.pause(); }); audio.play(); }
+  function render() {
+    const t = audio.currentTime, pct = (t / dur * 100) + "%";
+    fill.style.width = pct; head.style.left = pct; time.textContent = fmt(t) + " / " + fmt(dur); track.setAttribute("aria-valuenow", Math.round(t));
+    let i = -1; for (let k = 0; k < data.lines.length; k++) { if (data.lines[k].t <= t + 0.05) i = k; else break; }
+    if (i !== active) { if (active >= 0) lineEls[active].classList.remove("active"); active = i;
+      if (i >= 0) { const e = lineEls[i]; e.classList.add("active"); const top = e.offsetTop, bottom = top + e.offsetHeight;
+        if (top < box.scrollTop || bottom > box.scrollTop + box.clientHeight) box.scrollTo({ top: top - box.clientHeight / 3, behavior: "smooth" }); } }
+    if (stopAt !== null && t >= stopAt) { clearKey(); audio.pause(); }
+  }
+  audio.addEventListener("timeupdate", render);
+  audio.addEventListener("play", () => { btn.innerHTML = ICON_PAUSE; btn.setAttribute("aria-label", "Pause"); });
+  audio.addEventListener("pause", () => { btn.innerHTML = ICON_PLAY; btn.setAttribute("aria-label", "Play"); if (stopAt === null) keyBtn.classList.remove("on"); });
+  audio.addEventListener("ended", clearKey);
+  btn.addEventListener("click", () => { clearKey(); audio.paused ? start() : audio.pause(); });
+  $(".speed").addEventListener("change", e => { audio.playbackRate = +e.target.value; });
+  const tAt = e => { const r = track.getBoundingClientRect(); return (e.clientX - r.left) / r.width * dur; };
+  track.addEventListener("pointerdown", e => { if (e.target.closest(".mk, .zone")) return; track.setPointerCapture(e.pointerId); clearKey(); seek(tAt(e));
+    const move = ev => seek(tAt(ev)), up = () => { track.removeEventListener("pointermove", move); track.removeEventListener("pointerup", up); };
+    track.addEventListener("pointermove", move); track.addEventListener("pointerup", up); });
+  track.addEventListener("keydown", e => { if (e.key === "ArrowRight") { seek(audio.currentTime + 5); e.preventDefault(); } if (e.key === "ArrowLeft") { seek(audio.currentTime - 5); e.preventDefault(); } });
+  host.querySelectorAll(".mk, .zone").forEach(x => x.addEventListener("click", () => { clearKey(); seek(keyStart, true); }));
+  host.querySelectorAll(".chip[data-i]").forEach(x => x.addEventListener("click", () => { clearKey(); seek(data.moments[+x.dataset.i].t, true); }));
+  keyBtn.addEventListener("click", () => { if (keyBtn.classList.contains("on")) { clearKey(); audio.pause(); return; } seek(keyStart); start(); stopAt = keyEnd; keyBtn.classList.add("on"); });
+  lineEls.forEach(x => x.addEventListener("click", () => { clearKey(); seek(data.lines[+x.dataset.i].t, true); }));
+  players.push(audio);
+}
+
+// findings
+DATA.F.forEach(f => {
+  const sec = document.createElement("section");
+  sec.className = "finding"; sec.id = f.id;
+  sec.innerHTML = `
+    <div class="f-head">
+      <div><span class="f-num">${code(f)}</span><h3>${esc(f.title)}</h3><p>${md(f.claim)}</p></div>
+      <div class="duels">${f.kpi.map(k => `<div class="duel"><div class="lbl">${esc(k.label)}</div>
+        <div class="c m"><span>Mumbai</span><b>${esc(k.m)}</b></div><div class="c d"><span>Delhi</span><b>${esc(k.d)}</b></div></div>`).join("")}</div>
+    </div>
+    <div class="f-body">
+      ${f.chart.map((c, i) => `<div><div class="blk-h"><h4>${c.title ? esc(c.title) : "Visualization"}</h4>${c.type === "stack" ? stackLegend(c.rows) : c.type === "matrix" ? "" : legend}</div><div class="chart" data-c="${i}"></div></div>`).join("")}
+      ${[f.table, f.table2].filter(Boolean).map(tb => { const rng = vrange(tb); return `<div><div class="blk-h"><h4>Data${tb.title ? ": " + esc(tb.title) : ""}</h4></div><div class="tbl"><table><thead><tr>${tb.cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>
+        <tbody>${tb.rows.map(r => `<tr>${r.map((c, i) => cell(c, i, tb.cols, rng)).join("")}</tr>`).join("")}</tbody></table></div>${rng ? '<div class="scale-key"><span>0.0</span><i></i><span>+0.7 valence score</span></div>' : ""}</div>`; }).join("")}
+      ${f.ex && f.ex.length ? `<div><div class="blk-h"><h4>Listen: call example${f.ex.length > 1 ? "s" : ""}</h4></div><div class="exs">${f.ex.map(() => '<div class="call"></div>').join("")}</div></div>` : ""}
+    </div>`;
+  document.getElementById(f.group).appendChild(sec);
+  f.chart.forEach((c, i) => CHART[c.type](sec.querySelector(`.chart[data-c="${i}"]`), c.rows));
+  (f.ex || []).forEach((e, k) => {
+    const host = sec.querySelectorAll(".call")[k];
+    host.innerHTML = `<div class="call-head"><span class="tag ${e.city}">${e.city}</span><span class="call-meta">Doc ID ${esc(e.docid)}</span></div><div class="note">${esc(e.note)}</div><div class="audio"></div>`;
+    buildPlayer(host.querySelector(".audio"), e);
+  });
+});
+
+// sidebar
+(function () {
+  const toc = document.getElementById("toc"), items = [];
+  const add = (id, n, label) => { toc.insertAdjacentHTML("beforeend", `<a href="#${id}"><span class="n">${n}</span><span>${esc(label)}</span></a>`); items.push([document.getElementById(id), toc.lastElementChild]); };
+  toc.insertAdjacentHTML("beforeend", '<div class="grp">Overview</div>'); add("summary", "", "Insight summary"); add("howto", "", "How valence scores are calculated");
+  toc.insertAdjacentHTML("beforeend", '<div class="grp">Where they behave the same</div>'); DATA.F.filter(f => f.group === "same").forEach(f => add(f.id, code(f), f.title));
+  toc.insertAdjacentHTML("beforeend", '<div class="grp">Where they differ</div>'); DATA.F.filter(f => f.group === "differ").forEach(f => add(f.id, code(f), f.title));
+  function spy() { let cur = null; for (const [e, a] of items) if (e.getBoundingClientRect().top <= 140) cur = a; items.forEach(([, a]) => a.classList.toggle("on", a === cur)); }
+  addEventListener("scroll", spy, { passive: true }); spy();
+})();
+</script>
+</body>
+</html>
+
+
+
+
+

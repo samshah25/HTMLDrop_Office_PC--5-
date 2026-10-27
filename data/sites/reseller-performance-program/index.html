@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reseller Performance Program</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+:root{
+  --bg:#F5F7FB; --surface:#FFFFFF; --soft:#EEF2F8; --ink:#1F2A37; --muted:#5F6B7A; --line:#DDE3EC;
+  --accent:#0A6E8A; --accent-soft:#E1F1F5; --accent-ink:#075569;
+  --amber:#B86E00; --amber-soft:#FFF3DE;
+  --good:#1E7B4A; --good-soft:#E2F4E9;
+  --warn:#A86200; --warn-soft:#FFF1D9;
+  --bad:#B3342C; --bad-soft:#FBE5E2;
+  --font:"Poppins", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.65}
+a{color:var(--accent)}
+h1,h2,h3,h4{margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(26px,4vw,36px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:22px;font-weight:600}
+h3{font-size:17px;font-weight:600}
+p{margin:0}
+ul,ol{margin:0;padding-left:20px}
+li+li{margin-top:4px}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+
+/* ---------- top bar ---------- */
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.topbar .in{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:20px;height:60px}
+.brand{font-weight:700;font-size:16px;color:var(--ink);text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.brand .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.menu-btn{display:none;margin-left:auto;font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+
+/* ---------- layout ---------- */
+.shell{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:230px 1fr;gap:32px;align-items:start}
+.side{position:sticky;top:84px;display:grid;gap:2px}
+.side .grp{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 12px 6px}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:14px}
+.side a .n{width:22px;height:22px;border-radius:6px;background:var(--soft);color:var(--muted);display:grid;place-items:center;font-size:11px;font-weight:600;flex:none}
+.side a:hover{background:var(--soft)}
+.side a.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.side a.on .n{background:var(--accent);color:#fff}
+main{min-width:0;display:grid;gap:28px}
+.page-head{display:grid;gap:8px}
+.page-head p{max-width:72ch;color:var(--muted);font-size:16px}
+
+/* ---------- generic blocks ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:10px;align-content:start}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.block{display:grid;gap:14px}
+.block>.hd{display:grid;gap:4px}
+.block>.hd p{color:var(--muted)}
+.note{font-size:13.5px;color:var(--muted);background:var(--soft);border-radius:10px;padding:12px 14px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-good{background:var(--good-soft);color:var(--good)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-bad{background:var(--bad-soft);color:var(--bad)}
+.p-acc{background:var(--accent-soft);color:var(--accent-ink)}
+.p-amb{background:var(--amber-soft);color:var(--amber)}
+.p-grey{background:var(--soft);color:var(--muted)}
+
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:2px}
+.stat .k{font-size:12px;color:var(--muted);font-weight:500}
+.stat .v{font-size:24px;font-weight:700;color:var(--ink)}
+.stat .s{font-size:12.5px;color:var(--muted)}
+
+/* link cards on overview */
+.linkcard{text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}
+.linkcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.linkcard .go{font-size:13px;font-weight:600;color:var(--accent)}
+
+/* tables */
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;font-weight:600;color:var(--muted);background:var(--soft);letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--accent-soft)}
+
+/* buttons */
+.btn{font:inherit;font-weight:600;font-size:14px;padding:9px 18px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{background:var(--accent-ink);color:#fff}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* prev / next */
+.pager{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+.pager a{display:grid;gap:2px;text-decoration:none;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);min-width:200px}
+.pager a:hover{border-color:var(--accent)}
+.pager a small{color:var(--muted);font-size:12px}
+.pager a b{font-weight:600}
+.pager .nx{text-align:right;margin-left:auto}
+
+/* ---------- journey ---------- */
+.ruler{display:flex;border-radius:10px;overflow:hidden;height:46px;font-size:12px;font-weight:600}
+.ruler a{display:grid;place-items:center;color:#fff;text-decoration:none;text-align:center;line-height:1.2;border-right:2px solid var(--bg);padding:0 4px;overflow:hidden}
+.ruler a:last-child{border-right:0}
+.ruler a span{display:block;font-weight:400;font-size:11px;opacity:.9}
+.timeline{position:relative;display:grid;gap:18px;padding-left:34px}
+.timeline::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.stage{position:relative;scroll-margin-top:84px}
+.stage .marker{position:absolute;left:-34px;top:20px;width:24px;height:24px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;box-shadow:0 0 0 4px var(--bg)}
+.stage .card{gap:14px}
+.stage-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.stage-top .when{font-size:13px;font-weight:600;color:var(--muted)}
+.stage-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.col h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:6px}
+.col ul{font-size:14px}
+.exit{display:grid;gap:8px;background:var(--soft);border-radius:10px;padding:14px;font-size:14px}
+.exit .row{display:flex;gap:8px;align-items:flex-start}
+
+/* flow diagram */
+.flow{display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;overflow-x:auto}
+.flow-row{display:flex;align-items:center;gap:8px;min-width:720px}
+.fbox{border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;border:1.5px solid;text-align:center;line-height:1.3;flex:none}
+.fbox small{display:block;font-weight:400;font-size:11.5px;opacity:.85}
+.f-n{border-color:var(--line);background:var(--soft);color:var(--ink)}
+.f-a{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.f-g{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.f-w{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.f-b{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.arr{color:var(--muted);font-size:13px;flex:none;display:grid;justify-items:center;line-height:1.1}
+.arr i{font-style:normal;font-size:18px}
+.arr em{font-style:normal;font-size:11px;font-weight:600}
+.branch{display:grid;gap:10px}
+
+/* ---------- slabs ---------- */
+.slab{border-top:5px solid var(--line)}
+.slab .pct{font-size:38px;font-weight:700;line-height:1}
+.slab.below{border-top-color:var(--bad)} .slab.below .pct{color:var(--bad)}
+.slab.base{border-top-color:var(--good)} .slab.base .pct{color:var(--good)}
+.slab.perf{border-top-color:var(--accent)} .slab.perf .pct{color:var(--accent)}
+.slab.elite{border-top-color:var(--amber)} .slab.elite .pct{color:var(--amber)}
+.slab .cond{font-size:13.5px;color:var(--muted)}
+
+/* ---------- rule book ---------- */
+.rb{display:grid;grid-template-columns:210px 1fr;gap:20px;align-items:start}
+.rb-idx{position:sticky;top:84px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:grid;gap:2px}
+.rb-idx a{text-decoration:none;color:var(--ink);font-size:13.5px;padding:7px 10px;border-radius:8px;display:flex;gap:8px}
+.rb-idx a b{color:var(--accent);width:16px}
+.rb-idx a:hover{background:var(--soft)}
+.rgroup{scroll-margin-top:84px}
+.rgroup .card{padding:0;gap:0;overflow:hidden}
+.rgroup .ghd{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;background:var(--soft)}
+.rgroup .gl{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.rule{display:grid;grid-template-columns:58px 1fr;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:14.5px}
+.rule:last-child{border-bottom:0}
+.rule .id{font-weight:600;color:var(--accent);font-size:13px;padding-top:1px}
+.rule .tx b{font-weight:600}
+
+/* walker */
+.walker{display:grid;gap:14px}
+.trail{display:grid;gap:6px;font-size:13px}
+.trail div{display:flex;gap:8px;align-items:center;color:var(--muted)}
+.q{font-size:18px;font-weight:600}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.result{padding:14px 16px;border-radius:10px;font-weight:500}
+.r-good{background:var(--good-soft);color:var(--good)}
+.r-warn{background:var(--warn-soft);color:var(--warn)}
+.r-bad{background:var(--bad-soft);color:var(--bad)}
+
+/* ---------- calculator ---------- */
+.calc{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14px;display:flex;justify-content:space-between}
+.field label .v{color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number]{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.bar{position:relative;height:14px;border-radius:7px;background:var(--soft);margin:30px 0}
+.bar .fill{position:absolute;inset:0 auto 0 0;border-radius:7px;transition:width .2s}
+.bar .mk{position:absolute;top:-22px;bottom:-22px;border-left:2px dashed #9AA6B4}
+.bar .mk span{position:absolute;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.bar .mk span.top{top:-2px}
+.bar .mk span.bot{bottom:-2px}
+.msg{padding:14px 16px;border-radius:10px;font-size:14px;display:grid;gap:2px}
+.m-info{background:var(--accent-soft);color:var(--accent-ink)}
+
+/* funnel */
+.funnel{display:grid;gap:10px}
+.fr{display:grid;grid-template-columns:210px 1fr;gap:12px;align-items:center;font-size:14px}
+.ft{height:32px;border-radius:7px;background:var(--accent);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center;padding-left:12px}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;display:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px}
+  .side.open{display:grid}
+  .menu-btn{display:inline-block}
+  .grid3,.grid4{grid-template-columns:repeat(2,1fr)}
+  .stage-body{grid-template-columns:1fr}
+  .rb{grid-template-columns:1fr}
+  .rb-idx{position:static;grid-template-columns:repeat(2,1fr)}
+  .calc{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .shell{padding:20px 16px 48px}
+  .topbar .in{padding:0 16px}
+  .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  .fr{grid-template-columns:1fr;gap:4px}
+  .rule{grid-template-columns:1fr;gap:2px}
+  .pager a{min-width:0;flex:1}
+  .ruler{font-size:10px}
+  .ruler a span{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ---------- flowchart (journey) ---------- */
+.fc-wrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;overflow-x:auto}
+.fc{display:block;width:100%;min-width:680px;max-width:860px;margin:0 auto;height:auto;font-family:var(--font)}
+.fc .bx rect{stroke-width:1.5;rx:10}
+.fc .n rect{fill:var(--soft);stroke:#B9C3CF}
+.fc .a rect{fill:var(--accent-soft);stroke:var(--accent)}
+.fc .g rect{fill:var(--good-soft);stroke:var(--good)}
+.fc .w rect{fill:var(--warn-soft);stroke:var(--warn)}
+.fc .b rect{fill:var(--bad-soft);stroke:var(--bad)}
+.fc .dm polygon{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.fc .t{font-size:12.5px;font-weight:600;fill:var(--ink)}
+.fc .s{font-size:12px;fill:var(--muted)}
+.fc .ln{stroke:#8C99A8;stroke-width:2;fill:none}
+.fc .lbl{font-size:12px;font-weight:600}
+.fc .yes{fill:var(--good)} .fc .no{fill:var(--bad)}
+.fc .click{cursor:pointer}
+.fc .click:hover rect{stroke-width:3}
+.fc .click:focus-visible{outline:none}
+.fc .click:focus-visible rect{stroke-width:3;stroke:var(--ink)}
+
+/* ---------- swipe carousel (journey) ---------- */
+.car-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip-btn{font:inherit;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip-btn i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip-btn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.arrows{display:flex;gap:8px}
+.arrows .btn{width:42px;height:42px;padding:0;justify-content:center;font-size:18px}
+.arrows .btn:disabled{opacity:.35;cursor:default;border-color:var(--line);color:var(--ink)}
+.track{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;outline:none}
+.track::-webkit-scrollbar{display:none}
+.slide{scroll-snap-align:start;min-width:0;scroll-margin-top:84px}
+.slide .card{height:100%;gap:14px;border-top:5px solid var(--line)}
+.swipe-hint{font-size:12.5px;color:var(--muted);text-align:center}
+.fc.tree{max-width:700px;min-width:560px}
+.fc.tree .s{font-size:11.5px}
+
+.view{display:grid;gap:28px;min-width:0}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side"></nav>
+  <main>
+<section class="view" id="view-index" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Justdial Reseller Program · Proposal</span>
+      <h1>Reseller Performance Program</h1>
+      <p>A performance-based program for Justdial reseller agencies. Every agency follows the same 45-day journey: train, assess its market, then close at least 3 deals. An agency that misses the target gets 10 days to recover. If it still misses, it is closed out of the program over the next 15 days.</p>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>The journey at a glance</h2><p>Each agency's days are counted from Day 0, the day it signs the agreement. Click a stage to read more.</p></div>
+      <div class="ruler" id="ruler"></div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>The program in brief</h2></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Area</th><th>How it works</th></tr></thead>
+          <tbody>
+            <tr><td><b>Onboarding</b></td><td>Rolling. An agency can join on any working day.</td></tr>
+            <tr><td><b>Training</b></td><td>Day 1–7</td></tr>
+            <tr><td><b>Market assessment</b></td><td>Day 8–14. The agency maps its market and builds a prospect list.</td></tr>
+            <tr><td><b>Target</b></td><td><b>At least 3 deals</b> by Day 45, with regular tracking</td></tr>
+            <tr><td><b>What counts as a deal</b></td><td>1 package = 1 deal · 3 JDRR = 1 deal</td></tr>
+            <tr><td><b>Target missed</b></td><td>10-day warning with closer tracking (Day 46–55)</td></tr>
+            <tr><td><b>Warning not cleared</b></td><td>15-day closure and exit from the program (Day 56–70)</td></tr>
+            <tr><td><b>Commission</b></td><td>Flat <span id="rate"></span>% of collection on every deal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pager"></div>
+  </section>
+<section class="view" id="view-journey" hidden>
+    <div class="page-head">
+      <span class="eyebrow">How it works</span>
+      <h1>Agency journey</h1>
+      <p>Agencies join whenever they are ready. Every agency follows the same journey, counted from its own Day 0, the day it signs the agreement.</p>
+    </div>
+
+    <div class="ruler" id="ruler"></div>
+
+    <div class="block">
+      <div class="hd"><h2>Possible paths</h2><p>Start at the top and follow the branches. Each diamond is a check, with Yes going left and No going right. Click any coloured stage to open its details below.</p></div>
+      <div class="fc-wrap">
+        <svg class="fc tree" id="fc" viewBox="0 0 760 860" role="img" aria-label="Tree diagram of the agency journey">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#8C99A8"></path>
+            </marker>
+          </defs>
+          <g><path class="ln" d="M300,433 V452 M110,452 H490" marker-end="none"></path><path class="ln" d="M490,653 V672 M330,672 H650" marker-end="none"></path></g>
+          <g marker-end="url(#ah)"><line class="ln" x1="300" y1="68" x2="300" y2="90"></line><line class="ln" x1="300" y1="148" x2="300" y2="170"></line><line class="ln" x1="300" y1="228" x2="300" y2="250"></line><line class="ln" x1="300" y1="308" x2="300" y2="335"></line><line class="ln" x1="490" y1="528" x2="490" y2="555"></line><line class="ln" x1="650" y1="748" x2="650" y2="785"></line><line class="ln" x1="110" y1="452" x2="110" y2="470"></line><line class="ln" x1="490" y1="452" x2="490" y2="470"></line><line class="ln" x1="330" y1="672" x2="330" y2="690"></line><line class="ln" x1="650" y1="672" x2="650" y2="690"></line></g>
+          <text class="lbl yes" x="200" y="446" text-anchor="middle">Yes</text>
+          <text class="lbl no" x="400" y="446" text-anchor="middle">No</text>
+          <text class="lbl yes" x="405" y="666" text-anchor="middle">Yes</text>
+          <text class="lbl no" x="575" y="666" text-anchor="middle">No</text>
+          <g class="bx n"><rect x="215" y="12" width="170" height="56"></rect><text class="t" x="300" y="36" text-anchor="middle">Sign-up</text><text class="s" x="300" y="55" text-anchor="middle">Day 0</text></g>
+          <g class="bx a click" data-i="0" tabindex="0"><rect x="215" y="92" width="170" height="56"></rect><text class="t" x="300" y="116" text-anchor="middle">Training</text><text class="s" x="300" y="135" text-anchor="middle">Day 1–7</text></g>
+          <g class="bx a click" data-i="1" tabindex="0"><rect x="215" y="172" width="170" height="56"></rect><text class="t" x="300" y="196" text-anchor="middle">Market assessment</text><text class="s" x="300" y="215" text-anchor="middle">Day 8–14</text></g>
+          <g class="bx a click" data-i="2" tabindex="0"><rect x="215" y="252" width="170" height="56"></rect><text class="t" x="300" y="276" text-anchor="middle">Performance window</text><text class="s" x="300" y="295" text-anchor="middle">Day 15–45</text></g>
+          <g class="dm"><polygon points="300,337 390,385 300,433 210,385"></polygon><text class="t" x="300" y="382" text-anchor="middle">At least 3 deals</text><text class="s" x="300" y="400" text-anchor="middle">by Day 45?</text></g>
+          <g class="bx g"><rect x="25" y="472" width="170" height="56"></rect><text class="t" x="110" y="496" text-anchor="middle">Active partner</text><text class="s" x="110" y="515" text-anchor="middle">Keeps selling</text></g>
+          <g class="bx w click" data-i="3" tabindex="0"><rect x="405" y="472" width="170" height="56"></rect><text class="t" x="490" y="496" text-anchor="middle">Warning</text><text class="s" x="490" y="515" text-anchor="middle">Day 46–55</text></g>
+          <g class="dm"><polygon points="490,557 580,605 490,653 400,605"></polygon><text class="t" x="490" y="602" text-anchor="middle">At least 3 deals</text><text class="s" x="490" y="620" text-anchor="middle">by Day 55?</text></g>
+          <g class="bx g"><rect x="245" y="692" width="170" height="56"></rect><text class="t" x="330" y="716" text-anchor="middle">Active partner</text><text class="s" x="330" y="735" text-anchor="middle">Keeps selling</text></g>
+          <g class="bx b click" data-i="4" tabindex="0"><rect x="565" y="692" width="170" height="56"></rect><text class="t" x="650" y="716" text-anchor="middle">Closure</text><text class="s" x="650" y="735" text-anchor="middle">Day 56–70</text></g>
+          <g class="bx b"><rect x="565" y="787" width="170" height="56"></rect><text class="t" x="650" y="811" text-anchor="middle">Removed</text><text class="s" x="650" y="830" text-anchor="middle">Day 70</text></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="block" id="stages">
+      <div class="car-head">
+        <h2>Stage by stage</h2>
+        <div class="arrows">
+          <button class="btn" id="prev" aria-label="Previous stage">←</button>
+          <button class="btn" id="next" aria-label="Next stage">→</button>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="track" id="track" tabindex="0" aria-label="Journey stages, swipe or use arrow keys"></div>
+      <p class="swipe-hint">Swipe, use the arrows, or pick a stage above.</p>
+    </div>
+
+    <div class="block" id="check">
+      <div class="hd"><h2>Check a situation</h2><p>Answer the questions to see what happens to an agency.</p></div>
+      <div class="card walker" id="walker"></div>
+    </div>
+
+    <div class="pager"></div>
+  </section>
+<section class="view" id="view-deals" hidden>
+    <div class="page-head">
+      <span class="eyebrow">How it works</span>
+      <h1>Deals and commission</h1>
+      <p>Agencies sell two products. Both count toward the same target of at least 3 deals. Use the tracker at the bottom of this page to check any agency.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="card"><span class="pill p-amb" style="justify-self:start">Package</span><h2>1 package = 1 deal</h2><p class="muted">Each package sold counts as one full deal. Average package value is about ₹26,000.</p></div>
+      <div class="card"><span class="pill p-acc" style="justify-self:start">JDRR</span><h2>3 JDRR = 1 deal</h2><p class="muted">Every 3 JDRR sales count as one deal. 1 or 2 JDRR sales left over carry forward until the third is sold.</p></div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>Ways to reach at least 3 deals</h2></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Packages</th><th>JDRR sales</th><th class="c">Deals</th><th>Target</th></tr></thead>
+          <tbody id="combos"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>What counts as a deal</h2></div>
+      <div class="card">
+        <ul>
+          <li>Payment is <b>realised</b>, not just booked. The deal date is the payment date.</li>
+          <li>Closed by a trained seller of the agency, using that seller's own login.</li>
+          <li>Closed on or after Day 8. Deals from the market assessment count.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>Commission</h2></div>
+      <div class="card"><span class="eyebrow">Rate</span><h2>Flat <span id="rate"></span>%</h2><p class="muted">The same rate on every package and JDRR sale, for every agency, from the first deal.</p></div>
+    </div>
+
+    <div class="block" id="tracker">
+      <div class="hd"><h2>Deal tracker</h2><p>Enter the agency's current day and what it has sold since Day 8. The tracker shows its stage, deal count, commission so far and what it needs next. The starting values are an example.</p></div>
+      <div class="calc">
+        <form class="card" id="f" onsubmit="return false">
+          <div class="field"><label for="day">Agency's day <span class="v" id="dayV"></span></label><input type="range" id="day" min="1" max="70" value="32"></div>
+          <div class="field"><label for="pkg">Packages sold <span class="v" id="pkgV"></span></label><input type="range" id="pkg" min="0" max="10" value="1"></div>
+          <div class="field"><label for="jdrr">JDRR sold <span class="v" id="jdrrV"></span></label><input type="range" id="jdrr" min="0" max="30" value="2"></div>
+          <div class="field"><label for="pkgval">Average package collection (₹)</label><input type="number" id="pkgval" min="0" step="500" value="26000"></div>
+        </form>
+
+        <div class="card" style="gap:18px">
+          <div class="grid4">
+            <div class="stat"><span class="k">Stage</span><span class="v" id="oStage" style="font-size:18px"></span></div>
+            <div class="stat"><span class="k">Deals</span><span class="v num" id="oDeals"></span></div>
+            <div class="stat"><span class="k">Days left</span><span class="v num" id="oLeft"></span></div>
+            <div class="stat"><span class="k">Commission so far</span><span class="v num" id="oPay" style="font-size:18px"></span></div>
+          </div>
+          <div class="bar" id="bar"></div>
+          <div class="msg" id="oMsg"></div>
+          <div class="msg m-info" id="oNext"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pager"></div>
+  </section>
+<section class="view" id="view-tracking" hidden>
+    <div class="page-head">
+      <span class="eyebrow">How it works</span>
+      <h1>Tracking</h1>
+      <p>Each agency is reviewed regularly from Day 1, so a slow agency is spotted early. Tracking gets closer once an agency is on warning.</p>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>Tracking by stage</h2></div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Stage</th><th>How often</th><th>What is checked</th><th>Who</th></tr></thead>
+          <tbody>
+            <tr><td><b>Training</b><br><span class="muted">Day 1–7</span></td><td>Daily</td><td>Attendance of every seller, Day 7 test result</td><td>Training team</td></tr>
+            <tr><td><b>Market assessment</b><br><span class="muted">Day 8–14</span></td><td>Mid-week call + Day 14 review</td><td>Target areas, prospect list, first meetings</td><td>RM</td></tr>
+            <tr><td><b>Performance window</b><br><span class="muted">Day 15–45</span></td><td>Weekly review on Day 21, 28, 35, 42</td><td>Deals closed, leads worked, meetings held, pipeline</td><td>RM</td></tr>
+            <tr><td><b>Warning</b><br><span class="muted">Day 46–55</span></td><td>Every 2 days + daily activity report</td><td>Each deal in the pipeline, progress toward at least 3 deals</td><td>RM + Sales manager</td></tr>
+            <tr><td><b>Closure</b><br><span class="muted">Day 56–70</span></td><td>Checklist review on Day 63 and Day 70</td><td>Lead and client handover, pending payments, logins</td><td>RM + Ops</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>Staying on track</h2><p>The agency should reach these totals by each date during the performance window. Missing one triggers an extra RM call, not a penalty.</p></div>
+      <div class="grid3" id="pace"></div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>What is tracked for every agency</h2></div>
+      <div class="grid2">
+        <div class="card"><h3>Results</h3><ul><li>Packages sold</li><li>JDRR sold</li><li>Total deals (packages + JDRR ÷ 3)</li><li>Collection</li></ul></div>
+        <div class="card"><h3>Activity</h3><ul><li>Leads worked</li><li>Meetings and demos held</li><li>Open pipeline</li><li>Days since the last deal</li></ul></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="hd"><h2>Weekly leaderboard</h2><p>All agencies are ranked by deals closed, and the ranking is shared every week so agencies can see how they compare. Agencies on warning are flagged privately, not on the shared board.</p></div>
+    </div>
+
+    <div class="pager"></div>
+  </section>
+<section class="view" id="view-rules" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Rules</span>
+      <h1>Rule book</h1>
+      <p>Every rule of the program, grouped in the order an agency meets them. Each rule has an ID (for example, F2) so it can be quoted in notices and agreements. The same rules apply to every agency.</p>
+    </div>
+
+    <div class="rb">
+      <div class="rb-idx" id="idx"></div>
+      <div class="block" id="book"></div>
+    </div>
+
+    <div class="pager"></div>
+  </section>
+<section class="view" id="view-decisions" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Before launch</span>
+      <h1>Open decisions</h1>
+      <p>These points need agreement before launch. Each one shows the current proposal.</p>
+    </div>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>#</th><th>Decision</th><th>Current proposal</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><b>After Day 45</b></td><td>Should Active partners also need at least 3 deals every 30 days, with the same warning and closure? Proposed: yes.</td></tr>
+          <tr><td>2</td><td><b>What the closure period is for</b></td><td>Day 56–70 is used for exit: handover, settlement and switching off logins. No new deals are counted.</td></tr>
+          <tr><td>3</td><td><b>Market assessment output</b></td><td>Target areas, business categories and a prospect list, reviewed by the RM on Day 14.</td></tr>
+          <tr><td>4</td><td><b>Deals during market assessment</b></td><td>Deals closed from Day 8 count toward the target of at least 3 deals.</td></tr>
+          <tr><td>5</td><td><b>When a deal counts</b></td><td>On payment realisation</td></tr>
+          <tr><td>6</td><td><b>Commission rate</b></td><td>Flat 40% of collection on every deal</td></tr>
+          <tr><td>7</td><td><b>Tracking JDRR and package deals by agency</b></td><td>Both must be recorded per agency and per seller to count deals.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">All targets and timelines in this proposal are drafts until these decisions are made.</div>
+
+    <div class="pager"></div>
+  </section>
+  </main>
+</div>
+<script>
+// Shared navigation, program constants and helpers for every page.
+const PAGES = [
+  { file: "index.html",     title: "Overview",          grp: "Start here" },
+  { file: "journey.html",   title: "Agency Journey",    grp: "How it works" },
+  { file: "deals.html",     title: "Deals & Commission", grp: "How it works" },
+  { file: "tracking.html",  title: "Tracking",          grp: "How it works" },
+  { file: "rules.html",     title: "Rule Book",         grp: "Rules" },
+  { file: "decisions.html", title: "Open Decisions",    grp: "Before launch" }
+];
+
+// One program for every agency: same journey, same target, same commission.
+const PROGRAM = {
+  minDeals: 3,          // deals needed in the performance window
+  jdrrPerDeal: 3,       // 3 JDRR sales = 1 deal; 1 package = 1 deal
+  commission: 40        // flat % of collection on every deal
+};
+
+// Stages, counted from the agency's Day 0 (the day its agreement is signed).
+const STAGES = [
+  { id: "training",   t: "Training",           from: 1,  to: 7,  c: "#2F86A0" },
+  { id: "assessment", t: "Market assessment",  from: 8,  to: 14, c: "#0A6E8A" },
+  { id: "performance",t: "Performance window", from: 15, to: 45, c: "#1E7B4A" },
+  { id: "warning",    t: "Warning",            from: 46, to: 55, c: "#B86E00" },
+  { id: "closure",    t: "Closure",            from: 56, to: 70, c: "#B3342C" }
+];
+
+// Suggested pace inside the performance window.
+const CHECKPOINTS = [ { day: 25, deals: 1 }, { day: 35, deals: 2 }, { day: 45, deals: 3 } ];
+
+const $ = id => document.getElementById(id);
+const dayRange = s => `Day ${s.from}–${s.to}`;
+const dealsOf = (pkg, jdrr) => pkg + Math.floor(jdrr / PROGRAM.jdrrPerDeal);
+
+
+(function(){
+const sec = document.getElementById('view-index');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+$("rate").textContent = PROGRAM.commission;
+$("ruler").innerHTML = STAGES.map(s => `<a href="journey.html#${s.id}" style="flex:${s.to - s.from + 1};background:${s.c}">${s.t}<span>${dayRange(s)}</span></a>`).join("");
+
+})();
+(function(){
+const sec = document.getElementById('view-journey');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+const M = PROGRAM.minDeals;
+const DETAIL = {
+  training: {
+    goal: "Every seller in the agency learns to sell JDRR and packages.",
+    jd: ["Train sellers on JDRR, packages, pricing and Genio", "Share pitch scripts and sample objections", "Hold a short test on Day 7"],
+    ag: ["Make sure every seller attends", "Complete the Day 7 test"],
+    gate: "Training attended and the Day 7 test passed",
+    pass: "Starts market assessment on Day 8", fail: "One repeat session. If the test is failed again, the agency doesn't start" },
+  assessment: {
+    goal: "The agency studies its own market before the target clock starts, so it starts Day 15 with a pipeline.",
+    jd: ["Share data on businesses in the agency's city or area", "RM reviews progress on Day 14"],
+    ag: ["Choose target areas and business categories", "Build a prospect list of businesses to approach", "Visit or call prospects to gauge interest"],
+    gate: "Market assessment completed by Day 14",
+    pass: "Enters the performance window on Day 15", fail: "The target clock starts on Day 15 regardless" },
+  performance: {
+    goal: `Close at least ${M} deals by Day 45. Deals closed during market assessment also count.`,
+    jd: ["Weekly review call with the agency (Day 21, 28, 35, 42)", "Track deals, leads worked and meetings", "Help close stuck deals"],
+    ag: ["Sell packages (1 deal each) and JDRR (3 sales = 1 deal)", "Update leads and meetings in Genio", `Reach at least ${M} deals by Day 45`],
+    gate: `At least ${M} deals by Day 45`,
+    pass: "Becomes an Active partner", fail: "Enters a 10-day warning on Day 46" },
+  warning: {
+    goal: `A 10-day chance to reach at least ${M} deals, with closer tracking.`,
+    jd: ["Send a written warning on Day 46 by email and WhatsApp", "Check in every 2 days", "Review the pipeline deal by deal"],
+    ag: ["Share a daily activity report", `Reach a total of at least ${M} deals by Day 55`],
+    gate: `A total of at least ${M} deals by Day 55`,
+    pass: "Becomes an Active partner", fail: "Closure starts on Day 56" },
+  closure: {
+    goal: "A clean exit from the program over 15 days.",
+    jd: ["Send a closure notice on Day 56", "Settle commission on genuine deals already closed", "Move the agency's open leads and clients to Justdial", "Switch off logins on Day 70"],
+    ag: ["Hand over open leads and client details", "Finish paperwork on pending deals", "Return any Justdial material"],
+    gate: "Closure checklist complete by Day 70",
+    pass: "Removed from the program. Can reapply after 90 days", fail: "Pending commission is held until the handover is complete" }
+};
+
+// ----- stage carousel -----
+const track = $("track");
+$("ruler").innerHTML = STAGES.map((s, i) => `<a href="#${s.id}" data-go="${i}" style="flex:${s.to - s.from + 1};background:${s.c}">${s.t}<span>${dayRange(s)}</span></a>`).join("");
+$("chips").innerHTML = STAGES.map((s, i) => `<button class="chip-btn" data-go="${i}"><i style="background:${s.c}"></i>${i + 1}. ${s.t}</button>`).join("");
+track.innerHTML = STAGES.map((s, i) => {
+  const d = DETAIL[s.id], len = s.to - s.from + 1, end = s.id === "closure";
+  return `
+  <div class="slide" id="${s.id}">
+    <div class="card" style="border-top-color:${s.c}">
+      <div class="stage-top"><div><span class="when">Stage ${i + 1} of ${STAGES.length} · ${dayRange(s)}</span><h2>${s.t}</h2></div><span class="pill p-grey">${len} days</span></div>
+      <p>${d.goal}</p>
+      <div class="stage-body">
+        <div class="col"><h4>Justdial does</h4><ul>${d.jd.map(x => `<li>${x}</li>`).join("")}</ul></div>
+        <div class="col"><h4>Agency does</h4><ul>${d.ag.map(x => `<li>${x}</li>`).join("")}</ul></div>
+        <div class="col"><h4>${end ? "Outcome" : "To move on"}</h4><div class="exit"><b>${d.gate}</b>
+          <div class="row"><span class="pill ${end ? "p-bad" : "p-good"}">${end ? "Result" : "Pass"}</span><span>${d.pass}</span></div>
+          <div class="row"><span class="pill p-bad">${end ? "If not" : "Fail"}</span><span>${d.fail}</span></div></div></div>
+      </div>
+    </div>
+  </div>`;
+}).join("");
+
+const slides = [...track.children];
+let cur = 0;
+function mark(i) {
+  cur = i;
+  [...$("chips").children].forEach((c, k) => c.classList.toggle("on", k === i));
+  $("prev").disabled = i === 0;
+  $("next").disabled = i === slides.length - 1;
+}
+function go(i, reveal) {
+  i = Math.max(0, Math.min(slides.length - 1, i));
+  track.scrollTo({ left: slides[i].offsetLeft - slides[0].offsetLeft });
+  mark(i);
+  if (reveal) $("stages").scrollIntoView({ behavior: "smooth" });
+}
+let raf;
+track.addEventListener("scroll", () => {
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => mark(Math.round(track.scrollLeft / ((slides[1].offsetLeft - slides[0].offsetLeft) || 1))));
+});
+$("prev").addEventListener("click", () => go(cur - 1));
+$("next").addEventListener("click", () => go(cur + 1));
+track.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") { e.preventDefault(); go(cur + 1); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
+});
+$("chips").addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) go(+b.dataset.go); });
+$("ruler").addEventListener("click", e => {
+  const a = e.target.closest("[data-go]"); if (!a) return;
+  e.preventDefault(); e.stopPropagation(); go(+a.dataset.go, true);
+});
+const fcGo = e => { const g = e.target.closest(".click"); if (g) go(+g.dataset.i, true); };
+$("fc").addEventListener("click", fcGo);
+$("fc").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fcGo(e); } });
+
+// Open on a stage if the link asked for one (journey.html#warning).
+const want = location.hash.split(/[#/]/).pop();
+const wi = STAGES.findIndex(s => s.id === want);
+mark(0);
+if (wi > 0) setTimeout(() => go(wi), 50);
+
+// ----- situation checker -----
+const TREE = {
+  start:  { q: "Did the agency complete training by Day 7?", a: [["Yes", "plan"], ["No", "retrain"]] },
+  retrain:{ end: "warn", msg: "It gets one repeat session and retest. Only sellers who pass can log deals. (Rule B2)" },
+  plan:   { q: "Did it close at least 3 deals by Day 45?", a: [["Yes", "active"], ["No", "warn"]] },
+  active: { end: "good", msg: "Active partner. It keeps selling at 40% commission. (Rule E4)" },
+  warn:   { q: "It gets a 10-day warning. Did it reach a total of at least 3 deals by Day 55?", a: [["Yes", "active2"], ["No", "closure"]] },
+  active2:{ end: "good", msg: "Active partner after clearing the warning. (Rule F5)" },
+  closure:{ end: "bad", msg: "Closure from Day 56 to Day 70, then removed. It can reapply after 90 days. (Rules G1–G5, J1)" }
+};
+let path = ["start"], trail = [];
+function walk() {
+  const n = TREE[path[path.length - 1]];
+  let h = trail.length ? `<div class="trail">${trail.map(t => `<div><span class="pill ${t.a === "Yes" ? "p-good" : "p-bad"}">${t.a}</span>${t.q}</div>`).join("")}</div>` : "";
+  h += n.end
+    ? `<div class="result r-${n.end}">${n.msg}</div><div class="btns"><button class="btn" data-w="reset">Start again</button></div>`
+    : `<p class="q">${n.q}</p><div class="btns">${n.a.map(([l, k]) => `<button class="btn ${l === "Yes" ? "pri" : ""}" data-w="${k}" data-l="${l}">${l}</button>`).join("")}</div>`;
+  $("walker").innerHTML = h;
+}
+$("walker").addEventListener("click", e => {
+  const b = e.target.closest("[data-w]"); if (!b) return;
+  if (b.dataset.w === "reset") { path = ["start"]; trail = []; }
+  else { trail.push({ q: TREE[path[path.length - 1]].q, a: b.dataset.l }); path.push(b.dataset.w); }
+  walk();
+});
+walk();
+
+})();
+(function(){
+const sec = document.getElementById('view-deals');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+$("rate").textContent = PROGRAM.commission;
+const C = [[3, 0], [2, 3], [1, 6], [0, 9], [2, 2], [1, 4]];
+$("combos").innerHTML = C.map(([p, j]) => {
+  const d = dealsOf(p, j), ok = d >= PROGRAM.minDeals;
+  return `<tr><td class="num">${p}</td><td class="num">${j}</td><td class="c num"><b>${d}</b></td><td><span class="pill ${ok ? "p-good" : "p-bad"}">${ok ? "Met" : "Not met: " + (PROGRAM.jdrrPerDeal - j % PROGRAM.jdrrPerDeal) + " more JDRR needed"}</span></td></tr>`;
+}).join("");
+
+})();
+(function(){
+const sec = document.getElementById('view-deals');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+const M = PROGRAM.minDeals, J = PROGRAM.jdrrPerDeal, JDRR_PRICE = 2999;
+const inr = n => "₹" + Math.round(n).toLocaleString("en-IN");
+function calc() {
+  const day = +$("day").value, pk = +$("pkg").value, j = +$("jdrr").value, pv = Math.max(0, +$("pkgval").value || 0);
+  $("dayV").textContent = "Day " + day; $("pkgV").textContent = pk; $("jdrrV").textContent = j;
+  const deals = dealsOf(pk, j), spare = j % J, met = deals >= M;
+  const st = STAGES.find(s => day >= s.from && day <= s.to);
+  $("oDeals").textContent = `${deals} / ${M}`;
+  $("oPay").textContent = inr((pk * pv + j * JDRR_PRICE) * PROGRAM.commission / 100);
+
+  // Which deadline applies right now.
+  let stage = st.t, deadline = null, cls = "r-good", head = "", body = "";
+  if (st.id === "training") { stage = "Training"; head = "Training in progress."; body = "The deal target starts counting from Day 8."; }
+  else if (st.id === "assessment") { deadline = 45; head = "Market assessment."; body = `Deals closed now already count toward the target of at least ${M} deals.`; }
+  else if (met) { stage = "Active partner"; head = `Target met: ${deals} deals.`; body = "The agency is an Active partner and keeps selling."; }
+  else if (st.id === "performance") {
+    deadline = 45;
+    const cp = CHECKPOINTS.filter(c => c.day <= day).pop();
+    if (cp && deals < cp.deals) { cls = "r-warn"; head = "Behind pace."; body = `It should have ${cp.deals} deal${cp.deals > 1 ? "s" : ""} by Day ${cp.day}. The RM schedules an extra call.`; }
+    else { head = "On track."; body = `${M - deals} more deal${M - deals > 1 ? "s" : ""} needed by Day 45.`; }
+  }
+  else if (st.id === "warning") { deadline = 55; cls = "r-warn"; head = "On warning."; body = `${M - deals} more deal${M - deals > 1 ? "s" : ""} needed by Day 55, or closure starts on Day 56.`; }
+  else { cls = "r-bad"; head = "In closure."; body = "No new deals can be logged. Handover must be complete and logins are switched off on Day 70."; deadline = 70; }
+
+  $("oStage").textContent = stage;
+  $("oLeft").textContent = deadline ? Math.max(0, deadline - day) : "–";
+  const m = $("oMsg"); m.className = "msg " + cls; m.innerHTML = `<b>${head}</b><span>${body}</span>`;
+
+  const nx = $("oNext");
+  if (!met && st.id !== "closure" && st.id !== "training") {
+    const need = M - deals, jNeed = need * J - spare;
+    nx.hidden = false;
+    nx.innerHTML = `<b>To reach at least ${M} deals:</b><span>${need} more package${need > 1 ? "s" : ""}, or ${jNeed} more JDRR sale${jNeed > 1 ? "s" : ""}${spare ? ` (the ${spare} spare JDRR already count toward the next deal)` : ""}.</span>`;
+  } else nx.hidden = true;
+
+  const pc = d => (d - 1) / 69 * 100;
+  $("bar").innerHTML = STAGES.map(s => `<div class="fill" style="left:${pc(s.from)}%;width:${pc(s.to + 1) - pc(s.from)}%;background:${s.c};opacity:.3;border-radius:0"></div>`).join("") +
+    `<div class="fill" style="width:${pc(day)}%;background:${st.c};opacity:.85"></div>
+     <div class="mk" style="left:${pc(15)}%"><span class="top">Day 15</span></div>
+     <div class="mk" style="left:${pc(45)}%"><span class="bot">Day 45 · at least ${M} deals</span></div>
+     <div class="mk" style="left:${pc(55)}%"><span class="top">Day 55</span></div>`;
+}
+["day", "pkg", "jdrr", "pkgval"].forEach(id => $(id).addEventListener("input", calc));
+calc();
+
+})();
+(function(){
+const sec = document.getElementById('view-tracking');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+$("pace").innerHTML = CHECKPOINTS.map((c, i) => `
+  <div class="stat"><span class="k">By Day ${c.day}</span><span class="v">${c.deals} deal${c.deals > 1 ? "s" : ""}</span><span class="s">${i === CHECKPOINTS.length - 1 ? "Target" : "On-track checkpoint"}</span></div>`).join("");
+
+})();
+(function(){
+const sec = document.getElementById('view-rules');
+const $ = id => sec.querySelector('#' + CSS.escape(id));
+
+const BOOK = [
+  { g: "A", t: "Onboarding", rules: [
+    "Agencies join on a <b>rolling basis</b>, on any working day.",
+    "An agency's <b>Day 0</b> is the day its agreement is signed. All its deadlines are counted from that day.",
+    "Before Day 0 the agency submits KYC, GST (where applicable), bank details and a signed agreement.",
+    "Each seller gets their <b>own login</b>. Shared logins are not allowed.",
+    "Each agency is assigned a relationship manager (RM)." ]},
+  { g: "B", t: "Training · Day 1–7", rules: [
+    "Training runs from <b>Day 1 to Day 7</b>. Every seller must attend.",
+    "A test is held on Day 7. A seller who fails gets one repeat session and retest.",
+    "Only sellers who pass the test can log deals." ]},
+  { g: "C", t: "Market assessment · Day 8–14", rules: [
+    "From <b>Day 8 to Day 14</b> the agency maps its market: target areas, business categories and a prospect list.",
+    "The RM reviews the agency's progress on <b>Day 14</b>.",
+    "Deals closed during market assessment count toward the target." ]},
+  { g: "D", t: "Deal counting", rules: [
+    "<b>1 package = 1 deal. 3 JDRR = 1 deal.</b>",
+    "1 or 2 JDRR sales left over carry forward until a third is sold.",
+    "A deal counts on the date payment is <b>realised</b>, not the booking date.",
+    "Only deals closed by a trained seller, using that seller's own login, count." ]},
+  { g: "E", t: "Performance window · Day 15–45", rules: [
+    "The agency must close <b>at least 3 deals by Day 45</b>.",
+    "The RM reviews progress every week, on Day 21, 28, 35 and 42.",
+    "On-track checkpoints: 1 deal by Day 25 and 2 deals by Day 35. Missing a checkpoint triggers an extra RM call, not a penalty.",
+    "An agency with 3 or more deals by Day 45 becomes an <b>Active partner</b>." ]},
+  { g: "F", t: "Warning · Day 46–55", rules: [
+    "An agency with fewer than 3 deals on Day 45 gets a <b>10-day warning</b>.",
+    "The warning notice is sent in writing (email and WhatsApp) on Day 46.",
+    "During the warning the agency must reach a <b>total of at least 3 deals by Day 55</b>.",
+    "The RM checks in every 2 days, and the agency shares a daily activity report.",
+    "An agency that reaches at least 3 deals by Day 55 becomes an Active partner." ]},
+  { g: "G", t: "Closure · Day 56–70", rules: [
+    "An agency with fewer than 3 deals on Day 55 enters <b>closure</b> on Day 56.",
+    "A closure notice is sent on Day 56. No new deals can be logged after that.",
+    "During closure the agency hands over open leads and client details, and completes paperwork on pending deals.",
+    "Commission on genuine deals already closed is still paid.",
+    "Logins are switched off and the agency is removed on <b>Day 70</b>." ]},
+  { g: "H", t: "Commission", rules: [
+    "Commission is a flat <b>40% of collection</b> on every package and JDRR sale, for every agency." ]},
+  { g: "I", t: "Conduct", rules: [
+    "Confirmed mis-selling or fraud means <b>immediate closure</b> at any stage. Pending commission is held for investigation.",
+    "Sellers must use Justdial's approved pricing and pitch material only." ]},
+  { g: "J", t: "Re-entry", rules: [
+    "An agency removed after closure can reapply after <b>90 days</b>, and starts again from Day 0.",
+    "An agency closed for fraud can't reapply." ]}
+];
+$("idx").innerHTML = BOOK.map(g => `<a href="#g${g.g}"><b>${g.g}</b>${g.t.split(" · ")[0]}</a>`).join("");
+$("book").innerHTML = BOOK.map(g => `
+  <div class="rgroup" id="g${g.g}"><div class="card">
+    <div class="ghd"><span class="gl">${g.g}</span><h3>${g.t}</h3></div>
+    ${g.rules.map((r, i) => `<div class="rule"><span class="id">${g.g}${i + 1}</span><span class="tx">${r}</span></div>`).join("")}
+  </div></div>`).join("");
+
+
+})();
+
+(function () {
+  const top = document.createElement("div");
+  top.className = "topbar";
+  top.innerHTML = `<div class="in">
+      <a class="brand" href="index.html"><span class="logo">JD</span>Reseller Performance Program</a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false">Menu</button></div>`;
+  document.body.prepend(top);
+  const side = document.querySelector(".side");
+  const keyOf = f => f.replace(".html", "");
+
+  function show(key, anchor) {
+    const idx = Math.max(0, PAGES.findIndex(p => keyOf(p.file) === key));
+    const page = PAGES[idx], k = keyOf(page.file);
+    document.querySelectorAll(".view").forEach(v => v.hidden = v.id !== "view-" + k);
+    let lastGrp = "", links = "";
+    PAGES.forEach((p, i) => {
+      if (p.grp !== lastGrp) { links += `<div class="grp">${p.grp}</div>`; lastGrp = p.grp; }
+      links += `<a href="${p.file}" class="${i === idx ? "on" : ""}"><span class="n">${i + 1}</span>${p.title}</a>`;
+    });
+    side.innerHTML = links;
+    side.classList.remove("open");
+    const prev = PAGES[idx - 1], next = PAGES[idx + 1];
+    document.querySelector("#view-" + k + " .pager").innerHTML =
+      (prev ? `<a href="${prev.file}"><small>← Previous</small><b>${prev.title}</b></a>` : "") +
+      (next ? `<a class="nx" href="${next.file}"><small>Next →</small><b>${next.title}</b></a>` : "");
+    document.title = page.title + " · Reseller Performance Program";
+    const target = anchor && document.querySelector("#view-" + k + " #" + CSS.escape(anchor));
+    if (target) target.scrollIntoView(); else window.scrollTo(0, 0);
+  }
+
+  // Page links ("journey.html#training") switch views; "#id" links scroll within the view.
+  document.addEventListener("click", e => {
+    const a = e.target.closest("a[href]"); if (!a) return;
+    const h = a.getAttribute("href");
+    let m = h.match(/^(\w+)\.html(?:#(.+))?$/);
+    if (m) { e.preventDefault(); location.hash = m[1] + (m[2] ? "/" + m[2] : ""); return; }
+    if (h.startsWith("#") && h.length > 1) {
+      e.preventDefault();
+      const view = document.querySelector(".view:not([hidden])");
+      const t = view && view.querySelector(h);
+      if (t) t.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+  const route = () => { const [k, a] = location.hash.slice(1).split("/"); show(k || "index", a); };
+  window.addEventListener("hashchange", route);
+  document.getElementById("menuBtn").addEventListener("click", () => {
+    const open = side.classList.toggle("open");
+    document.getElementById("menuBtn").setAttribute("aria-expanded", open);
+  });
+  route();
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refresh Test Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 760px; margin: 48px auto; padding: 0 20px; color: #263238; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 24px; }
+    .status { background: #f3f6f8; padding: 14px; border-radius: 8px; white-space: pre-wrap; }
+    button { padding: 10px 14px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Refresh Test Dashboard</h1>
+  <p>This test project checks whether HTML Drop detects a refresh script and offers Task Scheduler setup.</p>
+  <div class="card">
+    <h2>Refresh status</h2>
+    <div id="status" class="status">Loading status…</div>
+    <p><button onclick="loadStatus()">Check again</button></p>
+  </div>
+  <script>
+    async function loadStatus() {
+      try {
+        const r = await fetch('./data/refresh_status.json?t=' + Date.now());
+        if (!r.ok) throw new Error('Status file not created yet. Run refresh_dashboard.py first.');
+        const d = await r.json();
+        document.getElementById('status').textContent =
+          'Last refresh: ' + (d.last_refresh || 'unknown') + '\n' +
+          'Runs: ' + (d.runs ?? 0) + '\n' +
+          'Message: ' + (d.message || 'No message');
+      } catch (e) {
+        document.getElementById('status').textContent = e.message;
+      }
+    }
+    loadStatus();
+  </script>
+</body>
+</html>

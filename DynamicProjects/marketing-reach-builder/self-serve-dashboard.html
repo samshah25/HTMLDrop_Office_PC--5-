@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Justdial Reach Builder</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#062B73; --navy-deep:#061A3A; --navy-soft:#EAF0FB;
+  --gold:#E1B33B; --gold-deep:#9A6D08; --gold-soft:#FBF3DE;
+  --red:#E94B38; --red-deep:#C83A2B; --red-soft:#FDE9E5;
+  --ink:#111827; --ink-soft:#596579; --ink-faint:#8A93A6;
+  --paper:#F5F7FB; --paper-raise:#FFFFFF;
+  --line:#E4E8EF;
+  --success:#0D8059; --success-soft:#E7F6EF;
+  --shadow:0 28px 70px -34px rgba(6,26,58,.32);
+  --shadow-sm:0 14px 34px -24px rgba(6,26,58,.28);
+  --radius-lg:20px; --radius-md:12px; --radius-sm:8px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Poppins',sans-serif;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;margin:0;color:var(--navy-deep);letter-spacing:-.02em;}
+p{margin:0;}
+button,input,select{font-family:inherit;}
+.mono{font-variant-numeric:tabular-nums;}
+img{max-width:100%;}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1600px;margin:0 auto;padding:0 clamp(16px,4vw,40px);}
+.screen{display:none;padding-bottom:80px;}
+.screen.active{display:block;}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(245,247,251,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.topbar-inner{max-width:1600px;margin:0 auto;padding:14px clamp(16px,4vw,40px) 14px;}
+.topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.topbar-row2{display:flex;justify-content:center;margin-top:14px;}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.brand-logo{height:24px;width:auto;display:block;}
+.brand-divider{width:1.5px;height:26px;background:var(--line);flex-shrink:0;}
+.brand-text{font-weight:800;color:var(--navy-deep);font-size:15px;line-height:1.2;}
+.brand-text small{display:block;font-weight:600;color:var(--ink-faint);font-size:10.5px;letter-spacing:.01em;margin-top:2px;}
+
+.stepper{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;}
+.step{display:flex;align-items:center;gap:7px;padding:6px 12px 6px 8px;border-radius:100px;font-size:12px;font-weight:700;color:var(--ink-faint);background:transparent;border:1px solid transparent;cursor:default;white-space:nowrap;}
+.step .num{width:20px;height:20px;border-radius:50%;background:var(--line);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.step.done{color:var(--navy-deep);cursor:pointer;}
+.step.done .num{background:var(--success);}
+.step.current{color:var(--navy-deep);background:var(--navy-soft);border-color:var(--navy-soft);}
+.step.current .num{background:var(--navy-deep);}
+.step-sep{width:16px;height:1.5px;background:var(--line);flex-shrink:0;}
+
+.start-over{background:#fff;color:var(--red-deep);border:1.5px solid var(--red-soft);padding:8px 16px;border-radius:100px;font-weight:800;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:.15s ease;white-space:nowrap;}
+.start-over:hover{background:var(--red-soft);}
+.campaigns-btn{background:#fff;color:var(--navy-deep);border:1.5px solid var(--line);padding:8px 16px;border-radius:100px;font-weight:800;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:.15s ease;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;}
+.campaigns-btn:hover{border-color:var(--navy-deep);}
+.campaigns-btn .count{background:var(--navy-deep);color:#fff;border-radius:100px;min-width:18px;height:18px;padding:0 5px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+.campaigns-btn .count[hidden]{display:none;}
+
+/* ---------- generic components ---------- */
+.hero{padding:clamp(14px,1.8vw,20px) 0 8px;}
+.eyebrow{display:inline-flex;align-items:center;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--red-deep);font-weight:700;margin-bottom:10px;}
+.hero h1{font-size:clamp(24px,3.4vw,34px);line-height:1.15;font-weight:800;}
+.hero p{margin-top:10px;color:var(--ink-soft);font-size:14.5px;line-height:1.6;max-width:900px;}
+
+.card{background:var(--paper-raise);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(18px,2.6vw,26px);box-shadow:var(--shadow-sm);}
+.section{margin-top:22px;}
+.section-title{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.section-title h3{font-size:17px;font-weight:800;}
+.section-title .hint{font-size:12.5px;color:var(--ink-faint);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 24px;font-weight:800;font-size:13px;letter-spacing:.02em;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease,opacity .15s;white-space:nowrap;}
+.btn-primary{background:var(--navy-deep);color:#fff;}
+.btn-primary:hover{background:var(--red);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.btn-primary:disabled{background:var(--line);color:var(--ink-faint);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-ghost{background:#fff;color:var(--navy-deep);border:1.5px solid var(--line);}
+.btn-ghost:hover{border-color:var(--navy-deep);}
+.btn-gold{background:var(--gold);color:var(--navy-deep);}
+.btn-gold:hover{background:var(--gold-deep);color:#fff;}
+.btn-danger-ghost{background:#fff;color:var(--red-deep);border:1.5px solid var(--red-soft);}
+.btn-danger-ghost:hover{background:var(--red-soft);}
+.btn-sm{padding:8px 14px;font-size:11.5px;border-radius:8px;}
+.btn[disabled]{opacity:.55;cursor:not-allowed;}
+
+.field-label{display:block;font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+input[type=text],input[type=number],select{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;font-size:13.5px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s;}
+input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--navy);}
+.help{font-size:11.5px;color:var(--ink-faint);margin-top:6px;}
+
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--navy-soft);color:var(--navy-deep);padding:7px 8px 7px 14px;border-radius:100px;font-size:12.5px;font-weight:700;}
+.chip button{background:rgba(6,43,115,.12);border:none;color:var(--navy-deep);width:18px;height:18px;border-radius:50%;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.chip button:hover{background:var(--red);color:#fff;}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.chip.static{background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);}
+.chip.tiny{padding:5px 12px;font-size:11.5px;font-weight:600;}
+
+.cat-chip-row{max-height:220px;overflow-y:auto;padding-right:4px;}
+.cat-chip{border:1.5px solid var(--navy-soft);background:var(--navy-soft);color:var(--navy-deep);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;transition:.12s;}
+.cat-chip:hover{border-color:var(--navy);}
+.cat-chip.excluded{background:var(--paper);border-color:var(--line);color:var(--ink-faint);text-decoration:line-through;opacity:.75;}
+
+.locbadge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--navy-deep);background:var(--navy-soft);padding:8px 14px;border-radius:10px;}
+
+/* ---------- state / city multi-select ---------- */
+.geo-field{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;font-size:13.5px;color:var(--ink);background:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;text-align:left;}
+.geo-field:hover{border-color:var(--navy);}
+.geo-field span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.geo-field svg{width:15px;height:15px;flex-shrink:0;color:var(--ink-faint);transition:transform .15s;}
+.geo-field.open svg{transform:rotate(180deg);}
+.geo-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:8px;z-index:30;max-height:320px;overflow-y:auto;}
+.geo-check-row{display:flex;align-items:center;gap:10px;padding:8px 8px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;border-radius:7px;}
+.geo-check-row:hover{background:var(--paper);}
+.geo-check-row input{width:16px;height:16px;accent-color:var(--navy-deep);cursor:pointer;flex-shrink:0;}
+.geo-check-row.all-row{font-weight:800;color:var(--navy-deep);border-bottom:1px solid var(--line);margin-bottom:6px;padding-bottom:11px;border-radius:0;}
+.geo-panel input[type=text]{margin-bottom:8px;}
+#salesgroup-checklist{max-height:280px;overflow-y:auto;padding-right:4px;}
+
+.grid{display:grid;gap:16px;}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,1fr);}.g3{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:620px){.g4,.g3,.g2{grid-template-columns:1fr;}}
+
+/* ---------- sticky bottom bar ---------- */
+.stickybar{position:sticky;bottom:0;left:0;right:0;background:var(--paper-raise);border-top:1px solid var(--line);box-shadow:0 -14px 34px -24px rgba(6,26,58,.28);z-index:40;margin-top:26px;}
+.stickybar-inner{max-width:1600px;margin:0 auto;padding:16px clamp(16px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.stickybar .summary{font-size:13.5px;color:var(--ink-soft);}
+.stickybar .summary b{color:var(--navy-deep);font-weight:800;}
+
+/* ---------- kpi ---------- */
+.kpi{border:1px solid var(--line);border-radius:var(--radius-md);padding:16px 18px;background:#fff;}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:800;}
+.kpi .value{font-size:24px;font-weight:800;color:var(--navy-deep);margin-top:6px;font-variant-numeric:tabular-nums;}
+.kpi .delta{font-size:11.5px;color:var(--ink-faint);margin-top:4px;}
+
+/* ---------- channel cards ---------- */
+.chan-card{border:1.5px solid var(--line);border-radius:var(--radius-lg);padding:22px;background:#fff;display:flex;flex-direction:column;gap:11px;transition:.15s;position:relative;}
+.chan-card.enabled:hover{border-color:var(--navy-deep);transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.chan-card.disabled{opacity:.55;}
+.chan-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:13px;background:var(--navy-soft);color:var(--navy-deep);flex-shrink:0;}
+.chan-badge.voice{background:var(--gold-soft);color:var(--gold-deep);}
+.chan-badge svg{width:56%;height:56%;}
+.chan-name{font-weight:800;font-size:15.5px;color:var(--navy-deep);}
+.chan-rate{font-size:11.5px;color:var(--gold-deep);font-weight:700;background:var(--gold-soft);display:inline-block;padding:4px 10px;border-radius:100px;width:fit-content;}
+.chan-stats{display:flex;gap:18px;margin-top:4px;}
+.chan-stats div{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;font-weight:800;}
+.chan-stats span{display:block;font-size:16px;color:var(--navy-deep);font-weight:700;text-transform:none;letter-spacing:0;margin-top:3px;font-variant-numeric:tabular-nums;}
+.chan-disabled-note{font-size:11.5px;color:var(--red-deep);background:var(--red-soft);padding:8px 10px;border-radius:8px;line-height:1.4;}
+
+/* ---------- slider ---------- */
+.slider-row{display:flex;align-items:center;gap:14px;}
+input[type=range]{-webkit-appearance:none;flex:1;height:6px;border-radius:6px;background:var(--line);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--navy-deep);border:3px solid #fff;box-shadow:0 2px 8px rgba(6,26,58,.4);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--navy-deep);border:3px solid #fff;box-shadow:0 2px 8px rgba(6,26,58,.4);cursor:pointer;}
+.slider-val{font-weight:700;color:var(--navy-deep);background:var(--navy-soft);padding:6px 12px;border-radius:8px;font-size:14px;min-width:56px;text-align:center;font-variant-numeric:tabular-nums;}
+
+/* ---------- funnel-style breakdown ---------- */
+.funnel-stage{padding:15px 0;border-bottom:1px dashed var(--line);}
+.funnel-stage:first-child{padding-top:2px;}
+.funnel-stage:last-child{border-bottom:none;padding-bottom:2px;}
+.funnel-stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px;}
+.funnel-label{font-size:12px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+.funnel-stage-meta{display:flex;align-items:baseline;gap:10px;flex-shrink:0;}
+.funnel-drop{font-size:11.5px;color:var(--ink-faint);font-weight:700;white-space:nowrap;}
+.funnel-count{font-weight:700;color:var(--navy-deep);font-size:17px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.funnel-bar-wrap{width:100%;background:var(--paper);border-radius:8px;height:14px;position:relative;overflow:hidden;}
+.funnel-bar{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--navy-deep),var(--navy));border-radius:8px;transition:width .4s ease;}
+/* Responses bar: solid up to the low end of the range, lighter tint from
+   there up to the high end - so the blue visibly reaches the full range.
+   Painted first (underneath) so the solid .funnel-bar on top of it only
+   covers the 0-low portion, leaving the low-high stretch visible. */
+.funnel-bar-hi{position:absolute;top:0;left:0;height:100%;background:var(--navy);opacity:.35;border-radius:8px;transition:width .4s ease;}
+
+/* ---------- tabs (channel switcher on outreach-plan screen) ---------- */
+.chan-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.chan-tab{display:flex;align-items:center;gap:9px;border:1.5px solid var(--line);background:#fff;padding:9px 18px 9px 12px;border-radius:100px;font-size:12.5px;font-weight:800;color:var(--ink-soft);cursor:pointer;transition:.12s;}
+.chan-tab.active{background:var(--navy-deep);border-color:var(--navy-deep);color:#fff;}
+.chan-tab:disabled{opacity:.4;cursor:not-allowed;}
+.chan-tab .chan-badge-tab{background:transparent;color:inherit;}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;padding:5px 11px;border-radius:100px;}
+.badge-success{background:var(--success-soft);color:var(--success);}
+.badge-gold{background:var(--gold-soft);color:var(--gold-deep);}
+
+.assum-popover{position:absolute;top:60px;right:20px;width:280px;background:#fff;border:1.5px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px;z-index:40;}
+@media (max-width:520px){.assum-popover{left:20px;right:20px;width:auto;}}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(6,26,58,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;}
+.modal-backdrop[hidden]{display:none;}
+.modal-panel{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow);}
+.modal-header{position:sticky;top:0;background:#fff;padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;z-index:2;border-radius:16px 16px 0 0;}
+.modal-header h3{font-size:16px;font-weight:800;}
+.modal-header button{border:none;background:none;cursor:pointer;color:var(--ink-faint);font-size:22px;line-height:1;padding:0;}
+.modal-body{padding:6px 24px 24px;}
+.modal-channel-section{padding:16px 0;border-bottom:1px solid var(--line);}
+.modal-channel-section:last-child{border-bottom:none;}
+.modal-channel-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.modal-channel-head span{font-weight:800;color:var(--navy-deep);font-size:14px;}
+
+/* ---------- Launch Campaign modal ---------- */
+.modal-panel-wide{max-width:980px;}
+.launch-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;padding-top:14px;}
+@media (max-width:720px){.launch-grid{grid-template-columns:1fr;}}
+.launch-field{margin-bottom:18px;}
+.launch-field label{display:block;font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+.launch-field label .req{color:var(--red-deep);margin-left:3px;}
+textarea{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;font-size:13.5px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s;font-family:inherit;resize:vertical;line-height:1.55;}
+textarea:focus{border-color:var(--navy);}
+.launch-banner-row{display:flex;align-items:center;gap:12px;}
+.launch-banner-thumb{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1.5px solid var(--line);flex-shrink:0;}
+.launch-banner-empty{width:60px;height:60px;border-radius:8px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:9.5px;text-align:center;flex-shrink:0;line-height:1.2;padding:4px;}
+.launch-preview-label{font-size:11.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.preview-frame{background:var(--paper);border-radius:14px;padding:18px;border:1px solid var(--line);min-height:0;display:flex;align-items:center;justify-content:center;}
+
+.script-card{width:100%;background:var(--navy-soft);border-radius:12px;padding:18px;font-size:13.5px;line-height:1.7;color:var(--navy-deep);white-space:pre-wrap;word-break:break-word;}
+.script-card.empty{color:var(--ink-faint);font-style:italic;}
+
+.chat-bubble{width:100%;max-width:300px;margin-left:auto;border-radius:12px 12px 2px 12px;padding:10px;box-shadow:var(--shadow-sm);}
+.chat-bubble.wa{background:#DCF8C6;}
+.chat-bubble.sms{background:#fff;border:1px solid var(--line);}
+.chat-bubble img{width:100%;border-radius:8px;display:block;margin-bottom:8px;object-fit:cover;max-height:150px;}
+.chat-bubble-text{font-size:13.5px;color:var(--ink);line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+.chat-bubble-text.empty{color:var(--ink-faint);font-style:italic;}
+.chat-cta-btn{display:block;width:100%;text-align:center;box-sizing:border-box;margin-top:8px;padding:9px;border-radius:8px;background:#fff;border:1px solid rgba(6,43,115,.25);color:var(--navy);font-weight:700;font-size:12.5px;}
+.chat-cta-btn.sms{background:var(--navy-soft);border:none;color:var(--navy-deep);}
+
+.email-preview{width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.email-preview-head{padding:14px 18px;border-bottom:1px solid var(--line);}
+.email-preview-from{font-size:12px;color:var(--ink-faint);margin-bottom:3px;}
+.email-preview-subject{font-weight:800;font-size:14.5px;color:var(--navy-deep);}
+.email-preview-subject.empty{color:var(--ink-faint);font-weight:600;font-style:italic;}
+.email-preview-banner{width:100%;max-height:170px;object-fit:cover;display:block;}
+.email-preview-body{padding:16px 18px;font-size:13.5px;line-height:1.6;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+.email-preview-body.empty{color:var(--ink-faint);font-style:italic;}
+
+/* ---------- Campaign summary / submitted / dashboard ---------- */
+.launch-summary-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.launch-summary-head h4{font-size:16px;font-weight:800;color:var(--navy-deep);margin:0;}
+.launch-summary-head .sub{font-size:12.5px;color:var(--ink-faint);margin-top:2px;}
+.launch-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+.launch-stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+.launch-stat .label{font-size:10px;font-weight:800;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.launch-stat .value{font-size:17px;font-weight:800;color:var(--navy-deep);font-variant-numeric:tabular-nums;}
+.disclaimer{display:flex;gap:12px;align-items:center;background:var(--gold-soft);border:1px solid rgba(154,109,8,.25);border-radius:10px;padding:16px 18px;font-size:12.5px;color:var(--gold-deep);line-height:1.5;margin-top:4px;margin-bottom:16px;}
+.disclaimer>span:first-child{flex:0 0 18px;font-size:15px;line-height:1;text-align:center;}
+.disclaimer strong{color:var(--gold-deep);}
+.disclaimer.info{background:var(--navy-soft);border-color:rgba(6,43,115,.15);color:var(--navy-deep);}
+.disclaimer.info strong{color:var(--navy-deep);}
+.launch-success{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 10px 6px;}
+.launch-success-icon{width:56px;height:56px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:14px;}
+.launch-success h4{font-size:17px;font-weight:800;color:var(--navy-deep);margin:0 0 6px;}
+.launch-success p{font-size:13px;color:var(--ink-soft);margin:0 0 18px;max-width:420px;line-height:1.5;}
+
+/* ---------- My Campaigns modal ---------- */
+.badge-pending{background:var(--gold-soft);color:var(--gold-deep);}
+.campaign-empty{text-align:center;padding:40px 20px;color:var(--ink-faint);font-size:13.5px;}
+.campaign-row{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background .15s;background:#fff;}
+.campaign-row:hover{border-color:var(--navy);background:var(--paper);}
+.campaign-row-info{flex:1;min-width:0;}
+.campaign-row-name{font-weight:800;font-size:13.5px;color:var(--navy-deep);}
+.campaign-row-meta{font-size:11.5px;color:var(--ink-faint);margin-top:2px;}
+.campaign-row-arrow{color:var(--ink-faint);font-size:16px;flex-shrink:0;}
+.live-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:18px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px var(--success-soft);}
+.live-dot.pending{background:var(--gold-deep);box-shadow:0 0 0 4px var(--gold-soft);}
+
+.launch-footer{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);}
+.launch-footer .err{font-size:12px;color:var(--red-deep);font-weight:700;}
+.assum-row{display:flex;align-items:center;gap:4px;padding:9px 0;border-bottom:1px solid var(--line);}
+.assum-row:last-child{border-bottom:none;}
+.assum-row label{flex:1;font-size:12px;font-weight:700;color:var(--ink-soft);}
+.assum-row input{width:70px;flex-shrink:0;padding:7px 8px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;}
+.assum-row .unit{display:inline-block;min-width:16px;font-size:12px;color:var(--ink-faint);flex-shrink:0;}
+/* Manual typing only in the edit fields - no up/down spinner arrows. */
+.assum-row input[type=number]::-webkit-outer-spin-button,
+.assum-row input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.assum-row input[type=number]{-moz-appearance:textfield;}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-deep);color:#fff;padding:16px 26px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s ease;z-index:100;display:flex;align-items:center;gap:10px;max-width:520px;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+::selection{background:var(--gold-soft);}
+.funnel-grid{grid-template-columns:1fr 1fr;}
+@media (max-width:980px){.funnel-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-row1">
+      <div class="brand">
+        <img class="brand-logo" src="https://akam.cdn.jdmagicbox.com/images/email_banner/jd_trademark_logo.png" alt="Justdial"/>
+        <span class="brand-divider"></span>
+        <div class="brand-text">Reach Builder<small>Find the right businesses. Reach them. Grow.</small></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="campaigns-btn" id="btn-campaigns">&#128203; My Campaigns<span class="count" id="campaigns-count" hidden>0</span></button>
+        <button class="start-over" id="btn-start-over">&#8634; Start Over</button>
+      </div>
+    </div>
+    <div class="topbar-row2"><div class="stepper" id="stepper"></div></div>
+  </div>
+</div>
+
+<!-- ================= SCREEN 1 : SEARCH ================= -->
+<div class="screen active" id="screen-search">
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow">Step 1 &middot; Build Audience</div>
+      <h1>Build your audience, then launch outreach - in one flow</h1>
+      <p>See how many real businesses you can reach - by phone, landline or email - before you spend a rupee.</p>
+    </div>
+
+    <div class="card section">
+      <div class="section-title"><h3>What are you targeting?</h3><span class="hint" id="kw-count-hint">No keywords added yet</span></div>
+      <div style="display:flex;gap:10px;">
+        <input type="text" id="kw-input" placeholder="Tv Dealers, Ac Dealers, Mobile Phone Dealers..." />
+        <button class="btn btn-primary btn-sm" id="btn-add-kw" style="flex-shrink:0;">+ Add</button>
+      </div>
+      <div class="help">Add keywords one at a time, or paste several separated by commas. Matched against real business categories.</div>
+      <div class="chip-row" id="kw-chips"></div>
+
+      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line);position:relative;" id="salesgroup-select-wrap">
+        <label class="field-label">Or pick directly from all Sales Groups</label>
+        <div class="help" style="margin-top:-4px;margin-bottom:8px;">Only electronics-related sales groups are shown.</div>
+        <button type="button" class="geo-field" id="salesgroup-field-btn">
+          <span id="salesgroup-field-label">All Sales Groups (optional)</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="geo-panel" id="salesgroup-panel" hidden></div>
+      </div>
+    </div>
+
+    <div class="card section">
+      <div class="section-title"><h3>Filters</h3><span class="hint">Applied to every keyword above</span></div>
+      <div class="grid g4" style="margin-bottom:18px;">
+        <div style="position:relative;" id="state-select-wrap">
+          <label class="field-label">State</label>
+          <button type="button" class="geo-field" id="state-field-btn">
+            <span id="state-field-label">All States</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="geo-panel" id="state-panel" hidden></div>
+        </div>
+        <div style="position:relative;" id="city-select-wrap">
+          <label class="field-label">City</label>
+          <button type="button" class="geo-field" id="city-field-btn">
+            <span id="city-field-label">All Cities</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="geo-panel" id="city-panel" hidden></div>
+        </div>
+        <div>
+          <label class="field-label">Minimum Rating</label>
+          <select id="f-rating">
+            <option value="0">Any rating</option>
+            <option value="3">3.0 &#9733; and above</option>
+            <option value="3.5">3.5 &#9733; and above</option>
+            <option value="4" selected>4.0 &#9733; and above</option>
+            <option value="4.5">4.5 &#9733; and above</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Minimum Reviews</label>
+          <input type="number" id="f-reviews" min="0" step="5" value="10" />
+        </div>
+      </div>
+      <div class="help" style="margin-bottom:18px;">Live data currently only covers Delhi NCR - other locations will return zero results for now.</div>
+      <div style="margin-top:16px;"><button class="btn btn-ghost btn-sm" id="btn-reset-filters">Reset filters</button></div>
+    </div>
+
+    <div class="section" style="display:flex;justify-content:flex-end;">
+      <button class="btn btn-primary" id="btn-search" disabled>Search Businesses &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCREEN 2 : CHANNEL COMPARISON ================= -->
+<div class="screen" id="screen-channels">
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow">Step 2 &middot; Choose a Channel</div>
+      <h1>Compare reach and cost across all 5 channels</h1>
+      <p>Move the slider to see live cost and reach for each channel. Greyed-out channels don't match your audience.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title" style="margin-bottom:10px;"><h3>Your Audience</h3><button class="btn btn-ghost btn-sm" id="btn-back-to-search">&larr; Edit search</button></div>
+      <div class="chip-row" id="chan-selection-recap" style="margin-top:0;"></div>
+      <div id="chan-matched-cats-wrap" style="margin-top:12px;" hidden>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+          <span id="matched-cats-label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-reset-cats" hidden>Reset categories</button>
+        </div>
+        <div class="chip-row cat-chip-row" id="chan-matched-cats"></div>
+      </div>
+      <div class="grid g4" style="margin-top:18px;">
+        <div class="kpi"><div class="label">Total Businesses Matched</div><div class="value" id="kpi-total-base">0</div><div class="delta">distinct docids</div></div>
+        <div class="kpi"><div class="label">With Phone</div><div class="value" id="kpi-base-phone">0</div><div class="delta">WhatsApp / SMS / Calling</div></div>
+        <div class="kpi"><div class="label">With Landline</div><div class="value" id="kpi-base-landline">0</div><div class="delta">Calling channels only</div></div>
+        <div class="kpi"><div class="label">With Email</div><div class="value" id="kpi-base-email">0</div><div class="delta">Email channel only</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title" style="margin-bottom:10px;"><h3>% of Audience You Want to Reach?</h3><span class="hint">Starting point - adjust per channel next</span></div>
+      <div class="slider-row">
+        <input type="range" id="global-pct" min="0" max="100" value="40" />
+        <div class="slider-val" id="global-pct-val">40%</div>
+      </div>
+    </div>
+
+    <div class="grid g3" id="channel-cards"></div>
+  </div>
+</div>
+
+<!-- ================= SCREEN 3 : OUTREACH PLAN ================= -->
+<div class="screen" id="screen-funnel">
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow">Step 3 &middot; Outreach Plan</div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <span id="funnel-title-badge"></span>
+        <h1 id="funnel-title">Outreach Plan</h1>
+      </div>
+      <p>Switch channels anytime without losing your audience.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <div class="chan-tabs" id="chan-tabs" style="margin-bottom:0;"></div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-master-edit-assum" style="flex-shrink:0;">&#9998; Edit All Channel Assumptions</button>
+    </div>
+
+    <div class="grid funnel-grid" style="align-items:stretch;">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:10px;"><h3>Reach</h3><span class="hint" id="funnel-base-hint"></span></div>
+        <label class="field-label">% of audience you want to reach?</label>
+        <div class="slider-row">
+          <input type="range" id="funnel-pct" min="0" max="100" value="40" />
+          <div class="slider-val" id="funnel-pct-val">40%</div>
+        </div>
+        <div style="margin-top:16px;">
+          <label class="field-label">Or set a budget cap (&#8377;)</label>
+          <input type="number" id="funnel-budget" min="0" step="500" />
+          <div class="help">Linked to the slider above - change either one.</div>
+        </div>
+      </div>
+
+      <div class="card" style="position:relative;">
+        <div class="section-title" style="margin-bottom:10px;">
+          <h3>Expected Results</h3>
+          <span class="badge badge-gold" id="funnel-rate-badge"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-edit-assum" style="margin-left:auto;">&#9998; Edit %</button>
+        </div>
+        <div id="assum-popover" class="assum-popover" hidden></div>
+        <div id="funnel-stages"></div>
+      </div>
+    </div>
+
+    <div class="card section">
+      <div class="section-title" style="margin-bottom:10px;"><h3>Cost Estimate</h3></div>
+      <div class="grid g3">
+        <div class="kpi"><div class="label">Total Est. Cost</div><div class="value" id="cost-total">&#8377;0</div><div class="delta" id="cost-basis"></div></div>
+        <div class="kpi"><div class="label">Cost / Targeted</div><div class="value" id="cost-per-reach">&#8377;0</div><div class="delta">per business targeted</div></div>
+        <div class="kpi"><div class="label">Cost / Response</div><div class="value" id="cost-per-cta">&#8377;0</div><div class="delta">per response</div></div>
+      </div>
+    </div>
+
+    <div class="section" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <button class="btn btn-ghost" id="btn-back-to-channels">&larr; Compare other channels</button>
+      <button class="btn btn-gold" id="btn-launch">Create Campaign &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="master-assum-backdrop" hidden>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3>Edit All Channel Assumptions</h3>
+      <button type="button" id="btn-close-master-assum">&times;</button>
+    </div>
+    <div class="modal-body" id="master-assum-body"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="launch-backdrop" hidden>
+  <div class="modal-panel modal-panel-wide">
+    <div class="modal-header">
+      <h3 id="launch-modal-title">Create Campaign</h3>
+      <button type="button" id="btn-close-launch">&times;</button>
+    </div>
+    <div class="modal-body" id="launch-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="campaigns-backdrop" hidden>
+  <div class="modal-panel modal-panel-wide">
+    <div class="modal-header">
+      <h3 id="campaigns-modal-title">My Campaigns</h3>
+      <button type="button" id="btn-close-campaigns">&times;</button>
+    </div>
+    <div class="modal-body" id="campaigns-modal-body"></div>
+  </div>
+</div>
+
+<script src="reach-data.js"></script>
+<script>
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const STEPS = ['search','channels','funnel'];
+const STEP_LABELS = {search:'Build Audience', channels:'Channels', funnel:'Outreach Plan'};
+
+const GEO = [
+  {id:'delhi-ncr', name:'Delhi NCR', cities:[
+    {id:'new-delhi', name:'New Delhi'},
+    {id:'gurugram', name:'Gurugram'},
+    {id:'noida', name:'Noida'},
+    {id:'faridabad', name:'Faridabad'},
+    {id:'ghaziabad', name:'Ghaziabad'},
+  ]},
+  {id:'maharashtra', name:'Maharashtra', cities:[
+    {id:'mumbai', name:'Mumbai'}, {id:'pune', name:'Pune'}, {id:'nagpur', name:'Nagpur'}, {id:'nashik', name:'Nashik'},
+  ]},
+  {id:'karnataka', name:'Karnataka', cities:[
+    {id:'bengaluru', name:'Bengaluru'}, {id:'mysuru', name:'Mysuru'}, {id:'mangaluru', name:'Mangaluru'},
+  ]},
+  {id:'telangana', name:'Telangana', cities:[
+    {id:'hyderabad', name:'Hyderabad'}, {id:'warangal', name:'Warangal'},
+  ]},
+  {id:'tamil-nadu', name:'Tamil Nadu', cities:[
+    {id:'chennai', name:'Chennai'}, {id:'coimbatore', name:'Coimbatore'}, {id:'madurai', name:'Madurai'},
+  ]},
+  {id:'west-bengal', name:'West Bengal', cities:[
+    {id:'kolkata', name:'Kolkata'}, {id:'howrah', name:'Howrah'}, {id:'siliguri', name:'Siliguri'},
+  ]},
+  {id:'gujarat', name:'Gujarat', cities:[
+    {id:'ahmedabad', name:'Ahmedabad'}, {id:'surat', name:'Surat'}, {id:'vadodara', name:'Vadodara'}, {id:'rajkot', name:'Rajkot'},
+  ]},
+  {id:'rajasthan', name:'Rajasthan', cities:[
+    {id:'jaipur', name:'Jaipur'}, {id:'jodhpur', name:'Jodhpur'}, {id:'udaipur', name:'Udaipur'},
+  ]},
+  {id:'uttar-pradesh', name:'Uttar Pradesh', cities:[
+    {id:'lucknow', name:'Lucknow'}, {id:'kanpur', name:'Kanpur'}, {id:'agra', name:'Agra'}, {id:'varanasi', name:'Varanasi'},
+  ]},
+  {id:'madhya-pradesh', name:'Madhya Pradesh', cities:[
+    {id:'indore', name:'Indore'}, {id:'bhopal', name:'Bhopal'}, {id:'gwalior', name:'Gwalior'},
+  ]},
+  {id:'punjab', name:'Punjab', cities:[
+    {id:'ludhiana', name:'Ludhiana'}, {id:'amritsar', name:'Amritsar'}, {id:'jalandhar', name:'Jalandhar'},
+  ]},
+  {id:'haryana', name:'Haryana', cities:[
+    {id:'panipat', name:'Panipat'}, {id:'karnal', name:'Karnal'}, {id:'hisar', name:'Hisar'},
+  ]},
+  {id:'kerala', name:'Kerala', cities:[
+    {id:'kochi', name:'Kochi'}, {id:'thiruvananthapuram', name:'Thiruvananthapuram'}, {id:'kozhikode', name:'Kozhikode'},
+  ]},
+  {id:'bihar', name:'Bihar', cities:[
+    {id:'patna', name:'Patna'}, {id:'gaya', name:'Gaya'},
+  ]},
+  {id:'odisha', name:'Odisha', cities:[
+    {id:'bhubaneswar', name:'Bhubaneswar'}, {id:'cuttack', name:'Cuttack'},
+  ]},
+  {id:'chhattisgarh', name:'Chhattisgarh', cities:[
+    {id:'raipur', name:'Raipur'}, {id:'bilaspur', name:'Bilaspur'},
+  ]},
+  {id:'jharkhand', name:'Jharkhand', cities:[
+    {id:'ranchi', name:'Ranchi'}, {id:'jamshedpur', name:'Jamshedpur'},
+  ]},
+  {id:'assam', name:'Assam', cities:[
+    {id:'guwahati', name:'Guwahati'},
+  ]},
+  {id:'uttarakhand', name:'Uttarakhand', cities:[
+    {id:'dehradun', name:'Dehradun'}, {id:'haridwar', name:'Haridwar'},
+  ]},
+  {id:'himachal-pradesh', name:'Himachal Pradesh', cities:[
+    {id:'shimla', name:'Shimla'},
+  ]},
+  {id:'goa', name:'Goa', cities:[
+    {id:'panaji', name:'Panaji'}, {id:'margao', name:'Margao'},
+  ]},
+  {id:'chandigarh', name:'Chandigarh', cities:[
+    {id:'chandigarh-city', name:'Chandigarh'},
+  ]},
+  {id:'jammu-kashmir', name:'Jammu & Kashmir', cities:[
+    {id:'srinagar', name:'Srinagar'}, {id:'jammu', name:'Jammu'},
+  ]},
+  {id:'puducherry', name:'Puducherry', cities:[
+    {id:'puducherry-city', name:'Puducherry'},
+  ]},
+];
+const ALL_CITIES_FLAT = GEO.flatMap(s=>s.cities.map(c=>({...c, stateId:s.id, stateName:s.name})));
+const REAL_DATA_CITY_ID = 'new-delhi';
+const REAL_DATA_STATE_ID = 'delhi-ncr';
+
+const ICONS = {
+  whatsapp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5l1.3-3.9a7.9 7.9 0 1 1 3.6 3.4L4 19.5z"/></svg>',
+  sms: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a7 7 0 0 1-7 7H8l-4 3 .8-4.3A7 7 0 1 1 21 12z"/><path d="M8 11h8M8 14.2h5"/></svg>',
+  email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6.8 8.5-6.8"/></svg>',
+  aibot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8.5" width="16" height="10.5" rx="3"/><path d="M12 8.5V5M9.5 5h5"/><path d="M9 13.5h.01M15 13.5h.01" stroke-width="2.6"/><path d="M9 16.5h6"/></svg>',
+  human: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 13v-1.5a7.5 7.5 0 0 1 15 0V13"/><rect x="3" y="13" width="4" height="6.5" rx="1.6"/><rect x="17" y="13" width="4" height="6.5" rx="1.6"/><path d="M21 19.5a4 4 0 0 1-4 4h-2.5"/></svg>',
+};
+function iconBadge(key, opts){
+  const size = (opts && opts.size) || 44;
+  const voice = opts && opts.voice;
+  return `<span class="chan-badge${voice?' voice':''}" style="width:${size}px;height:${size}px;">${ICONS[key]}</span>`;
+}
+
+const CHANNELS = [
+  {id:'whatsapp', name:'WhatsApp Message', iconKey:'whatsapp', voice:false, unit:'open', unitLabel:'per open', rate:5, requires:['phone'],
+    stages:[{key:'sent',label:'Sent'},{key:'delivered',label:'Delivered'},{key:'secondary',label:'Read'}],
+    defaults:{delivered:90, secondary:50}, ctaRange:{min:4, max:6}},
+  {id:'sms', name:'SMS', iconKey:'sms', voice:false, unit:'delivered', unitLabel:'per delivered', rate:1, requires:['phone'],
+    stages:[{key:'sent',label:'Sent'},{key:'delivered',label:'Delivered'}],
+    defaults:{delivered:95}, ctaRange:{min:1, max:3}},
+  {id:'email', name:'Email', iconKey:'email', voice:false, unit:'open', unitLabel:'per open', rate:1, requires:['email'],
+    stages:[{key:'sent',label:'Sent'},{key:'delivered',label:'Inboxed'},{key:'secondary',label:'Opened'}],
+    defaults:{delivered:75, secondary:20}, ctaRange:{min:2, max:4}},
+  {id:'aibot', name:'AI Bot Calling', iconKey:'aibot', voice:true, unit:'pulse', unitLabel:'per 30 sec', rate:3.5, requires:['phone','landline']},
+  {id:'human', name:'Human Calling', iconKey:'human', voice:true, unit:'min', unitLabel:'per minute talked', rate:7.5, requires:['phone','landline']},
+];
+CHANNELS[3].stages = [{key:'sent',label:'Dialed'},{key:'secondary',label:'Connected'}];
+CHANNELS[3].defaults = {secondary:35, avgPulses:2};
+CHANNELS[3].extra = 'avgPulses'; CHANNELS[3].extraLabel = 'Avg length per connected call (30-sec units)';
+CHANNELS[3].ctaRange = {min:4, max:6};
+CHANNELS[4].stages = [{key:'sent',label:'Dialed'},{key:'secondary',label:'Connected'}];
+CHANNELS[4].defaults = {secondary:45, avgMinutes:2};
+CHANNELS[4].extra = 'avgMinutes'; CHANNELS[4].extraLabel = 'Avg length per connected call (minutes)';
+CHANNELS[4].ctaRange = {min:4, max:6};
+
+const SEGMENT_LABEL = {phone:'Phone', landline:'Landline', email:'Email'};
+
+let state = {
+  step: 'search',
+  maxStepReached: 0,
+  keywords: [],
+  selectedCats: [],
+  geo: { stateIds: ['delhi-ncr'], cityIds: ['new-delhi'] },
+  filters: { rating:'4', reviews:'10' },
+  matchedCats: [],
+  base: {total:0, phone:0, landline:0, email:0, callable:0},
+  globalPct: 40,
+  channel: null,
+  channelState: {},
+  campaignDrafts: {},
+};
+
+// Submitted campaigns persist across "Start Over" (they're already-submitted
+// work, independent of whatever audience you're currently building) - so this
+// lives outside `state` and is never touched by resetAll().
+let campaigns = [];
+
+/* =========================================================================
+   HELPERS
+   ========================================================================= */
+const fmt = n => Math.round(n).toLocaleString('en-IN');
+const fmtMoney = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const fmtMoney2 = n => '₹' + (Math.round(n*100)/100).toLocaleString('en-IN');
+const $ = id => document.getElementById(id);
+function updateSliderFill(el){
+  const min = parseFloat(el.min)||0, max = parseFloat(el.max)||100, val = parseFloat(el.value)||0;
+  const pct = Math.max(0, Math.min(100, ((val-min)/(max-min))*100));
+  el.style.background = `linear-gradient(to right, var(--navy-deep) ${pct}%, var(--line) ${pct}%)`;
+}
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 3600);
+}
+
+/* =========================================================================
+   REAL DATA MATCHING (reach-data.js -> REACH_DATA)
+   ========================================================================= */
+// Generic business-type words that show up across huge swathes of the category
+// list (e.g. "dealers" alone appears in 84/280 categories). They describe HOW a
+// business sells, not WHAT it sells, so they're excluded from the word-level
+// fallback match below - keeping just these in a typed phrase would otherwise
+// flood the results with unrelated categories.
+const GENERIC_TRADE_WORDS = new Set([
+  'dealer','dealers','distributor','distributors','manufacturer','manufacturers',
+  'wholesaler','wholesalers','retailer','retailers','supplier','suppliers',
+  'service','services','repair','repairs','maintenance',
+  'centre','centres','center','centers','buyer','buyers','trader','traders',
+  'hire','agency','agencies','shop','shops','store','stores',
+  'and','on','part','parts','goods'
+]);
+
+// A category matches a keyword if the category name contains the keyword as a
+// substring (e.g. keyword "tv" matches "tv dealers", "tv repair & services").
+// If a keyword's exact phrase matches nothing, fall back to matching on its
+// individual significant words (ignoring generic trade words above), so a
+// typed phrase like "mobile screen distributors" - which appears nowhere
+// verbatim - still surfaces the real "mobile phone ..." categories via "mobile".
+function findMatchedCategories(){
+  const kws = state.keywords.map(k=>k.text.toLowerCase().trim()).filter(Boolean);
+  if(kws.length===0 || typeof REACH_DATA === 'undefined') return [];
+  const seen = new Set();
+  const out = [];
+  kws.forEach(kw=>{
+    let matchedAny = false;
+    REACH_DATA.cats.forEach((c,i)=>{
+      if(c.includes(kw) && !seen.has(i)){ seen.add(i); out.push({idx:i, name:c}); matchedAny = true; }
+    });
+    if(matchedAny) return;
+    const words = kw.split(/[^a-z0-9]+/).filter(w=>w.length>1 && !GENERIC_TRADE_WORDS.has(w));
+    if(words.length===0) return;
+    REACH_DATA.cats.forEach((c,i)=>{
+      if(!seen.has(i) && words.some(w=>c.includes(w))){ seen.add(i); out.push({idx:i, name:c}); }
+    });
+  });
+  return out;
+}
+
+function activeCatIdxSet(){
+  return new Set(state.matchedCats.filter(c=>c.included).map(c=>c.idx));
+}
+
+function scanAudience(catIdxSet){
+  const empty = {total:0, phone:0, landline:0, email:0, callable:0};
+  if(!catIdxSet || catIdxSet.size===0 || typeof REACH_DATA === 'undefined') return empty;
+  const minRating = parseFloat(state.filters.rating)||0;
+  const minReviews = parseInt(state.filters.reviews||'0',10)||0;
+  let total=0, phone=0, landline=0, email=0, callable=0;
+  for(const row of REACH_DATA.rows){
+    const rating = row[1], review = row[2], flags = row[3], cats = row[4];
+    if(rating < minRating || review < minReviews) continue;
+    let match = false;
+    for(let j=0;j<cats.length;j++){ if(catIdxSet.has(cats[j])){ match=true; break; } }
+    if(!match) continue;
+    total++;
+    const hasPhone = (flags&1)!==0, hasLandline = (flags&2)!==0, hasEmail = (flags&4)!==0;
+    if(hasPhone) phone++;
+    if(hasLandline) landline++;
+    if(hasEmail) email++;
+    if(hasPhone||hasLandline) callable++;
+  }
+  return {total, phone, landline, email, callable};
+}
+
+function recomputeBase(){
+  state.base = scanAudience(activeCatIdxSet());
+  renderChannels();
+}
+
+function toggleMatchedCat(idx){
+  const c = state.matchedCats.find(x=>x.idx===idx);
+  if(!c) return;
+  c.included = !c.included;
+  recomputeBase();
+}
+function resetMatchedCats(){
+  state.matchedCats.forEach(c=>{ c.included = true; });
+  recomputeBase();
+}
+
+function eligibleBaseForChannel(ch){
+  if(ch.requires.includes('email')) return state.base.email;
+  if(ch.requires.length>1) return state.base.callable;
+  return state.base.phone;
+}
+
+/* =========================================================================
+   NAVIGATION
+   ========================================================================= */
+function goTo(step){
+  state.step = step;
+  const idx = STEPS.indexOf(step);
+  if(idx > state.maxStepReached) state.maxStepReached = idx;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('screen-'+step).classList.add('active');
+  renderStepper();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(step==='channels') renderChannels();
+  if(step==='funnel') renderFunnel();
+}
+
+function renderStepper(){
+  const el = $('stepper');
+  el.innerHTML = '';
+  STEPS.forEach((s,i)=>{
+    if(i>0){
+      const sep = document.createElement('div');
+      sep.className='step-sep';
+      el.appendChild(sep);
+    }
+    const d = document.createElement('div');
+    const isCurrent = s===state.step;
+    d.className = 'step ' + (isCurrent?'current':(i<=state.maxStepReached?'done':''));
+    d.innerHTML = '<span class="num">'+(i<=state.maxStepReached && !isCurrent ? '✓' : (i+1))+'</span>'+STEP_LABELS[s];
+    if(i<=state.maxStepReached && !isCurrent){
+      d.addEventListener('click', ()=>goTo(s));
+    }
+    el.appendChild(d);
+  });
+}
+
+function resetAll(){
+  state = {
+    step:'search', maxStepReached:0, keywords:[], selectedCats:[],
+    geo:{stateIds:['delhi-ncr'], cityIds:['new-delhi']},
+    filters:{rating:'4',reviews:'10'},
+    matchedCats:[],
+    base:{total:0,phone:0,landline:0,email:0,callable:0},
+    globalPct:40, channel:null, channelState:{}, campaignDrafts:{},
+  };
+  renderKwChips(); renderStatePanel(); renderCityPanel(); updateGeoFieldLabels(); renderSalesGroupPanel(); updateSalesGroupFieldLabel(); syncFilterInputs(); updateSearchBtn();
+  goTo('search');
+}
+$('btn-start-over').addEventListener('click', ()=>{
+  if(confirm('Start over? This clears your keywords, filters and selections.')) resetAll();
+});
+
+/* =========================================================================
+   SCREEN 1 : SEARCH
+   ========================================================================= */
+function citiesInScope(){
+  return state.geo.stateIds.length
+    ? GEO.filter(s=>state.geo.stateIds.includes(s.id)).flatMap(s=>s.cities.map(c=>({...c, stateId:s.id, stateName:s.name})))
+    : ALL_CITIES_FLAT;
+}
+function pruneCityIds(){
+  const validIds = citiesInScope().map(c=>c.id);
+  state.geo.cityIds = state.geo.cityIds.filter(id=>validIds.includes(id));
+}
+function stateFieldLabel(){
+  return state.geo.stateIds.length ? state.geo.stateIds.map(id=>GEO.find(s=>s.id===id).name).join(', ') : 'All States';
+}
+function cityFieldLabel(){
+  if(state.geo.cityIds.length===0) return 'All Cities';
+  const scope = citiesInScope();
+  return state.geo.cityIds.map(id=>(scope.find(c=>c.id===id)||ALL_CITIES_FLAT.find(c=>c.id===id)).name).join(', ');
+}
+function updateGeoFieldLabels(){
+  $('state-field-label').textContent = stateFieldLabel();
+  $('city-field-label').textContent = cityFieldLabel();
+}
+
+// Real data only exists for New Delhi. Selecting only other locations
+// (specific cities that exclude New Delhi, or states that exclude Delhi NCR) returns zero.
+function hasRealDataForScope(){
+  if(state.geo.cityIds.length>0) return state.geo.cityIds.includes(REAL_DATA_CITY_ID);
+  if(state.geo.stateIds.length>0) return state.geo.stateIds.includes(REAL_DATA_STATE_ID);
+  return true; // All States / All Cities
+}
+
+function renderStatePanel(){
+  const panel = $('state-panel');
+  panel.innerHTML = `
+    <label class="geo-check-row all-row"><input type="checkbox" id="state-all-checkbox" ${state.geo.stateIds.length===0?'checked':''}/> All States</label>
+    ${GEO.map(st=>`<label class="geo-check-row"><input type="checkbox" class="state-check" data-state="${st.id}" ${state.geo.stateIds.includes(st.id)?'checked':''}/> ${st.name}</label>`).join('')}
+  `;
+  $('state-all-checkbox').addEventListener('change', e=>{
+    if(e.target.checked){
+      state.geo.stateIds = [];
+      pruneCityIds();
+      renderStatePanel(); renderCityPanel(); updateGeoFieldLabels();
+    } else { e.target.checked = true; }
+  });
+  panel.querySelectorAll('.state-check').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      const id = cb.dataset.state;
+      if(e.target.checked){ if(!state.geo.stateIds.includes(id)) state.geo.stateIds.push(id); }
+      else { state.geo.stateIds = state.geo.stateIds.filter(x=>x!==id); }
+      pruneCityIds();
+      renderStatePanel(); renderCityPanel(); updateGeoFieldLabels();
+    });
+  });
+}
+
+function renderCityPanel(){
+  const panel = $('city-panel');
+  const scope = citiesInScope();
+  panel.innerHTML = `
+    <label class="geo-check-row all-row"><input type="checkbox" id="city-all-checkbox" ${state.geo.cityIds.length===0?'checked':''}/> All Cities${state.geo.stateIds.length?' in Selected States':''}</label>
+    ${scope.map(c=>`<label class="geo-check-row"><input type="checkbox" class="city-check" data-city="${c.id}" ${state.geo.cityIds.includes(c.id)?'checked':''}/> ${c.name}${state.geo.stateIds.length===0?' <span style="color:var(--ink-faint);font-weight:500;">('+c.stateName+')</span>':''}</label>`).join('')}
+  `;
+  $('city-all-checkbox').addEventListener('change', e=>{
+    if(e.target.checked){
+      state.geo.cityIds = [];
+      renderCityPanel(); updateGeoFieldLabels();
+    } else { e.target.checked = true; }
+  });
+  panel.querySelectorAll('.city-check').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      const id = cb.dataset.city;
+      if(e.target.checked){ if(!state.geo.cityIds.includes(id)) state.geo.cityIds.push(id); }
+      else { state.geo.cityIds = state.geo.cityIds.filter(x=>x!==id); }
+      renderCityPanel(); updateGeoFieldLabels();
+    });
+  });
+}
+
+function toggleGeoPanel(panelId, btnId, force){
+  const panel = $(panelId);
+  const btn = $(btnId);
+  const shouldOpen = force !== undefined ? force : panel.hidden;
+  panel.hidden = !shouldOpen;
+  btn.classList.toggle('open', shouldOpen);
+}
+$('state-field-btn').addEventListener('click', e=>{
+  e.stopPropagation();
+  toggleGeoPanel('state-panel','state-field-btn');
+  toggleGeoPanel('city-panel','city-field-btn', false);
+});
+$('city-field-btn').addEventListener('click', e=>{
+  e.stopPropagation();
+  toggleGeoPanel('city-panel','city-field-btn');
+  toggleGeoPanel('state-panel','state-field-btn', false);
+});
+document.addEventListener('click', e=>{
+  const stateWrap = $('state-select-wrap');
+  const cityWrap = $('city-select-wrap');
+  const sgWrap = $('salesgroup-select-wrap');
+  if(stateWrap && !e.composedPath().includes(stateWrap)) toggleGeoPanel('state-panel','state-field-btn', false);
+  if(cityWrap && !e.composedPath().includes(cityWrap)) toggleGeoPanel('city-panel','city-field-btn', false);
+  if(sgWrap && !e.composedPath().includes(sgWrap)) toggleGeoPanel('salesgroup-panel','salesgroup-field-btn', false);
+});
+
+/* ---------- Sales Group dropdown (all real categories, with Select All) ---------- */
+// Categories present in the data that are services/venues/telecom-billing rather
+// than an actual electronics product or appliance - kept out of the picker.
+const NON_ELECTRONIC_CATS = new Set([
+  'cable tv operators',
+  'computer designing graphic & animation services',
+  'computer networking services & solutions',
+  'computer software developers',
+  'computer stationeries',
+  'computer training institutes',
+  'computerised horoscope',
+  'digital signature services',
+  'dth tv broadcast service distributors',
+  'dth tv broadcast service providers',
+  'mobile phone bill payment centres',
+  'mobile phone corporate connection',
+  'mobile phone recharge coupon',
+  'mobile phone simcard dealers',
+  'motorcycle electronic repair & services',
+  'online dth recharge services',
+  'video game parlours',
+]);
+function electronicCatIndices(){
+  if(typeof REACH_DATA === 'undefined') return [];
+  const out = [];
+  REACH_DATA.cats.forEach((c,i)=>{ if(!NON_ELECTRONIC_CATS.has(c)) out.push(i); });
+  return out;
+}
+
+function updateSalesGroupFieldLabel(){
+  const n = state.selectedCats.length;
+  const total = electronicCatIndices().length;
+  let label;
+  if(n===0) label = 'All Sales Groups (optional)';
+  else if(total>0 && n===total) label = 'All Sales Groups Selected';
+  else if(n<=3) label = state.selectedCats.map(i=>REACH_DATA.cats[i].replace(/\b\w/g, ch=>ch.toUpperCase())).join(', ');
+  else label = n + ' sales groups selected';
+  $('salesgroup-field-label').textContent = label;
+}
+
+function renderSalesGroupPanel(){
+  const panel = $('salesgroup-panel');
+  if(typeof REACH_DATA === 'undefined'){
+    panel.innerHTML = '<div style="padding:8px;color:var(--ink-faint);font-size:12px;">reach-data.js not loaded.</div>';
+    return;
+  }
+  const idxs = electronicCatIndices();
+  panel.innerHTML = `
+    <input type="text" id="salesgroup-filter-input" placeholder="Search sales groups..." />
+    <label class="geo-check-row all-row"><input type="checkbox" id="salesgroup-all-checkbox" ${state.selectedCats.length===idxs.length?'checked':''}/> <span id="salesgroup-all-label">Select All (${idxs.length})</span></label>
+    <div id="salesgroup-checklist">
+      ${idxs.map(i=>{ const c = REACH_DATA.cats[i]; return `<label class="geo-check-row sg-row" data-name="${c}"><input type="checkbox" class="sg-check" data-idx="${i}" ${state.selectedCats.includes(i)?'checked':''}/> ${c.replace(/\b\w/g, ch=>ch.toUpperCase())}</label>`; }).join('')}
+    </div>
+  `;
+
+  const filterInput = $('salesgroup-filter-input');
+  const allCb = $('salesgroup-all-checkbox');
+  const rows = [...panel.querySelectorAll('.sg-row')];
+
+  function visibleRows(){ return rows.filter(r=>r.style.display!=='none'); }
+  function syncAllCheckbox(){
+    const vis = visibleRows();
+    allCb.checked = vis.length>0 && vis.every(r=>r.querySelector('.sg-check').checked);
+  }
+
+  filterInput.addEventListener('input', ()=>{
+    const q = filterInput.value.toLowerCase().trim();
+    rows.forEach(row=>{ row.style.display = row.dataset.name.includes(q) ? '' : 'none'; });
+    $('salesgroup-all-label').textContent = 'Select All ('+visibleRows().length+')';
+    syncAllCheckbox();
+  });
+
+  allCb.addEventListener('change', e=>{
+    const checked = e.target.checked;
+    visibleRows().forEach(row=>{
+      const cb = row.querySelector('.sg-check');
+      cb.checked = checked;
+      const idx = parseInt(cb.dataset.idx,10);
+      if(checked){ if(!state.selectedCats.includes(idx)) state.selectedCats.push(idx); }
+      else { state.selectedCats = state.selectedCats.filter(x=>x!==idx); }
+    });
+    updateSalesGroupFieldLabel();
+    updateSearchBtn();
+  });
+
+  rows.forEach(row=>{
+    const cb = row.querySelector('.sg-check');
+    cb.addEventListener('change', e=>{
+      const idx = parseInt(cb.dataset.idx,10);
+      if(e.target.checked){ if(!state.selectedCats.includes(idx)) state.selectedCats.push(idx); }
+      else { state.selectedCats = state.selectedCats.filter(x=>x!==idx); }
+      syncAllCheckbox();
+      updateSalesGroupFieldLabel();
+      updateSearchBtn();
+    });
+  });
+}
+$('salesgroup-field-btn').addEventListener('click', e=>{
+  e.stopPropagation();
+  toggleGeoPanel('salesgroup-panel','salesgroup-field-btn');
+  toggleGeoPanel('state-panel','state-field-btn', false);
+  toggleGeoPanel('city-panel','city-field-btn', false);
+});
+
+function renderKwChips(){
+  const el = $('kw-chips');
+  el.innerHTML = '';
+  state.keywords.forEach((kw,i)=>{
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.innerHTML = '<span>'+kw.text+'</span>';
+    const btn = document.createElement('button');
+    btn.textContent = '×';
+    btn.addEventListener('click', ()=>{ state.keywords.splice(i,1); renderKwChips(); updateSearchBtn(); });
+    c.appendChild(btn);
+    el.appendChild(c);
+  });
+  $('kw-count-hint').textContent = state.keywords.length===0 ? 'No keywords added yet'
+    : state.keywords.length + (state.keywords.length===1 ? ' keyword added' : ' keywords added');
+}
+
+function addKeyword(){
+  const input = $('kw-input');
+  const raw = input.value;
+  if(!raw.trim()) return;
+  const parts = raw.split(',').map(s=>s.trim()).filter(Boolean);
+  for(const val of parts){
+    if(state.keywords.some(k=>k.text.toLowerCase()===val.toLowerCase())) continue;
+    state.keywords.push({text:val});
+  }
+  input.value='';
+  renderKwChips();
+  updateSearchBtn();
+  input.focus();
+}
+$('btn-add-kw').addEventListener('click', addKeyword);
+$('kw-input').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addKeyword(); } });
+
+function updateSearchBtn(){
+  $('btn-search').disabled = state.keywords.length===0 && state.selectedCats.length===0;
+}
+
+function syncFilterInputs(){
+  $('f-rating').value = state.filters.rating;
+  $('f-reviews').value = state.filters.reviews;
+}
+['f-rating','f-reviews'].forEach(id=>{
+  $(id).addEventListener('change', e=>{
+    const map = {'f-rating':'rating','f-reviews':'reviews'};
+    state.filters[map[id]] = e.target.value;
+  });
+});
+$('btn-reset-filters').addEventListener('click', ()=>{
+  state.filters = {rating:'4',reviews:'10'};
+  state.geo = {stateIds:['delhi-ncr'], cityIds:['new-delhi']};
+  syncFilterInputs(); renderStatePanel(); renderCityPanel(); updateGeoFieldLabels();
+});
+
+$('btn-search').addEventListener('click', ()=>{
+  if($('btn-search').disabled) return;
+  if(!hasRealDataForScope()){
+    showToast('No data available for the selected location yet - only Delhi NCR is live right now.');
+    return;
+  }
+  const combined = new Map();
+  findMatchedCategories().forEach(c=>combined.set(c.idx, c));
+  state.selectedCats.forEach(idx=>combined.set(idx, {idx, name: REACH_DATA.cats[idx]}));
+  const cats = [...combined.values()];
+  if(cats.length===0){
+    showToast('Add a keyword or pick at least one sales group.');
+    return;
+  }
+  state.matchedCats = cats.map(c=>({...c, included:true}));
+  state.base = scanAudience(activeCatIdxSet());
+  if(state.base.total===0){
+    showToast('No businesses matched those keywords - try a different one, or lower the rating/review filters.');
+    return;
+  }
+  state.channel = null;
+  state.channelState = {};
+  goTo('channels');
+});
+
+/* =========================================================================
+   SCREEN 2 : CHANNEL COMPARISON
+   ========================================================================= */
+function renderChannels(){
+  const base = state.base;
+
+  const recap = $('chan-selection-recap');
+  recap.innerHTML = '';
+  state.keywords.forEach(kw=>{
+    const c = document.createElement('div');
+    c.className='chip static';
+    c.textContent = kw.text;
+    recap.appendChild(c);
+  });
+  const locChip = document.createElement('div');
+  locChip.className='chip static';
+  locChip.innerHTML = '&#128205; ' + stateFieldLabel() + ' &middot; ' + cityFieldLabel();
+  recap.appendChild(locChip);
+
+  const catsWrap = $('chan-matched-cats-wrap');
+  const catsEl = $('chan-matched-cats');
+  catsEl.innerHTML = '';
+  if(state.matchedCats.length){
+    catsWrap.hidden = false;
+    const excludedCount = state.matchedCats.filter(c=>!c.included).length;
+    $('matched-cats-label').textContent = 'Matched categories (click to exclude)'
+      + (excludedCount ? ' — '+excludedCount+' excluded' : '');
+    $('btn-reset-cats').hidden = excludedCount===0;
+    state.matchedCats.forEach(c=>{
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'cat-chip' + (c.included ? ' active' : ' excluded');
+      chip.textContent = c.name.replace(/\b\w/g, ch=>ch.toUpperCase());
+      chip.addEventListener('click', ()=>toggleMatchedCat(c.idx));
+      catsEl.appendChild(chip);
+    });
+  } else {
+    catsWrap.hidden = true;
+  }
+
+  $('kpi-total-base').textContent = fmt(base.total);
+  $('kpi-base-phone').textContent = fmt(base.phone);
+  $('kpi-base-landline').textContent = fmt(base.landline);
+  $('kpi-base-email').textContent = fmt(base.email);
+
+  $('global-pct').value = state.globalPct;
+  $('global-pct-val').textContent = state.globalPct+'%';
+  updateSliderFill($('global-pct'));
+
+  const cards = $('channel-cards');
+  cards.innerHTML = '';
+  CHANNELS.forEach(ch=>{
+    const eligible = eligibleBaseForChannel(ch);
+    const enabled = eligible > 0;
+    const target = Math.round(eligible * state.globalPct/100);
+    const est = estimateForChannel(ch, target, getChannelAssumptions(ch));
+
+    const card = document.createElement('div');
+    card.className = 'chan-card ' + (enabled?'enabled':'disabled');
+    card.innerHTML = `
+      ${iconBadge(ch.iconKey, {size:48, voice:ch.voice})}
+      <div class="chan-name">${ch.name}</div>
+      <div class="chan-rate">₹${ch.rate} ${ch.unitLabel}</div>
+      ${enabled ? `
+        <div class="chan-stats">
+          <div>Reachable<span>${fmt(eligible)}</span></div>
+          <div>Targeted<span>${fmt(target)}</span></div>
+          <div>Est. cost<span>${fmtMoney(est.cost)}</span></div>
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;" data-chan="${ch.id}">View Plan &rarr;</button>
+      ` : `<div class="chan-disabled-note">No matched businesses have ${ch.requires.map(s=>SEGMENT_LABEL[s]).join(' or ')} on file.</div>`}
+    `;
+    if(enabled){
+      card.querySelector('button').addEventListener('click', ()=>{
+        state.channel = ch.id;
+        getOrInitChannelState(ch);
+        goTo('funnel');
+      });
+    }
+    cards.appendChild(card);
+  });
+}
+
+$('global-pct').addEventListener('input', e=>{
+  state.globalPct = parseInt(e.target.value,10);
+  $('global-pct-val').textContent = state.globalPct+'%';
+  renderChannels();
+});
+$('btn-back-to-search').addEventListener('click', ()=>goTo('search'));
+$('btn-reset-cats').addEventListener('click', resetMatchedCats);
+
+/* =========================================================================
+   SCREEN 3 : OUTREACH PLAN
+   ========================================================================= */
+function getChannelAssumptions(ch){
+  const s = state.channelState[ch.id] || {...ch.defaults, pct: state.globalPct, ctaMin: ch.ctaRange.min, ctaMax: ch.ctaRange.max};
+  return s;
+}
+
+function estimateForChannel(ch, target, assum){
+  const stages = {};
+  stages.sent = target;
+  let deliveredCount, secondaryCount, ctaBase=0, cost;
+
+  if(ch.id==='sms'){
+    deliveredCount = target * (assum.delivered/100);
+    ctaBase = deliveredCount;
+    cost = deliveredCount * ch.rate;
+    stages.delivered = deliveredCount;
+  } else if(ch.id==='whatsapp' || ch.id==='email'){
+    deliveredCount = target * (assum.delivered/100);
+    secondaryCount = deliveredCount * (assum.secondary/100);
+    ctaBase = secondaryCount;
+    cost = secondaryCount * ch.rate; // billed per open
+    stages.delivered = deliveredCount;
+    stages.secondary = secondaryCount;
+  } else if(ch.id==='aibot'){
+    secondaryCount = target * (assum.secondary/100); // connected
+    ctaBase = secondaryCount;
+    const pulses = secondaryCount * (assum.avgPulses||1);
+    cost = pulses * ch.rate;
+    stages.secondary = secondaryCount;
+  } else if(ch.id==='human'){
+    secondaryCount = target * (assum.secondary/100); // connected
+    ctaBase = secondaryCount;
+    const minutes = secondaryCount * (assum.avgMinutes||1);
+    cost = minutes * ch.rate;
+    stages.secondary = secondaryCount;
+  }
+  // Responses is always a rate band (assum.ctaMin-ctaMax), never a single point -
+  // so the response count itself comes out as a low-high range.
+  return {
+    stages,
+    ctaLo: ctaBase * (assum.ctaMin/100) || 0,
+    ctaHi: ctaBase * (assum.ctaMax/100) || 0,
+    cost: cost||0
+  };
+}
+
+function renderChanTabs(){
+  const el = $('chan-tabs');
+  el.innerHTML = '';
+  CHANNELS.forEach(ch=>{
+    const eligible = eligibleBaseForChannel(ch);
+    const b = document.createElement('button');
+    b.className = 'chan-tab' + (state.channel===ch.id?' active':'');
+    b.innerHTML = iconBadge(ch.iconKey, {size:18, voice:ch.voice}).replace('chan-badge','chan-badge chan-badge-tab') + '<span>'+ch.name+'</span>';
+    b.disabled = eligible<=0;
+    b.addEventListener('click', ()=>{
+      state.channel = ch.id;
+      getOrInitChannelState(ch);
+      renderFunnel();
+    });
+    el.appendChild(b);
+  });
+}
+
+function renderFunnel(){
+  if(!state.channel){
+    const firstEligible = CHANNELS.find(ch=>eligibleBaseForChannel(ch)>0);
+    state.channel = firstEligible ? firstEligible.id : CHANNELS[0].id;
+  }
+  renderChanTabs();
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const assum = getOrInitChannelState(ch);
+
+  $('funnel-title').textContent = ch.name;
+  $('funnel-title-badge').innerHTML = iconBadge(ch.iconKey, {size:40, voice:ch.voice});
+  $('funnel-rate-badge').textContent = '₹'+ch.rate+' '+ch.unitLabel;
+
+  const eligible = eligibleBaseForChannel(ch);
+  $('funnel-base-hint').textContent = fmt(eligible)+' businesses reachable on this channel';
+
+  $('funnel-pct').value = assum.pct;
+  $('funnel-pct-val').textContent = assum.pct+'%';
+  updateSliderFill($('funnel-pct'));
+  const target = Math.round(eligible * assum.pct/100);
+
+  const est = estimateForChannel(ch, target, assum);
+  $('funnel-budget').value = Math.round(est.cost);
+
+  $('assum-popover').hidden = true;
+  renderFunnelNumbers();
+}
+
+function assumKeysFor(ch){
+  const keys = [];
+  if(ch.stages.some(s=>s.key==='delivered')) keys.push('delivered');
+  if(ch.stages.some(s=>s.key==='secondary')) keys.push('secondary');
+  keys.push('cta');
+  if(ch.extra) keys.push(ch.extra);
+  return keys;
+}
+
+// The funnel always shows the first stage as "Targeted" regardless of the
+// channel's own key name ("Sent" / "Dialed"), so labels here must match that.
+function stageDisplayLabel(ch, key){
+  if(key==='sent') return 'Targeted';
+  const s = ch.stages.find(x=>x.key===key);
+  return s ? s.label : null;
+}
+
+// Label every rate as "<Stage> Rate (of <previous stage>)" using the exact
+// stage names shown in Expected Results, so nothing is ambiguous.
+function assumFieldLabel(ch, key){
+  if(key===ch.extra) return ch.extraLabel;
+  const hasDelivered = ch.stages.some(s=>s.key==='delivered');
+  const hasSecondary = ch.stages.some(s=>s.key==='secondary');
+  if(key==='delivered'){
+    return stageDisplayLabel(ch,'delivered')+' Rate (of '+stageDisplayLabel(ch,'sent')+')';
+  }
+  if(key==='secondary'){
+    const prevKey = hasDelivered ? 'delivered' : 'sent';
+    return stageDisplayLabel(ch,'secondary')+' Rate (of '+stageDisplayLabel(ch,prevKey)+')';
+  }
+  if(key==='cta'){
+    const prevKey = hasSecondary ? 'secondary' : (hasDelivered ? 'delivered' : 'sent');
+    return 'Responses Rate (of '+stageDisplayLabel(ch,prevKey)+')';
+  }
+  return key;
+}
+
+// Creates (or returns the existing) editable state for a channel. Every channel's
+// response rate starts out as an editable band (ctaMin/ctaMax), not a single point -
+// stored per-channel here, seeded from the channel's default band.
+function getOrInitChannelState(ch){
+  if(!state.channelState[ch.id]){
+    state.channelState[ch.id] = {...ch.defaults, pct: state.globalPct, ctaMin: ch.ctaRange.min, ctaMax: ch.ctaRange.max};
+  }
+  return state.channelState[ch.id];
+}
+
+// Every field except the response rate is a normal 0-100% rate (or unbounded for
+// count-style fields); the response rate is always the channel's editable band.
+function assumFieldRange(ch, key, assum){
+  if(key==='cta') return {min: assum.ctaMin, max: assum.ctaMax};
+  if(key===ch.extra) return {min:0, max:null};
+  return {min:0, max:100};
+}
+function assumFieldLabelWithRange(ch, key, assum){
+  const label = assumFieldLabel(ch, key);
+  const range = assumFieldRange(ch, key, assum);
+  const isCount = key===ch.extra;
+  if(!isCount && (range.min!==0 || range.max!==100)) return `${label} (${range.min}-${range.max}%)`;
+  return label;
+}
+
+// Builds one editable field. The response rate ("cta") is never a single point -
+// it's shown as a Min-Max band editor; everything else is a plain value input.
+// Shared by both the per-channel popover and the "edit all channels" modal.
+function buildAssumFieldRow(ch, assum, key, onChange){
+  if(key==='cta'){
+    const row = document.createElement('div');
+    row.className = 'assum-row assum-range-row';
+    const labelEl = document.createElement('label');
+    labelEl.textContent = assumFieldLabel(ch, key);
+    row.appendChild(labelEl);
+
+    const minInp = document.createElement('input');
+    minInp.type='number'; minInp.step='0.5'; minInp.value=assum.ctaMin;
+    minInp.style.width='54px';
+    const toEl = document.createElement('span');
+    toEl.textContent='-';
+    toEl.style.cssText='font-size:12px;color:var(--ink-faint);flex-shrink:0;';
+    const maxInp = document.createElement('input');
+    maxInp.type='number'; maxInp.step='0.5'; maxInp.value=assum.ctaMax;
+    maxInp.style.width='54px';
+    const unitEl = document.createElement('span');
+    unitEl.className='unit';
+    unitEl.textContent='%';
+
+    function applyRangeChange(){
+      let min = parseFloat(minInp.value); let max = parseFloat(maxInp.value);
+      if(isNaN(min)) min = assum.ctaMin;
+      if(isNaN(max)) max = assum.ctaMax;
+      if(min > max){ const t=min; min=max; max=t; }
+      assum.ctaMin = min; assum.ctaMax = max;
+      onChange();
+    }
+    minInp.addEventListener('input', applyRangeChange);
+    maxInp.addEventListener('input', applyRangeChange);
+
+    row.appendChild(minInp);
+    row.appendChild(toEl);
+    row.appendChild(maxInp);
+    row.appendChild(unitEl);
+    return [row];
+  }
+
+  const isCount = key===ch.extra;
+  const row = document.createElement('div');
+  row.className='assum-row';
+  const labelEl = document.createElement('label');
+  labelEl.textContent = assumFieldLabelWithRange(ch, key, assum);
+  row.appendChild(labelEl);
+
+  const range = assumFieldRange(ch, key, assum);
+  const inp = document.createElement('input');
+  inp.type='number';
+  inp.min = range.min;
+  inp.step = isCount ? '0.5' : '1';
+  if(range.max!=null) inp.max = range.max;
+  inp.value = assum[key];
+  inp.addEventListener('input', e=>{
+    assum[key] = parseFloat(e.target.value)||0;
+    onChange();
+  });
+  row.appendChild(inp);
+
+  const unitEl = document.createElement('span');
+  unitEl.className = 'unit';
+  unitEl.textContent = isCount ? '' : '%';
+  row.appendChild(unitEl);
+
+  return [row];
+}
+
+function renderAssumPopover(){
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const assum = getOrInitChannelState(ch);
+  const pop = $('assum-popover');
+  pop.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <span style="font-weight:800;font-size:13px;color:var(--navy-deep);">Edit Assumptions</span>
+      <button type="button" id="btn-close-assum" style="border:none;background:none;cursor:pointer;color:var(--ink-faint);font-size:18px;line-height:1;padding:0;">&times;</button>
+    </div>
+    <div id="assum-fields"></div>
+  `;
+  const fieldsEl = pop.querySelector('#assum-fields');
+  assumKeysFor(ch).forEach(key=>{
+    buildAssumFieldRow(ch, assum, key, renderFunnelNumbers).forEach(r=>fieldsEl.appendChild(r));
+  });
+  pop.querySelector('#btn-close-assum').addEventListener('click', ()=>{ pop.hidden = true; });
+}
+
+$('btn-edit-assum').addEventListener('click', e=>{
+  e.stopPropagation();
+  const pop = $('assum-popover');
+  if(pop.hidden){ renderAssumPopover(); pop.hidden = false; }
+  else { pop.hidden = true; }
+});
+document.addEventListener('click', e=>{
+  const pop = $('assum-popover');
+  if(!pop.hidden && !e.composedPath().includes(pop.closest('.card'))){
+    pop.hidden = true;
+  }
+});
+
+/* ---------- Master "edit all channels" modal ---------- */
+function openMasterAssumModal(){
+  CHANNELS.forEach(ch=>getOrInitChannelState(ch));
+  const body = $('master-assum-body');
+  body.innerHTML = '';
+  CHANNELS.forEach(ch=>{
+    const assum = state.channelState[ch.id];
+    const section = document.createElement('div');
+    section.className = 'modal-channel-section';
+    const head = document.createElement('div');
+    head.className = 'modal-channel-head';
+    head.innerHTML = `${iconBadge(ch.iconKey,{size:32,voice:ch.voice})}<span>${ch.name}</span>`;
+    section.appendChild(head);
+    const onChange = ()=>{
+      if(state.step==='channels') renderChannels();
+      if(state.step==='funnel' && state.channel===ch.id) renderFunnelNumbers();
+    };
+    assumKeysFor(ch).forEach(key=>{
+      buildAssumFieldRow(ch, assum, key, onChange).forEach(r=>section.appendChild(r));
+    });
+    body.appendChild(section);
+  });
+  $('master-assum-backdrop').hidden = false;
+}
+$('btn-master-edit-assum').addEventListener('click', openMasterAssumModal);
+$('btn-close-master-assum').addEventListener('click', ()=>{ $('master-assum-backdrop').hidden = true; });
+$('master-assum-backdrop').addEventListener('click', e=>{
+  if(e.target.id==='master-assum-backdrop') $('master-assum-backdrop').hidden = true;
+});
+
+function renderFunnelNumbers(){
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const assum = state.channelState[ch.id];
+  const eligible = eligibleBaseForChannel(ch);
+  const target = Math.round(eligible * assum.pct/100);
+  const est = estimateForChannel(ch, target, assum);
+
+  const stagesEl = $('funnel-stages');
+  stagesEl.innerHTML = '';
+  const midVals = [target, ...ch.stages.slice(1).map(s=>est.stages[s.key]||0)];
+  const midLabels = ['Targeted', ...ch.stages.slice(1).map(s=>s.label)];
+
+  // Each bar's fill matches the exact rate shown next to it (its own
+  // conversion % from the stage before it), not a cumulative share of the
+  // top of the funnel - so the blue always lines up with the % you're reading.
+  for(let i=0;i<midVals.length;i++){
+    const prev = i>0 ? midVals[i-1] : midVals[0];
+    const dropPct = i>0 && prev>0 ? Math.round((midVals[i]/prev)*100) : 100;
+    const widthPct = Math.max(1, dropPct);
+    const dropText = i===0 ? 'your audience' : dropPct+'% of prev. stage';
+    const row = document.createElement('div');
+    row.className='funnel-stage';
+    row.innerHTML = `
+      <div class="funnel-stage-head">
+        <div class="funnel-label">${midLabels[i]}</div>
+        <div class="funnel-stage-meta">
+          <span class="funnel-drop">${dropText}</span>
+          <span class="funnel-count">${fmt(midVals[i])}</span>
+        </div>
+      </div>
+      <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${widthPct}%"></div></div>
+    `;
+    stagesEl.appendChild(row);
+  }
+
+  // Responses is always a rate band, not a single point - so its count and
+  // cost-per-response are shown as low-high ranges too, from the same band.
+  // The bar itself reflects that: solid blue up to the low end of the rate,
+  // a lighter tint carrying it the rest of the way to the high end.
+  const ctaRange = assumFieldRange(ch, 'cta', assum);
+  const ctaLoWidthPct = Math.max(1, Math.round(ctaRange.min));
+  const ctaHiWidthPct = Math.max(ctaLoWidthPct+1, Math.round(ctaRange.max));
+  const ctaRow = document.createElement('div');
+  ctaRow.className='funnel-stage';
+  ctaRow.innerHTML = `
+    <div class="funnel-stage-head">
+      <div class="funnel-label">Responses</div>
+      <div class="funnel-stage-meta">
+        <span class="funnel-drop">${ctaRange.min}-${ctaRange.max}% of prev. stage</span>
+        <span class="funnel-count">${fmt(est.ctaLo)}-${fmt(est.ctaHi)}</span>
+      </div>
+    </div>
+    <div class="funnel-bar-wrap">
+      <div class="funnel-bar-hi" style="width:${ctaHiWidthPct}%"></div>
+      <div class="funnel-bar" style="width:${ctaLoWidthPct}%"></div>
+    </div>
+  `;
+  stagesEl.appendChild(ctaRow);
+
+  $('cost-total').textContent = fmtMoney(est.cost);
+  $('cost-basis').textContent = 'billed '+ch.unitLabel;
+  $('cost-per-reach').textContent = target>0 ? fmtMoney2(est.cost/target) : '₹0';
+  if(est.ctaHi>0){
+    const costLo = est.cost/est.ctaHi; // more responses = cheaper per response
+    const costHi = est.ctaLo>0 ? est.cost/est.ctaLo : costLo;
+    $('cost-per-cta').textContent = Math.round(costLo)===Math.round(costHi)
+      ? fmtMoney(costLo)
+      : `${fmtMoney(costLo)}-${fmtMoney(costHi)}`;
+  } else {
+    $('cost-per-cta').textContent = '-';
+  }
+
+  $('funnel-budget').value = Math.round(est.cost);
+}
+
+$('funnel-pct').addEventListener('input', e=>{
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const assum = state.channelState[ch.id];
+  assum.pct = parseInt(e.target.value,10);
+  $('funnel-pct-val').textContent = assum.pct+'%';
+  updateSliderFill(e.target);
+  renderFunnelNumbers();
+});
+
+$('funnel-budget').addEventListener('change', e=>{
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const assum = state.channelState[ch.id];
+  const eligible = eligibleBaseForChannel(ch);
+  const budget = parseFloat(e.target.value)||0;
+  let lo=0, hi=100, bestPct=0;
+  for(let iter=0; iter<28; iter++){
+    const mid = (lo+hi)/2;
+    const target = Math.round(eligible*mid/100);
+    const est = estimateForChannel(ch, target, assum);
+    if(est.cost <= budget){ bestPct = mid; lo = mid; } else { hi = mid; }
+  }
+  assum.pct = Math.round(bestPct);
+  $('funnel-pct').value = assum.pct;
+  $('funnel-pct-val').textContent = assum.pct+'%';
+  updateSliderFill($('funnel-pct'));
+  renderFunnelNumbers();
+});
+
+$('btn-back-to-channels').addEventListener('click', ()=>goTo('channels'));
+
+/* =========================================================================
+   LAUNCH CAMPAIGN MODAL
+   Content differs by channel: AI Bot/Human Calling get a call script; SMS/
+   WhatsApp get a template + banner + required CTA; Email gets a subject,
+   body and banner. Each shows a live preview of how it will actually look.
+   ========================================================================= */
+const SENDER_INFO = {
+  whatsapp: 'Sent via Justdial\'s WhatsApp number - the sender name will include "Justdial".',
+  sms: 'Sent via Justdial\'s SMS number.',
+  email: 'Sent from a Justdial email address, with the Justdial logo and footer added automatically.',
+  aibot: 'The script can use any caller name, but the call itself comes from Justdial\'s number.',
+  human: 'The script can use any caller name, but the call itself comes from Justdial\'s number.',
+};
+
+// Each screen inside a modal (editor -> summary -> submitted, or campaign list
+// -> detail) reuses the same scrollable panel, so without this the new screen
+// can open still scrolled to wherever the previous one left off.
+function scrollModalToTop(modalId){
+  const panel = document.querySelector('#'+modalId+' .modal-panel');
+  if(panel) panel.scrollTop = 0;
+}
+
+function getOrInitCampaignDraft(ch){
+  if(!state.campaignDrafts[ch.id]){
+    state.campaignDrafts[ch.id] = ch.voice ? {script:''}
+      : ch.id==='email' ? {subject:'', body:'', banner:''}
+      : {template:'', banner:'', cta:''};
+  }
+  return state.campaignDrafts[ch.id];
+}
+
+function launchFieldWrap(labelText, required, inputEl, helpText){
+  const wrap = document.createElement('div');
+  wrap.className = 'launch-field';
+  const label = document.createElement('label');
+  label.textContent = labelText;
+  if(required){
+    const req = document.createElement('span');
+    req.className = 'req';
+    req.textContent = '*';
+    label.appendChild(req);
+  }
+  wrap.appendChild(label);
+  wrap.appendChild(inputEl);
+  if(helpText){
+    const help = document.createElement('div');
+    help.className = 'help';
+    help.textContent = helpText;
+    wrap.appendChild(help);
+  }
+  return wrap;
+}
+
+function buildBannerField(draft, onChange){
+  const thumbWrap = document.createElement('div');
+  function renderThumb(){
+    thumbWrap.innerHTML = draft.banner
+      ? `<img class="launch-banner-thumb" src="${draft.banner}" alt="Banner preview" />`
+      : `<div class="launch-banner-empty">No image</div>`;
+  }
+  renderThumb();
+
+  const fileInp = document.createElement('input');
+  fileInp.type = 'file';
+  fileInp.accept = 'image/*';
+  fileInp.style.cssText = 'font-size:12px;';
+  fileInp.addEventListener('change', ()=>{
+    const file = fileInp.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      draft.banner = reader.result;
+      renderThumb();
+      onChange();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'btn btn-ghost btn-sm';
+  removeBtn.style.cssText = 'width:fit-content;padding:6px 12px;margin-top:6px;';
+  removeBtn.textContent = 'Remove image';
+  removeBtn.addEventListener('click', ()=>{
+    draft.banner = '';
+    fileInp.value = '';
+    renderThumb();
+    onChange();
+  });
+
+  const btnsWrap = document.createElement('div');
+  btnsWrap.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;gap:2px;';
+  btnsWrap.appendChild(fileInp);
+  btnsWrap.appendChild(removeBtn);
+
+  const row = document.createElement('div');
+  row.className = 'launch-banner-row';
+  row.appendChild(thumbWrap);
+  row.appendChild(btnsWrap);
+
+  return launchFieldWrap('Banner Image', false, row, 'Optional - shown above the message.');
+}
+
+function buildLaunchFields(ch, draft, onChange){
+  const wrap = document.createElement('div');
+
+  if(ch.voice){
+    const ta = document.createElement('textarea');
+    ta.rows = 12;
+    ta.placeholder = 'Hi, this is [Agent] calling from Justdial on behalf of [Business]. We noticed you deal in electronics and wanted to...';
+    ta.value = draft.script;
+    ta.addEventListener('input', ()=>{ draft.script = ta.value; onChange(); });
+    wrap.appendChild(launchFieldWrap('Call Script', true, ta, (ch.id==='aibot' ? 'The AI bot reads this out on every call.' : 'Shared with agents as the call guide.')));
+    return wrap;
+  }
+
+  if(ch.id==='email'){
+    const subjInp = document.createElement('input');
+    subjInp.type = 'text';
+    subjInp.placeholder = 'Grow your business with Justdial';
+    subjInp.value = draft.subject;
+    subjInp.addEventListener('input', ()=>{ draft.subject = subjInp.value; onChange(); });
+    wrap.appendChild(launchFieldWrap('Subject', true, subjInp));
+
+    wrap.appendChild(buildBannerField(draft, onChange));
+
+    const bodyTa = document.createElement('textarea');
+    bodyTa.rows = 9;
+    bodyTa.placeholder = 'Write your email body here...';
+    bodyTa.value = draft.body;
+    bodyTa.addEventListener('input', ()=>{ draft.body = bodyTa.value; onChange(); });
+    wrap.appendChild(launchFieldWrap('Body', true, bodyTa));
+    return wrap;
+  }
+
+  // whatsapp / sms
+  const tplTa = document.createElement('textarea');
+  tplTa.rows = 6;
+  tplTa.placeholder = 'Hi {business_name}, grow your reach with Justdial...';
+  tplTa.value = draft.template;
+  tplTa.addEventListener('input', ()=>{ draft.template = tplTa.value; onChange(); });
+  wrap.appendChild(launchFieldWrap('Template', true, tplTa));
+
+  wrap.appendChild(buildBannerField(draft, onChange));
+
+  const ctaInp = document.createElement('input');
+  ctaInp.type = 'text';
+  ctaInp.placeholder = ch.id==='whatsapp' ? 'e.g. Get Started' : 'e.g. Reply YES to learn more';
+  ctaInp.value = draft.cta;
+  ctaInp.addEventListener('input', ()=>{ draft.cta = ctaInp.value; onChange(); });
+  wrap.appendChild(launchFieldWrap('Call to Action (CTA)', true, ctaInp));
+
+  return wrap;
+}
+
+function renderLaunchPreviewInto(frame, ch, draft){
+  if(ch.voice){
+    const has = draft.script.trim().length>0;
+    frame.innerHTML = `<div class="script-card${has?'':' empty'}">${has ? escapeHtml(draft.script) : 'Your script will appear here as you type.'}</div>`;
+    return;
+  }
+  if(ch.id==='email'){
+    const hasSubj = draft.subject.trim().length>0;
+    const hasBody = draft.body.trim().length>0;
+    frame.innerHTML = `
+      <div class="email-preview">
+        <div class="email-preview-head">
+          <div class="email-preview-from">Justdial &lt;campaigns@justdial.com&gt;</div>
+          <div class="email-preview-subject${hasSubj?'':' empty'}">${hasSubj ? escapeHtml(draft.subject) : 'Your subject line will appear here'}</div>
+        </div>
+        ${draft.banner ? `<img class="email-preview-banner" src="${draft.banner}" alt="Banner" />` : ''}
+        <div class="email-preview-body${hasBody?'':' empty'}">${hasBody ? escapeHtml(draft.body) : 'Your email body will appear here as you type.'}</div>
+      </div>
+    `;
+    return;
+  }
+  // whatsapp / sms
+  const isWa = ch.id==='whatsapp';
+  const hasTpl = draft.template.trim().length>0;
+  const hasCta = draft.cta.trim().length>0;
+  frame.innerHTML = `
+    <div class="chat-bubble ${isWa?'wa':'sms'}">
+      ${draft.banner ? `<img src="${draft.banner}" alt="Banner" />` : ''}
+      <div class="chat-bubble-text${hasTpl?'':' empty'}">${hasTpl ? escapeHtml(draft.template) : 'Your message will appear here as you type.'}</div>
+      ${hasCta ? `<div class="chat-cta-btn ${isWa?'':'sms'}">${escapeHtml(draft.cta)}</div>` : ''}
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function launchDraftIsValid(ch, draft){
+  if(ch.voice) return draft.script.trim().length>0;
+  if(ch.id==='email') return draft.subject.trim().length>0 && draft.body.trim().length>0;
+  return draft.template.trim().length>0 && draft.cta.trim().length>0;
+}
+
+function renderLaunchModal(){
+  const ch = CHANNELS.find(c=>c.id===state.channel);
+  const draft = getOrInitCampaignDraft(ch);
+
+  $('launch-modal-title').textContent = 'Create Campaign - '+ch.name;
+  const body = $('launch-modal-body');
+  body.innerHTML = '';
+
+  const senderInfo = document.createElement('div');
+  senderInfo.className = 'disclaimer info';
+  senderInfo.innerHTML = `<span>&#8505;&#65039;</span><span>${SENDER_INFO[ch.id]}</span>`;
+  body.appendChild(senderInfo);
+
+  const grid = document.createElement('div');
+  grid.className = 'launch-grid';
+
+  const editCol = document.createElement('div');
+  const previewCol = document.createElement('div');
+  const previewLabel = document.createElement('div');
+  previewLabel.className = 'launch-preview-label';
+  previewLabel.textContent = 'How it will look';
+  const previewFrame = document.createElement('div');
+  previewFrame.className = 'preview-frame';
+  previewCol.appendChild(previewLabel);
+  previewCol.appendChild(previewFrame);
+
+  const footer = document.createElement('div');
+  footer.className = 'launch-footer';
+  const errEl = document.createElement('span');
+  errEl.className = 'err';
+  errEl.hidden = true;
+  const launchBtn = document.createElement('button');
+  launchBtn.type = 'button';
+  launchBtn.className = 'btn btn-gold';
+  launchBtn.textContent = 'Review & Submit →';
+  footer.appendChild(errEl);
+  footer.appendChild(launchBtn);
+
+  function refreshPreview(){
+    renderLaunchPreviewInto(previewFrame, ch, draft);
+  }
+  refreshPreview();
+
+  editCol.appendChild(buildLaunchFields(ch, draft, refreshPreview));
+
+  launchBtn.addEventListener('click', ()=>{
+    if(!launchDraftIsValid(ch, draft)){
+      errEl.textContent = ch.voice ? 'Add a call script before continuing.'
+        : ch.id==='email' ? 'Subject and body are required.'
+        : 'Template and CTA are required.';
+      errEl.hidden = false;
+      return;
+    }
+    errEl.hidden = true;
+    renderLaunchSummary(ch, draft);
+  });
+
+  grid.appendChild(editCol);
+  grid.appendChild(previewCol);
+  body.appendChild(grid);
+  body.appendChild(footer);
+  scrollModalToTop('launch-backdrop');
+}
+
+// A quick recap of what's about to go out - audience, cost, and the exact
+// content preview - plus the approval-time disclaimer, before it's submitted.
+function renderLaunchSummary(ch, draft){
+  const assum = state.channelState[ch.id];
+  const eligible = eligibleBaseForChannel(ch);
+  const target = Math.round(eligible * assum.pct/100);
+  const est = estimateForChannel(ch, target, assum);
+
+  $('launch-modal-title').textContent = 'Campaign Summary - '+ch.name;
+  const body = $('launch-modal-body');
+  body.innerHTML = '';
+
+  const head = document.createElement('div');
+  head.className = 'launch-summary-head';
+  head.innerHTML = `
+    ${iconBadge(ch.iconKey, {size:44, voice:ch.voice})}
+    <div><h4>${ch.name}</h4><div class="sub">Review before submitting</div></div>
+  `;
+  body.appendChild(head);
+
+  const stats = document.createElement('div');
+  stats.className = 'launch-stat-grid';
+  stats.innerHTML = `
+    <div class="launch-stat"><div class="label">Audience Targeted</div><div class="value">${fmt(target)}</div></div>
+    <div class="launch-stat"><div class="label">Est. Cost</div><div class="value">${fmtMoney(est.cost)}</div></div>
+  `;
+  body.appendChild(stats);
+
+  const previewLabel = document.createElement('div');
+  previewLabel.className = 'launch-preview-label';
+  previewLabel.textContent = 'Content';
+  body.appendChild(previewLabel);
+  const previewFrame = document.createElement('div');
+  previewFrame.className = 'preview-frame';
+  body.appendChild(previewFrame);
+  renderLaunchPreviewInto(previewFrame, ch, draft);
+
+  const disclaimer = document.createElement('div');
+  disclaimer.className = 'disclaimer';
+  disclaimer.innerHTML = `<span>&#9203;</span><span><strong>Approval required.</strong> ${ch.voice ? 'Call scripts' : 'Templates'} typically take up to 24 hours to get approved before this campaign goes live.</span>`;
+  body.appendChild(disclaimer);
+
+  const senderInfo = document.createElement('div');
+  senderInfo.className = 'disclaimer info';
+  senderInfo.innerHTML = `<span>&#8505;&#65039;</span><span>${SENDER_INFO[ch.id]}</span>`;
+  body.appendChild(senderInfo);
+
+  const footer = document.createElement('div');
+  footer.className = 'launch-footer';
+  const backBtn = document.createElement('button');
+  backBtn.type = 'button';
+  backBtn.className = 'btn btn-ghost';
+  backBtn.textContent = '← Edit';
+  backBtn.addEventListener('click', ()=>renderLaunchModal());
+  const submitBtn = document.createElement('button');
+  submitBtn.type = 'button';
+  submitBtn.className = 'btn btn-gold';
+  submitBtn.textContent = 'Submit for Approval →';
+  submitBtn.addEventListener('click', ()=>{
+    const campaign = {
+      id: 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+      channelId: ch.id,
+      status: 'pending',
+      submittedAt: Date.now(),
+      draft: {...draft},
+      target, cost: est.cost, ctaLo: est.ctaLo, ctaHi: est.ctaHi,
+      stages: {...est.stages},
+    };
+    campaigns.unshift(campaign);
+    renderCampaignsBadge();
+    renderCampaignSubmitted(ch, draft);
+  });
+  footer.appendChild(backBtn);
+  footer.appendChild(submitBtn);
+  body.appendChild(footer);
+  scrollModalToTop('launch-backdrop');
+}
+
+// Confirms the submission - there's no real backend here, so nothing has
+// actually gone out yet. It's now tracked in "My Campaigns" for later.
+function renderCampaignSubmitted(ch, draft){
+  $('launch-modal-title').textContent = 'Campaign Submitted';
+  const body = $('launch-modal-body');
+  body.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'launch-success';
+  wrap.innerHTML = `
+    <div class="launch-success-icon">&#10003;</div>
+    <h4>${ch.name} campaign submitted</h4>
+    <p>Queued for approval - usually live within 24 hours.<br/>Track status anytime from "My Campaigns".</p>
+  `;
+  body.appendChild(wrap);
+
+  const footer = document.createElement('div');
+  footer.className = 'launch-footer';
+  const doneBtn = document.createElement('button');
+  doneBtn.type = 'button';
+  doneBtn.className = 'btn btn-gold';
+  doneBtn.textContent = 'Done';
+  doneBtn.addEventListener('click', ()=>{ $('launch-backdrop').hidden = true; });
+  footer.appendChild(doneBtn);
+  body.appendChild(footer);
+  scrollModalToTop('launch-backdrop');
+}
+
+$('btn-launch').addEventListener('click', ()=>{
+  renderLaunchModal();
+  $('launch-backdrop').hidden = false;
+});
+$('btn-close-launch').addEventListener('click', ()=>{ $('launch-backdrop').hidden = true; });
+$('launch-backdrop').addEventListener('click', e=>{
+  if(e.target.id==='launch-backdrop') $('launch-backdrop').hidden = true;
+});
+
+/* =========================================================================
+   MY CAMPAIGNS
+   Every submitted campaign lands here regardless of what audience is
+   currently loaded. Clicking one opens its own status view - "Pending
+   Approval" (content + disclaimer) or, once simulated as approved, a "Live"
+   view with performance numbers derived from that campaign's own assumptions.
+   ========================================================================= */
+function renderCampaignsBadge(){
+  const el = $('campaigns-count');
+  el.textContent = campaigns.length;
+  el.hidden = campaigns.length===0;
+}
+
+function timeAgo(ts){
+  const mins = Math.max(0, Math.round((Date.now()-ts)/60000));
+  if(mins<1) return 'just now';
+  if(mins<60) return mins+' min'+(mins===1?'':'s')+' ago';
+  const hrs = Math.round(mins/60);
+  if(hrs<24) return hrs+' hour'+(hrs===1?'':'s')+' ago';
+  const days = Math.round(hrs/24);
+  return days+' day'+(days===1?'':'s')+' ago';
+}
+
+function renderCampaignsList(){
+  $('campaigns-modal-title').textContent = 'My Campaigns';
+  const body = $('campaigns-modal-body');
+  body.innerHTML = '';
+  scrollModalToTop('campaigns-backdrop');
+
+  if(campaigns.length===0){
+    const empty = document.createElement('div');
+    empty.className = 'campaign-empty';
+    empty.textContent = 'No campaigns yet - create one from the Outreach Plan screen.';
+    body.appendChild(empty);
+    return;
+  }
+
+  const totalSpend = campaigns.reduce((sum,c)=>sum+c.cost, 0);
+  const liveCount = campaigns.filter(c=>c.status==='live').length;
+  const pendingCount = campaigns.length - liveCount;
+  const rollup = document.createElement('div');
+  rollup.className = 'launch-stat-grid';
+  rollup.style.gridTemplateColumns = 'repeat(3,1fr)';
+  rollup.innerHTML = `
+    <div class="launch-stat"><div class="label">Campaigns</div><div class="value">${campaigns.length}</div></div>
+    <div class="launch-stat"><div class="label">Total Spend</div><div class="value">${fmtMoney(totalSpend)}</div></div>
+    <div class="launch-stat"><div class="label">Status</div><div class="value" style="font-size:13px;">${pendingCount} pending &middot; ${liveCount} live</div></div>
+  `;
+  body.appendChild(rollup);
+
+  campaigns.forEach(c=>{
+    const ch = CHANNELS.find(x=>x.id===c.channelId);
+    const row = document.createElement('div');
+    row.className = 'campaign-row';
+    row.innerHTML = `
+      ${iconBadge(ch.iconKey, {size:38, voice:ch.voice})}
+      <div class="campaign-row-info">
+        <div class="campaign-row-name">${ch.name}</div>
+        <div class="campaign-row-meta">Submitted ${timeAgo(c.submittedAt)} &middot; ${fmt(c.target)} targeted &middot; ${fmtMoney(c.cost)}</div>
+      </div>
+      <span class="badge ${c.status==='live' ? 'badge-success' : 'badge-pending'}">${c.status==='live' ? 'Live' : 'Pending Approval'}</span>
+      <span class="campaign-row-arrow">&rarr;</span>
+    `;
+    row.addEventListener('click', ()=>renderCampaignDetail(c));
+    body.appendChild(row);
+  });
+}
+
+function withdrawCampaign(campaign){
+  if(!confirm('Withdraw this '+CHANNELS.find(x=>x.id===campaign.channelId).name+' campaign? This can\'t be undone.')) return;
+  campaigns = campaigns.filter(c=>c.id!==campaign.id);
+  renderCampaignsBadge();
+  renderCampaignsList();
+}
+
+function renderCampaignDetail(campaign, editing){
+  const ch = CHANNELS.find(x=>x.id===campaign.channelId);
+  $('campaigns-modal-title').textContent = ch.name+' Campaign';
+  const body = $('campaigns-modal-body');
+  body.innerHTML = '';
+  scrollModalToTop('campaigns-backdrop');
+
+  const backBtn = document.createElement('button');
+  backBtn.type = 'button';
+  backBtn.className = 'btn btn-ghost btn-sm';
+  backBtn.style.marginBottom = '16px';
+  backBtn.textContent = '← All Campaigns';
+  backBtn.addEventListener('click', renderCampaignsList);
+  body.appendChild(backBtn);
+
+  const head = document.createElement('div');
+  head.className = 'launch-summary-head';
+  head.innerHTML = `
+    ${iconBadge(ch.iconKey, {size:44, voice:ch.voice})}
+    <div><h4>${ch.name}</h4><div class="sub">Submitted ${timeAgo(campaign.submittedAt)}</div></div>
+  `;
+  body.appendChild(head);
+
+  const status = document.createElement('div');
+  status.className = 'live-status';
+  status.innerHTML = `<span class="live-dot${campaign.status==='pending'?' pending':''}"></span> ${campaign.status==='live' ? 'Live' : 'Pending Approval'}`;
+  body.appendChild(status);
+
+  if(campaign.status==='pending'){
+    const stats = document.createElement('div');
+    stats.className = 'launch-stat-grid';
+    stats.innerHTML = `
+      <div class="launch-stat"><div class="label">Audience Targeted</div><div class="value">${fmt(campaign.target)}</div></div>
+      <div class="launch-stat"><div class="label">Est. Cost</div><div class="value">${fmtMoney(campaign.cost)}</div></div>
+    `;
+    body.appendChild(stats);
+  } else {
+    const rng = seededRandom(campaign.id+'::live');
+    const jitter = (spread)=> 1 + (rng()*2-1)*spread;
+    const stageActuals = ch.stages.filter(s=>s.key!=='sent').map(s=>({
+      label: s.label,
+      value: Math.round((campaign.stages[s.key]||0) * jitter(0.12))
+    }));
+    const responsesActual = Math.max(0, Math.round((campaign.ctaLo + rng()*(campaign.ctaHi-campaign.ctaLo)) * jitter(0.08)));
+    const costActual = Math.round(campaign.cost * jitter(0.1));
+    const stats = document.createElement('div');
+    stats.className = 'launch-stat-grid';
+    stats.style.gridTemplateColumns = 'repeat(auto-fit,minmax(110px,1fr))';
+    stats.innerHTML = `
+      <div class="launch-stat"><div class="label">${ch.voice ? 'Dialed' : 'Sent'}</div><div class="value">${fmt(campaign.target)}</div></div>
+      ${stageActuals.map(s=>`<div class="launch-stat"><div class="label">${s.label}</div><div class="value">${fmt(s.value)}</div></div>`).join('')}
+      <div class="launch-stat"><div class="label">Responses</div><div class="value">${fmt(responsesActual)}</div></div>
+      <div class="launch-stat"><div class="label">Cost Spent</div><div class="value">${fmtMoney(costActual)}</div></div>
+    `;
+    body.appendChild(stats);
+  }
+
+  const previewLabel = document.createElement('div');
+  previewLabel.className = 'launch-preview-label';
+  previewLabel.textContent = editing ? 'Content (editing)' : 'Content';
+  body.appendChild(previewLabel);
+
+  if(campaign.status==='pending' && editing){
+    const grid = document.createElement('div');
+    grid.className = 'launch-grid';
+    const editCol = document.createElement('div');
+    const previewCol = document.createElement('div');
+    const previewFrame = document.createElement('div');
+    previewFrame.className = 'preview-frame';
+    previewCol.appendChild(previewFrame);
+    function refreshPreview(){ renderLaunchPreviewInto(previewFrame, ch, campaign.draft); }
+    refreshPreview();
+    editCol.appendChild(buildLaunchFields(ch, campaign.draft, refreshPreview));
+    grid.appendChild(editCol);
+    grid.appendChild(previewCol);
+    body.appendChild(grid);
+
+    const footer = document.createElement('div');
+    footer.className = 'launch-footer';
+    const errEl = document.createElement('span');
+    errEl.className = 'err';
+    errEl.hidden = true;
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'btn btn-gold';
+    saveBtn.textContent = 'Save Changes';
+    saveBtn.addEventListener('click', ()=>{
+      if(!launchDraftIsValid(ch, campaign.draft)){
+        errEl.textContent = ch.voice ? 'Add a call script before saving.'
+          : ch.id==='email' ? 'Subject and body are required.'
+          : 'Template and CTA are required.';
+        errEl.hidden = false;
+        return;
+      }
+      renderCampaignDetail(campaign, false);
+    });
+    footer.appendChild(errEl);
+    footer.appendChild(saveBtn);
+    body.appendChild(footer);
+    return;
+  }
+
+  const previewFrame = document.createElement('div');
+  previewFrame.className = 'preview-frame';
+  body.appendChild(previewFrame);
+  renderLaunchPreviewInto(previewFrame, ch, campaign.draft);
+
+  if(campaign.status==='pending'){
+    const disclaimer = document.createElement('div');
+    disclaimer.className = 'disclaimer';
+    disclaimer.style.marginTop = '20px';
+    disclaimer.innerHTML = `<span>&#9203;</span><span><strong>Approval required.</strong> ${ch.voice ? 'Call scripts' : 'Templates'} typically take up to 24 hours to get approved before this campaign goes live.</span>`;
+    body.appendChild(disclaimer);
+
+    const footer = document.createElement('div');
+    footer.className = 'launch-footer';
+    const withdrawBtn = document.createElement('button');
+    withdrawBtn.type = 'button';
+    withdrawBtn.className = 'btn btn-danger-ghost';
+    withdrawBtn.textContent = 'Withdraw';
+    withdrawBtn.addEventListener('click', ()=>withdrawCampaign(campaign));
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn btn-ghost';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', ()=>renderCampaignDetail(campaign, true));
+    const simBtn = document.createElement('button');
+    simBtn.type = 'button';
+    simBtn.className = 'btn btn-gold';
+    simBtn.textContent = 'Simulate Approval →';
+    simBtn.title = 'Demo only - fast-forwards this campaign to "Live" so you can show what performance looks like once approved.';
+    simBtn.addEventListener('click', ()=>{
+      campaign.status = 'live';
+      renderCampaignDetail(campaign);
+    });
+    footer.appendChild(withdrawBtn);
+    footer.appendChild(editBtn);
+    footer.appendChild(simBtn);
+    body.appendChild(footer);
+  } else {
+    const note = document.createElement('div');
+    note.className = 'help';
+    note.style.marginTop = '14px';
+    note.textContent = 'Simulated performance for preview purposes - connect a live campaign to see real numbers here.';
+    body.appendChild(note);
+  }
+}
+
+// Deterministic per-string PRNG - so simulated "live" numbers stay stable
+// across reopens instead of reshuffling every time you view a campaign.
+function seededRandom(seed){
+  let s = 0;
+  for(let i=0;i<seed.length;i++) s = (Math.imul(s,31) + seed.charCodeAt(i)) >>> 0;
+  return function(){
+    s = (Math.imul(s,1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+$('btn-campaigns').addEventListener('click', ()=>{
+  renderCampaignsList();
+  $('campaigns-backdrop').hidden = false;
+});
+$('btn-close-campaigns').addEventListener('click', ()=>{ $('campaigns-backdrop').hidden = true; });
+$('campaigns-backdrop').addEventListener('click', e=>{
+  if(e.target.id==='campaigns-backdrop') $('campaigns-backdrop').hidden = true;
+});
+renderCampaignsBadge();
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+renderKwChips();
+renderStatePanel();
+renderCityPanel();
+updateGeoFieldLabels();
+renderSalesGroupPanel();
+updateSalesGroupFieldLabel();
+syncFilterInputs();
+updateSearchBtn();
+renderStepper();
+if(typeof REACH_DATA === 'undefined'){
+  showToast('reach-data.js not found - keep it in the same folder as this HTML file.');
+} else {
+  console.log('Reach Builder loaded', REACH_DATA.rows.length, 'businesses,', REACH_DATA.cats.length, 'categories');
+}
+</script>
+</body>
+</html>

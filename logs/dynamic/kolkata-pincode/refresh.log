@@ -1,0 +1,4 @@
+
+[2026-10-15T19:46:52] Manual refresh started
+[1/4] Pull deals, presentations and listings ...
+Pull deals, presentations and listings FAILED (exit 1); see pipeline\run_daily.log. The last good dashboard is unchanged.

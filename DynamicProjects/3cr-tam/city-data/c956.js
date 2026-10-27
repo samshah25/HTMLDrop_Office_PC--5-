@@ -1,0 +1,1 @@
+window.__CITY_DATA(956,{"Apparels & Clothing - Retailer":"4lhCDCC","Car Repair & Services":"vi_BBC","Chartered Accountant":"868BBC","Civil & Construction Contractors":"miVBC","Hotels":"z78BBCmlEBC","Insurance Agents":"xulBDKK","Restaurants":"7g6BDCC"});

@@ -1,0 +1,1 @@
+window.__CITY_DATA(958,{"Beauty Parlours":"1vzBBC","Computer Training Institutes":"s-wBBC","Electronic Goods Showrooms":"z78BBC","Gynaecologist & Obstetrician Doctors":"_vhCFCC","Opticians":"-qnBBC","Precast Wall":"wm_BBC","Projector Dealers":"ovsBBC","Restaurants":"l2wBDCC","Tiles":"_vzBBC","Tools & Hardware Products & Services":"z4nBBC"});
