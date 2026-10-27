@@ -297,6 +297,159 @@
     .linkbox button .w { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Section Selection Modal */
+.section-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.section-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 14, 28, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.section-modal-dialog {
+  position: relative;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  padding: 24px 26px 20px;
+  z-index: 1;
+  animation: modalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.section-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.section-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.section-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.section-modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.section-modal-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0 0 16px;
+}
+
+.section-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-opt {
+  display: block;
+  cursor: pointer;
+}
+
+.section-opt input {
+  display: none;
+}
+
+.section-opt-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  transition: all 0.18s ease;
+}
+
+.section-opt-card:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.section-opt input:checked + .section-opt-card {
+  border-color: var(--c, #3b82f6);
+  background: color-mix(in srgb, var(--c, #3b82f6) 10%, #ffffff);
+  box-shadow: 0 0 0 1px var(--c, #3b82f6), 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.section-opt-icon {
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.section-opt-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-opt-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.section-opt-sub {
+  font-size: 10.5px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.section-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
 </style>
 </head>
 <body>
@@ -385,16 +538,18 @@
           <div class="body">
             <h2 id="placeLabel">Show on master dashboard?</h2>
             <div class="choices" role="radiogroup" aria-labelledby="placeLabel">
-              <label class="choice"><input type="radio" name="place" value="off" checked>
+              <label class="choice">
+                <input type="radio" name="place" value="off" checked>
                 <span class="dot"></span><span class="lbl">No, just host it</span>
-                <span class="desc">Only people with the link will find it.</span></label>
-              <label class="choice"><input type="radio" name="place" value="general">
-                <span class="dot"></span><span class="lbl">Yes, in General</span>
-                <span class="desc">On the General tab everyone sees first.</span></label>
-              <label class="choice"><input type="radio" name="place" value="all">
-                <span class="dot"></span><span class="lbl">Yes, in All dashboards only</span>
-                <span class="desc">Kept off General; shown under All dashboards.</span></label>
+                <span class="desc">Only people with the link will find it.</span>
+              </label>
+              <label class="choice" id="choiceMaster" onclick="setTimeout(() => { if (document.querySelector('input[name=\'place\'][value=\'all\']').checked) openSectionModal(); }, 10);">
+                <input type="radio" name="place" value="all">
+                <span class="dot"></span><span class="lbl">Yes, on master dashboard</span>
+                <span class="desc" id="sectionSelectedDesc">Select which section to place this dashboard in.</span>
+              </label>
             </div>
+            <input type="hidden" id="selectedCategory" name="category" value="funnel">
           </div>
         </div>
 
@@ -873,7 +1028,7 @@ function submit() {
 
   if (!chosen) {   // settings-only change to your own page
     $("publish").disabled = true;
-    api("/api/page?" + new URLSearchParams({ slug }), { title: $("title").value.trim(), placement: getPlace() })
+    api("/api/page?" + new URLSearchParams({ slug }), { title: $("title").value.trim(), placement: getPlace(), category: getCategory() })
       .then(res => showDone(res, "saved"))
       .catch(err => err.status === 401 ? loggedOut() : showErr(err.message))
       .finally(() => { $("publish").disabled = false; });
@@ -887,7 +1042,7 @@ function submit() {
     const qs = new URLSearchParams({
       slug,
       title: $("title").value.trim(),
-      placement: placement === "off" ? "off" : placement === "general" ? "general" : "all"
+      placement: placement === "off" ? "off" : "all", category: getCategory()
     });
     $("publish").disabled = true;
     $("progress").style.display = "block";
@@ -936,7 +1091,7 @@ function submit() {
     return showErr("Only .html or .htm files are supported for static dashboards. For dynamic projects, upload a .zip file.");
   }
 
-  const qs = new URLSearchParams({ slug, title: $("title").value.trim(), filename: chosen.name, hub: getPlace() });
+  const qs = new URLSearchParams({ slug, title: $("title").value.trim(), filename: chosen.name, hub: getPlace(), category: getCategory() });
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "/api/upload?" + qs);
   xhr.setRequestHeader("X-HD", "1");
@@ -1516,6 +1671,149 @@ async function load() {
   await load();
 })();
 setInterval(load, 30000);
+
+const SECTION_NAMES = {
+  funnel: "Sales Funnel",
+  geo: "Location",
+  renew: "Renewals",
+  other: "Sales Operations & Overview",
+  ecs: "Collections",
+  hr: "Workforce"
+};
+
+let currentCategory = "funnel";
+
+function openSectionModal() {
+  const modal = $("sectionModal");
+  if (!modal) return;
+  const rad = document.querySelector(`input[name="modalCategory"][value="${currentCategory}"]`);
+  if (rad) rad.checked = true;
+  modal.style.display = "flex";
+}
+
+function closeSectionModal() {
+  const modal = $("sectionModal");
+  if (modal) modal.style.display = "none";
+}
+
+function confirmSectionChoice() {
+  const checked = document.querySelector('input[name="modalCategory"]:checked');
+  if (checked) {
+    currentCategory = checked.value;
+    const catInput = $("selectedCategory");
+    if (catInput) catInput.value = currentCategory;
+    const desc = $("sectionSelectedDesc");
+    if (desc) {
+      desc.innerHTML = `Section: <strong style="color: #1e40af; background: #eff6ff; padding: 2px 8px; border-radius: 4px; font-weight:700;">${SECTION_NAMES[currentCategory] || currentCategory}</strong> <a href="#" onclick="openSectionModal(); return false;" style="margin-left: 6px; color: #2563eb; text-decoration: underline; font-weight: 600;">(Change)</a>`;
+    }
+  }
+  closeSectionModal();
+}
+
+const getCategory = () => ($("selectedCategory") && $("selectedCategory").value) || currentCategory || "funnel";
+
+// Hook up radio button click to open section popup when "Yes, on master dashboard" is selected
+document.addEventListener("change", e => {
+  if (e.target && e.target.name === "place") {
+    if (e.target.value !== "off") {
+      openSectionModal();
+    } else {
+      const desc = $("sectionSelectedDesc");
+      if (desc) desc.textContent = "Select which section to place this dashboard in.";
+    }
+  }
+});
+
 </script>
+
+<!-- SECTION SELECTION POPUP MODAL -->
+<div id="sectionModal" class="section-modal" style="display: none;">
+  <div class="section-modal-backdrop" onclick="closeSectionModal()"></div>
+  <div class="section-modal-dialog">
+    <div class="section-modal-header">
+      <div class="section-modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Choose Section on Master Dashboard</span>
+      </div>
+      <button type="button" class="section-modal-close" onclick="closeSectionModal()">&times;</button>
+    </div>
+    
+    <p class="section-modal-desc">In which section would you like to place this dashboard?</p>
+
+    <div class="section-options-grid">
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="funnel" checked>
+        <div class="section-opt-card" style="--c:#3b82f6;">
+          <span class="section-opt-icon">⚡</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Sales Funnel</span>
+            <span class="section-opt-sub">Pipelines & conversions</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="geo">
+        <div class="section-opt-card" style="--c:#06b6d4;">
+          <span class="section-opt-icon">📍</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Location</span>
+            <span class="section-opt-sub">Cities & pincode data</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="renew">
+        <div class="section-opt-card" style="--c:#10b981;">
+          <span class="section-opt-icon">🔄</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Renewals</span>
+            <span class="section-opt-sub">Retention & vintage</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="other">
+        <div class="section-opt-card" style="--c:#8b5cf6;">
+          <span class="section-opt-icon">💼</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Sales Operations & Overview</span>
+            <span class="section-opt-sub">Performance & ops</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="ecs">
+        <div class="section-opt-card" style="--c:#f59e0b;">
+          <span class="section-opt-icon">💰</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Collections</span>
+            <span class="section-opt-sub">ECS, billing & tracking</span>
+          </div>
+        </div>
+      </label>
+
+      <label class="section-opt">
+        <input type="radio" name="modalCategory" value="hr">
+        <div class="section-opt-card" style="--c:#ec4899;">
+          <span class="section-opt-icon">👥</span>
+          <div class="section-opt-info">
+            <span class="section-opt-name">Workforce</span>
+            <span class="section-opt-sub">Headcount & tenure</span>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <div class="section-modal-actions">
+      <button type="button" class="btn" onclick="closeSectionModal()">Cancel</button>
+      <button type="button" class="btn primary" onclick="confirmSectionChoice()">Select Section</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

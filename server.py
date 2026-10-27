@@ -582,6 +582,68 @@ def find_dashboard_file(link):
     return matches.pop()
 
 
+def get_existing_dashboard_file(slug, record=None, fallback_name=None):
+    """Accurately resolve the local dashboard file Path on the host PC.
+    Guarantees returning a file path (never a bare folder path)."""
+    file_setting = (record.get("file") or "").strip() if record else ""
+
+    # If file_setting points to an actual file on disk, return it directly
+    if file_setting and Path(file_setting).is_file():
+        return Path(file_setting).resolve()
+
+    # Determine the target HTML filename
+    expected_filename = ""
+    if file_setting and not Path(file_setting).is_dir():
+        expected_filename = Path(file_setting).name
+    if not expected_filename and fallback_name:
+        expected_filename = Path(fallback_name).name
+    if not expected_filename and record and record.get("link"):
+        try:
+            expected_filename = unquote(urlparse(record["link"]).path).rsplit("/", 1)[-1]
+        except Exception:
+            pass
+    if not expected_filename:
+        for s, _p, fn, _o, _t in EXISTING_DASHBOARDS:
+            if s.lower() == str(slug).lower():
+                expected_filename = fn
+                break
+    if not expected_filename:
+        expected_filename = f"{slug}.html"
+
+    # Check Task Scheduler WorkingDirectory if task exists on Windows
+    try:
+        _tname, xml_root = query_task_scheduler_info(slug, record)
+        if xml_root is not None:
+            NS = "http://schemas.microsoft.com/windows/2004/02/mit/task"
+            for exec_node in xml_root.findall(f".//{{{NS}}}Exec"):
+                wdir_node = exec_node.find(f"{{{NS}}}WorkingDirectory")
+                if wdir_node is not None and wdir_node.text:
+                    wdir = Path(wdir_node.text.strip().strip('"'))
+                    cand = wdir / expected_filename
+                    if cand.is_file():
+                        return cand.resolve()
+    except Exception:
+        pass
+
+    # Check standard dashboard directory
+    dash_folder = Path(r"C:\Users\10179794\Dashboardd\dash")
+    cand = dash_folder / expected_filename
+    if cand.is_file() or dash_folder.is_dir():
+        return cand.resolve()
+
+    # Try matching file via find_dashboard_file if link responds
+    if record and record.get("link"):
+        try:
+            found = find_dashboard_file(record["link"])
+            if found and Path(found).is_file():
+                return Path(found).resolve()
+        except Exception:
+            pass
+
+    # Default fallback to dash folder
+    return cand.resolve()
+
+
 def replace_page(slug, user, filename, data):
     """The Replace button: new file, same link. An existing dashboard's file is overwritten in
     its own folder under its own name (backed up first); an HTML Drop page gets a new version."""
@@ -598,23 +660,17 @@ def replace_page(slug, user, filename, data):
                 raise UserError("Only the page's owners or an admin can replace it.", 403)
             if Path(filename).suffix.lower() not in (".html", ".htm"):
                 raise UserError("Choose the dashboard's .html file.")
-            target = Path(record.get("file") or "")
-            if not target.is_file():
-                cand = Path(r"C:\Users\10179794\Dashboardd\dash") / (target.name if target.name else Path(filename).name)
-                if cand.is_file() or cand.parent.is_dir():
-                    target = cand
-                    record["file"] = str(cand)
+            target = get_existing_dashboard_file(slug, record, fallback_name=filename)
+            record["file"] = str(target)
             if record.get("disabled"):
                 target = parked_path(slug, record)  # stays hidden until Enable
                 target.parent.mkdir(parents=True, exist_ok=True)
-            elif not target.is_file():
-                target = Path(find_dashboard_file(record["link"]))
-                record["file"] = str(target)
             target.parent.mkdir(parents=True, exist_ok=True)
             now = datetime.now()
             backup = HISTORY / slug / f"{now:%Y%m%d-%H%M%S}_v{record['version']}"
             backup.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(target, backup / target.name)
+            if target.is_file():
+                shutil.copy2(target, backup / target.name)
             tmp = target.with_name(target.name + ".htmldrop-new")
             tmp.write_bytes(data)
             for attempt in range(20):
@@ -712,7 +768,10 @@ def update_page(slug, user, data):
         if title:
             record["title"] = title
         if "placement" in data:
-            record["hub"] = {**hub_of(record), **placement_to_hub(data["placement"])}
+            hub_up = placement_to_hub(data["placement"])
+            if "category" in data and data["category"]:
+                hub_up["category"] = str(data["category"]).strip()[:40]
+            record["hub"] = {**hub_of(record), **hub_up}
         save_meta(meta)
         return public_record(slug, record, load_json(USERS_FILE))
 
@@ -839,12 +898,16 @@ def sync_existing_dashboards():
                     move_with_retry(copy, TRASH / f"{slug}-copy-{datetime.now():%Y%m%d-%H%M%S}")
             kept = old if old and old.get("link") else {}
             keys = [user_key(o) for o in owners]
+            default_dash_file = str(Path(r"C:\Users\10179794\Dashboardd\dash") / filename)
+            current_file = (kept.get("file") or "").strip()
+            if not current_file or Path(current_file).is_dir():
+                current_file = default_dash_file
             meta[slug] = {
                 "title": kept["title"] if kept.get("renamed") else (title or filename.rsplit(".", 1)[0]),
                 "renamed": bool(kept.get("renamed")),
                 "user": keys[0], "editors": keys[1:],
                 "link": f"http://{EXISTING_HOST}:{port}/{filename}",
-                "file": kept.get("file", ""),
+                "file": current_file,
                 "version": kept.get("version", 1),
                 "created": kept.get("created", stamp),
                 "updated": kept.get("updated", stamp),
@@ -1386,20 +1449,15 @@ def resolve_dynamic_script(slug):
     meta = load_meta()
     linked = meta.get(slug)
     if linked and linked.get("link"):
-        target_file = Path(linked.get("file") or "")
-        if not target_file.is_file():
-            cand = Path(r"C:\Users\10179794\Dashboardd\dash") / target_file.name
-            if cand.is_file() or cand.parent.is_dir():
-                target_file = cand
-        if target_file.is_file() or target_file.parent.is_dir():
-            target_dir = target_file.parent.resolve()
-            script = target_dir / "main.py"
-            if not script.is_file():
-                script = target_dir / "refresh_dashboard.py"
-            py = target_dir / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-            if not py.is_file():
-                py = Path(sys.executable)
-            return target_dir, script, py
+        target_file = get_existing_dashboard_file(slug, linked)
+        target_dir = target_file.parent.resolve()
+        script = target_dir / "main.py"
+        if not script.is_file():
+            script = target_dir / "refresh_dashboard.py"
+        py = target_dir / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        if not py.is_file():
+            py = Path(sys.executable)
+        return target_dir, script, py
 
     return dyn_dir, dyn_dir / "main.py", Path(sys.executable)
 
@@ -1914,6 +1972,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.check_not_taken(slug)
                 user, cookie = self.acting_user()
                 hub_choice = placement_to_hub(q["hub"]) if "hub" in q else None
+                if hub_choice and "category" in q and q["category"]:
+                    hub_choice["category"] = q["category"].strip()[:40]
                 rec = publish(slug, q.get("title", "").strip()[:120], user,
                               q.get("filename", ""), data, hub_choice)
                 self.log_message("%s published %s v%s", user["username"], slug, rec["version"])
@@ -1954,20 +2014,15 @@ class Handler(BaseHTTPRequestHandler):
                 if not SLUG_RE.match(slug):
                     raise UserError("Invalid project link name.")
                 body = self.read_body()
-                linked = load_meta().get(slug)
+                all_meta = load_meta()
+                linked = all_meta.get(slug)
                 if not linked or not linked.get("link") or linked.get("deleted"):
                     raise UserError("This is not a registered existing dashboard.", 404)
                 if not can_manage(user, linked):
                     raise UserError("Only the dashboard owner or an admin can change its ZIP.", 403)
-                target_file = Path(linked.get("file") or "")
-                if not target_file.is_file():
-                    cand = Path(r"C:\Users\10179794\Dashboardd\dash") / target_file.name
-                    if cand.is_file() or cand.parent.is_dir():
-                        target_file = cand
-                        linked["file"] = str(cand)
-                    else:
-                        target_file = Path(find_dashboard_file(linked["link"]))
+                target_file = get_existing_dashboard_file(slug, linked)
                 target_dir = target_file.parent.resolve()
+                linked["file"] = str(target_file)
                 expected_html = target_file.name.lower()
                 force_upload = q.get("force") == "1"
                 try:
@@ -2017,11 +2072,12 @@ class Handler(BaseHTTPRequestHandler):
                 except OSError as exc:
                     raise UserError(f"Could not update the existing dashboard folder: {exc}")
                 linked["updated"] = datetime.now().isoformat(timespec="seconds")
-                save_meta(load_meta())
-                self.log_message("%s updated existing dashboard %s from ZIP (%s files)",
-                                 user["username"], slug, written)
+                all_meta[slug] = linked
+                save_meta(all_meta)
+                self.log_message("%s updated existing dashboard %s from ZIP (%s files) into %s",
+                                 user["username"], slug, written, target_dir)
                 return self.send_json({"ok": True, "message":
-                    f"Updated {written} files in the existing folder. Existing files not in the ZIP, cron scripts, URL and port were left unchanged. Backups: {backup_root}"})
+                    f"Updated {written} files in '{target_dir}'. Existing files not in the ZIP, cron scripts, URL and port were left unchanged. Backups: {backup_root}"})
             if u.path == "/api/dynamic/replace-html":
                 user = self.require_user()
                 slug = q.get("slug", "").strip().lower()

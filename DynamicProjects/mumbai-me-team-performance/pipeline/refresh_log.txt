@@ -604,3 +604,6 @@
 [2026-10-27 08:03:40] ===== done in 217s =====
 [2026-10-27 14:35:36] ===== ME dashboards refresh =====
 [2026-10-27 14:35:37] -- fetch_data.py
+[2026-10-27 15:15:49]    [15:08:49] Attempt 1 failed: (2013, 'Lost connection to MySQL server during query (timed out)')
+[2026-10-27 15:15:55]    TIMED OUT: stopped after 40 minutes (a database or the API did not answer, or the PC slept during the step)
+[2026-10-27 15:15:56] FAILED: fetch_data.py (exit 124). Stopped here; the pages keep their last good data.
