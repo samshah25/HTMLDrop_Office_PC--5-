@@ -768,10 +768,14 @@ def update_page(slug, user, data):
         if title:
             record["title"] = title
         if "placement" in data:
+<<<<<<< HEAD
             hub_up = placement_to_hub(data["placement"])
             if "category" in data and data["category"]:
                 hub_up["category"] = str(data["category"]).strip()[:40]
             record["hub"] = {**hub_of(record), **hub_up}
+=======
+            record["hub"] = {**hub_of(record), **placement_to_hub(data["placement"])}
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
         save_meta(meta)
         return public_record(slug, record, load_json(USERS_FILE))
 
@@ -1972,8 +1976,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.check_not_taken(slug)
                 user, cookie = self.acting_user()
                 hub_choice = placement_to_hub(q["hub"]) if "hub" in q else None
+<<<<<<< HEAD
                 if hub_choice and "category" in q and q["category"]:
                     hub_choice["category"] = q["category"].strip()[:40]
+=======
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
                 rec = publish(slug, q.get("title", "").strip()[:120], user,
                               q.get("filename", ""), data, hub_choice)
                 self.log_message("%s published %s v%s", user["username"], slug, rec["version"])

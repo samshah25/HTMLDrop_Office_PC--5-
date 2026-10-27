@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pan-India Dynamic Test Dashboard</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: gap: 16px; }
+    .title h1 { font-size: 24px; font-weight: 700; color: var(--text); }
+    .title p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+    .badge-refresh {
+      background: var(--success-bg); color: var(--success);
+      padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .card-value { font-size: 26px; font-weight: 700; margin-top: 8px; color: var(--text); }
+    .card-footer { font-size: 12px; color: var(--success); margin-top: 6px; font-weight: 500; }
+    
+    .table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
+    .table-header { padding: 18px 24px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background: #f1f5f9; padding: 12px 24px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+    td { padding: 14px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+    
+    .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; border-radius: 4px; }
+    .bg-green { background: var(--success); }
+    .bg-yellow { background: var(--warning); }
+    .bg-red { background: var(--danger); }
+
+    .instructions { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 18px 24px; font-size: 13.5px; line-height: 1.6; color: #1e3a8a; }
+    .instructions code { background: #dbeafe; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">
+        <h1 id="dashTitle">Pan-India Operations & Sales Tracker</h1>
+        <p>Dynamic Dashboard with Automatic Scheduled Refresh via <code>main.py</code></p>
+      </div>
+      <div>
+        <span class="badge-refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          Last Refreshed: <span id="lastRefresh">Loading...</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-label">Total Revenue</div>
+        <div class="card-value" id="valRevenue">₹0</div>
+        <div class="card-footer">↑ Freshly calculated from records</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Units Sold</div>
+        <div class="card-value" id="valUnits">0</div>
+        <div class="card-footer">Live tracking</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Avg Target Achievement</div>
+        <div class="card-value" id="valAchieve">0%</div>
+        <div class="card-footer" id="valStatus">Calculated across regions</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Active Regions</div>
+        <div class="card-value" id="valRegions">0</div>
+        <div class="card-footer">Pan-India coverage</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">Region Performance Breakdown</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Revenue</th>
+            <th>Units Sold</th>
+            <th>Target</th>
+            <th style="min-width: 160px;">Achievement</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="instructions">
+      <b>💡 How to verify refresh on this project:</b><br>
+      1. <b>Manual Run</b>: Open a command prompt in this folder and run: <code>python main.py</code>. Refresh this page to see the updated figures and timestamp.<br>
+      2. <b>HTML Drop Run Now</b>: In HTML Drop under <i>Dynamic Projects</i>, click <b>Refresh now</b> to trigger Windows Task Scheduler execution.<br>
+      3. <b>Scheduled Refresh</b>: Click <b>Refresh settings</b> in HTML Drop to set daily/hourly execution.
+    </div>
+  </div>
+
+  <script>
+    async function loadData() {
+      try {
+        const resp = await fetch('data.json?t=' + Date.now());
+        if (!resp.ok) throw new Error('Data file not found');
+        const data = await resp.json();
+        renderDashboard(data);
+      } catch (e) {
+        console.warn('Could not load data.json, using fallback data:', e);
+        // Fallback default sample data
+        renderDashboard({
+          last_refresh: new Date().toISOString().replace('T', ' ').substring(0, 19),
+          total_revenue: 3840000,
+          total_units: 7200,
+          avg_achievement: 94.2,
+          records: [
+            { region: "Kolkata", sales: 720000, units: 1400, target: 750000, achievement: 96.0 },
+            { region: "Mumbai", sales: 940000, units: 1800, target: 900000, achievement: 104.4 },
+            { region: "Delhi", sales: 810000, units: 1600, target: 850000, achievement: 95.3 },
+            { region: "Bengaluru", sales: 690000, units: 1250, target: 720000, achievement: 95.8 },
+            { region: "Chennai", sales: 680000, units: 1150, target: 820000, achievement: 82.9 }
+          ]
+        });
+      }
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('lastRefresh').textContent = data.last_refresh || 'Just now';
+      document.getElementById('valRevenue').textContent = '₹' + (data.total_revenue || 0).toLocaleString();
+      document.getElementById('valUnits').textContent = (data.total_units || 0).toLocaleString();
+      document.getElementById('valAchieve').textContent = (data.avg_achievement || 0) + '%';
+      document.getElementById('valRegions').textContent = (data.records || []).length;
+
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = (data.records || []).map(r => {
+        const colorClass = r.achievement >= 100 ? 'bg-green' : (r.achievement >= 85 ? 'bg-yellow' : 'bg-red');
+        return `
+          <tr>
+            <td><b>${r.region}</b></td>
+            <td>₹${r.sales.toLocaleString()}</td>
+            <td>${r.units.toLocaleString()}</td>
+            <td>₹${r.target.toLocaleString()}</td>
+            <td>
+              <div>${r.achievement}%</div>
+              <div class="progress-bar">
+                <div class="progress-fill ${colorClass}" style="width: ${Math.min(r.achievement, 100)}%;"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

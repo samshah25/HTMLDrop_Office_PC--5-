@@ -5,7 +5,11 @@
     "user": "sarvesh",
     "editors": [],
     "link": "http://172.29.65.188:8080/JDA_JDS_Mumbai_Pincode_Dashboard.html",
+<<<<<<< HEAD
     "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\JDA_Mumbai_Dashboard\\JDA_Mumbai_Dashboard_Kit\\JDA_JDS_Mumbai_Pincode_Dashboard.html",
+=======
+    "file": "C:\\Users\\10179794\\Dashboardd\\dash\\JDA_JDS_Mumbai_Pincode_Dashboard.html",
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     "version": 3,
     "created": "2026-10-08T18:39:31",
     "updated": "2026-10-13T14:50:40",
@@ -97,7 +101,11 @@
     "user": "muskan",
     "editors": [],
     "link": "http://172.29.65.188:8095/Renewal_funnel_Apr_Aug_fy27.html",
+<<<<<<< HEAD
     "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\renewal-funnel_apr_aug_fy27\\Renewal_funnel_Apr_Aug_fy27.html",
+=======
+    "file": "C:\\Users\\10179794\\Dashboardd\\dash\\Renewal_funnel_Apr_Aug_fy27.html",
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     "version": 4,
     "created": "2026-10-08T18:39:31",
     "updated": "2026-10-14T12:58:36",
@@ -283,10 +291,18 @@
     "title": "Justdial_callable_representation",
     "user": "priyal",
     "editors": [],
+<<<<<<< HEAD
     "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\Justdial callable representation\\Justdial_callable_representation.html",
     "trash": "C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\data\\trash\\callable-representation-20261016-155911",
     "deleted_at": "2026-10-16T15:59:11",
     "deleted_by": "priyal"
+=======
+    "file": "C:\\Users\\10179794\\Dashboardd\\dash\\Justdial_callable_representation.html",
+    "trash": "C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\data\\trash\\callable-representation-20261016-155911",
+    "deleted_at": "2026-10-16T15:59:11",
+    "deleted_by": "priyal",
+    "disabled": false
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   },
   "jd-india-sales-overview": {
     "title": "JD India sales overview",
@@ -435,9 +451,15 @@
   "ecs-collection-tracker": {
     "title": "ECS Collection Tracker",
     "user": "muskan",
+<<<<<<< HEAD
     "version": 66,
     "created": "2026-10-19T17:51:58",
     "updated": "2026-10-27T16:19:47",
+=======
+    "version": 63,
+    "created": "2026-10-19T17:51:58",
+    "updated": "2026-10-26T13:17:40",
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     "entry": "index.html",
     "hub": {
       "show": true,
@@ -561,9 +583,15 @@
   "apparel-gsc-analysis": {
     "title": "Apparel Search Analysis",
     "user": "priyal",
+<<<<<<< HEAD
     "version": 22,
     "created": "2026-10-26T14:59:01",
     "updated": "2026-10-27T16:28:29",
+=======
+    "version": 13,
+    "created": "2026-10-26T14:59:01",
+    "updated": "2026-10-26T19:12:58",
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -577,6 +605,7 @@
     }
   },
   "sales-call-analysis": {
+<<<<<<< HEAD
     "title": "What distinguishes appointment booked calls from non-appointment calls?",
     "user": "vaibhav",
     "version": 2,
@@ -586,6 +615,17 @@
     "hub": {
       "show": true,
       "scope": "all",
+=======
+    "title": "tme training brief easy",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-26T20:05:02",
+    "updated": "2026-10-26T20:05:02",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
       "reviewed": false,
       "category": "",
       "branch": "",
@@ -593,6 +633,7 @@
       "title": "",
       "legacy_id": ""
     }
+<<<<<<< HEAD
   },
   "delhi-vs-mumbai-valence-score": {
     "title": "Do Mumbai customers respond differently from Delhi customers?",
@@ -647,5 +688,7 @@
       "title": "",
       "legacy_id": ""
     }
+=======
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   }
 }

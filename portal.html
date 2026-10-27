@@ -297,6 +297,7 @@
     .linkbox button .w { display: none; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+<<<<<<< HEAD
 
 /* Section Selection Modal */
 .section-modal {
@@ -450,6 +451,8 @@
   border-top: 1px solid #f1f5f9;
 }
 
+=======
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
 </style>
 </head>
 <body>
@@ -538,6 +541,7 @@
           <div class="body">
             <h2 id="placeLabel">Show on master dashboard?</h2>
             <div class="choices" role="radiogroup" aria-labelledby="placeLabel">
+<<<<<<< HEAD
               <label class="choice">
                 <input type="radio" name="place" value="off" checked>
                 <span class="dot"></span><span class="lbl">No, just host it</span>
@@ -550,6 +554,18 @@
               </label>
             </div>
             <input type="hidden" id="selectedCategory" name="category" value="funnel">
+=======
+              <label class="choice"><input type="radio" name="place" value="off" checked>
+                <span class="dot"></span><span class="lbl">No, just host it</span>
+                <span class="desc">Only people with the link will find it.</span></label>
+              <label class="choice"><input type="radio" name="place" value="general">
+                <span class="dot"></span><span class="lbl">Yes, in General</span>
+                <span class="desc">On the General tab everyone sees first.</span></label>
+              <label class="choice"><input type="radio" name="place" value="all">
+                <span class="dot"></span><span class="lbl">Yes, in All dashboards only</span>
+                <span class="desc">Kept off General; shown under All dashboards.</span></label>
+            </div>
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
           </div>
         </div>
 
@@ -1028,7 +1044,11 @@ function submit() {
 
   if (!chosen) {   // settings-only change to your own page
     $("publish").disabled = true;
+<<<<<<< HEAD
     api("/api/page?" + new URLSearchParams({ slug }), { title: $("title").value.trim(), placement: getPlace(), category: getCategory() })
+=======
+    api("/api/page?" + new URLSearchParams({ slug }), { title: $("title").value.trim(), placement: getPlace() })
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
       .then(res => showDone(res, "saved"))
       .catch(err => err.status === 401 ? loggedOut() : showErr(err.message))
       .finally(() => { $("publish").disabled = false; });
@@ -1042,7 +1062,11 @@ function submit() {
     const qs = new URLSearchParams({
       slug,
       title: $("title").value.trim(),
+<<<<<<< HEAD
       placement: placement === "off" ? "off" : "all", category: getCategory()
+=======
+      placement: placement === "off" ? "off" : placement === "general" ? "general" : "all"
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
     });
     $("publish").disabled = true;
     $("progress").style.display = "block";
@@ -1091,7 +1115,11 @@ function submit() {
     return showErr("Only .html or .htm files are supported for static dashboards. For dynamic projects, upload a .zip file.");
   }
 
+<<<<<<< HEAD
   const qs = new URLSearchParams({ slug, title: $("title").value.trim(), filename: chosen.name, hub: getPlace(), category: getCategory() });
+=======
+  const qs = new URLSearchParams({ slug, title: $("title").value.trim(), filename: chosen.name, hub: getPlace() });
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "/api/upload?" + qs);
   xhr.setRequestHeader("X-HD", "1");
@@ -1671,6 +1699,7 @@ async function load() {
   await load();
 })();
 setInterval(load, 30000);
+<<<<<<< HEAD
 
 const SECTION_NAMES = {
   funnel: "Sales Funnel",
@@ -1815,5 +1844,8 @@ document.addEventListener("change", e => {
   </div>
 </div>
 
+=======
+</script>
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
 </body>
 </html>

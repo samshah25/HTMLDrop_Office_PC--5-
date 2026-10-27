@@ -33,6 +33,7 @@
     "salt": "39559c1443b110ea11992a990255399e",
     "pw_hash": "57c085c403db95b029ce74796289c7c65d2365a85fc3e7dd06d925323325d480",
     "created": "2026-10-09T17:51:52"
+<<<<<<< HEAD
   },
   "priyal": {
     "name": "Priyal",
@@ -40,5 +41,7 @@
     "salt": "1f061bed85bdd6c732ca1dce81bd6383",
     "pw_hash": "a03245863e32b985260d73bed95b065460b3929876a68cf32a66d0c53cfe7842",
     "created": "2026-10-13T19:59:35"
+=======
+>>>>>>> f741deab67fbcd7ba054b5e6d1e2ff8395e98145
   }
 }
