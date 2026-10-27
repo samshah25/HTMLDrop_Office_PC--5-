@@ -433,7 +433,7 @@
     }
   },
   "ecs-collection-tracker": {
-    "title": "ECS Collection Tracker",
+    "title": "ECS Collection tracker",
     "user": "muskan",
     "version": 63,
     "created": "2026-10-19T17:51:58",
@@ -577,15 +577,51 @@
     }
   },
   "sales-call-analysis": {
-    "title": "tme training brief easy",
+    "title": "What distinguishes appointment booked calls from non-appointment calls?",
     "user": "vaibhav",
-    "version": 1,
+    "version": 2,
     "created": "2026-10-26T20:05:02",
-    "updated": "2026-10-26T20:05:02",
+    "updated": "2026-10-27T14:19:24",
     "entry": "index.html",
     "hub": {
-      "show": false,
-      "scope": "general",
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "delhi-vs-mumbai-valence-score": {
+    "title": "Do Mumbai customers respond differently from Delhi customers?",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-27T14:18:37",
+    "updated": "2026-10-27T14:18:37",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "best-practises-doc": {
+    "title": "Best Practises for sales calls",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-27T14:18:58",
+    "updated": "2026-10-27T14:18:58",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
       "reviewed": false,
       "category": "",
       "branch": "",
