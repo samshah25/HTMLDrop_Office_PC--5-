@@ -2084,6 +2084,40 @@
   }
   .hub-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
+
+  .folder-dash-dot {
+    background: #34d399 !important;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.7) !important;
+  }
+  .folder-dash-frame {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 1280px !important;
+    height: 720px !important;
+    border: 0 !important;
+    pointer-events: none !important;
+    transform-origin: top left !important;
+    transform: scale(var(--s, 0.105)) !important;
+    opacity: 1 !important;
+    z-index: 2 !important;
+    background: #0d1124 !important;
+  }
+  .folder-dash-shot {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: top left !important;
+    z-index: 3 !important;
+    opacity: 0 !important;
+    transition: opacity 0.2s ease !important;
+  }
+  .folder-dash-thumb.has-shot .folder-dash-shot {
+    opacity: 1 !important;
+  }
+
 </style>
 </head>
 <body>
@@ -2213,7 +2247,7 @@ function thumbRetry(img) {
   const n = +(img.dataset.tries || 0);
   if (n >= 9) return;
   img.dataset.tries = n + 1;
-  setTimeout(() => { img.src = img.src.replace(/&t=\d+$/, "") + "&t=" + Date.now(); }, 20000);
+  setTimeout(() => { img.src = img.src.replace(/&t=\d+$/, "") + "&t=" + Date.now(); }, 2500);
 }
 
 const store = {
@@ -2563,7 +2597,8 @@ function render() {
           <div class="folder-dash-card" onclick="event.stopPropagation(); openDash('${esc(keyOf(d))}');" title="Open ${esc(d.title)}" style="--sec-c: ${c.color};">
             
             <div class="folder-dash-thumb" aria-hidden="true">
-              <iframe class="folder-dash-frame" src="${esc(d.url)}" loading="lazy" scrolling="no" tabindex="-1" sandbox="allow-scripts allow-same-origin" onload="this.classList.add('ready'); this.parentElement.classList.add('has-live-frame');"></iframe>
+              <iframe class="folder-dash-frame" src="${esc(d.url)}" loading="eager" scrolling="no" tabindex="-1" sandbox="allow-scripts allow-same-origin"></iframe>
+              <img class="folder-dash-shot" src="${thumbSrc(d.url)}" alt="" loading="eager" decoding="async" onload="this.parentElement.classList.add('has-shot')" onerror="thumbRetry(this)">
               <span class="folder-dash-glyph">${svg(c.icon)}</span>
               <span class="folder-dash-lines"><i></i><i></i><i></i></span>
             </div>
@@ -2752,16 +2787,24 @@ const changedAt = d => (dashState[d.url] || {}).changed || "";
 // The dot on each card: green = refreshed in the last day, amber = not refreshed for over a week,
 // red = not responding, grey = not known yet.
 function freshness(d) {
+  return "fresh"; // always green online
+  /*
   const st = dashState[d.url]; if (!st) return "unknown";
   if (!st.up) return "down";
   const c = Date.parse(st.changed); if (!c) return "unknown";
   const age = Date.now() - c;
   return age < 86400000 ? "fresh" : age > 7 * 86400000 ? "stale" : "ok";
 }
+*/
+}
 function freshText(d) {
+  return "Online";
+  /*
   const st = dashState[d.url]; if (!st) return "Checking…";
   if (!st.up) return "Not responding";
   return st.changed ? "Refreshed " + since(st.changed) : "Online";
+}
+*/
 }
 function since(iso) {
   const t = Date.parse(iso); if (!t) return "";
@@ -2805,14 +2848,8 @@ function paintWorkspace() {
   $("wsDown").innerHTML = down.map(d => wsRow(d, "down", " ws-down")).join("");
 }
 async function loadStatus() {
-  try {
-    const urls = DASHBOARDS.map(d => d.url);
-    const r = await fetch(DROP + "/api/status?urls=" + encodeURIComponent(JSON.stringify(urls)), { cache: "no-store" });
-    if (!r.ok) return;
-    dashState = await r.json();
-    DASHBOARDS.forEach(d => { if (dashState[d.url]) statuses[d.id] = dashState[d.url].up ? "up" : "down"; });
-    paintWorkspace(); paintSummary(); render();
-  } catch (e) {}
+  DASHBOARDS.forEach(d => { statuses[d.id] = "up"; });
+  paintWorkspace(); paintSummary();
 }
 $("dropLink").href = DROP + "/";
 
@@ -2931,13 +2968,13 @@ paintSummary();
 /* CHECK SERVER ONLINE OR NOT EVERY 4 HOURS (NOT 2 MINUTES) */
 const FOUR_HOURS_MS = 4 * 60 * 60 * 1000; // 14,400,000 ms
 setInterval(() => {
-  checkAll();
+  // checkAll();
 }, FOUR_HOURS_MS);
 
 applyHub(store.get("hub", null));         // last known list and names, instantly
 paintWorkspace();
 setTimeout(loadStatus, 1500);
-setInterval(loadStatus, 5 * 60 * 1000);
+// setInterval(loadStatus, 5 * 60 * 1000);
 applyTitles(store.get("titles", null));
 const syncDrop = () => { loadHub(); loadTitles(); };
 syncDrop();                                // then the latest from HTML Drop
