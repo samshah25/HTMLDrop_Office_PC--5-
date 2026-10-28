@@ -642,6 +642,56 @@
   </form>
 </dialog>
 
+
+<dialog id="settingsModal" aria-labelledby="settingsModalTitle" style="width:min(520px, calc(100vw - 32px))">
+  <form method="dialog" id="settingsForm" novalidate onsubmit="return false;">
+    <button type="button" class="x" id="settingsClose" onclick="$('settingsModal').close()" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 id="settingsModalTitle">Change settings</h2>
+    <p class="lead" id="settingsModalLead">Update the dashboard's display title, section, link, or master dashboard placement.</p>
+    <div class="derr" id="settingsErr" role="alert"></div>
+
+    <div class="field">
+      <label class="l" for="settingTitle">Dashboard title</label>
+      <input class="input" id="settingTitle" maxlength="120" autocomplete="off" placeholder="e.g. Sales Funnel">
+    </div>
+
+    <div class="field" id="settingLinkField" style="display:none;">
+      <label class="l" for="settingLink">Dashboard URL / Link</label>
+      <input class="input" id="settingLink" type="url" placeholder="http://172.29.65.188:8080/..." autocomplete="off">
+    </div>
+
+    <div class="field" style="margin-top:4px;">
+      <label class="choice" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="settingShowMaster" style="width:18px;height:18px;accent-color:var(--accent);">
+        <span style="font-weight:600;font-size:14px;">Show on Master Dashboard</span>
+      </label>
+    </div>
+
+    <div class="field" id="settingSectionField" style="margin-top:4px;">
+      <label class="l">Section on Master Dashboard</label>
+      <div id="settingSecCard" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--tint);cursor:pointer;" onclick="openSectionModalFromSettings()">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="settingSecIcon" style="width:30px;height:30px;border-radius:6px;display:grid;place-items:center;background:#60a5fa;color:#fff;flex:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </span>
+          <div>
+            <b id="settingSecName" style="font-size:14px;display:block;color:var(--ink);">Sales Performance</b>
+            <span id="settingSecSub" style="font-size:12px;color:var(--muted);display:block;">Click to change section</span>
+          </div>
+        </div>
+        <button type="button" class="btn sm" onclick="event.stopPropagation(); openSectionModalFromSettings()" style="font-size:12.5px;padding:6px 12px;">Change section</button>
+      </div>
+    </div>
+
+    <div class="dacts" style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn" type="button" onclick="$('settingsModal').close()">Cancel</button>
+      <button class="btn primary" id="settingsSaveBtn" type="button" onclick="saveSettingsModal()" style="flex:1;">Save settings</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="refreshModal" aria-labelledby="refreshModalTitle" style="width:min(490px, calc(100vw - 32px))">
   <form method="dialog" id="refreshForm" novalidate>
     <button type="button" class="x" id="refreshClose" aria-label="Close">
@@ -1303,7 +1353,7 @@ function render() {
         <div class="menu">
           <button type="button" onclick="renamePage('${esc(s.slug)}')" title="Change the name shown here. The link stays the same.">Rename</button>
           <button type="button" onclick="toggleDisable('${esc(s.slug)}')" title="${s.disabled ? TIP_ENABLE : TIP_DISABLE}">${s.disabled ? "Enable" : "Disable temporarily"}</button>
-          <button type="button" onclick="prefill('${esc(s.slug)}')">Change settings</button>
+          <button type="button" onclick="openSettingsModal('${esc(s.slug)}')">Change settings</button>
           <button type="button" class="danger" onclick="del('${esc(s.slug)}')" title="${TIP_DELETE}">Delete</button>
         </div>
       </details>
@@ -1331,7 +1381,7 @@ function renderDynamicProjects() {
           <button type="button" onclick="refreshDynamicNow('${esc(p.slug)}')">Refresh now</button>
           <button type="button" onclick="configureDynamicRefresh('${esc(p.slug)}')">Refresh settings</button>
           <button type="button" onclick="renamePage('${esc(p.slug)}', true)">Rename</button>
-          <button type="button" onclick="prefill('${esc(p.slug)}')">Change settings</button>
+          <button type="button" onclick="openSettingsModal('${esc(p.slug)}')">Change settings</button>
           ${p.external ? `
             <input type="file" accept=".zip,application/zip" hidden id="external-zip-${esc(p.slug)}" onchange="changeExternalZip('${esc(p.slug)}',this)">
             <button type="button" onclick="document.getElementById('external-zip-${esc(p.slug)}').click()">Change ZIP</button>
@@ -1706,6 +1756,7 @@ const SECTION_NAMES = {
 let currentCategory = "perf";
 
 function openSectionModal() {
+  if (sectionModalTarget !== "settings") sectionModalTarget = "upload";
   const modal = $("sectionModal");
   if (!modal) return;
   const rad = document.querySelector(`input[name="modalCategory"][value="${currentCategory}"]`);
@@ -1721,12 +1772,17 @@ function closeSectionModal() {
 function confirmSectionChoice() {
   const checked = document.querySelector('input[name="modalCategory"]:checked');
   if (checked) {
-    currentCategory = checked.value;
-    const catInput = $("selectedCategory");
-    if (catInput) catInput.value = currentCategory;
-    const desc = $("sectionSelectedDesc");
-    if (desc) {
-      desc.innerHTML = `Section: <strong style="color: #1e40af; background: #eff6ff; padding: 2px 8px; border-radius: 4px; font-weight:700;">${SECTION_NAMES[currentCategory] || currentCategory}</strong> <a href="#" onclick="openSectionModal(); return false;" style="margin-left: 6px; color: #2563eb; text-decoration: underline; font-weight: 600;">(Change)</a>`;
+    const chosenCat = checked.value;
+    if (sectionModalTarget === "settings") {
+      updateSettingModalSec(chosenCat);
+    } else {
+      currentCategory = chosenCat;
+      const catInput = $("selectedCategory");
+      if (catInput) catInput.value = currentCategory;
+      const desc = $("sectionSelectedDesc");
+      if (desc) {
+        desc.innerHTML = `Section: <strong style="color: #1e40af; background: #eff6ff; padding: 2px 8px; border-radius: 4px; font-weight:700;">${SECTION_NAMES[currentCategory] || currentCategory}</strong> <a href="#" onclick="openSectionModal(); return false;" style="margin-left: 6px; color: #2563eb; text-decoration: underline; font-weight: 600;">(Change)</a>`;
+      }
     }
   }
   closeSectionModal();
@@ -1804,6 +1860,9 @@ async function submitNewSecInline() {
     if (desc) {
       desc.innerHTML = `Section: <strong style="color: #1e40af; background: #eff6ff; padding: 2px 8px; border-radius: 4px; font-weight:700;">${name}</strong> <a href="#" onclick="openSectionModal(); return false;" style="margin-left: 6px; color: #2563eb; text-decoration: underline; font-weight: 600;">(Change)</a>`;
     }
+    if (sectionModalTarget === "settings") {
+      updateSettingModalSec(key);
+    }
     toggleAddSecInline(false);
   } catch(e) {
     alert('Error adding section: ' + e.message);
@@ -1823,6 +1882,182 @@ document.addEventListener("change", e => {
       const desc = $("sectionSelectedDesc");
       if (desc) desc.textContent = "Select which section to place this dashboard in.";
     }
+  }
+});
+
+
+let sectionModalTarget = "upload"; // "upload" or "settings"
+let settingModalSelectedCat = "perf";
+let currentSettingsTargetSlug = null;
+let currentSettingsIsDynamic = false;
+
+function showToastNotification(msg) {
+  let t = $("portalToast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "portalToast";
+    t.style.cssText = "position:fixed;bottom:24px;right:24px;background:#1e293b;color:#f8fafc;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,0.3);z-index:99999;border:1px solid rgba(255,255,255,0.15);transition:opacity 0.25s,transform 0.25s;transform:translateY(10px);opacity:0;pointer-events:none;";
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.transform = "translateY(0)";
+  t.style.opacity = "1";
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transform = "translateY(10px)";
+  }, 3200);
+}
+
+function updateSettingModalSec(cat) {
+  settingModalSelectedCat = cat;
+  const name = SECTION_NAMES[cat] || cat;
+  if ($("settingSecName")) $("settingSecName").textContent = name;
+  const card = document.querySelector(`.section-opt input[value="${cat}"]`);
+  let color = "#818cf8";
+  if (card) {
+    const optCard = card.closest('.section-opt').querySelector('.section-opt-card');
+    if (optCard && optCard.style.getPropertyValue('--c')) {
+      color = optCard.style.getPropertyValue('--c');
+    }
+  }
+  if ($("settingSecIcon")) {
+    $("settingSecIcon").style.background = color;
+  }
+}
+
+function openSectionModalFromSettings() {
+  sectionModalTarget = "settings";
+  const modal = $("sectionModal");
+  if (!modal) return;
+  const rad = document.querySelector(`input[name="modalCategory"][value="${settingModalSelectedCat}"]`);
+  if (rad) rad.checked = true;
+  modal.style.display = "flex";
+}
+
+function openSettingsModal(slug) {
+  let s = sites.find(x => x.slug === slug);
+  let isDyn = false;
+  if (!s && typeof dynamicProjects !== "undefined" && Array.isArray(dynamicProjects)) {
+    s = dynamicProjects.find(x => x.slug === slug);
+    isDyn = true;
+  }
+  if (!s) return;
+
+  currentSettingsTargetSlug = slug;
+  currentSettingsIsDynamic = isDyn;
+
+  $("settingsModalTitle").textContent = `Settings: ${s.title || slug}`;
+  $("settingTitle").value = s.title || "";
+  $("settingsErr").textContent = "";
+
+  const linkField = $("settingLinkField");
+  const linkInput = $("settingLink");
+  const hasLink = Boolean(s.link || s.external_url || (s.external && s.url));
+  if (hasLink) {
+    linkField.style.display = "block";
+    linkInput.value = s.link || s.external_url || s.url || "";
+  } else {
+    linkField.style.display = "none";
+    linkInput.value = "";
+  }
+
+  const isMaster = Boolean(s.show_on_master || (s.placement && s.placement !== "off") || s.hub);
+  $("settingShowMaster").checked = isMaster;
+  $("settingSectionField").style.display = isMaster ? "block" : "none";
+
+  const cat = s.category || (s.hub && s.hub.category) || "perf";
+  updateSettingModalSec(cat);
+
+  $("settingsModal").showModal();
+}
+
+async function saveSettingsModal() {
+  if (!currentSettingsTargetSlug) return;
+  const title = $("settingTitle").value.trim();
+  if (!title) {
+    $("settingsErr").textContent = "Please enter a dashboard title.";
+    return;
+  }
+  const isMaster = $("settingShowMaster").checked;
+  const category = settingModalSelectedCat || "perf";
+  const link = $("settingLink").value.trim();
+
+  const btn = $("settingsSaveBtn");
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+  $("settingsErr").textContent = "";
+
+  try {
+    const payload = {
+      title,
+      placement: isMaster ? "all" : "off",
+      category: isMaster ? category : "other"
+    };
+    if ($("settingLinkField").style.display !== "none" && link) {
+      payload.link = link;
+    }
+
+    const res = await fetch(`/api/page/update?slug=${encodeURIComponent(currentSettingsTargetSlug)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-HD": "1" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to update settings");
+    }
+
+    if (currentSettingsIsDynamic && typeof dynamicProjects !== "undefined") {
+      const p = dynamicProjects.find(x => x.slug === currentSettingsTargetSlug);
+      if (p) {
+        p.title = title;
+        p.category = payload.category;
+        p.show_on_master = isMaster;
+        p.placement = payload.placement;
+        if (payload.link) { p.link = payload.link; p.external_url = payload.link; }
+      }
+      if (typeof renderDynamicProjects === "function") renderDynamicProjects();
+    } else {
+      const s = sites.find(x => x.slug === currentSettingsTargetSlug);
+      if (s) {
+        s.title = title;
+        s.category = payload.category;
+        s.placement = payload.placement;
+        s.show_on_master = isMaster;
+        if (payload.link) s.link = payload.link;
+      }
+      if (typeof render === "function") render();
+    }
+
+    try {
+      await fetch('/api/dashboard/section', {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-HD": "1" },
+        body: JSON.stringify({ slug: currentSettingsTargetSlug, category: payload.category })
+      });
+    } catch (e) {}
+
+    $("settingsModal").close();
+    showToastNotification(`Settings updated for "${title}"`);
+  } catch (err) {
+    $("settingsErr").textContent = err.message || "Failed to save settings";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save settings";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chk = $("settingShowMaster");
+  if (chk) {
+    chk.addEventListener("change", e => {
+      $("settingSectionField").style.display = e.target.checked ? "block" : "none";
+      if (e.target.checked) {
+        openSectionModalFromSettings();
+      }
+    });
   }
 });
 

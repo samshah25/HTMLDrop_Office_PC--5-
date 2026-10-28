@@ -1916,6 +1916,27 @@
     opacity: 0 !important; transition: opacity 0.3s ease !important;
   }
   .folder-dash-thumb.has-shot .folder-dash-shot { opacity: 1 !important; }
+
+  .folder-dash-frame {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 1280px !important;
+    height: 720px !important;
+    border: 0 !important;
+    pointer-events: none !important;
+    transform-origin: top left !important;
+    transform: scale(var(--s, 0.105)) !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+    z-index: 2 !important;
+    background: #0d1124 !important;
+  }
+  .folder-dash-frame.ready,
+  .folder-dash-thumb.has-live-frame .folder-dash-frame {
+    opacity: 1 !important;
+  }
+
   .thumb img.shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
                     object-position: top left; opacity: 0; transition: opacity 0.3s ease; }
   .thumb img.shot.ready { opacity: 1; }
@@ -2411,7 +2432,7 @@ function cardHTML(d) {
   return `<article class="card" data-id="${d.id}" data-category="${d.category}" style="--c:${c.color}">
     <a class="stretch" href="${esc(d.url)}" target="${linkTarget}" data-open="${esc(keyOf(d))}"></a>
     <div class="thumb" id="thumb-${d.id}">
-      <img class="shot" src="${thumbSrc(d.url)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ready'); this.parentElement.classList.add('loaded');" onerror="thumbRetry(this)">
+      <iframe class="shot" src="${esc(d.url)}" loading="lazy" scrolling="no" tabindex="-1" sandbox="allow-scripts allow-same-origin" onload="this.classList.add('ready'); this.parentElement.classList.add('loaded');" style="position:absolute;inset:0;width:1280px;height:720px;border:0;pointer-events:none;transform-origin:top left;transform:scale(var(--s,0.22));z-index:1;background:#0c102a;"></iframe>
       <div class="ph" data-ph-for="${d.id}"><div class="ph-icon" ${glyphStyle}>${svg(c.icon)}</div><div class="ph-label">${esc(d.title)}</div></div>
       
       <div class="acts">
@@ -2542,10 +2563,9 @@ function render() {
           <div class="folder-dash-card" onclick="event.stopPropagation(); openDash('${esc(keyOf(d))}');" title="Open ${esc(d.title)}" style="--sec-c: ${c.color};">
             
             <div class="folder-dash-thumb" aria-hidden="true">
+              <iframe class="folder-dash-frame" src="${esc(d.url)}" loading="lazy" scrolling="no" tabindex="-1" sandbox="allow-scripts allow-same-origin" onload="this.classList.add('ready'); this.parentElement.classList.add('has-live-frame');"></iframe>
               <span class="folder-dash-glyph">${svg(c.icon)}</span>
               <span class="folder-dash-lines"><i></i><i></i><i></i></span>
-              <img class="folder-dash-shot" src="${thumbSrc(d.url)}" alt="" loading="lazy" decoding="async"
-                   onload="this.parentElement.classList.add('has-shot')" onerror="thumbRetry(this)">
             </div>
             <button type="button" class="folder-dash-move" title="Change section" onclick="event.stopPropagation(); openChangeSectionModal('${esc(keyOf(d))}');"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
             <button type="button" class="folder-dash-star" aria-pressed="${isPinned(keyOf(d))}" title="${isPinned(keyOf(d)) ? "Remove from My dashboards" : "Add to My dashboards"}"
