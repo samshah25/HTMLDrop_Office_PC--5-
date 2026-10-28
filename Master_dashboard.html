@@ -3127,7 +3127,13 @@ async function submitSecModalNewSection() {
     color: color,
     icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
   };
-  const list = Object.keys(CATEGORIES).filter(k => k !== "other");
+  try {
+    const custom = JSON.parse(localStorage.getItem("hd_custom_cats") || "{}");
+    custom[key] = { label: name, color };
+    localStorage.setItem("hd_custom_cats", JSON.stringify(custom));
+  } catch (e) {}
+  const list = Object.keys(CATEGORIES).filter(k => k !== "other" && k !== key);
+  list.push(key);
   CAT_ORDER = [...list, "other"];
 
   modalSelectedCat = key;
@@ -3168,6 +3174,26 @@ async function saveChangedSection() {
 }
 
 async function loadCategories() {
+  try {
+    const local = JSON.parse(localStorage.getItem("hd_custom_cats") || "{}");
+    let localChanged = false;
+    for (const [k, v] of Object.entries(local)) {
+      if (!CATEGORIES[k]) {
+        CATEGORIES[k] = {
+          label: v.label || k,
+          color: v.color || "#818cf8",
+          icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
+        };
+        localChanged = true;
+      }
+    }
+    if (localChanged) {
+      const keys = Object.keys(CATEGORIES).filter(k => k !== "other");
+      CAT_ORDER = [...keys, "other"];
+      render();
+    }
+  } catch (e) {}
+
   try {
     const r = await fetch(DROP + "/api/categories", { cache: "no-store" });
     if (!r.ok) return;
@@ -3304,16 +3330,23 @@ async function confirmDeleteMasterSec(key, label) {
     });
     if (!r.ok) {
       const err = await r.json().catch(()=>({}));
-      throw Error(err.error || "Failed to delete section");
+      if (err.error) {
+        alert("Cannot delete section: " + err.error);
+        return;
+      }
     }
   } catch (e) {
-    alert("Error deleting section: " + e.message);
-    return;
+    console.warn("Could not reach backend to delete section:", e.message);
   }
   delete CATEGORIES[key];
   CAT_ORDER = CAT_ORDER.filter(k => k !== key);
   if (activeCat === key) activeCat = "all";
   if (focusedSection === key) focusedSection = null;
+  try {
+    const custom = JSON.parse(localStorage.getItem("hd_custom_cats") || "{}");
+    delete custom[key];
+    localStorage.setItem("hd_custom_cats", JSON.stringify(custom));
+  } catch (e) {}
   render();
   paintWorkspace();
   renderSecDelList();
@@ -3351,7 +3384,13 @@ async function submitMasterNewSection() {
     color: color,
     icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
   };
-  const list = Object.keys(CATEGORIES).filter(k => k !== "other");
+  try {
+    const custom = JSON.parse(localStorage.getItem("hd_custom_cats") || "{}");
+    custom[key] = { label: name, color };
+    localStorage.setItem("hd_custom_cats", JSON.stringify(custom));
+  } catch (e) {}
+  const list = Object.keys(CATEGORIES).filter(k => k !== "other" && k !== key);
+  list.push(key);
   CAT_ORDER = [...list, "other"];
 
   closeMasterSecSettingsModal();
@@ -3382,8 +3421,16 @@ document.addEventListener("keydown", e => {
       <button type="button" class="sec-modal-close" onclick="closeMasterSecSettingsModal()">&times;</button>
     </div>
     
+    <!-- Helpful Guidance Note (HTML Drop Reassignment) -->
+    <div style="display:flex; align-items:flex-start; gap:9px; background:rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.3); border-radius:8px; padding:10px 12px; margin-top:12px; font-size:12.5px; color:#c7d2fe; line-height:1.45;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex:none; margin-top:2px; color:#818cf8;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div>
+        <b>Need to move or assign dashboards?</b> Open <b>HTML Drop</b> (or click the move icon on any dashboard card) to change which section a dashboard belongs to.
+      </div>
+    </div>
+
     <!-- Tab switcher: Add Section / Delete Section -->
-    <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.12); margin-top:14px; gap:8px;">
+    <div style="display:flex; border-bottom:1px solid rgba(255,255,255,0.12); margin-top:10px; gap:8px;">
       <button type="button" id="secTabAddBtn" onclick="switchSecTab('add')" style="padding:8px 16px; font-size:13.5px; font-weight:700; background:none; border:none; border-bottom:2px solid #6366f1; color:#c7d2fe; cursor:pointer;">➕ Add Section</button>
       <button type="button" id="secTabDelBtn" onclick="switchSecTab('del')" style="padding:8px 16px; font-size:13.5px; font-weight:600; background:none; border:none; border-bottom:2px solid transparent; color:rgba(255,255,255,0.6); cursor:pointer;">🗑️ Delete Section</button>
     </div>
@@ -3396,7 +3443,7 @@ document.addEventListener("keydown", e => {
         <input type="text" id="masterNewSecInput" placeholder="e.g. Executive Reports, Client Insights" maxlength="40" style="width:100%;height:38px;padding:0 12px;border:1px solid rgba(255,255,255,0.18);border-radius:8px;background:rgba(255,255,255,0.06);color:#fff;font-size:13.5px;box-sizing:border-box;">
       </div>
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px;">
-        <button type="button" class="author-pill" style="cursor:pointer;padding:8px 16px;font-size:13px;" onclick="closeMasterSecSettingsModal()">Cancel</button>
+        <button type="button" class="btn" style="cursor:pointer; padding:8px 18px; font-size:13px; font-weight:700; background:#334155; color:#ffffff; border:1px solid #475569; border-radius:8px; transition:background .15s;" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'" onclick="closeMasterSecSettingsModal()">Cancel</button>
         <button type="button" class="author-pill" id="masterAddSecBtn" style="cursor:pointer;padding:8px 18px;font-size:13px;background:#6366f1;color:#fff;border-color:#6366f1;font-weight:700;" onclick="submitMasterNewSection()">Create Section</button>
       </div>
     </div>
