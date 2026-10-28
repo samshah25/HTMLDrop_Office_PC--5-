@@ -1767,6 +1767,10 @@ function openSectionModal() {
 function closeSectionModal() {
   const modal = $("sectionModal");
   if (modal) modal.style.display = "none";
+  if (sectionModalTarget === "settings") {
+    const sm = $("settingsModal");
+    if (sm && !sm.open) sm.showModal();
+  }
 }
 
 function confirmSectionChoice() {
@@ -1913,21 +1917,29 @@ function updateSettingModalSec(cat) {
   settingModalSelectedCat = cat;
   const name = SECTION_NAMES[cat] || cat;
   if ($("settingSecName")) $("settingSecName").textContent = name;
-  const card = document.querySelector(`.section-opt input[value="${cat}"]`);
-  let color = "#818cf8";
-  if (card) {
-    const optCard = card.closest('.section-opt').querySelector('.section-opt-card');
-    if (optCard && optCard.style.getPropertyValue('--c')) {
-      color = optCard.style.getPropertyValue('--c');
+  const cardInput = document.querySelector(`.section-opt input[value="${cat}"]`);
+  if (cardInput) {
+    const opt = cardInput.closest('.section-opt');
+    const sub = opt ? opt.querySelector('.section-opt-sub') : null;
+    if (sub && $("settingSecSub")) {
+      $("settingSecSub").textContent = sub.textContent.trim();
     }
-  }
-  if ($("settingSecIcon")) {
-    $("settingSecIcon").style.background = color;
+    const iconSvg = opt ? opt.querySelector('.section-opt-icon svg') : null;
+    const optCard = opt ? opt.querySelector('.section-opt-card') : null;
+    const color = (optCard && optCard.style.getPropertyValue('--c')) ? optCard.style.getPropertyValue('--c').trim() : "#818cf8";
+    if ($("settingSecIcon")) {
+      $("settingSecIcon").style.background = color;
+      if (iconSvg) {
+        $("settingSecIcon").innerHTML = iconSvg.outerHTML;
+      }
+    }
   }
 }
 
 function openSectionModalFromSettings() {
   sectionModalTarget = "settings";
+  const sm = $("settingsModal");
+  if (sm && sm.open) sm.close();
   const modal = $("sectionModal");
   if (!modal) return;
   const rad = document.querySelector(`input[name="modalCategory"][value="${settingModalSelectedCat}"]`);
