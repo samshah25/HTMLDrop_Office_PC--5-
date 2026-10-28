@@ -73,6 +73,8 @@ def add_category(key, label, color):
     CATEGORIES_FILE.write_text(json.dumps(custom, indent=2), encoding="utf-8")
     return custom
 
+
+
 SITES = DATA / "sites"
 HISTORY = DATA / "history"
 TRASH = DATA / "trash"
@@ -1005,6 +1007,54 @@ def load_dynamic_meta():
 
 
 def save_dynamic_meta(meta):
+    save_json(DYNAMIC_META_FILE, meta)
+
+def count_category_dashboards(key):
+    cnt = 0
+    key = str(key or '').strip().lower()
+    try:
+        with lock:
+            if META_FILE.is_file():
+                meta = load_meta()
+                for r in meta.values():
+                    hub = hub_of(r)
+                    cat = str(hub.get('category') or r.get('category') or '').strip().lower()
+                    if cat == key:
+                        cnt += 1
+            if DYNAMIC_META_FILE.is_file():
+                dyn = load_dynamic_meta()
+                for dr in dyn.values():
+                    cat = str(dr.get('category') or '').strip().lower()
+                    if cat == key:
+                        cnt += 1
+    except Exception:
+        pass
+    return cnt
+
+
+def delete_category(key):
+    key = str(key or '').strip().lower()
+    if not key:
+        raise UserError('Section key is required.', 400)
+    if key in DEFAULT_CATEGORIES:
+        raise UserError('Default system sections cannot be deleted.', 400)
+    
+    cnt = count_category_dashboards(key)
+    if cnt > 0:
+        raise UserError(f"Cannot delete section '{key}' because it contains {cnt} dashboard(s). Move them to another section first.", 400)
+    
+    custom = {}
+    if CATEGORIES_FILE.is_file():
+        try:
+            custom = json.loads(CATEGORIES_FILE.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+    if key in custom:
+        del custom[key]
+        CATEGORIES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CATEGORIES_FILE.write_text(json.dumps(custom, indent=2), encoding='utf-8')
+    return custom
+
     save_json(DYNAMIC_META_FILE, meta)
 
 
@@ -2088,6 +2138,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_titles()
             if path == "/api/categories":
                 return self.send_json(load_categories(), cors=True)
+            if path in ("/api/categories/delete", "/api/categories/del"):
+                key = str(q.get("key", [""])[0] or q.get("category", [""])[0]).strip().lower()
+                delete_category(key)
+                return self.send_json({"ok": True, "categories": load_categories()}, cors=True)
             if path == "/api/hub":
                 return self.send_hub()
             if path == "/api/admin/sites":
@@ -2215,8 +2269,18 @@ class Handler(BaseHTTPRequestHandler):
         try:
             # Browsers can't add this header to a cross-site request without our
             # permission, so another site can't make a logged-in user's browser act here.
-            if self.headers.get("X-HD") != "1" and u.path not in ("/api/dashboard/section", "/api/categories/add"):
+            if self.headers.get("X-HD") != "1" and u.path not in ("/api/dashboard/section", "/api/categories/add", "/api/categories/delete", "/api/categories/del"):
                 raise UserError("Missing request header.", 403)
+
+            if u.path in ("/api/categories/delete", "/api/categories/del"):
+                data = self.read_json()
+                key = str(data.get("key") or data.get("category") or "").strip().lower()
+                if not key:
+                    raise UserError("Section key is required.", 400)
+                if key in DEFAULT_CATEGORIES:
+                    raise UserError("Default system sections cannot be deleted.", 400)
+                delete_category(key)
+                return self.send_json({"ok": True, "categories": load_categories()})
 
             if u.path == "/api/categories/add":
                 data = self.read_json()
