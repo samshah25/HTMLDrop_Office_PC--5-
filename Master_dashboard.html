@@ -444,6 +444,8 @@
   .acc-item:has(.acc-trigger[data-cat="ecs"]:hover),   .acc-item:has(.acc-trigger[data-cat="ecs"][aria-expanded="true"])   {border-color:#fbbf24;box-shadow:0 0 16px rgba(251,191,36,.32)}
   .acc-item:has(.acc-trigger[data-cat="other"]:hover), .acc-item:has(.acc-trigger[data-cat="other"][aria-expanded="true"]) {border-color:#94a3b8;box-shadow:0 0 16px rgba(148,163,184,.28)}
 
+  .acc-item[style*="--c"]:has(.acc-trigger:hover), .acc-item[style*="--c"]:has(.acc-trigger[aria-expanded="true"]) {
+    border-color:var(--c);box-shadow:0 0 16px color-mix(in srgb,var(--c) 32%,transparent)}
   .acc-trigger, :root[data-theme="dark"] .acc-trigger{color:#e8ecff;font-weight:600;font-size:13.5px}
   .acc-trigger:hover, :root[data-theme="dark"] .acc-trigger:hover{color:#fff}
   .acc-trigger[aria-expanded="true"], :root[data-theme="dark"] .acc-trigger[aria-expanded="true"]{
@@ -1835,7 +1837,232 @@
       padding: 14px !important;
     }
   }
-  
+
+  /* ================= FOLDERS: UNIFORM SMALL FILE CARDS THAT WRAP ================= */
+  /* Every card is the same size in every section; cards wrap onto new rows instead of
+     being cut off or scrolled sideways, so every dashboard can be clicked from the main page. */
+  .sections-flow { align-items: start !important; }
+  .physical-folder { height: auto !important; }
+  .physical-folder:hover { transform: none !important; }
+  .folder-main-envelope { flex: 1 1 auto !important; min-height: 0 !important; }
+
+  .folder-sheets-pocket {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)) !important;
+    grid-auto-rows: 120px !important;
+    align-content: start !important;
+    gap: 10px !important;
+    padding: 16px 16px 60px !important;
+    overflow: visible !important;
+    min-height: 196px !important;
+  }
+
+  .folder-dash-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 120px !important;
+    flex: none !important;
+    border-radius: 9px !important;
+    background: #121734 !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+  }
+  .folder-dash-card:hover {
+    transform: translateY(-3px) !important;
+    border-color: color-mix(in srgb, var(--sec-c, #818cf8) 70%, rgba(255, 255, 255, 0.3)) !important;
+    box-shadow: 0 10px 20px -6px rgba(0, 0, 0, 0.7), 0 0 14px color-mix(in srgb, var(--sec-c, #818cf8) 35%, transparent) !important;
+  }
+
+  /* the thumbnail: the section's colour and icon, drawn like a small document */
+  .folder-dash-thumb {
+    height: 58px !important;
+    flex: none !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    padding: 0 12px !important;
+    background:
+      radial-gradient(circle at 18% 30%, color-mix(in srgb, var(--sec-c, #6366f1) 45%, transparent) 0%, transparent 60%),
+      linear-gradient(135deg, color-mix(in srgb, var(--sec-c, #6366f1) 26%, #0c1030) 0%, #0a0d24 100%) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--sec-c, #6366f1) 30%, rgba(255, 255, 255, 0.06)) !important;
+  }
+  .folder-dash-glyph {
+    width: 30px !important;
+    height: 30px !important;
+    flex: none !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 8px !important;
+    color: color-mix(in srgb, var(--sec-c, #6366f1) 80%, #ffffff) !important;
+    background: color-mix(in srgb, var(--sec-c, #6366f1) 22%, rgba(0, 0, 0, 0.35)) !important;
+    border: 1px solid color-mix(in srgb, var(--sec-c, #6366f1) 45%, transparent) !important;
+  }
+  .folder-dash-glyph svg { width: 15px !important; height: 15px !important; }
+  .folder-dash-lines { flex: 1 !important; display: flex !important; flex-direction: column !important; gap: 5px !important; }
+  .folder-dash-lines i { display: block !important; height: 4px !important; border-radius: 99px !important;
+                         background: color-mix(in srgb, var(--sec-c, #6366f1) 35%, rgba(255, 255, 255, 0.12)) !important; }
+  .folder-dash-lines i:nth-child(2) { width: 75% !important; }
+  .folder-dash-lines i:nth-child(3) { width: 50% !important; }
+
+  .folder-dash-thumb { height: 66px !important; overflow: hidden !important; }
+  .folder-dash-card { height: 128px !important; }
+  .folder-sheets-pocket { grid-auto-rows: 128px !important; }
+  .folder-dash-shot {
+    position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+    object-fit: cover !important; object-position: top left !important;
+    opacity: 0 !important; transition: opacity 0.3s ease !important;
+  }
+  .folder-dash-thumb.has-shot .folder-dash-shot { opacity: 1 !important; }
+  .thumb img.shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+                    object-position: top left; opacity: 0; transition: opacity 0.3s ease; }
+  .thumb img.shot.ready { opacity: 1; }
+
+  .folder-dash-info { padding: 6px 8px 7px !important; min-height: 0 !important; background: transparent !important; }
+  .folder-dash-title { font-size: 10.5px !important; line-height: 1.25 !important; }
+  .folder-dash-author { font-size: 8.5px !important; max-width: 80px !important; }
+
+
+  /* ================= MY WORKSPACE SIDEBAR ================= */
+  /* The main page is for browsing; the sidebar holds what the main page doesn't show:
+     your pinned dashboards, what you opened recently, what changed, and what's down. */
+  .side .ws h4 { margin-top: 10px !important; }
+  .side .ws h4:first-child { margin-top: 2px !important; }
+  .ws-list { display: flex; flex-direction: column; gap: 2px; }
+  .ws-row { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 9px; text-decoration: none;
+            color: #e8ecff; font-size: 12.5px; font-weight: 600; border: 1px solid transparent; min-width: 0; }
+  .ws-row:hover { background: color-mix(in srgb, var(--c) 14%, rgba(255,255,255,.03)); border-color: color-mix(in srgb, var(--c) 35%, transparent); }
+  .ws-dot { width: 8px; height: 8px; border-radius: 3px; flex: none; background: var(--c); box-shadow: 0 0 8px color-mix(in srgb, var(--c) 60%, transparent); }
+  .ws-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ws-m { flex: none; font-size: 10.5px; font-weight: 600; color: #8b93c9; }
+  .ws-empty { padding: 4px 10px 6px; font-size: 11.5px; line-height: 1.45; color: rgba(255,255,255,.45); }
+  .ws-empty b { color: #fbbf24; font-weight: 700; }
+  .ws-warn { color: #fca5a5 !important; }
+  .ws-down .ws-m { color: #fca5a5; }
+  .ws-drop { width: 100%; justify-content: flex-start; gap: 8px; text-decoration: none; font-size: 12.5px; font-weight: 600; }
+  :root:not([data-theme="dark"]) .ws-row { color: #1f2547; }
+  :root:not([data-theme="dark"]) .ws-empty { color: #6b7096; }
+
+  /* star (pin) and "Updated" badge on the folder cards */
+  .folder-dash-star { position: absolute; top: 4px; right: 4px; z-index: 3; width: 22px; height: 22px; padding: 0;
+                      display: grid; place-items: center; border-radius: 6px; cursor: pointer;
+                      border: 1px solid rgba(255,255,255,.18); background: rgba(8,10,28,.72); color: #cbd5e1;
+                      opacity: 0; transition: opacity .15s ease; }
+  .folder-dash-star svg { width: 13px; height: 13px; }
+  .folder-dash-card:hover .folder-dash-star, .folder-dash-star[aria-pressed="true"], .folder-dash-star:focus-visible { opacity: 1; }
+  .folder-dash-star[aria-pressed="true"] { color: #fbbf24; border-color: rgba(251,191,36,.55); }
+  .folder-dash-dot[data-f] { background: #64748b !important; box-shadow: none !important; }
+  .folder-dash-dot[data-f="fresh"], .folder-dash-dot[data-f="ok"] { background: #10b981 !important; box-shadow: 0 0 5px #10b981 !important; }
+  .folder-dash-dot[data-f="ok"] { opacity: .65; }
+  .folder-dash-dot[data-f="stale"] { background: #fbbf24 !important; box-shadow: 0 0 5px #fbbf24 !important; }
+  .folder-dash-dot[data-f="down"] { background: #f87171 !important; box-shadow: 0 0 6px #f87171 !important; }
+
+  /* ================= CHANGE SECTION BUTTON & MODAL ================= */
+  .folder-dash-move {
+    position: absolute; top: 4px; left: 4px; z-index: 4; width: 22px; height: 22px; padding: 0;
+    display: grid; place-items: center; border-radius: 6px; cursor: pointer;
+    background: rgba(15, 20, 50, 0.85); border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7); opacity: 0; transition: all 0.18s ease;
+    backdrop-filter: blur(4px);
+  }
+  .folder-dash-move svg { width: 12px; height: 12px; }
+  .folder-dash-card:hover .folder-dash-move, .folder-dash-move:focus-visible { opacity: 1; }
+  .folder-dash-move:hover { color: #fff; background: rgba(59, 130, 246, 0.5); border-color: #60a5fa; transform: scale(1.1); }
+
+  .sec-modal-backdrop {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(4, 7, 20, 0.75); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+    animation: secFadeIn 0.2s ease;
+  }
+  @keyframes secFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .sec-modal-card {
+    background: #0f1432; border: 1.5px solid rgba(129, 140, 248, 0.3);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 25px rgba(99, 102, 241, 0.2);
+    border-radius: 14px; width: 100%; max-width: 540px; max-height: 90vh;
+    display: flex; flex-direction: column; overflow: hidden; color: #e8ecff;
+    animation: secSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes secSlideUp { from { transform: translateY(16px) scale(0.97); } to { transform: translateY(0) scale(1); } }
+
+  .sec-modal-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 18px 22px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .sec-modal-title { margin: 0; font-size: 17px; font-weight: 700; color: #fff; }
+  .sec-modal-sub { margin: 4px 0 0; font-size: 12.5px; color: #94a3b8; }
+  .sec-modal-close {
+    background: none; border: none; font-size: 24px; line-height: 1;
+    color: #94a3b8; cursor: pointer; padding: 2px 6px; border-radius: 6px;
+  }
+  .sec-modal-close:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+  .sec-modal-grid {
+    padding: 16px 22px; display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px; overflow-y: auto; max-height: 380px;
+  }
+  @media (max-width: 520px) { .sec-modal-grid { grid-template-columns: 1fr; } }
+
+  .sec-modal-opt {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 9px; background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08); cursor: pointer;
+    transition: all 0.16s ease; user-select: none;
+  }
+  .sec-modal-opt:hover {
+    background: rgba(255, 255, 255, 0.06); border-color: var(--sec-c, #818cf8);
+    transform: translateY(-1px);
+  }
+  .sec-modal-opt.selected {
+    background: color-mix(in srgb, var(--sec-c, #818cf8) 18%, rgba(255, 255, 255, 0.04));
+    border-color: var(--sec-c, #818cf8);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--sec-c, #818cf8) 35%, transparent);
+  }
+  .sec-modal-opt-icon {
+    width: 28px; height: 28px; border-radius: 7px; flex: none;
+    display: grid; place-items: center; color: var(--sec-c, #818cf8);
+    background: color-mix(in srgb, var(--sec-c, #818cf8) 20%, transparent);
+  }
+  .sec-modal-opt-icon svg { width: 15px; height: 15px; }
+  .sec-modal-opt-name { font-size: 13px; font-weight: 600; color: #f1f5f9; flex: 1; min-width: 0; }
+  .sec-modal-opt.selected .sec-modal-opt-name { color: #fff; font-weight: 700; }
+
+  .sec-modal-add-box {
+    padding: 10px 22px 14px; border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+  .sec-modal-add-trigger {
+    display: inline-flex; align-items: center; gap: 6px; background: none; border: none;
+    color: #60a5fa; font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 0;
+  }
+  .sec-modal-add-trigger:hover { text-decoration: underline; color: #93c5fd; }
+  .sec-modal-add-form {
+    display: flex; align-items: center; gap: 8px; margin-top: 6px;
+  }
+  .sec-modal-add-form input {
+    flex: 1; height: 34px; padding: 0 10px; border-radius: 6px;
+    background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff; font-size: 13px; outline: none;
+  }
+  .sec-modal-add-form input:focus { border-color: #60a5fa; box-shadow: 0 0 8px rgba(96, 165, 250, 0.3); }
+
+  .sec-modal-footer {
+    padding: 14px 22px; border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .hub-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(50px);
+    background: #1e293b; color: #fff; font-size: 13.5px; font-weight: 600;
+    padding: 10px 20px; border-radius: 99px; border: 1px solid rgba(96, 165, 250, 0.4);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6), 0 0 15px rgba(96, 165, 250, 0.25);
+    z-index: 10001; pointer-events: none; opacity: 0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hub-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
 </style>
 </head>
 <body>
@@ -1848,84 +2075,27 @@
     <span>Search dashboards</span><kbd>Ctrl K</kbd>
   </button>
 
-  <div class="nav">
-    <h4>Categories</h4>
-    
-    <!-- SLIDING DROPDOWN ACCORDION CATEGORIES -->
-    <div class="accordion-group" id="catAccordion">
-      <!-- General / All -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="all" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
-          <span>All Dashboards</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-all"></div>
-      </div>
+  <div class="nav ws">
+    <h4>My dashboards</h4>
+    <div class="ws-list" id="wsPinned"></div>
 
-      <!-- Location -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="geo" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
-          <span>Location</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-geo"></div>
-      </div>
+    <h4>Recently opened</h4>
+    <div class="ws-list" id="wsRecent"></div>
 
-      <!-- Workforce -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="hr" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2a5 5 0 0 1 6 4.8"/></svg>
-          <span>Workforce</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-hr"></div>
-      </div>
+    <h4>Recently refreshed</h4>
+    <div class="ws-list" id="wsUpdated"></div>
 
-      <!-- Sales Funnel -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="funnel" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8.5V20l-4-2v-5.5z"/></svg>
-          <span>Sales Funnel</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-funnel"></div>
-      </div>
-
-      <!-- Renewals -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="renew" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/></svg>
-          <span>Renewals</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-renew"></div>
-      </div>
-
-      <!-- Collections -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="ecs" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/></svg>
-          <span>Collections</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-ecs"></div>
-      </div>
-
-      <!-- Other -->
-      <div class="acc-item">
-        <button class="acc-trigger" data-cat="other" aria-expanded="false">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
-          <span>Other</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="acc-content" id="sub-other"></div>
-      </div>
+    <div id="wsDownSec" hidden>
+      <h4 class="ws-warn">Not responding</h4>
+      <div class="ws-list" id="wsDown"></div>
     </div>
   </div>
 
   <div class="foot">
+    <a class="sbtn ws-drop" id="dropLink" href="#" target="_blank" rel="noopener" title="Add a new dashboard, or update, rename or remove yours">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <span>Upload / manage dashboards</span>
+    </a>
     <div class="seg" id="seg">
       <button data-target="_blank">New tab</button>
       <button data-target="_self">Same tab</button>
@@ -2012,7 +2182,18 @@ const DROP = new URLSearchParams(location.search).get("drop")
   || (location.protocol.startsWith("http")
        ? (location.port === "8150" ? location.origin : `http://${currentHost}:8150`)
        : "http://localhost:8150");
-const HOST = currentHost;
+const HOST = new URLSearchParams(location.search).get("host") || currentHost;
+
+/* Saved pictures of each dashboard's front page (taken by HTML Drop), instead of loading every
+   dashboard inside its card. Until a picture exists the card shows its icon; it checks again
+   every 20 seconds for up to 3 minutes while HTML Drop takes the picture. */
+const thumbSrc = url => DROP + "/api/thumb?url=" + encodeURIComponent(url);
+function thumbRetry(img) {
+  const n = +(img.dataset.tries || 0);
+  if (n >= 9) return;
+  img.dataset.tries = n + 1;
+  setTimeout(() => { img.src = img.src.replace(/&t=\d+$/, "") + "&t=" + Date.now(); }, 20000);
+}
 
 const DASHBOARDS = [
   // Location (3)
@@ -2052,13 +2233,72 @@ DASHBOARDS.forEach(d => {
 });
 
 const CATEGORIES = {
-  geo:    { label: "Location",     color: "#38bdf8", icon: '<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.3"/>' },
-  hr:     { label: "Workforce",    color: "#a78bfa", icon: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2a5 5 0 0 1 6 4.8"/>' },
-  funnel: { label: "Sales Funnel", color: "#fb7185", icon: '<path d="M3 4h18l-7 8.5V20l-4-2v-5.5z"/>' },
-  renew:  { label: "Renewals",     color: "#34d399", icon: '<path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/>' },
-  ecs:    { label: "Collections",  color: "#fbbf24", icon: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/>' },
-  other:  { label: "Sales Operations & Overview",        color: "#94a3b8", icon: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>' }
+  perf: { label: "Sales Performance", color: "#60a5fa", icon: '<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>' },
+  funnel: { label: "Sales Funnel & Conversion", color: "#fb7185", icon: '<path d="M3 4h18l-7 8.5V20l-4-2v-5.5z"/>' },
+  calls: { label: "TME Calls & Sales Assistance", color: "#f97316", icon: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>' },
+  renew: { label: "Renewals & Retention", color: "#34d399", icon: '<path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/>' },
+  ecs: { label: "ECS & Collections", color: "#fbbf24", icon: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/>' },
+  explore: { label: "Exploratory Insights", color: "#e879f9", icon: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>' },
+  hr: { label: "Workforce", color: "#a78bfa", icon: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2a5 5 0 0 1 6 4.8"/>' },
+  other: { label: "More Dashboards", color: "#94a3b8", icon: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>' }
 };
+const CAT_ORDER = Object.keys(CATEGORIES);
+
+/* WHERE EACH DASHBOARD GOES, AND ITS NAME ON THE MASTER DASHBOARD
+   Keyed by the dashboard's id here, or its HTML Drop link name (the part after /s/ in its link).
+   A dashboard that isn't listed keeps the section chosen when it was uploaded; the old section
+   names still work (Location -> Sales Performance, Sales Operations & Overview -> More Dashboards).
+   A name changed with Rename in HTML Drop still wins over the name here. */
+const PLACE = {
+  "mumbai-pincode": { cat: "perf", title: "Mumbai JDA & JDS: Pincode View" },
+  "kolkata-pincode": { cat: "perf", title: "Kolkata JDA & JDS: Pincode View" },
+  "Pan_india_JDA": { cat: "perf", title: "Pan-India JDA Performance" },
+  "jd-india-sales-overview": { cat: "perf", title: "JD India Sales Overview" },
+  "mumbai-me-team-performance": { cat: "perf", title: "Mumbai ME Team Performance" },
+  "cos-vs-revenue": { cat: "perf", title: "Cost of Sales vs Revenue" },
+  "supercat-funnel": { cat: "funnel", title: "Supercat Funnel (Aug '26)" },
+  "appointment-funnel": { cat: "funnel", title: "Appointment Funnel" },
+  "deal-retouch-timing": { cat: "funnel", title: "Deal Retouch Timing" },
+  "sales-call-analysis": { cat: "calls", title: "Appointment vs Non-Appointment Calls" },
+  "best-practises-doc": { cat: "calls", title: "Sales Call Best Practices" },
+  "renewal-funnel-fy27": { cat: "renew", title: "Renewal Funnel (Apr–Aug FY27)" },
+  "rv-vintage-tracker": { cat: "renew", title: "RV Vintage Tracker" },
+  "chennai-rv-drop": { cat: "renew", title: "Chennai RV Drop (Aug '26)" },
+  "ecs-billed-cleared": { cat: "ecs", title: "ECS Billed vs Cleared (Mar '22–Aug '26)" },
+  "ecs-collection-tracker": { cat: "ecs", title: "ECS Collection Tracker" },
+  "delhi-vs-mumbai-valence-score": { cat: "explore", title: "Mumbai vs Delhi: Customer Response" },
+  "rating-review": { cat: "explore", title: "Rating & Review Explorer" },
+  "3cr-tam": { cat: "explore", title: "JD Callable Representation (3CR)" },
+  "callable-representation": { cat: "explore", title: "JD Callable Representation (3CR)" },
+  "headcount-tenure": { cat: "hr", title: "Employee Headcount & Tenure" }
+};
+const OLD_SECTIONS = { geo: "perf" };
+// The same dashboard can arrive under two ids (built-in "x", HTML Drop "drop-x" / "dynamic-x");
+// both have the same key, so it is shown once.
+function keyOf(d) {
+  const m = /\/s\/([^\/?#]+)/.exec(d.url || "");
+  return m ? decodeURIComponent(m[1]) : String(d.id || "").replace(/^(drop|dynamic)-/, "");
+}
+function place(d) {
+  const userSections = store.get("user_sections", {});
+  const userCat = userSections[keyOf(d)] || userSections[d.id];
+  if (userCat) {
+    d.category = userCat;
+    return;
+  }
+  if (d.category && CATEGORIES[d.category]) {
+    return;
+  }
+  const p = PLACE[keyOf(d)] || PLACE[d.id];
+  if (p) {
+    if (!d.category || d.category === "other") d.category = p.cat;
+    if (!d.title) d.title = p.title;
+    return;
+  }
+  d.category = OLD_SECTIONS[d.category] || d.category;
+  if (!CATEGORIES[d.category]) d.category = "other";
+}
+DASHBOARDS.forEach(place);
 
 const store = {
   get(k, fb) { try { const v = localStorage.getItem("hub:" + k); return v === null ? fb : JSON.parse(v); } catch (e) { return fb; } },
@@ -2103,7 +2343,7 @@ seg.addEventListener("click", e => {
   const b = e.target.closest("button[data-target]"); if (!b) return;
   linkTarget = b.dataset.target; store.set("target", linkTarget); paintSeg(); render();
 });
-function go(d) { if (linkTarget === "_self") location.href = d.url; else window.open(d.url, "_blank", "noopener"); }
+function go(d) { noteOpened(d); if (linkTarget === "_self") location.href = d.url; else window.open(d.url, "_blank", "noopener"); }
 
 /* Scope Tabs */
 const inScope = d => true;
@@ -2144,7 +2384,7 @@ document.querySelectorAll(".acc-trigger").forEach(btn => {
 });
 
 function renderAccordionDrawers() {
-  const cats = ["all", "geo", "hr", "funnel", "renew", "ecs", "other"];
+  const cats = ["all", ...CAT_ORDER];
   cats.forEach(cat => {
     const drawer = $("sub-" + cat);
     if (!drawer) return;
@@ -2166,19 +2406,19 @@ function renderAccordionDrawers() {
 
 
 function cardHTML(d) {
-  const c = catOf(d), starred = isPinned(d.id), st = statuses[d.id] || "up";
+  const c = catOf(d), starred = isPinned(keyOf(d)), st = statuses[d.id] || "up";
   const glyphStyle = `style="background:color-mix(in srgb,${c.color} 14%,transparent);color:${c.color}"`;
   const colorStyle = `style="background:color-mix(in srgb,${c.color} 15%,transparent);color:${c.color};border-color:color-mix(in srgb,${c.color} 35%,transparent)"`;
 
-  return `<article class="card" data-id="${d.id}" data-category="${d.category}">
-    <a class="stretch" href="${esc(d.url)}" target="${linkTarget}"></a>
+  return `<article class="card" data-id="${d.id}" data-category="${d.category}" style="--c:${c.color}">
+    <a class="stretch" href="${esc(d.url)}" target="${linkTarget}" data-open="${esc(keyOf(d))}"></a>
     <div class="thumb" id="thumb-${d.id}">
-      <iframe data-thumb-for="${d.id}" src="${esc(d.url)}" title="${esc(d.title)}" tabindex="-1" loading="eager" sandbox="allow-scripts allow-same-origin" scrolling="no" onload="this.classList.add('ready'); this.parentElement.classList.add('loaded');"></iframe>
+      <img class="shot" src="${thumbSrc(d.url)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ready'); this.parentElement.classList.add('loaded');" onerror="thumbRetry(this)">
       <div class="ph" data-ph-for="${d.id}"><div class="ph-icon" ${glyphStyle}>${svg(c.icon)}</div><div class="ph-label">${esc(d.title)}</div></div>
       
       <div class="acts">
         <button class="ib" data-preview="${d.id}" title="Preview here"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/></svg></button>
-        <button class="ib" data-pin="${d.id}" aria-pressed="${starred}" title="${starred ? "Unpin" : "Pin"}"><svg viewBox="0 0 24 24" fill="${starred ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg></button>
+        <button class="ib" data-pin="${esc(keyOf(d))}" aria-pressed="${starred}" title="${starred ? "Unpin" : "Pin"}"><svg viewBox="0 0 24 24" fill="${starred ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg></button>
       </div>
     </div>
     <div class="body">
@@ -2196,6 +2436,7 @@ function cardHTML(d) {
         </div>
         <div class="sub">
           <span class="status" data-s="${st}" data-status-for="${d.id}"><span class="pulse" data-s="${st}"></span><span class="txt">${STATUS_TEXT[st] || "online"}</span></span>
+          <button type="button" style="margin-left:auto; z-index:2; font-size:11px; padding:2px 8px; border-radius:4px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#94a3b8; cursor:pointer;" onclick="event.preventDefault(); event.stopPropagation(); openChangeSectionModal('${esc(keyOf(d))}');" title="Change section">Change section</button>
         </div>
       </div>
       <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></span>
@@ -2238,7 +2479,7 @@ function render() {
   
   let totalVisible = 0;
   // Order: Sales Funnel (4) & Location (3), Renewals (3) & Sales Operations (3), Collections (2) & Workforce (1)
-  const catOrder = ["funnel", "geo", "renew", "other", "ecs", "hr"];
+  const catOrder = CAT_ORDER;
   
   container.innerHTML = "";
   
@@ -2300,18 +2541,24 @@ function render() {
       const sheetsHTML = catItems.map(d => {
         const authorName = d.author || d.owner || "Sarvesh";
         return `
-          <div class="folder-dash-card" onclick="event.stopPropagation(); window.open('${esc(d.url)}', linkTarget || '_blank', 'noopener');" title="Open ${esc(d.title)} directly" style="--sec-c: ${c.color};">
+          <div class="folder-dash-card" onclick="event.stopPropagation(); openDash('${esc(keyOf(d))}');" title="Open ${esc(d.title)}" style="--sec-c: ${c.color};">
             
-            <div class="folder-dash-preview" id="thumb-${esc(d.id)}">
-              <iframe data-thumb-for="${esc(d.id)}" src="${esc(d.url)}" title="${esc(d.title)}" tabindex="-1" loading="lazy" sandbox="allow-scripts allow-same-origin" scrolling="no"></iframe>
+            <div class="folder-dash-thumb" aria-hidden="true">
+              <span class="folder-dash-glyph">${svg(c.icon)}</span>
+              <span class="folder-dash-lines"><i></i><i></i><i></i></span>
+              <img class="folder-dash-shot" src="${thumbSrc(d.url)}" alt="" loading="lazy" decoding="async"
+                   onload="this.parentElement.classList.add('has-shot')" onerror="thumbRetry(this)">
             </div>
+            <button type="button" class="folder-dash-move" title="Change section" onclick="event.stopPropagation(); openChangeSectionModal('${esc(keyOf(d))}');"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button type="button" class="folder-dash-star" aria-pressed="${isPinned(keyOf(d))}" title="${isPinned(keyOf(d)) ? "Remove from My dashboards" : "Add to My dashboards"}"
+                    onclick="event.stopPropagation(); togglePin('${esc(keyOf(d))}');"><svg viewBox="0 0 24 24" fill="${isPinned(keyOf(d)) ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg></button>
             <div class="folder-dash-info">
-              <h5 class="folder-dash-title" title="${esc(d.title)}">${esc(d.title)}</h5>
+              <h5 class="folder-dash-title" title="${esc(d.title)}">${esc(d.title.replace(/_/g, " "))}</h5>
               <div class="folder-dash-meta">
                 <span class="folder-dash-author" title="Author: ${esc(authorName)}">
                   ${esc(authorName)}
                 </span>
-                <span class="folder-dash-dot" title="Status: Online"></span>
+                <span class="folder-dash-dot" data-f="${freshness(d)}" title="${esc(freshText(d))}"></span>
               </div>
             </div>
           </div>
@@ -2375,7 +2622,9 @@ document.addEventListener("click", e => {
   const prev = e.target.closest("[data-preview]");
   if (prev) { e.preventDefault(); openViewer(prev.dataset.preview); return; }
   const pin = e.target.closest("[data-pin]");
-  if (pin) { e.preventDefault(); const id = pin.dataset.pin; pinned = isPinned(id) ? pinned.filter(x => x !== id) : [...pinned, id]; store.set("pinned", pinned); render(); }
+  if (pin) { e.preventDefault(); togglePin(pin.dataset.pin); return; }
+  const opened = e.target.closest("a[data-open]");
+  if (opened) { const d = byKey(opened.dataset.open); if (d) noteOpened(d); }
 });
 
 const pal = $("pal"), palIn = $("palIn"), palList = $("palList");
@@ -2446,7 +2695,7 @@ function paintSummary() {
   const n = DASHBOARDS.length, up = DASHBOARDS.filter(d => (statuses[d.id] || "up") === "up").length;
   const btn = $("recheck");
   $("kUp").textContent = up;
-  btn.dataset.s = "up";
+  btn.dataset.s = up === n ? "up" : "down";
   btn.title = `Health check every 4 hours: ${up}/${n} online. Click to ping now.`;
 }
 
@@ -2465,7 +2714,7 @@ async function checkOne(d) {
     paintStatus(d.id); 
   }
 }
-async function checkAll() { await Promise.all(DASHBOARDS.map(checkOne)); paintSummary(); }
+async function checkAll() { await loadStatus(); }
 $("recheck").addEventListener("click", checkAll);
 
 function refreshMeta() {
@@ -2473,6 +2722,81 @@ function refreshMeta() {
   $("kTotal").textContent = DASHBOARDS.length;
   paintSummary();
 }
+
+/* ================= MY WORKSPACE =================
+   Pinned dashboards and recently opened ones are remembered in this browser. "Updated recently"
+   and "Not responding" come from HTML Drop (DROP/api/status), which checks each dashboard's
+   server and when its file last changed; checked again every 5 minutes. */
+let recent = store.get("recent", []);           // [{k: key, t: time opened}], newest first
+let dashState = {};                              // url -> {up, changed}
+const byKey = k => DASHBOARDS.find(d => keyOf(d) === k || d.id === k);
+const changedAt = d => (dashState[d.url] || {}).changed || "";
+// The dot on each card: green = refreshed in the last day, amber = not refreshed for over a week,
+// red = not responding, grey = not known yet.
+function freshness(d) {
+  const st = dashState[d.url]; if (!st) return "unknown";
+  if (!st.up) return "down";
+  const c = Date.parse(st.changed); if (!c) return "unknown";
+  const age = Date.now() - c;
+  return age < 86400000 ? "fresh" : age > 7 * 86400000 ? "stale" : "ok";
+}
+function freshText(d) {
+  const st = dashState[d.url]; if (!st) return "Checking…";
+  if (!st.up) return "Not responding";
+  return st.changed ? "Refreshed " + since(st.changed) : "Online";
+}
+function since(iso) {
+  const t = Date.parse(iso); if (!t) return "";
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.round(s / 60) + " min ago";
+  if (s < 86400) return Math.round(s / 3600) + " h ago";
+  const days = Math.round(s / 86400);
+  return days === 1 ? "yesterday" : days + " days ago";
+}
+function openDash(k) { const d = byKey(k); if (d) go(d); }
+function noteOpened(d) {
+  const k = keyOf(d);
+  recent = [{ k, t: Date.now() }, ...recent.filter(r => r.k !== k)].slice(0, 6);
+  store.set("recent", recent);
+  paintWorkspace();
+}
+function togglePin(k) {
+  pinned = isPinned(k) ? pinned.filter(x => x !== k) : [...pinned, k];
+  store.set("pinned", pinned);
+  render(); paintWorkspace();
+}
+function wsRow(d, meta, extra) {
+  return `<a class="ws-row${extra || ""}" href="${esc(d.url)}" target="${linkTarget}" data-open="${esc(keyOf(d))}"
+             style="--c:${catOf(d).color}" title="${esc(d.title)} · ${esc(catOf(d).label)}">
+    <span class="ws-dot"></span><span class="ws-t">${esc(d.title)}</span>${meta ? `<span class="ws-m">${esc(meta)}</span>` : ""}</a>`;
+}
+function paintWorkspace() {
+  const pins = DASHBOARDS.filter(d => isPinned(keyOf(d)));
+  $("wsPinned").innerHTML = pins.length ? pins.map(d => wsRow(d)).join("")
+    : `<div class="ws-empty">Hover a dashboard and click its <b>☆</b> to keep it here.</div>`;
+  const rec = recent.map(r => ({ d: byKey(r.k), t: r.t })).filter(r => r.d);
+  $("wsRecent").innerHTML = rec.length ? rec.map(r => wsRow(r.d, since(new Date(r.t).toISOString()))).join("")
+    : `<div class="ws-empty">Dashboards you open will show up here.</div>`;
+  const upd = DASHBOARDS.filter(d => changedAt(d) && Date.now() - Date.parse(changedAt(d)) < 7 * 86400000)
+    .sort((a, b) => Date.parse(changedAt(b)) - Date.parse(changedAt(a))).slice(0, 6);
+  $("wsUpdated").innerHTML = upd.length ? upd.map(d => wsRow(d, since(changedAt(d)))).join("")
+    : `<div class="ws-empty">${Object.keys(dashState).length ? "Nothing changed in the last 7 days." : "Checking…"}</div>`;
+  const down = DASHBOARDS.filter(d => dashState[d.url] && dashState[d.url].up === false);
+  $("wsDownSec").hidden = !down.length;
+  $("wsDown").innerHTML = down.map(d => wsRow(d, "down", " ws-down")).join("");
+}
+async function loadStatus() {
+  try {
+    const urls = DASHBOARDS.map(d => d.url);
+    const r = await fetch(DROP + "/api/status?urls=" + encodeURIComponent(JSON.stringify(urls)), { cache: "no-store" });
+    if (!r.ok) return;
+    dashState = await r.json();
+    DASHBOARDS.forEach(d => { if (dashState[d.url]) statuses[d.id] = dashState[d.url].up ? "up" : "down"; });
+    paintWorkspace(); paintSummary(); render();
+  } catch (e) {}
+}
+$("dropLink").href = DROP + "/";
 
 /* UPLOADED PAGES FROM HTML DROP
    Pages published in HTML Drop with "Show on master dashboard" (or added later from its menu)
@@ -2492,13 +2816,14 @@ function applyHub(items) {
   items.forEach(it => {
     if (!it || !it.id) return;
     if (it.hidden) { hidden.add(it.id); return; }
+    if (keyOf(it) === "master-dashboard") return;   // this page itself, if uploaded to HTML Drop
     if (!it.url) return;
-    const own = STATIC.find(d => d.id === it.id);
+    const own = STATIC.find(d => d.id === it.id || keyOf(d) === keyOf(it));
     if (own) {
       if (it.title) own.title = it.title;
       if (it.url) own.url = it.url;
       if (it.category) own.category = it.category;
-    } else {
+    } else if (!dynamicItems.some(x => keyOf(x) === keyOf(it))) {
       dynamicItems.push({
         id: it.id,
         url: it.url,
@@ -2511,6 +2836,7 @@ function applyHub(items) {
     }
   });
   const next = STATIC.filter(d => !hidden.has(d.id)).concat(dynamicItems);
+  next.forEach(place);
   const sig = hubSigOf(next);
   if (sig !== hubSig) {
     hubSig = sig;
@@ -2591,6 +2917,9 @@ setInterval(() => {
 }, FOUR_HOURS_MS);
 
 applyHub(store.get("hub", null));         // last known list and names, instantly
+paintWorkspace();
+setTimeout(loadStatus, 1500);
+setInterval(loadStatus, 5 * 60 * 1000);
 applyTitles(store.get("titles", null));
 const syncDrop = () => { loadHub(); loadTitles(); };
 syncDrop();                                // then the latest from HTML Drop
@@ -2599,6 +2928,199 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) sync
 
 const deep = location.hash.slice(1);
 if (deep && byId(deep)) openViewer(deep);
+</script>
+
+
+<!-- CHANGE SECTION MODAL -->
+<div class="sec-modal-backdrop" id="secModalBackdrop" style="display:none;" onclick="closeChangeSectionModal()">
+  <div class="sec-modal-card" onclick="event.stopPropagation()">
+    <div class="sec-modal-header">
+      <div>
+        <h3 class="sec-modal-title" id="secModalTitle">Change Section</h3>
+        <p class="sec-modal-sub" id="secModalSub">Choose which section this dashboard belongs to</p>
+      </div>
+      <button type="button" class="sec-modal-close" onclick="closeChangeSectionModal()">&times;</button>
+    </div>
+    
+    <div class="sec-modal-grid" id="secModalGrid"></div>
+
+    <div class="sec-modal-add-box">
+      <button type="button" class="sec-modal-add-trigger" id="secModalAddTrigger" onclick="toggleSecModalAdd(true)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+        <span>+ Add new section</span>
+      </button>
+      <div class="sec-modal-add-form" id="secModalAddForm" style="display:none;">
+        <input type="text" id="secModalNewName" placeholder="New section name (e.g. Client Insights)" maxlength="40">
+        <button type="button" class="btn primary sm" onclick="submitSecModalNewSection()" style="height:34px; padding:0 12px; font-size:12.5px;">Create & Select</button>
+        <button type="button" class="btn sm" onclick="toggleSecModalAdd(false)" style="height:34px; padding:0 10px; font-size:12.5px;">Cancel</button>
+      </div>
+    </div>
+
+    <div class="sec-modal-footer">
+      <button type="button" class="btn" onclick="closeChangeSectionModal()">Cancel</button>
+      <button type="button" class="btn primary" id="secModalSaveBtn" onclick="saveChangedSection()">Save & Move</button>
+    </div>
+  </div>
+</div>
+<div id="hubToast" class="hub-toast"></div>
+
+<script>
+let modalTargetKey = null;
+let modalSelectedCat = null;
+const CAT_COLORS = ["#38bdf8", "#818cf8", "#34d399", "#fbbf24", "#fb7185", "#e879f9", "#2dd4bf", "#f59e0b", "#a855f7"];
+
+function showToast(msg) {
+  const t = $("hubToast");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+function openChangeSectionModal(key) {
+  const d = byKey(key);
+  if (!d) return;
+  modalTargetKey = key;
+  modalSelectedCat = d.category || "perf";
+
+  $("secModalTitle").textContent = `Move "${d.title.replace(/_/g, ' ')}"`;
+  const currLabel = (CATEGORIES[d.category] || {}).label || d.category;
+  $("secModalSub").innerHTML = `Current section: <strong style="color:var(--sec-c, #818cf8);">${esc(currLabel)}</strong>`;
+
+  renderSecModalGrid();
+  toggleSecModalAdd(false);
+  $("secModalBackdrop").style.display = "flex";
+}
+
+function closeChangeSectionModal() {
+  $("secModalBackdrop").style.display = "none";
+  modalTargetKey = null;
+}
+
+function renderSecModalGrid() {
+  const grid = $("secModalGrid");
+  if (!grid) return;
+  grid.innerHTML = CAT_ORDER.map(cat => {
+    const c = CATEGORIES[cat] || { label: cat, color: "#818cf8", icon: "" };
+    const sel = cat === modalSelectedCat;
+    return `
+      <div class="sec-modal-opt${sel ? ' selected' : ''}" style="--sec-c:${c.color};" onclick="selectSecModalCat('${cat}')">
+        <span class="sec-modal-opt-icon">${svg(c.icon)}</span>
+        <span class="sec-modal-opt-name">${esc(c.label)}</span>
+        ${sel ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--sec-c);flex:none;"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+    `;
+  }).join("");
+}
+
+function selectSecModalCat(cat) {
+  modalSelectedCat = cat;
+  renderSecModalGrid();
+}
+
+function toggleSecModalAdd(show) {
+  const form = $("secModalAddForm");
+  const trig = $("secModalAddTrigger");
+  if (form) form.style.display = show ? "flex" : "none";
+  if (trig) trig.style.display = show ? "none" : "inline-flex";
+  if (show && $("secModalNewName")) {
+    $("secModalNewName").value = "";
+    setTimeout(() => $("secModalNewName").focus(), 40);
+  }
+}
+
+async function submitSecModalNewSection() {
+  const inp = $("secModalNewName");
+  const name = inp ? inp.value.trim() : "";
+  if (!name) { alert("Please type a section name."); return; }
+  const key = name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-|-$/g, '') || ('cat-' + Date.now());
+  const color = CAT_COLORS[Math.abs(key.split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % CAT_COLORS.length];
+
+  try {
+    const r = await fetch(DROP + "/api/categories/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-HD": "1" },
+      body: JSON.stringify({ key, label: name, color })
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(()=>({}));
+      throw Error(err.error || "Failed to add section");
+    }
+  } catch (e) {
+    console.warn("Could not save section to server, keeping locally:", e.message);
+  }
+
+  CATEGORIES[key] = {
+    label: name,
+    color: color,
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
+  };
+  const list = Object.keys(CATEGORIES).filter(k => k !== "other");
+  CAT_ORDER = [...list, "other"];
+
+  modalSelectedCat = key;
+  renderSecModalGrid();
+  toggleSecModalAdd(false);
+}
+
+async function saveChangedSection() {
+  if (!modalTargetKey || !modalSelectedCat) return;
+  const d = byKey(modalTargetKey);
+  if (!d) return;
+
+  const oldCat = d.category;
+  const newCat = modalSelectedCat;
+  d.category = newCat;
+
+  const userSections = store.get("user_sections", {});
+  userSections[keyOf(d)] = newCat;
+  userSections[d.id] = newCat;
+  store.set("user_sections", userSections);
+
+  try {
+    await fetch(DROP + "/api/dashboard/section", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-HD": "1" },
+      body: JSON.stringify({ slug: keyOf(d), id: d.id, category: newCat })
+    });
+  } catch (e) {
+    console.warn("Could not sync section to server:", e.message);
+  }
+
+  closeChangeSectionModal();
+  render();
+  paintWorkspace();
+
+  const newLabel = (CATEGORIES[newCat] || {}).label || newCat;
+  showToast(`Moved "${d.title.replace(/_/g, ' ')}" to ${newLabel}`);
+}
+
+async function loadCategories() {
+  try {
+    const r = await fetch(DROP + "/api/categories", { cache: "no-store" });
+    if (!r.ok) return;
+    const data = await r.json();
+    let changed = false;
+    for (const [k, v] of Object.entries(data)) {
+      if (!CATEGORIES[k]) {
+        CATEGORIES[k] = {
+          label: v.label || k,
+          color: v.color || "#818cf8",
+          icon: v.icon || '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
+        };
+        changed = true;
+      }
+    }
+    if (changed) {
+      const keys = Object.keys(CATEGORIES).filter(k => k !== "other");
+      CAT_ORDER = [...keys, "other"];
+      render();
+    }
+  } catch (e) {}
+}
+
+setTimeout(loadCategories, 200);
 </script>
 
 </body>

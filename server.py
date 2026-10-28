@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """HTML Drop - a self-service LAN hosting portal for HTML reports.
 
@@ -36,6 +37,42 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
+
+CATEGORIES_FILE = DATA / "categories.json"
+
+DEFAULT_CATEGORIES = {
+    "perf": {"label": "Sales Performance", "color": "#60a5fa"},
+    "funnel": {"label": "Sales Funnel & Conversion", "color": "#fb7185"},
+    "calls": {"label": "TME Calls & Sales Assistance", "color": "#f97316"},
+    "renew": {"label": "Renewals & Retention", "color": "#34d399"},
+    "ecs": {"label": "ECS & Collections", "color": "#fbbf24"},
+    "explore": {"label": "Exploratory Insights", "color": "#e879f9"},
+    "hr": {"label": "Workforce", "color": "#a78bfa"},
+    "other": {"label": "More Dashboards", "color": "#94a3b8"},
+}
+
+def load_categories():
+    cats = dict(DEFAULT_CATEGORIES)
+    if CATEGORIES_FILE.is_file():
+        try:
+            custom = json.loads(CATEGORIES_FILE.read_text(encoding="utf-8"))
+            cats.update(custom)
+        except Exception:
+            pass
+    return cats
+
+def add_category(key, label, color):
+    custom = {}
+    if CATEGORIES_FILE.is_file():
+        try:
+            custom = json.loads(CATEGORIES_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    custom[key] = {"label": label, "color": color}
+    CATEGORIES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    CATEGORIES_FILE.write_text(json.dumps(custom, indent=2), encoding="utf-8")
+    return custom
+
 SITES = DATA / "sites"
 HISTORY = DATA / "history"
 TRASH = DATA / "trash"
@@ -399,8 +436,6 @@ def get_managed(meta, slug, user):
     record = meta.get(slug)
     if not record or record.get("deleted"):
         raise UserError("No such page.", 404)
-    if record.get("link") and user["role"] != "admin":
-        raise UserError("This dashboard runs on its own server; HTML Drop only links to it.", 403)
     if not can_manage(user, record):
         raise UserError("Only the page's owner or an admin can change it.", 403)
     return record
@@ -765,17 +800,37 @@ def update_page(slug, user, data):
     """Change a page's title or master dashboard placement without a new file."""
     with lock:
         meta = load_meta()
-        record = get_managed(meta, slug, user)
-        title = str(data.get("title", "")).strip()[:120]
-        if title:
-            record["title"] = title
-        if "placement" in data:
-            hub_up = placement_to_hub(data["placement"])
+        if slug in meta and not meta[slug].get("deleted"):
+            record = get_managed(meta, slug, user)
+            title = str(data.get("title", "")).strip()[:120]
+            if title:
+                record["title"] = title
+            if "placement" in data:
+                hub_up = placement_to_hub(data["placement"])
+                if "category" in data and data["category"]:
+                    hub_up["category"] = str(data["category"]).strip()[:40]
+                record["hub"] = {**hub_of(record), **hub_up}
+            save_meta(meta)
+            return public_record(slug, record, load_json(USERS_FILE))
+            
+        # Also check dynamic meta
+        dyn_meta = load_dynamic_meta()
+        if slug in dyn_meta and not dyn_meta[slug].get("deleted"):
+            drec = dyn_meta[slug]
+            if not dynamic_owner_allowed(user, drec):
+                raise UserError("Only the page's owner or an admin can change it.", 403)
+            title = str(data.get("title", "")).strip()[:120]
+            if title:
+                drec["title"] = title
+            if "placement" in data:
+                drec["show_on_master"] = (data["placement"] != "off")
+                drec["master_scope"] = data["placement"] if data["placement"] in ("general", "all") else "all"
             if "category" in data and data["category"]:
-                hub_up["category"] = str(data["category"]).strip()[:40]
-            record["hub"] = {**hub_of(record), **hub_up}
-        save_meta(meta)
-        return public_record(slug, record, load_json(USERS_FILE))
+                drec["category"] = str(data["category"]).strip()[:40]
+            save_dynamic_meta(dyn_meta)
+            return dynamic_public(drec, include_path=user.get("role") == "admin")
+            
+        raise UserError("No such page.", 404)
 
 
 def rename_page(slug, user, title):
@@ -1585,6 +1640,163 @@ def delete_refresh_task(slug, rec=None, is_external=False):
                                    capture_output=True, text=True, timeout=15, check=False)
 
 
+# ---------------------------------------------------------------- dashboard snapshots
+# The master dashboard shows a picture of each dashboard's front page instead of loading the
+# whole dashboard in every card. HTML Drop takes the pictures with the PC's Edge or Chrome
+# (one at a time, in the background), keeps them in data/thumbs/ and retakes them every 6 hours.
+
+THUMBS = DATA / "thumbs"
+THUMB_MAX_AGE = 6 * 3600
+THUMB_JOBS = []                  # urls waiting for a picture, oldest first
+THUMB_CV = threading.Condition()
+BROWSERS = [r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"]
+
+
+def thumb_file(url):
+    return THUMBS / (hashlib.sha1(url.encode("utf-8")).hexdigest()[:20] + ".png")
+
+
+def thumb_url_allowed(url, request_host):
+    """Only pictures of dashboards on this PC or the office dashboard PC, never other sites."""
+    u = urlparse(url)
+    if u.scheme not in ("http", "https") or not u.hostname:
+        return False
+    allowed = {"127.0.0.1", "localhost", EXISTING_HOST, request_host.split(":")[0].lower()}
+    try:
+        allowed.add(socket.gethostbyname(socket.gethostname()))
+    except OSError:
+        pass
+    return u.hostname.lower() in allowed
+
+
+def queue_thumb(url):
+    with THUMB_CV:
+        if url not in THUMB_JOBS:
+            THUMB_JOBS.append(url)
+            THUMB_CV.notify()
+
+
+THUMB_CHECKED = {}               # url -> when we last asked whether its dashboard changed
+
+
+def page_changed_at(url):
+    """When the dashboard behind url last changed (unix time), or None if unknown.
+    HTML Drop's own pages: their last upload / Replace / refresh. Dashboards on their own
+    server: the Last-Modified time that server reports (a HEAD request, nothing downloaded)."""
+    m = re.match(r"^/s/([^/]+)/", urlparse(url).path)
+    if m:
+        record = load_meta().get(unquote(m.group(1)))
+        if record and record.get("updated"):
+            try:
+                return datetime.fromisoformat(record["updated"]).timestamp()
+            except ValueError:
+                return None
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=5) as resp:
+            stamp = resp.headers.get("Last-Modified")
+        if stamp:
+            from email.utils import parsedate_to_datetime
+            return parsedate_to_datetime(stamp).timestamp()
+    except Exception:
+        pass
+    return None
+
+
+STATUS_CACHE = {}                # url -> (checked at, {"up": bool, "changed": iso or ""})
+
+
+def dashboard_status(url):
+    """Is the dashboard answering, and when did it last change? HTML Drop's own pages are
+    looked up directly; other dashboards get a HEAD request (nothing downloaded).
+    Remembered for 2 minutes so the dashboard servers aren't asked on every page load."""
+    hit = STATUS_CACHE.get(url)
+    if hit and time.time() - hit[0] < 120:
+        return hit[1]
+    m = re.match(r"^/s/([^/]+)/", urlparse(url).path)
+    slug = unquote(m.group(1)) if m else ""
+    record = load_meta().get(slug) if m else None
+    project = load_dynamic_meta().get(slug) if m and not record else None
+    if record and not record.get("link"):
+        result = {"up": not record.get("disabled") and not record.get("deleted"),
+                  "changed": record.get("updated", "")}
+    elif project:
+        result = {"up": not project.get("disabled") and not project.get("deleted"),
+                  "changed": project.get("updated", "")}
+    else:
+        result = {"up": False, "changed": ""}
+        try:
+            try:
+                resp = urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=4)
+            except urllib.error.HTTPError as e:
+                if e.code not in (405, 501):  # this server can't answer HEAD: ask for the first byte instead
+                    raise
+                resp = urllib.request.urlopen(urllib.request.Request(url, headers={"Range": "bytes=0-0"}), timeout=4)
+            with resp:
+                result["up"] = resp.status < 400
+                stamp = resp.headers.get("Last-Modified")
+            if stamp:
+                from email.utils import parsedate_to_datetime
+                result["changed"] = parsedate_to_datetime(stamp).astimezone().replace(tzinfo=None).isoformat(timespec="seconds")
+        except Exception:
+            pass
+    STATUS_CACHE[url] = (time.time(), result)
+    return result
+
+
+def check_thumb(url, taken_at):
+    """Retake the picture if its dashboard changed after the picture was taken."""
+    changed = page_changed_at(url)
+    if changed and changed > taken_at:
+        queue_thumb(url)
+
+
+def thumb_worker():
+    browser = next((b for b in BROWSERS if os.path.isfile(b)), None)
+    while True:
+        with THUMB_CV:
+            while not THUMB_JOBS:
+                THUMB_CV.wait()
+            url = THUMB_JOBS[0]
+        out = thumb_file(url)
+        try:
+            if browser:
+                THUMBS.mkdir(parents=True, exist_ok=True)
+                tmp = out.with_name(out.stem + ".new.png")
+                tmp.unlink(missing_ok=True)
+                profile = THUMBS / ".browser" / secrets.token_hex(4)  # its own profile: runs can't collide
+                # A 1280x800 page at half size: a sharp 640x400 picture of the dashboard's top.
+                subprocess.Popen([browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--mute-audio",
+                                  "--no-first-run", "--window-size=1280,800", "--force-device-scale-factor=0.5",
+                                  "--virtual-time-budget=15000", f"--user-data-dir={profile}",
+                                  f"--screenshot={tmp}", url],
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
+                # msedge.exe hands the work to a background browser and returns at once, so wait
+                # for the picture itself: it exists and has stopped growing.
+                deadline, last = time.time() + 90, -1
+                while time.time() < deadline:
+                    time.sleep(1)
+                    size = tmp.stat().st_size if tmp.is_file() else -1
+                    if size > 2000 and size == last:
+                        break
+                    last = size
+                time.sleep(2)  # let the browser close before its profile is removed
+                if tmp.is_file() and tmp.stat().st_size > 2000:
+                    os.replace(tmp, out)
+                else:
+                    tmp.unlink(missing_ok=True)
+                shutil.rmtree(profile, ignore_errors=True)
+        except Exception:
+            traceback.print_exc()
+        finally:
+            with THUMB_CV:
+                if url in THUMB_JOBS:
+                    THUMB_JOBS.remove(url)
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "HTMLDrop/2.0"
 
@@ -1599,6 +1811,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-cache")
         if cors:
             self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "*")
         for k, v in headers:
             self.send_header(k, v)
         self.end_headers()
@@ -1689,6 +1903,14 @@ class Handler(BaseHTTPRequestHandler):
         return self.rfile.read(length)
 
     # --- routes
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "*")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.end_headers()
+
     def do_GET(self):
         path = unquote(urlparse(self.path).path)
         try:
@@ -1809,10 +2031,44 @@ class Handler(BaseHTTPRequestHandler):
                 log_path = DYNAMIC_LOG_ROOT / slug / "runtime.log"
                 content = log_path.read_text(encoding="utf-8", errors="replace")[-20000:] if log_path.exists() else "No logs yet."
                 return self.send_json({"slug": slug, "log": content})
+            if path == "/api/status":
+                # For the master dashboard's sidebar: which dashboards answer, and when each changed.
+                try:
+                    urls = json.loads(parse_qs(urlparse(self.path).query).get("urls", ["[]"])[0])[:200]
+                except ValueError:
+                    raise UserError("Bad list of links.")
+                host = self.headers.get("Host") or ""
+                urls = [u for u in urls if isinstance(u, str) and thumb_url_allowed(u, host)]
+                results = {}
+                workers = [threading.Thread(target=lambda u=u: results.__setitem__(u, dashboard_status(u)))
+                           for u in dict.fromkeys(urls)]
+                for t in workers:
+                    t.start()
+                for t in workers:
+                    t.join(6)
+                return self.send_json(results, cors=True)
+            if path == "/api/thumb":
+                # A saved picture of a dashboard's front page; 404 (and a picture is queued) if
+                # there is none yet, so the card shows its icon until the picture is ready.
+                url = parse_qs(urlparse(self.path).query).get("url", [""])[0]
+                if not thumb_url_allowed(url, self.headers.get("Host") or ""):
+                    raise UserError("Not a dashboard on this network.", 400)
+                f = thumb_file(url)
+                if f.is_file():
+                    taken = f.stat().st_mtime
+                    if time.time() - taken > THUMB_MAX_AGE:
+                        queue_thumb(url)
+                    elif time.time() - THUMB_CHECKED.get(url, 0) > 60:
+                        # Changed since the picture? Checked in the background, at most once a minute.
+                        THUMB_CHECKED[url] = time.time()
+                        threading.Thread(target=check_thumb, args=(url, taken), daemon=True).start()
+                    return self.send_body(f.read_bytes(), "image/png", cors=True)
+                queue_thumb(url)
+                return self.send_json({"error": "No picture yet."}, 404, cors=True)
             if path == "/api/titles":
                 return self.send_titles()
             if path == "/api/categories":
-                return self.send_json(CONFIG.get("hub_categories", DEFAULT_HUB_CATEGORIES))
+                return self.send_json(load_categories(), cors=True)
             if path == "/api/hub":
                 return self.send_hub()
             if path == "/api/admin/sites":
@@ -1940,8 +2196,66 @@ class Handler(BaseHTTPRequestHandler):
         try:
             # Browsers can't add this header to a cross-site request without our
             # permission, so another site can't make a logged-in user's browser act here.
-            if self.headers.get("X-HD") != "1":
+            if self.headers.get("X-HD") != "1" and u.path not in ("/api/dashboard/section", "/api/categories/add"):
                 raise UserError("Missing request header.", 403)
+
+            if u.path == "/api/categories/add":
+                data = self.read_json()
+                label = str(data.get("label") or data.get("name") or "").strip()[:60]
+                if not label:
+                    raise UserError("Section name is required.", 400)
+                key = str(data.get("key") or "").strip().lower()
+                if not key:
+                    key = re.sub(r"[^a-z0-9_-]", "", label.lower().replace(" ", "-"))[:30]
+                if not key:
+                    key = f"cat-{int(time.time())}"
+                color = str(data.get("color") or "").strip()[:20] or "#818cf8"
+                add_category(key, label, color)
+                return self.send_json({"ok": True, "key": key, "label": label, "color": color}, cors=True)
+
+            if u.path == "/api/dashboard/section":
+                data = self.read_json()
+                raw_slug = str(data.get("slug") or data.get("id") or "").strip()
+                slug = raw_slug
+                if slug.startswith("drop-"):
+                    slug = slug[5:]
+                if slug.startswith("dynamic-"):
+                    slug = slug[8:]
+                cat = str(data.get("category") or data.get("section") or "").strip()[:40]
+                if not slug or not cat:
+                    raise UserError("Missing slug or category.", 400)
+                
+                updated = False
+                with lock:
+                    meta = load_meta()
+                    rec_key = None
+                    if slug in meta:
+                        rec_key = slug
+                    elif raw_slug in meta:
+                        rec_key = raw_slug
+                    else:
+                        for k, r in meta.items():
+                            if r.get("hub", {}).get("legacy_id") in (raw_slug, slug) or k.lower() == slug.lower():
+                                rec_key = k
+                                break
+                    if rec_key:
+                        meta[rec_key]["hub"] = {**hub_of(meta[rec_key]), "category": cat, "show": True}
+                        save_meta(meta)
+                        updated = True
+                        
+                    dyn_meta = load_dynamic_meta()
+                    dyn_key = None
+                    if slug in dyn_meta:
+                        dyn_key = slug
+                    elif raw_slug in dyn_meta:
+                        dyn_key = raw_slug
+                    if dyn_key:
+                        dyn_meta[dyn_key]["category"] = cat
+                        dyn_meta[dyn_key]["show_on_master"] = True
+                        save_dynamic_meta(dyn_meta)
+                        updated = True
+                        
+                return self.send_json({"ok": True, "slug": slug, "category": cat, "updated": updated}, cors=True)
 
             if u.path == "/api/signup":
                 data = self.read_json()
@@ -2498,6 +2812,7 @@ def main():
     TMP.mkdir()
     ensure_admin()
     sync_existing_dashboards()
+    threading.Thread(target=thumb_worker, daemon=True).start()
     load_sessions()
     port = int(CONFIG.get("port", 8150))
     try:
