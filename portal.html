@@ -2002,6 +2002,7 @@ async function saveSettingsModal() {
 
   try {
     const payload = {
+      slug: currentSettingsTargetSlug,
       title,
       placement: isMaster ? "all" : "off",
       category: isMaster ? category : "other"
@@ -2010,7 +2011,7 @@ async function saveSettingsModal() {
       payload.link = link;
     }
 
-    const res = await fetch(`/api/page/update?slug=${encodeURIComponent(currentSettingsTargetSlug)}`, {
+    const res = await fetch(`/api/page?slug=${encodeURIComponent(currentSettingsTargetSlug)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-HD": "1" },
       body: JSON.stringify(payload)

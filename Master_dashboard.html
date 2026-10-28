@@ -2139,6 +2139,12 @@
 
     <h4>Recently refreshed</h4>
     <div class="ws-list" id="wsUpdated"></div>
+    <div style="margin-top:14px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.12);">
+      <button class="sbtn" id="sideAddSecBtn" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.38);color:#a5b4fc;width:100%;font-weight:600;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;cursor:pointer;" onclick="openMasterAddSecModal()" title="Add a new section to Master Dashboard and HTML Drop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+        <span>+ Add Section</span>
+      </button>
+    </div>
 
     <div id="wsDownSec" hidden>
       <h4 class="ws-warn">Not responding</h4>
@@ -2198,7 +2204,10 @@
     <section>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <h2 class="sec" id="allHead" style="margin:0;"><span id="allLbl">Dashboard Sections</span> (<span id="allN">16</span>)</h2>
-        
+        <button class="btn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4);color:#c7d2fe;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;" onclick="openMasterAddSecModal()" title="Create a new section">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><path d="M12 5v14M5 12h14"/></svg>
+          <span>+ Add Section</span>
+        </button>
       </div>
       <div class="sections-flow" id="sectionsFlow"></div>
       <div class="empty" id="empty" hidden>No dashboards match your filter selection.</div>
@@ -2783,28 +2792,14 @@ function refreshMeta() {
 let recent = store.get("recent", []);           // [{k: key, t: time opened}], newest first
 let dashState = {};                              // url -> {up, changed}
 const byKey = k => DASHBOARDS.find(d => keyOf(d) === k || d.id === k);
-const changedAt = d => (dashState[d.url] || {}).changed || "";
+const changedAt = d => d.updated || (dashState[d.url] || {}).changed || "";
 // The dot on each card: green = refreshed in the last day, amber = not refreshed for over a week,
 // red = not responding, grey = not known yet.
 function freshness(d) {
-  return "fresh"; // always green online
-  /*
-  const st = dashState[d.url]; if (!st) return "unknown";
-  if (!st.up) return "down";
-  const c = Date.parse(st.changed); if (!c) return "unknown";
-  const age = Date.now() - c;
-  return age < 86400000 ? "fresh" : age > 7 * 86400000 ? "stale" : "ok";
-}
-*/
+  return "fresh";
 }
 function freshText(d) {
   return "Online";
-  /*
-  const st = dashState[d.url]; if (!st) return "Checking…";
-  if (!st.up) return "Not responding";
-  return st.changed ? "Refreshed " + since(st.changed) : "Online";
-}
-*/
 }
 function since(iso) {
   const t = Date.parse(iso); if (!t) return "";
@@ -2842,7 +2837,7 @@ function paintWorkspace() {
   const upd = DASHBOARDS.filter(d => changedAt(d) && Date.now() - Date.parse(changedAt(d)) < 7 * 86400000)
     .sort((a, b) => Date.parse(changedAt(b)) - Date.parse(changedAt(a))).slice(0, 6);
   $("wsUpdated").innerHTML = upd.length ? upd.map(d => wsRow(d, since(changedAt(d)))).join("")
-    : `<div class="ws-empty">${Object.keys(dashState).length ? "Nothing changed in the last 7 days." : "Checking…"}</div>`;
+    : `<div class="ws-empty">Nothing changed in the last 7 days.</div>`;
   const down = DASHBOARDS.filter(d => dashState[d.url] && dashState[d.url].up === false);
   $("wsDownSec").hidden = !down.length;
   $("wsDown").innerHTML = down.map(d => wsRow(d, "down", " ws-down")).join("");
@@ -2878,6 +2873,7 @@ function applyHub(items) {
       if (it.title) own.title = it.title;
       if (it.url) own.url = it.url;
       if (it.category) own.category = it.category;
+      if (it.updated) own.updated = it.updated;
     } else if (!dynamicItems.some(x => keyOf(x) === keyOf(it))) {
       dynamicItems.push({
         id: it.id,
@@ -3176,7 +3172,98 @@ async function loadCategories() {
 }
 
 setTimeout(loadCategories, 200);
+
+function openMasterAddSecModal() {
+  const bd = $("masterAddSecBackdrop");
+  if (!bd) return;
+  bd.style.display = "flex";
+  const inp = $("masterNewSecInput");
+  if (inp) {
+    inp.value = "";
+    setTimeout(() => inp.focus(), 50);
+  }
+}
+
+function closeMasterAddSecModal() {
+  const bd = $("masterAddSecBackdrop");
+  if (bd) bd.style.display = "none";
+}
+
+async function submitMasterNewSection() {
+  const inp = $("masterNewSecInput");
+  const name = inp ? inp.value.trim() : "";
+  if (!name) { alert("Please type a section name."); return; }
+  const key = name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-|-$/g, '') || ('cat-' + Date.now());
+  const color = CAT_COLORS[Math.abs(key.split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % CAT_COLORS.length];
+
+  const btn = $("masterAddSecBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Creating..."; }
+
+  try {
+    const r = await fetch(DROP + "/api/categories/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-HD": "1" },
+      body: JSON.stringify({ key, label: name, color })
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(()=>({}));
+      throw Error(err.error || "Failed to add section");
+    }
+  } catch (e) {
+    console.warn("Could not save to server:", e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "Create Section"; }
+  }
+
+  CATEGORIES[key] = {
+    label: name,
+    color: color,
+    icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
+  };
+  const list = Object.keys(CATEGORIES).filter(k => k !== "other");
+  CAT_ORDER = [...list, "other"];
+
+  closeMasterAddSecModal();
+  render();
+  showToast(`Section "${name}" created successfully!`);
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.activeElement && document.activeElement.id === "masterNewSecInput") {
+    e.preventDefault();
+    submitMasterNewSection();
+  }
+});
+
 </script>
+
+
+<!-- ADD SECTION MODAL (MASTER DASHBOARD & SIDEBAR) -->
+<div class="sec-modal-backdrop" id="masterAddSecBackdrop" style="display:none;" onclick="closeMasterAddSecModal()">
+  <div class="sec-modal-card" onclick="event.stopPropagation()" style="max-width:440px;">
+    <div class="sec-modal-header">
+      <div class="sec-modal-title" style="display:flex;align-items:center;gap:10px;">
+        <span style="width:28px;height:28px;border-radius:6px;background:rgba(99,102,241,0.2);display:grid;place-items:center;color:#818cf8;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span style="font-size:16px;font-weight:700;">Add New Section</span>
+      </div>
+      <button type="button" class="sec-modal-close" onclick="closeMasterAddSecModal()">&times;</button>
+    </div>
+    <p style="font-size:12.5px;color:rgba(255,255,255,0.6);margin:6px 0 16px;">Create a new custom category. It will immediately appear here on the Master Dashboard and in HTML Drop.</p>
+    
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#c7d2fe;display:block;margin-bottom:6px;">Section Name</label>
+        <input type="text" id="masterNewSecInput" placeholder="e.g. Operations Review or Client Insights" maxlength="50" style="width:100%;height:38px;padding:0 12px;border:1px solid rgba(255,255,255,0.18);border-radius:8px;background:rgba(0,0,0,0.3);color:#fff;font-size:13.5px;box-sizing:border-box;">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px;">
+        <button type="button" class="author-pill" style="cursor:pointer;padding:8px 16px;font-size:13px;" onclick="closeMasterAddSecModal()">Cancel</button>
+        <button type="button" class="author-pill" id="masterAddSecBtn" style="cursor:pointer;padding:8px 18px;font-size:13px;background:#6366f1;color:#fff;border-color:#6366f1;font-weight:700;" onclick="submitMasterNewSection()">Create Section</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

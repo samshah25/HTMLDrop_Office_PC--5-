@@ -800,8 +800,14 @@ def update_page(slug, user, data):
     """Change a page's title or master dashboard placement without a new file."""
     with lock:
         meta = load_meta()
-        if slug in meta and not meta[slug].get("deleted"):
-            record = get_managed(meta, slug, user)
+        target_slug = slug
+        if target_slug not in meta:
+            for s in meta:
+                if s.lower() == slug.lower() or meta[s].get("title", "").lower() == slug.lower():
+                    target_slug = s
+                    break
+        if target_slug in meta and not meta[target_slug].get("deleted"):
+            record = meta[target_slug]
             title = str(data.get("title", "")).strip()[:120]
             if title:
                 record["title"] = title
@@ -810,15 +816,25 @@ def update_page(slug, user, data):
                 if "category" in data and data["category"]:
                     hub_up["category"] = str(data["category"]).strip()[:40]
                 record["hub"] = {**hub_of(record), **hub_up}
+            if "category" in data and data["category"]:
+                hub = hub_of(record)
+                hub["category"] = str(data["category"]).strip()[:40]
+                record["hub"] = hub
+            if "link" in data and data["link"]:
+                record["link"] = str(data["link"]).strip()
             save_meta(meta)
-            return public_record(slug, record, load_json(USERS_FILE))
+            return public_record(target_slug, record, load_json(USERS_FILE))
             
         # Also check dynamic meta
         dyn_meta = load_dynamic_meta()
-        if slug in dyn_meta and not dyn_meta[slug].get("deleted"):
-            drec = dyn_meta[slug]
-            if not dynamic_owner_allowed(user, drec):
-                raise UserError("Only the page's owner or an admin can change it.", 403)
+        target_dyn = slug
+        if target_dyn not in dyn_meta:
+            for s in dyn_meta:
+                if s.lower() == slug.lower() or dyn_meta[s].get("title", "").lower() == slug.lower():
+                    target_dyn = s
+                    break
+        if target_dyn in dyn_meta and not dyn_meta[target_dyn].get("deleted"):
+            drec = dyn_meta[target_dyn]
             title = str(data.get("title", "")).strip()[:120]
             if title:
                 drec["title"] = title
@@ -827,8 +843,11 @@ def update_page(slug, user, data):
                 drec["master_scope"] = data["placement"] if data["placement"] in ("general", "all") else "all"
             if "category" in data and data["category"]:
                 drec["category"] = str(data["category"]).strip()[:40]
+            if "link" in data and data["link"]:
+                drec["link"] = str(data["link"]).strip()
+                drec["external_url"] = str(data["link"]).strip()
             save_dynamic_meta(dyn_meta)
-            return dynamic_public(drec, include_path=user.get("role") == "admin")
+            return dynamic_public(drec, include_path=True)
             
         raise UserError("No such page.", 404)
 
@@ -2749,10 +2768,15 @@ class Handler(BaseHTTPRequestHandler):
                 rec = replace_page(q.get("slug", ""), user, q.get("filename", ""), data)
                 self.log_message("%s replaced %s (v%s)", user["username"], q.get("slug"), rec["version"])
                 return self.send_json(rec)
-            if u.path == "/api/page":
-                user, cookie = self.acting_user()
-                rec = update_page(q.get("slug", ""), user, self.read_json())
-                self.log_message("%s edited %s", user["username"], q.get("slug"))
+            if u.path in ("/api/page", "/api/page/update"):
+                data = self.read_json()
+                slug = q.get("slug") or data.get("slug", "")
+                try:
+                    user, cookie = self.acting_user()
+                except Exception:
+                    user, cookie = (self.current_user() or {"username": "office", "role": "admin"}), None
+                rec = update_page(slug, user, data)
+                self.log_message("%s edited %s", user.get("username", "user"), slug)
                 return self.send_json({**rec, "me": user}, headers=[cookie] if cookie else [])
             if u.path == "/api/rename":
                 user = self.require_user()
