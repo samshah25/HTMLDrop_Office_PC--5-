@@ -8,7 +8,7 @@
     "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\JDA_Mumbai_Dashboard\\JDA_Mumbai_Dashboard_Kit\\JDA_JDS_Mumbai_Pincode_Dashboard.html",
     "version": 3,
     "created": "2026-10-08T18:39:31",
-    "updated": "2026-10-13T14:50:40",
+    "updated": "2026-10-28T13:50:52",
     "entry": "",
     "disabled": false,
     "hub": {
@@ -399,9 +399,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 1,
+    "version": 15,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-10-16T16:03:39",
+    "updated": "2026-10-28T11:29:51",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -630,18 +630,54 @@
       "legacy_id": ""
     }
   },
-  "master-dashboard": {
-    "title": "Master Dashboard",
-    "user": "muskan",
+  "cs-analyis-v1": {
+    "title": "docid issue overlap",
+    "user": "vaibhav",
     "version": 1,
-    "created": "2026-10-27T17:09:49",
-    "updated": "2026-10-27T17:09:49",
+    "created": "2026-10-27T21:29:26",
+    "updated": "2026-10-27T21:29:26",
     "entry": "index.html",
     "hub": {
-      "show": true,
-      "scope": "all",
+      "show": false,
+      "scope": "general",
       "reviewed": false,
-      "category": "hr",
+      "category": "funnel",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "hyderabad-jda-dashboard": {
+    "title": "Hyderabad JDA Dashboard",
+    "user": "muskan",
+    "version": 2,
+    "created": "2026-10-28T12:41:41",
+    "updated": "2026-10-28T15:22:32",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "funnel",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "cs-analyis-v2": {
+    "title": "docid issue overlap",
+    "user": "vaibhav",
+    "version": 1,
+    "created": "2026-10-28T15:33:11",
+    "updated": "2026-10-28T15:33:11",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "funnel",
       "branch": "",
       "tags": [],
       "title": "",
