@@ -3230,6 +3230,7 @@ async function loadCategories() {
 setTimeout(loadCategories, 200);
 
 function openMasterSecSettingsModal(tab) {
+  try { loadCategories(); } catch(e) {}
   const bd = $("masterSecSettingsBackdrop");
   if (!bd) return;
   bd.style.display = "flex";

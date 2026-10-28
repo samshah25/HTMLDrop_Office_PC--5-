@@ -1757,6 +1757,7 @@ let currentCategory = "perf";
 
 function openSectionModal() {
   if (sectionModalTarget !== "settings") sectionModalTarget = "upload";
+  try { loadPortalCategories(); } catch(e) {}
   const modal = $("sectionModal");
   if (!modal) return;
   const rad = document.querySelector(`input[name="modalCategory"][value="${currentCategory}"]`);

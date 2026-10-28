@@ -2168,7 +2168,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.serve_site(m.group(1), m.group(2))
             self.send_error(404)
         except UserError as e:
-            self.send_json({"error": str(e)}, e.status)
+            self.send_json({"error": str(e)}, e.status, cors=True)
 
     def send_hub(self):
         # Read by Master_Dashboard.html, which may be served from another port.
@@ -2280,7 +2280,7 @@ class Handler(BaseHTTPRequestHandler):
                 if key in DEFAULT_CATEGORIES:
                     raise UserError("Default system sections cannot be deleted.", 400)
                 delete_category(key)
-                return self.send_json({"ok": True, "categories": load_categories()})
+                return self.send_json({"ok": True, "categories": load_categories()}, cors=True)
 
             if u.path == "/api/categories/add":
                 data = self.read_json()
@@ -2867,7 +2867,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"ok": True})
             self.send_error(404)
         except UserError as e:
-            self.send_json({"error": str(e)}, e.status)
+            self.send_json({"error": str(e)}, e.status, cors=True)
         except zipfile.BadZipFile:
             self.send_json({"error": "That zip file is damaged or not a zip."}, 400)
         except Exception as e:
