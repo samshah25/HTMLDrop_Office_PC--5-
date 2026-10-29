@@ -1654,6 +1654,7 @@ def sync_task_to_slack_script(task_name):
     candidate_paths = [
         r"C:\Users\hp\Downloads\task_1.py",
         Path.home() / "Downloads" / "task_1.py",
+        BASE_DIR / "task_1.py",
         BASE_DIR.parent / "task_1.py",
     ]
     formatted = "\\" + str(task_name).lstrip("\\")
