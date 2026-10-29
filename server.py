@@ -1981,7 +1981,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        path = unquote(urlparse(self.path).path)
+        u = urlparse(self.path)
+        path = unquote(u.path)
+        q = {k: v[0] for k, v in parse_qs(u.query).items()}
         try:
             if path in ("/", "/index.html"):
                 return self.send_body(PORTAL_FILE.read_bytes(), "text/html; charset=utf-8")
@@ -2139,7 +2141,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/categories":
                 return self.send_json(load_categories(), cors=True)
             if path in ("/api/categories/delete", "/api/categories/del"):
-                key = str(q.get("key", [""])[0] or q.get("category", [""])[0]).strip().lower()
+                key = str(q.get("key") or q.get("category") or "").strip().lower()
                 delete_category(key)
                 return self.send_json({"ok": True, "categories": load_categories()}, cors=True)
             if path == "/api/hub":
