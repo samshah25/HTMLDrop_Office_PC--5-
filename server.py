@@ -1647,6 +1647,36 @@ def build_refresh_task_xml(slug, rec, settings):
     return ET.tostring(task, encoding="utf-16", xml_declaration=True)
 
 
+def sync_task_to_slack_script(task_name):
+    """Automatically synchronizes a refresh task name into the Slack monitoring script (task_1.py)."""
+    if not task_name:
+        return
+    candidate_paths = [
+        r"C:\Users\hp\Downloads\task_1.py",
+        Path.home() / "Downloads" / "task_1.py",
+        BASE_DIR.parent / "task_1.py",
+    ]
+    formatted = "\\" + str(task_name).lstrip("\\")
+    for script_path in candidate_paths:
+        try:
+            sp = Path(script_path)
+            if not sp.is_file():
+                continue
+            code = sp.read_text(encoding="utf-8")
+            if formatted in code:
+                continue
+            pattern = re.compile(r'((?:BASE_TASKS|TASKS)\s*=\s*\[)(.*?)(\])', re.DOTALL)
+            match = pattern.search(code)
+            if match:
+                body = match.group(2).rstrip()
+                entry = f'    r"{formatted}",'
+                new_body = f"{body}\n{entry}\n"
+                new_code = code[:match.start(2)] + new_body + code[match.end(2):]
+                sp.write_text(new_code, encoding="utf-8")
+        except Exception:
+            pass
+
+
 def register_refresh_task(slug, rec, settings):
     if os.name != "nt":
         raise UserError("Windows Task Scheduler is only available on Windows. Schedule settings were not registered on this computer.", 501)
@@ -1686,6 +1716,7 @@ def register_refresh_task(slug, rec, settings):
         "updated": datetime.now().isoformat(timespec="seconds"),
         "last_status": "scheduled"
     }
+    sync_task_to_slack_script(target_name)
     return rec["refresh"]
 
 
