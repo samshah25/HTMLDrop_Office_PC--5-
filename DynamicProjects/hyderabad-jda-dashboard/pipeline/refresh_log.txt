@@ -1,0 +1,101 @@
+2026-10-29 13:51:31  Presentations: 187 days with Hyderabad JDA presentations, 32185 rep-days, 559 reps (saved 174, fetched 15, not in feed 2)
+2026-10-29 13:51:36  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-10-29 13:51:39  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-10-29 13:51:40  === Hyderabad dashboard refresh: 2026-04-21 to 2026-10-28 ===
+2026-10-29 13:51:41  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-10-29 13:51:44  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-10-29 13:51:46  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-10-29 13:51:48  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-10-29 13:51:51  Sales 2026-10-01..2026-10-28: 998 JDA deal rows
+2026-10-29 13:52:03  1947 Hyderabad-branch pincodes in 82 areas
+2026-10-29 13:52:37  Presentations: 187 days with Hyderabad JDA presentations, 32185 rep-days, 559 reps (saved 175, fetched 14, not in feed 2)
+2026-10-29 13:52:40  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-10-29 13:52:42  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-10-29 13:52:45  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-10-29 13:52:47  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-10-29 13:52:50  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-10-29 13:52:52  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-10-29 13:52:55  Sales 2026-10-01..2026-10-28: 998 JDA deal rows
+2026-10-29 13:53:04  HR: 4252 branch field JDAs on the HR list ({'left': 4058, 'working': 194}); HR details for 559 of 559 people who presented
+2026-10-29 13:53:04  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 55, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-10-29 13:53:08  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 187 days, 596 reps, 93 managers, 32185 rep-days
+2026-10-29 13:58:31  === Hyderabad dashboard refresh: 2026-04-21 to 2026-10-28 ===
+2026-10-29 13:58:57  1947 Hyderabad-branch pincodes in 82 areas
+2026-10-29 13:59:24  Presentations: 187 days with Hyderabad JDA presentations, 32185 rep-days, 559 reps (saved 175, fetched 14, not in feed 2)
+2026-10-29 13:59:28  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-10-29 13:59:30  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-10-29 13:59:33  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-10-29 13:59:35  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-10-29 13:59:38  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-10-29 13:59:40  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-10-29 13:59:43  Sales 2026-10-01..2026-10-28: 998 JDA deal rows
+2026-10-29 13:59:54  HR: 4252 branch field JDAs on the HR list ({'left': 4058, 'working': 194}); HR details for 559 of 559 people who presented
+2026-10-29 13:59:54  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 55, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-10-29 13:59:59  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 187 days, 596 reps, 93 managers, 32185 rep-days
+2026-10-30 12:50:03  === Hyderabad dashboard refresh: 2026-04-21 to 2026-10-29 ===
+2026-10-30 12:50:17  1947 Hyderabad-branch pincodes in 82 areas
+2026-10-30 12:50:47  Presentations: 188 days with Hyderabad JDA presentations, 32371 rep-days, 559 reps (saved 176, fetched 14, not in feed 2)
+2026-10-30 12:50:50  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-10-30 12:50:52  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-10-30 12:50:55  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-10-30 12:50:57  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-10-30 12:50:59  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-10-30 12:51:02  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-10-30 12:51:04  Sales 2026-10-01..2026-10-29: 1035 JDA deal rows
+2026-10-30 12:51:09  HR: 4252 branch field JDAs on the HR list ({'left': 4060, 'working': 192}); HR details for 559 of 559 people who presented
+2026-10-30 12:51:09  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 55, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-10-30 12:51:13  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 188 days, 596 reps, 93 managers, 32371 rep-days
+2026-10-31 12:50:03  === Hyderabad dashboard refresh: 2026-04-21 to 2026-10-30 ===
+2026-10-31 12:50:25  1947 Hyderabad-branch pincodes in 82 areas
+2026-10-31 12:51:00  Presentations: 189 days with Hyderabad JDA presentations, 32556 rep-days, 559 reps (saved 177, fetched 14, not in feed 2)
+2026-10-31 12:51:03  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-10-31 12:51:05  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-10-31 12:51:07  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-10-31 12:51:09  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-10-31 12:51:12  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-10-31 12:51:14  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-10-31 12:51:16  Sales 2026-10-01..2026-10-30: 1035 JDA deal rows
+2026-10-31 12:51:23  HR: 4256 branch field JDAs on the HR list ({'left': 4061, 'working': 195}); HR details for 559 of 559 people who presented
+2026-10-31 12:51:23  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-10-31 12:51:28  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 189 days, 600 reps, 93 managers, 32556 rep-days
+2026-11-01 12:50:04  === Hyderabad dashboard refresh: 2026-04-21 to 2026-10-31 ===
+2026-11-01 12:50:25  1947 Hyderabad-branch pincodes in 82 areas
+2026-11-01 12:50:58  Presentations: 190 days with Hyderabad JDA presentations, 32742 rep-days, 560 reps (saved 178, fetched 14, not in feed 2)
+2026-11-01 12:51:02  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-11-01 12:51:04  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-11-01 12:51:07  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-11-01 12:51:09  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-11-01 12:51:12  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-11-01 12:51:14  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-11-01 12:51:16  Sales 2026-10-01..2026-10-31: 1142 JDA deal rows
+2026-11-01 12:51:23  HR: 4256 branch field JDAs on the HR list ({'left': 4062, 'working': 194}); HR details for 560 of 560 people who presented
+2026-11-01 12:51:23  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-11-01 12:51:28  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 190 days, 600 reps, 93 managers, 32742 rep-days
+2026-11-02 12:50:40  === Hyderabad dashboard refresh: 2026-04-21 to 2026-11-01 ===
+2026-11-02 12:51:47  1947 Hyderabad-branch pincodes in 82 areas
+2026-11-02 12:52:37  Presentations: 190 days with Hyderabad JDA presentations, 32742 rep-days, 560 reps (saved 179, fetched 14, not in feed 2)
+2026-11-02 12:52:41  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-11-02 12:52:43  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-11-02 12:52:46  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-11-02 12:52:48  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-11-02 12:52:51  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-11-02 12:52:53  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-11-02 12:52:55  Sales 2026-10-01..2026-10-31: 1142 JDA deal rows
+2026-11-02 12:52:57  Sales 2026-11-01..2026-11-01: 0 JDA deal rows
+2026-11-02 12:53:05  HR: 4256 branch field JDAs on the HR list ({'left': 4062, 'working': 194}); HR details for 560 of 560 people who presented
+2026-11-02 12:53:05  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-11-02 12:53:10  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 190 days, 600 reps, 93 managers, 32742 rep-days
+2026-11-03 12:50:14  === Hyderabad dashboard refresh: 2026-04-21 to 2026-11-02 ===
+2026-11-03 12:50:49  1947 Hyderabad-branch pincodes in 82 areas
+2026-11-03 12:51:31  Presentations: 191 days with Hyderabad JDA presentations, 32916 rep-days, 560 reps (saved 180, fetched 14, not in feed 2)
+2026-11-03 12:51:34  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-11-03 12:51:37  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-11-03 12:51:39  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-11-03 12:51:41  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-11-03 12:51:43  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-11-03 12:51:46  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-11-03 12:51:48  Sales 2026-10-01..2026-10-31: 1130 JDA deal rows
+2026-11-03 12:51:50  Sales 2026-11-01..2026-11-02: 50 JDA deal rows
+2026-11-03 12:51:58  HR: 4256 branch field JDAs on the HR list ({'left': 4063, 'working': 193}); HR details for 560 of 560 people who presented
+2026-11-03 12:51:58  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-11-03 12:52:05  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 191 days, 600 reps, 93 managers, 32916 rep-days

@@ -442,6 +442,10 @@ button.srow { cursor: pointer; } button.srow:hover { background: #F7F9FB; }
 /* ===================== v3: one calm page (months on top, three steps, three tiles, one ME list) ===================== */
 /* top bar: brand + month buttons */
 .brand-name .city { color: var(--navy-mute); font-weight: 500; margin-left: 6px; }
+/* the ME head's line only (settings, 2026-10-27): a tag beside the city, and a note under the heading */
+.linetag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; border: 1px solid rgba(255, 217, 194, .5); color: #FFD9C2; font-size: 11.5px; font-weight: 600; vertical-align: 2px; }
+.linetag[hidden] { display: none; }
+.linenote { margin: -4px 0 12px; font-size: 12.5px; color: var(--navy-mute); max-width: 900px; line-height: 1.4; }
 .pills { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .pill { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; border: 1px solid var(--navy-3); background: transparent; color: #DCE3F0; border-radius: 999px; padding: 6px 15px; font-size: 13.5px; font-weight: 550; white-space: nowrap; }
 .pill:hover { border-color: var(--navy-mute); color: #fff; }
@@ -965,6 +969,7 @@ body.resizing, body.resizing * { cursor: col-resize !important; user-select: non
 .xtbl tbody tr[data-me] { cursor: pointer; }
 .xtbl tbody tr[data-me]:hover td { box-shadow: inset 0 0 0 100vmax rgba(20, 33, 61, .04); }
 .xtbl tbody tr[data-me]:hover td:first-child { box-shadow: inset 0 0 0 100vmax rgba(20, 33, 61, .04), 1px 0 0 var(--rule); }
+.xtbl tbody tr[data-me] td[data-g]:hover { box-shadow: inset 0 0 0 100vmax rgba(20, 33, 61, .09); }   /* a team's cells open the ME on that team */
 .xtbl .pv { font-variant-numeric: tabular-nums; }
 .xtbl td.few .pv { color: var(--mute); }
 .xtbl td.emp { text-align: left; white-space: normal; }
@@ -1224,13 +1229,365 @@ body.nodata #vTeam, body.nodata #vTable { display: none; }
 .xtbl td.tc5 .db { min-width: 30px; } .xtbl th.tc5 .hbtn { padding-left: 4px; padding-right: 6px; }
 .xtbl tr.gr th.tc5 { color: var(--ink); text-align: center; } .xtbl tr.tot td.tc5 { background: #EEF1F5; }
 /* settings: the two group switches */
-.setpop { width: 290px; }
+.setpop { width: 320px; }
 .setpop .setl.setg { margin-top: 14px; }
 
 /* ME window: pick a TME team in "By TME team" to list only its appointments (2026-10-16) */
 #meTeams .srow { padding: 2px 6px; }
 #meTeams .mrow.mh { padding-left: 6px; padding-right: 6px; }
-#meTeams button.srow.tsel[aria-pressed="true"] { background: var(--org-soft); box-shadow: inset 2px 0 0 var(--org); }
-#meTeams .srow.tall { border-top: 1px solid var(--rule); border-bottom: 0; }
+#meTeams button.srow.tsel[aria-pressed="true"], #grpTeams button.srow.tsel[aria-pressed="true"] { background: var(--org-soft); box-shadow: inset 2px 0 0 var(--org); }
+#meTeams .srow.tall, #grpTeams .srow.tall { border-top: 1px solid var(--rule); border-bottom: 0; }
 #meDet details.appts { margin-top: 12px; }
 #meDet .dline { margin: 4px 0; }
+
+/* Super Cat skewness card on the Overview (2026-10-19): the day's factor, each day's dots + 6-day average, the heavy MEs */
+.skcard .card-h > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; }
+.skb { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, .9fr); }
+.skb > div { padding: 0 20px; min-width: 0; } .skb > div:first-child { padding-left: 0; } .skb > div + div { border-left: 1px solid var(--rule-2); } .skb > div:last-child { padding-right: 0; }
+.skbig { font: 700 46px/1 var(--num); color: var(--ink); } .skbig small { font-size: 26px; margin-left: 1px; }
+.sklab { font-weight: 650; font-size: 14px; margin-top: 4px; }
+.skex { font-size: 12.8px; color: var(--ink-2); margin-top: 6px; line-height: 1.45; } .skex b { font-weight: 650; }
+.skchg { font-size: 12.5px; margin-top: 8px; color: var(--mute); } .skchg b { font-weight: 650; }
+.skchg .better, .sktrio .better { color: var(--up); } .skchg .worse, .sktrio .worse { color: var(--dn); }
+.skk { font-size: 12px; font-weight: 600; color: var(--mute); margin-bottom: 4px; display: flex; justify-content: space-between; gap: 10px; } .skk span { font-weight: 500; }
+.skc { width: 100%; height: auto; display: block; cursor: pointer; }
+.skax { font-size: 10.5px; fill: var(--mute); } .skgl { stroke: var(--rule-2); } .skband { fill: #EEF2F7; }
+.skfair { stroke: var(--up); stroke-dasharray: 4 3; } .skfairt { font-size: 10.5px; fill: var(--up); font-weight: 600; }
+.skdt { fill: #9DB7D6; } .skdt.on { fill: var(--ink); } .skavg { fill: none; stroke: var(--blue); stroke-width: 2; }
+.skcross { stroke: #9AA4B5; } .skhit { fill: transparent; }
+.skkey { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--mute); margin-top: 2px; }
+.skkey i { display: inline-block; vertical-align: 1px; margin-right: 5px; } .skkey .k1 { width: 7px; height: 7px; border-radius: 50%; background: #9DB7D6; }
+.skkey .k2 { width: 14px; height: 2px; background: var(--blue); vertical-align: 3px; } .skkey .k3 { width: 14px; height: 9px; background: #EEF2F7; border: 1px solid var(--rule); }
+.skkey .k4 { width: 14px; border-top: 2px dashed var(--up); vertical-align: 3px; }
+.sktrio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+.sktrio div { border: 1px solid var(--rule-2); border-radius: 8px; padding: 5px 8px; } .sktrio b { display: block; font: 700 26px/1.05 var(--num); } .sktrio span { font-size: 12px; color: var(--ink-2); }
+.sknote { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; } .sknote b { font-weight: 650; }
+.skcard .btn.skbtn { margin-top: 10px; }
+.skstrip { display: inline-flex; gap: 2px; } .skstrip i { width: 9px; height: 11px; border-radius: 2px; background: var(--rule-2); } .skstrip i.on { background: #5B6475; } .skstrip i.near { background: #B5BECB; } .skstrip i.few { background: #fff; box-shadow: inset 0 0 0 1px var(--rule); }
+.skmo { display: inline-flex; gap: 2px; } .skmo span { width: 9px; font-size: 9.5px; text-align: center; color: var(--mute); }
+.skst { font-size: 11.5px; font-weight: 650; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--rule); white-space: nowrap; } .skst.new { color: var(--dn); border-color: #F2C5C0; } .skst.back { color: var(--up); border-color: #BFE3D3; }
+#drawerBody .dl td small.pid { display: block; }
+#vTable .skcard { display: none; }
+@media (max-width: 1250px) { .skb { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); row-gap: 14px; } .skb > div:last-child { grid-column: 1 / -1; border-left: 0; padding-left: 0; border-top: 1px solid var(--rule-2); padding-top: 12px; } }
+/* the skewness list: names wrap, numbers and tags stay on one line */
+#drawerBody .sktbl td:first-child { max-width: 220px; white-space: normal; }
+#drawerBody .sktbl td small.pid { white-space: normal; }
+#drawerBody .sktbl td.tn, #drawerBody .sktbl td:last-child { white-space: nowrap; }
+#drawerBody .sktbl .skwhy { color: #9A5B00; font-weight: 600; }
+/* ---------- the TME view (2026-10-28): amber where the ME view is navy - the band, the active controls and the TME's side
+   window - so it is plain which side is shown; cards, type and the data colours stay the same ---------- */
+:root { --tb: #FBF1DC; --tb-2: #F1E1BC; --tb-3: #EBD6A8; --tb-ink: #3D4860; --tb-mute: #6E5A36; }
+body.tmev { --org: #C98A12; --org-soft: #FFF4DB; }
+#viewSw .vtme[aria-pressed="true"] { background: #FFF4DB; color: var(--amber-ink); box-shadow: inset 0 -2px 0 var(--amber-line); }
+/* the band: light amber with the page's ink, where the ME view's is navy with white */
+body.tmev .band { background: var(--tb); border-bottom: 1px solid var(--tb-3); }
+body.tmev .when h1, body.tmev .fout, body.tmev .flab b, body.tmev .mv p b, body.tmev .miss b { color: var(--ink); }
+body.tmev .when span, body.tmev .upd, body.tmev .linenote, body.tmev .lownote, body.tmev .crumbs, body.tmev .fside h3, body.tmev .mv .k { color: var(--tb-mute); }
+body.tmev .flab, body.tmev .mv p, body.tmev .miss, body.tmev .noband { color: var(--tb-ink); }
+body.tmev .hero2 .chg.up { color: var(--up); } body.tmev .hero2 .chg.dn { color: var(--dn); } body.tmev .hero2 .chg.flat { color: var(--tb-mute); }
+body.tmev .fbar.g { background: #EADBB8; color: var(--ink); }
+body.tmev .hero2 .lnk.on-navy, body.tmev .crumbs .lnk { color: var(--ink); text-decoration-color: #C9A45A; }
+body.tmev .hero2 .lnk.on-navy:hover, body.tmev .crumbs .lnk:hover { color: var(--ink); text-decoration-color: var(--amber-ink); }
+body.tmev .fside { border-left-color: var(--tb-3); }
+@media (max-width: 1100px) { body.tmev .fside { border-top-color: var(--tb-3); } }
+.tcrumbs .lnk { font-weight: 600; }
+.when .tgsw { margin-left: auto; align-self: center; background: var(--tb-2); }
+.tgsw button { color: var(--tb-mute); }
+.tgsw button:hover { color: var(--ink); }
+.tgsw button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(110, 90, 54, .18), inset 0 -2px 0 var(--amber-line); }
+/* the band's side: label | words */
+.tmv p { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 10px; }
+body.tmev .tmv .k { min-width: 0; }
+.tfew { margin: 2px 0 0; font-size: 12.5px; color: var(--tb-mute); line-height: 1.45; }
+/* the card */
+body.tmev .chips button[aria-pressed="true"] { background: var(--amber-ink); border-color: var(--amber-ink); color: #fff; }
+.tordsay { margin: -4px 0 10px; font-size: 12.5px; color: var(--mute); }
+.tordsay[hidden] { display: none; }
+.tmecard .tctools { flex: 0 0 auto; flex-wrap: nowrap; }
+@media (max-width: 1100px) { .tmecard .card-h { flex-wrap: wrap; } .tmecard .tctools { flex-wrap: wrap; } }
+.tmecard .lkey i.g { background: #C9D3E0; } .tmecard .lkey i.a { background: var(--g-att); } .tmecard .lkey i.d { background: var(--g-deal); }
+.tmecard .lr .v em[title] { cursor: help; }
+/* side windows: a TME's (amber edge), and the TMEs inside an ME's */
+.drawer.tmed { border-top: 4px solid var(--amber-line); }
+.tmetag { display: inline-block; font-size: 12px; font-weight: 650; border-radius: 5px; padding: 3px 8px; background: var(--amber-bg); color: var(--amber-ink); }
+.tcmp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 24px; margin: 4px 0 6px; }
+.tcl { margin: 0 0 4px; font-size: 12.5px; font-weight: 650; }
+.cmp3 .r { grid-template-columns: 96px minmax(40px, 1fr) 44px; }
+.tmed .cmp3 .tr i.me { background: #B7740A; }
+.tsay { margin: 6px 0 0; }
+.tsay b { font-weight: 650; color: var(--ink); } .tsay b.up { color: var(--up); } .tsay b.dn { color: var(--dn); }
+#drawerBody .dl tr.on td { background: var(--amber-bg); }
+#drawerBody .dl td.n .mu { margin-left: 4px; font-size: 11.5px; }
+.tmeh { margin: 14px 0 6px; font-size: 13.5px; font-weight: 650; }
+@media (max-width: 640px) { .tcmp { grid-template-columns: minmax(0, 1fr); } }
+#drawerBody .dl tr.rest td { color: var(--mute); font-style: italic; }
+
+/* ---------- ME | TME (2026-10-29): the people switch next to Table | Overview; TME mode keeps the TME view's amber ---------- */
+#modeSw button { min-width: 56px; }
+#modeSw .vtme[aria-pressed="true"] { background: #FFF4DB; color: var(--amber-ink); box-shadow: inset 0 -2px 0 var(--amber-line); }
+body.switching { cursor: progress; } body.switching #main, body.switching .band { opacity: .45; }
+/* the Table's band of totals on the light amber band */
+body.tmev .kp { border-left-color: var(--tb-3); } body.tmev .kp .kv, body.tmev .kp .kl b { color: var(--ink); } body.tmev .kp .kl { color: var(--tb-ink); }
+body.tmev .trd h3, body.tmev .tkey { color: var(--tb-mute); }
+/* the gaps to the same MEs in the Table (points; green / red past the usual swing) */
+.lfv { font-weight: 650; } .lfv.up { color: var(--up); } .lfv.dn { color: var(--dn); }
+/* the band's trend on the light amber band: darker lines */
+body.tmev .trd .g50 { stroke: #C9B48A; } body.tmev .trd .la { stroke: #3D6FB0; } body.tmev .trd .lc { stroke: #12875F; }
+body.tmev .trd .da { stroke: #3D6FB0; } body.tmev .trd .dc { stroke: #12875F; } body.tmev .tkey i.a { background: #3D6FB0; } body.tmev .tkey i.c { background: #12875F; }
+/* TME mode's calls before the appointments (30 Oct 2026) */
+.cstrip { display: flex; align-items: flex-start; gap: 6px 16px; margin: 4px 0 14px; color: var(--tb-ink); }
+.cstrip .cst { display: flex; flex-direction: column; min-width: 0; }
+.cstrip .cst b.tn { font: 700 24px/1 var(--num); color: var(--ink); }
+.cstrip .cst .cl { font-size: 13px; margin-top: 3px; } .cstrip .cst .cc { font-size: 12.5px; margin-top: 2px; }
+.cstrip .carr { align-self: center; color: var(--tb-mute); font-size: 18px; margin-top: -14px; }
+.cnote { font-size: 12px; color: var(--tb-mute); margin: -8px 0 12px; }
+.tile .tline.tcl { font-size: 12px; color: var(--mute); margin-top: 2px; } .tile .tline.tcl b { color: var(--ink-2); font-weight: 650; }
+/* TME mode: where the appointments went (30 Oct 2026) */
+.flowcard .flsvg svg { display: block; width: 100%; height: auto; }
+.flowcard path.fl { opacity: .32; cursor: pointer; } .flowcard path.fl.on { opacity: .75; } .flowcard path.fl.off { opacity: .05; } .flowcard path.fl:hover { opacity: .9; }
+.flowcard .fnd { cursor: pointer; } .flowcard .fnd text.nm { font-size: 12.5px; font-weight: 650; fill: var(--ink); } .flowcard .fnd text.ct { font-size: 11.5px; fill: var(--mute); }
+.flowcard .fnd.sel rect { stroke: var(--ink); stroke-width: 2; } .flowcard .fnd.dim { opacity: .4; } .flowcard .fnd:focus { outline: none; } .flowcard .fnd:focus-visible rect { stroke: var(--amber-ink); stroke-width: 2.5; }
+.flowcard .flcap { font-size: 11.5px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--mute); margin: 4px 0 0; }
+.flowcard .flhd { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; margin: 14px 0 8px; } .flowcard .flhd h3 { margin: 0; font-size: 14px; } .flowcard .flhd span { font-size: 12.5px; color: var(--mute); } .flowcard .flhd .lnk { margin-left: auto; }
+.flowcard .fltbl td:first-child { white-space: normal; }
+
+/* TME mode: every TME team its own card; the ME managers' teams as cards (30 Oct 2026) */
+.tile[data-t] .tt::before { background: var(--dot); }
+.tile.mgt .tt::before { display: none; }
+.mgrtiles { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.mgrcard .sortrow { margin-bottom: 12px; } .mgrcard .chips { flex-wrap: wrap; }
+.mgrcard .chips .cdot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+
+/* TME-mode review (30 Oct 2026): the per-team Table tint for teams without a colour of their own, small notes, where to look */
+.xtbl td.tc6 { background: #F5F6F8; padding: 0 6px; } .xtbl th.tc6 { background: #E7EAEF; }
+.xtbl td.tc6 .db { min-width: 30px; } .xtbl th.tc6 .hbtn { padding-left: 4px; padding-right: 6px; }
+.xtbl tr.gr th.tc6 { color: var(--ink); text-align: center; } .xtbl tr.tot td.tc6 { background: #EEF1F5; }
+.tch { font-size: 11.5px; color: var(--tb-mute); font-weight: 500; }
+.tmv .tmore { display: block; margin-top: 2px; } .tmv .k .lnk { font-weight: 650; text-align: left; }
+.cstrip .cnote2 { align-self: center; }
+
+/* TME mode: the allocation grid; faint small lines (30 Oct 2026) */
+.flowcard path.fl.faint { opacity: .07; }
+.fgw { margin-top: 6px; }
+.fgrid { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+.fgrid th, .fgrid td { border-bottom: 1px solid var(--rule-2); padding: 6px 8px; text-align: center; }
+.fgrid th.fgc { text-align: left; font-weight: 600; color: var(--mute); font-size: 11.5px; vertical-align: bottom; }
+.fgrid th.fgr { text-align: left; font-weight: 650; white-space: nowrap; cursor: pointer; } .fgrid th.fgr i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.fgrid th small, .fgrid td small { display: block; font-size: 11px; color: var(--mute); font-weight: 500; }
+.fgrid th.fgr small { display: inline; margin-left: 6px; }
+.fgrid th.fgb { cursor: pointer; font-weight: 650; white-space: nowrap; } .fgrid th.fgb.on, .fgrid tr.on th.fgr { color: var(--amber-ink); }
+.fgrid td.fgx { cursor: pointer; } .fgrid td.fgx b { font-weight: 650; } .fgrid td.fgx:not(.sig) b { color: var(--mute); font-weight: 500; }
+.fgrid tr.on td, .fgrid tr.on th { box-shadow: inset 0 2px 0 var(--amber-line), inset 0 -2px 0 var(--amber-line); }
+.fgkey i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; vertical-align: -1px; margin: 0 4px 0 0; } .fgkey i.ka { background: rgba(201, 138, 18, .45); } .fgkey i.kb { background: rgba(61, 111, 176, .45); margin-left: 8px; }
+.flowcard.gridv .flcap { display: none; }
+
+/* TME mode, less scrolling (30 Oct 2026): the section tabs, the Summary card, five figures in the band, shorter cards */
+.tsec { position: sticky; top: var(--tbh, 64px); z-index: 15; display: flex; gap: 6px; flex-wrap: wrap; background: var(--bg); padding: 10px 0 10px; margin: 0 0 8px; border-bottom: 1px solid var(--rule); }
+.tsec button { font: inherit; font-weight: 650; font-size: 14px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--rule); background: #fff; color: var(--ink-2); cursor: pointer; }
+.tsec button:hover { border-color: #B9C2CF; }
+.tsec button[aria-pressed="true"] { background: #FFF4DB; color: var(--amber-ink); border-color: var(--amber-line); }
+.tsec button small { color: var(--mute); font-weight: 500; margin-left: 2px; }
+.sumcard .sumg { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 0 26px; }
+.sumcard .sumg > div + div { border-left: 1px solid var(--rule-2); padding-left: 24px; }
+.sumcard .mv { margin-bottom: 14px; } .sumcard .mv h3, .sumcard .trd h3 { font-size: 13.5px; color: var(--ink); margin: 0 0 6px; }
+.sumcard .tmv p { font-size: 13.5px; } .sumcard .sumnone { font-size: 13.5px; }
+.kps.kps5 { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; }
+.kps.kps5 .kp { padding: 0 16px; } .kps.kps5 .kp:first-child { padding-left: 0; }
+.tile.tf .tmeta { font-size: 12px; color: var(--mute); line-height: 1.5; margin-top: 2px; } .tile.tf .tmeta b { color: var(--ink-2); font-weight: 650; }
+@media (max-width: 1250px) { .sumcard .sumg { grid-template-columns: minmax(0, 1fr); } .sumcard .sumg > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule-2); padding-top: 12px; } }
+.tile.tf .tmeta .nw { white-space: nowrap; }
+.kps.kps5 .kp .kl { white-space: normal; line-height: 1.3; }
+body.tmev .linenote, body.tmev .lownote { max-width: none; margin-bottom: 8px; }
+.sumcard #sumL .trd { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--rule-2); }
+
+/* TME mode, the TME teams → ME managers tab (31 Oct 2026, the user: smaller boxes, less space between them) */
+body.tmev #vTeam > .tmstrip, body.tmev #vTeam > .flowcard, body.tmev #vTeam > .mgrcard { padding: 12px 14px; margin-bottom: 10px; }
+body.tmev .tmstrip .card-h, body.tmev .flowcard .card-h, body.tmev .mgrcard .card-h { margin-bottom: 8px; }
+body.tmev .tmstrip .card-h h2, body.tmev .flowcard .card-h h2, body.tmev .mgrcard .card-h h2 { font-size: 15px; }
+body.tmev .tmstrip .card-h .sub, body.tmev .flowcard .card-h .sub, body.tmev .mgrcard .card-h .sub { font-size: 12.5px; }
+body.tmev #teams, body.tmev #mgrTiles { gap: 8px; }
+body.tmev .tile.tf { padding: 8px 10px 9px; gap: 2px; border-radius: 8px; }
+body.tmev .tile.tf .tt { font-size: 13.5px; } body.tmev .tile.tf .tt::before { width: 8px; height: 8px; margin-right: 6px; border-radius: 2px; }
+body.tmev .tile.tf .tt small { font-size: 11.5px; padding-left: 6px; }
+body.tmev .tile.tf .mini { gap: 2px; margin: 5px 0 4px; }
+body.tmev .tile.tf .ml { height: 15px; gap: 5px; }
+body.tmev .tile.tf .ml i { padding-left: 6px; font-size: 10.5px; border-radius: 2px; } body.tmev .tile.tf .ml em { font-size: 10.5px; }
+body.tmev .tile.tf .tline { font-size: 12.5px; }
+body.tmev .tile.tf .tmeta { font-size: 11px; line-height: 1.45; margin-top: 1px; }
+body.tmev .mgrcard .sortrow { margin-bottom: 8px; gap: 8px; }
+body.tmev .mgrcard .chips { gap: 4px; } body.tmev .mgrcard .chips button { min-height: 28px; padding: 3px 10px; font-size: 12.5px; }
+body.tmev .flowcard .flcap { margin-top: 0; }
+body.tmev .tile.tf .tt small { white-space: nowrap; }
+
+/* TME mode boxes (31 Oct 2026, the user liked the ME box): the ME box's bars, with calls dialed and connected first on
+   their own scale (amber: the TMEs' own work), then appointments per 100 connected, then given / attended / deals */
+.tile.tf .tt .tnm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile.tf .ml.c i { background: #F2E4C6; color: var(--ink); } .tile.tf .ml.k i { background: #DDA94A; color: var(--ink); }
+.tile.tf .ml em { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.tile.tf .mbt { display: block; font-size: 10.5px; line-height: 13px; color: var(--mute); padding: 1px 0 2px 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.tf .mbt b { color: var(--ink-2); font-weight: 650; } .tile.tf .mbt:empty { height: 4px; padding: 0; }
+.tile.tf .mbt.nod { padding-bottom: 3px; }
+.tile.tf .tdl { font-size: 10.5px; font-weight: 650; color: var(--mute); } .tile.tf .tdl.up { color: var(--up); } .tile.tf .tdl.dn { color: var(--dn); }
+body.tmev .tile.tf .tline { font-size: 12px; } .tile.tf .tline .nw { white-space: nowrap; }
+
+/* TME mode leads with appointments given (31 Oct 2026): the small grey part of a heading, the line under it */
+.h3s { font-weight: 500; color: var(--mute); }
+.sumcard .sumsub { margin: -2px 0 6px; font-size: 12px; color: var(--mute); }
+.sumcard #sumL .mv + .mv { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--rule-2); }
+.flowcard .fnd text.ct.pt { fill: var(--ink); font-weight: 650; }   /* a team picked: its part of each team on the other row */
+.tsec[hidden] { display: none; }   /* the tabs are TME mode only (31 Oct 2026: display flex had kept them on in ME mode) */
+
+/* ===================================================================================================================
+   TME mode, design pass (31 Oct 2026). Visual only; everything below is scoped to TME mode.
+   Direction: a calm paper band with one amber rule under the top bar; amber kept for what is selected or operable and
+   for the TMEs' own calls; neutral hairline cards; figures announced in Barlow, compared in Inter tabular.
+   =================================================================================================================== */
+body.tmev { --tm-paper: #FDFBF7; --tm-rule: #ECE5D6; --tm-label: #7C6A45; --tm-acc: #C98A12; --tm-acc-ink: #8A5A00; --tm-acc-wash: #FFF6E3; --tm-card-rule: #E3E7EE; }
+
+/* the band: paper, an amber rule along its top, hairline below */
+body.tmev .band { background: var(--tm-paper); border-top: 3px solid var(--tm-acc); border-bottom: 1px solid var(--tm-rule); }
+body.tmev .hero2 .when h1 { color: var(--ink); }
+body.tmev .kp { border-left-color: var(--tm-rule); }
+body.tmev .kps.kps5 { margin-top: 4px; }
+body.tmev .kps.kps5 .kp { padding: 2px 20px 0; }
+body.tmev .kps.kps5 .kp:first-child { padding-left: 0; }
+.kp.kq { display: flex; flex-direction: column; min-width: 0; }
+.kp.kq .kh { font: 650 11px/1.2 var(--ui); letter-spacing: .06em; text-transform: uppercase; color: var(--tm-label); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kp.kq .kv { font: 700 32px/1 var(--num); color: var(--ink); letter-spacing: -.005em; }
+.kp.kq .kvr { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 9px; }   /* the context beside the figure when it fits */
+.kp.kq .ks { font-size: 13px; color: var(--ink-2); line-height: 1.35; }
+.kp.kq .kc { margin-top: 6px; font-size: 12px; line-height: 1.5; color: var(--mute); }
+.kp.kq .kc .chg { font-weight: 600; }
+
+/* section tabs: text tabs with an amber underline, on the page ground */
+body.tmev .tsec { gap: 26px; padding: 0; margin: 0 0 14px; border-bottom: 1px solid var(--tm-card-rule); }
+body.tmev .tsec button { position: relative; border: 0; background: transparent; border-radius: 0; padding: 13px 0 11px; font-size: 14px; font-weight: 600; color: var(--mute); }
+body.tmev .tsec button:hover { color: var(--ink); border: 0; }
+body.tmev .tsec button[aria-pressed="true"] { background: transparent; color: var(--ink); box-shadow: inset 0 -2px 0 var(--tm-acc); }
+body.tmev .tsec button small { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 9px; background: var(--rule-2); color: var(--mute); font-size: 11px; font-weight: 600; vertical-align: 1px; }
+body.tmev .tsec button[aria-pressed="true"] small { background: var(--tm-acc-wash); color: var(--tm-acc-ink); }
+body.tmev .tsec button:focus-visible { outline: 2px solid var(--tm-acc); outline-offset: 2px; }
+
+/* cards: neutral hairlines, quieter headers */
+body.tmev #vTeam > .card { border-color: var(--tm-card-rule); }
+body.tmev .card-h h2 { font-size: 15px; font-weight: 650; color: var(--ink); }
+body.tmev .card-h .sub { color: var(--mute); }
+
+/* Summary */
+.sumcard .tmv p.sumsub, .sumcard .tmv p.sumnone { display: block; margin: -2px 0 8px; }
+.sumcard .tmv p.sumnone { margin-top: 0; line-height: 1.5; }
+.sumcard p.tfew { margin: 2px 0 14px; color: var(--mute); }
+.sumcard .mv h3 { font-size: 13px !important; letter-spacing: .005em; }
+.sumcard .rk { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; align-items: center; padding: 8px 0; border-top: 1px solid var(--rule-2); }
+.sumcard .rk:first-of-type { border-top: 0; }
+.sumcard .rkt { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.sumcard .rkt .lnk { font-size: 13.5px; font-weight: 600; color: var(--ink); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration-color: #CDB27A; }
+.sumcard .rkt .lnk:hover { text-decoration-color: var(--tm-acc-ink); }
+.sumcard .rkx { flex: none; font-size: 11.5px; color: var(--mute); }
+.sumcard .rkd { margin-top: 2px; font-size: 12.5px; color: var(--mute); line-height: 1.4; }
+.sumcard .rkd b { color: var(--ink-2); font-weight: 650; }
+.sumcard .rkv { text-align: right; min-width: 74px; }
+.sumcard .rkv b { display: block; font: 700 22px/1 var(--num); color: var(--ink); }
+.sumcard .rkv small { display: block; margin-top: 2px; font-size: 11px; color: var(--mute); white-space: nowrap; }
+.sumcard .tmore { margin: 8px 0 0; }
+.sumcard .tmore .lnk { font-size: 12.5px; font-weight: 600; }
+.sumcard .tmv .k { color: var(--mute); }
+
+/* the team and manager boxes */
+body.tmev #teams, body.tmev #mgrTiles { gap: 8px; }
+body.tmev .tile.tf { border-color: var(--tm-card-rule); border-radius: 9px; padding: 9px 10px 10px; }
+body.tmev .tile.tf:hover { border-color: #D7B46A; background: #fff; }
+body.tmev .tile.tf:focus-visible { outline: 2px solid var(--tm-acc); outline-offset: 2px; }
+body.tmev .tile.tf .tt { font-size: 13.5px; letter-spacing: -.003em; }
+body.tmev .tile.tf .tt small { color: var(--mute); }
+body.tmev .tile.tf .mini { gap: 2px; margin: 6px 0 4px; }
+body.tmev .tile.tf .ml i { border-radius: 2px; }
+.tile.tf .ml.c i { background: #EFE8D9; color: var(--ink); } .tile.tf .ml.k i { background: #DCC497; color: var(--ink); }
+body.tmev .tile.tf .mbt { color: #7C6A45; padding: 0 0 3px 2px; }
+body.tmev .tile.tf .mbt b { color: var(--ink); }
+body.tmev .tile.tf .tline { margin-top: 2px; color: var(--ink-2); }
+body.tmev .tile.tf .tline b { color: var(--ink); }
+body.tmev .tile.tf .tmeta { margin-top: 1px; }
+body.tmev .mgrcard .sortrow { margin: 2px 0 10px; }
+body.tmev .chips button { min-height: 30px; padding: 4px 11px; font-size: 12.5px; border-color: var(--tm-card-rule); color: var(--ink-2); }
+body.tmev .chips button:hover { border-color: #C9D1DC; color: var(--ink); }
+body.tmev .chips button[aria-pressed="true"] { background: var(--tm-acc-wash); border-color: var(--tm-acc); color: var(--tm-acc-ink); }
+
+/* where the appointments went */
+.flowcard path.fl { opacity: .26; }
+.flowcard path.fl:hover { opacity: .62; }
+.flowcard path.fl.on { opacity: .72; }
+.flowcard path.fl.off { opacity: .045; }
+.flowcard .fnd text.nm { font-size: 12.5px; font-weight: 650; fill: var(--ink); }
+.flowcard .fnd text.ct { font-size: 11.5px; fill: var(--mute); }
+.flowcard .fnd.sel rect { stroke: var(--ink); stroke-width: 1.5; }
+.flowcard .flcap { font-size: 11px; letter-spacing: .06em; color: #8A93A3; }
+.flowcard .flhd { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule-2); }
+
+/* TME mode: the TME teams as one table (2 Nov 2026, the user's pick of ten mockups) */
+#teams.ttbl { display: block; }
+.ttw { overflow-x: auto; }
+.tmt { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tmt th { text-align: right; font-size: 11.5px; font-weight: 600; color: var(--mute); padding: 6px 12px; border-bottom: 1px solid var(--tm-card-rule, #E3E7EE); white-space: nowrap; }
+.tmt th.l { text-align: left; padding-left: 4px; }
+.tmt tr.gr th { text-align: center; font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: #8A93A3; border-bottom: 0; padding: 0 12px 3px; }
+.tmt td { text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--rule-2); white-space: nowrap; color: var(--ink-2); vertical-align: middle; }
+.tmt td.l { text-align: left; }
+.tmt .sep { border-left: 1px solid var(--rule-2); }
+.tmt tbody tr { cursor: pointer; }
+.tmt tbody tr:hover td { background: #FBFAF6; }
+.tmt tbody tr:focus-visible { outline: 2px solid var(--tm-acc, #C98A12); outline-offset: -2px; }
+.tmt td.nm { text-align: left; padding-left: 4px; min-width: 190px; }
+.tmt td.nm .tnm { display: flex; align-items: center; font-weight: 650; color: var(--ink); font-size: 13.5px; }
+.tmt td.nm small { display: block; margin: 1px 0 0 17px; font-size: 11.5px; color: var(--mute); }
+.tmt .cdot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 8px; flex: none; }
+.tmt td b { color: var(--ink); font-weight: 650; }
+.tmt td.few, .tmt td.few b { color: var(--mute); font-weight: 500; }
+.tmt td.mu { color: var(--mute); font-size: 12px; }
+.tmt small.ct { display: block; font-size: 11px; color: var(--mute); }
+.tmt .tdl { margin-left: 4px; font-size: 10.5px; font-weight: 650; color: var(--mute); } .tmt .tdl.up { color: var(--up); } .tmt .tdl.dn { color: var(--dn); }
+.tmt th.fbh, .tmt td.fbc { width: 168px; }
+.tmt td.fbc .fb { display: block; height: 7px; border-radius: 2px; margin-left: auto; } .tmt td.fbc .fb + .fb { margin-top: 2px; }
+.tmt .fb.g { background: var(--g-given); } .tmt .fb.a { background: var(--g-att); } .tmt .fb.d { background: var(--g-deal); }
+.tmt tfoot td { border-top: 1px solid var(--ink); border-bottom: 0; background: #FCFCFB; color: var(--ink); font-weight: 600; }
+.tmt tfoot td.nm .tnm { padding-left: 17px; }
+.ttk { margin: 8px 0 0; font-size: 12px; color: var(--mute); }
+.ttk .fk { display: inline-block; width: 12px; height: 7px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: 1px; } .ttk .fk:first-child { margin-left: 0; }
+.ttk .fk.g { background: var(--g-given); } .ttk .fk.a { background: var(--g-att); } .ttk .fk.d { background: var(--g-deal); }
+/* the shares on the flow's lines (2 Nov 2026): small, muted, with a light halo; no pointer events */
+.flowcard .fps { pointer-events: none; }
+.flowcard .fps text.fp { font: 650 10px var(--ui); fill: #3D4860; fill-opacity: .82; paint-order: stroke; stroke: rgba(255, 255, 255, .78); stroke-width: 2.6px; stroke-linejoin: round; font-variant-numeric: tabular-nums; }
+.flowcard .fps.on text.fp { fill: var(--ink); fill-opacity: 1; }
+
+/* TME mode: who converts which leads (2 Nov 2026, the user's pick, mockup A) */
+.cvw { overflow-x: auto; margin-top: 2px; }
+.cvg { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 13px; }
+.cvg th { font-size: 12px; font-weight: 650; padding: 4px 6px 6px; text-align: center; vertical-align: bottom; color: var(--ink); }
+.cvg thead th[data-ct] { cursor: pointer; border-radius: 5px; } .cvg thead th[data-ct]:hover { background: #FBFAF6; }
+.cvg th small { display: block; font-weight: 500; color: var(--mute); font-size: 11px; margin-top: 1px; }
+.cvg .cdot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+.cvg th.c0 { width: 1%; } .cvg th.ct0 { color: var(--mute); font-weight: 600; }
+.cvg th.rh { text-align: left; font-weight: 600; font-size: 13px; white-space: nowrap; padding-left: 2px; cursor: pointer; border-radius: 5px; }
+.cvg th.rh:hover { color: var(--amber-ink); }
+.cvg td { position: relative; text-align: center; padding: 7px 6px 6px; border-radius: 5px; background: #F7F8FA; cursor: pointer; }
+.cvg td:hover { box-shadow: inset 0 0 0 1.5px #C9A45A; }
+.cvg td:focus-visible, .cvg th[tabindex]:focus-visible { outline: 2px solid var(--tm-acc, #C98A12); outline-offset: 1px; }
+.cvg td b { display: block; font: 700 19px/1 var(--num); color: var(--ink); }
+.cvg td small { display: block; font-size: 10.5px; color: var(--mute); margin-top: 2px; }
+.cvg td.few { background: repeating-linear-gradient(135deg, #fff 0 6px, #F3F4F7 6px 7px); } .cvg td.few b { color: #8A93A3; font-weight: 600; }
+.cvg td.best::after { content: "best"; position: absolute; top: 3px; right: 4px; font: 700 8.5px/1 var(--ui); letter-spacing: .05em; text-transform: uppercase; color: #0B6B52; }
+.cvg td.tot, .cvg tr.all td { background: #fff; border: 1px solid var(--rule-2); cursor: default; } .cvg td.tot:hover, .cvg tr.all td:hover { box-shadow: none; }
+.cvg tr.all td { border-style: dashed; border-color: var(--rule); } .cvg tr.all th.rh { cursor: default; color: var(--mute); }
+.cvk { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 10px 0 0; font-size: 12px; color: var(--mute); }
+.cvk i { display: inline-block; width: 14px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+.cvk i.g { background: rgba(18, 135, 95, .4); } .cvk i.r { background: rgba(200, 55, 45, .32); } .cvk i.n { background: #F7F8FA; border: 1px solid var(--rule); } .cvk i.f { background: repeating-linear-gradient(135deg, #fff 0 4px, #E6E9EE 4px 5px); border: 1px solid var(--rule-2); }
+#flowMw[hidden] { display: none; }
+.cvg th.rh { vertical-align: middle; }
+
+/* ME mode: 'Who converts' in the Your team card (2 Nov 2026): the TME mode grid (.cvg) with ME mode's orange accent */
+.cvbar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin: 0 0 6px; }
+.cvg th.rh .rn { display: block; } .cvg th.rh small { display: block; font-weight: 400; color: var(--mute); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+.cvg th.rh0 { text-align: left; color: var(--mute); font-weight: 600; }
+body:not(.tmev) .cvg th.rh:hover { color: var(--org); } body:not(.tmev) .cvg td:hover { box-shadow: inset 0 0 0 1.5px #F6B48A; }
+body:not(.tmev) .cvg td:focus-visible, body:not(.tmev) .cvg th[tabindex]:focus-visible { outline-color: var(--org); }
+#meList .cvw + .ovpg, #meList .cvw ~ .ovpg { padding-top: 8px; }

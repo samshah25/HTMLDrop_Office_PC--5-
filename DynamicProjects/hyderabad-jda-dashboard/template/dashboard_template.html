@@ -1,0 +1,1706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hyderabad JDA Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --page: #f2f4fb;
+  --surface: #ffffff;
+  --surface-2: #f6f7fc;
+  --line: #dde1ea;
+  --track: #eceff7;
+  --ink: #0f172a;
+  --ink-2: #3f4a5c;
+  --ink-3: #6b7489;
+  --brand: #4f46e5;
+  --brand-soft: #eef0ff;
+  --c1: #6366f1; --c2: #0ea5e9; --c3: #10b981; --c4: #f59e0b; --c5: #ec4899; --c6: #8b5cf6; --c7: #14b8a6; --c8: #f97316;
+  --hi: #f97316;
+  --grid: #edf0f6;
+  --axis: #d5dae6;
+  --good: #10b981; --good-ink: #047857; --good-bg: #e7f8f0;
+  --warn: #f59e0b; --warn-ink: #b45309; --warn-bg: #fff6e0;
+  --serious: #f97316; --serious-ink: #c2410c; --serious-bg: #ffefe3;
+  --crit: #ef4444; --crit-ink: #b91c1c; --crit-bg: #feeceb;
+  --shadow: 0 1px 2px rgba(15,23,42,.04), 0 6px 20px -8px rgba(15,23,42,.10);
+  --shadow-hover: 0 2px 4px rgba(15,23,42,.05), 0 14px 30px -10px rgba(79,70,229,.25);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0a0f1e; --surface: #121a2f; --surface-2: #18223c; --line: #243052; --track: #222d4a;
+    --ink: #e8ecf8; --ink-2: #a9b4d0; --ink-3: #6f7c9c; --brand: #818cf8; --brand-soft: #1d2445;
+    --grid: #1c2643; --axis: #2c3a60;
+    --good-ink: #34d399; --good-bg: #0f2e26; --warn-ink: #fbbf24; --warn-bg: #33270b;
+    --serious-ink: #fb923c; --serious-bg: #35200f; --crit-ink: #f87171; --crit-bg: #3a1619;
+    --shadow: 0 1px 2px rgba(0,0,0,.3); --shadow-hover: 0 10px 30px -10px rgba(99,102,241,.45);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0a0f1e; --surface: #121a2f; --surface-2: #18223c; --line: #243052; --track: #222d4a;
+  --ink: #e8ecf8; --ink-2: #a9b4d0; --ink-3: #6f7c9c; --brand: #818cf8; --brand-soft: #1d2445;
+  --grid: #1c2643; --axis: #2c3a60;
+  --good-ink: #34d399; --good-bg: #0f2e26; --warn-ink: #fbbf24; --warn-bg: #33270b;
+  --serious-ink: #fb923c; --serious-bg: #35200f; --crit-ink: #f87171; --crit-bg: #3a1619;
+  --shadow: 0 1px 2px rgba(0,0,0,.3); --shadow-hover: 0 10px 30px -10px rgba(99,102,241,.45);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--page); color: var(--ink); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button, select, input { font: inherit; color: inherit; }
+.app { display: grid; grid-template-columns: 80px 1fr; min-height: 100vh; }
+.ic { width: 18px; height: 18px; flex: none; }
+
+/* ---------- icon rail ---------- */
+.side { background: linear-gradient(185deg, #1e1b4b 0%, #172554 55%, #0f172a 100%); color: #c7d2fe; padding: 14px 8px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 7; }
+.brand { width: 100%; display: flex; justify-content: center; padding-bottom: 14px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.09); }
+.logo { width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, #f97316, #ec4899 55%, #8b5cf6); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .5px; box-shadow: 0 6px 18px -4px rgba(236,72,153,.6); }
+.nav-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 64px; padding: 10px 2px 8px; border: 0; border-radius: 14px; background: transparent; color: #a5b4fc; cursor: pointer; font-size: 10.5px; font-weight: 600; line-height: 1.15; text-align: center; position: relative; transition: background .15s, color .15s; }
+.nav-btn .ic { width: 22px; height: 22px; }
+.nav-btn:hover { background: rgba(255,255,255,.07); color: #fff; }
+.nav-btn[aria-current="page"] { color: #fff; background: linear-gradient(160deg, rgba(99,102,241,.55), rgba(139,92,246,.35)); box-shadow: inset 0 0 0 1px rgba(196,181,253,.35); }
+.nav-btn[aria-current="page"]::before { content: ''; position: absolute; left: -8px; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: linear-gradient(#c4b5fd, #f472b6); }
+.nav-btn[aria-current="page"] .ic { filter: drop-shadow(0 0 6px rgba(196,181,253,.9)); }
+.nav-btn .badge { position: absolute; top: 3px; right: 6px; background: #f43f5e; color: #fff; border-radius: 10px; font-size: 9.5px; line-height: 15px; min-width: 16px; padding: 0 4px; font-weight: 700; box-shadow: 0 0 0 2px #1e1b4b; }
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.rail-ic { width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(255,255,255,.08); color: #c7d2fe; display: grid; place-items: center; cursor: pointer; }
+.rail-ic:hover { background: rgba(255,255,255,.16); color: #fff; }
+.live-dot { width: 10px; height: 10px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 4px rgba(52,211,153,.2); cursor: help; }
+.upd { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
+.upd::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981; }
+
+/* ---------- top bar ---------- */
+.main { min-width: 0; }
+.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--page) 85%, transparent); backdrop-filter: blur(10px); padding: 12px 28px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; border-bottom: 1px solid var(--line); }
+.crumb { margin-right: auto; font-size: 13px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.crumb b { color: var(--ink); font-weight: 700; font-size: 15px; }
+.datebox { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; box-shadow: var(--shadow); }
+.datebox button { border: 0; background: none; padding: 7px 11px; cursor: pointer; color: var(--ink-2); font-size: 16px; line-height: 1; }
+.datebox button:hover:not(:disabled) { background: var(--brand-soft); color: var(--brand); }
+.datebox button:disabled { opacity: .3; cursor: default; }
+.datewrap { position: relative; }
+.datebox .cal-btn { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--ink); padding: 7px 10px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.cal-btn .ic { width: 16px; height: 16px; color: var(--brand); }
+.cal-btn .car { font-size: 10px; color: var(--ink-3); }
+.cal-pop { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 15; width: 320px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 50px -16px rgba(15,23,42,.35); padding: 14px; }
+.cal-pop[hidden] { display: none; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-head b { font-size: 15px; font-weight: 800; }
+.cal-head button { border: 0; background: var(--surface-2); color: var(--ink-2); width: 30px; height: 30px; border-radius: 9px; cursor: pointer; font-size: 15px; }
+.cal-head button:hover:not(:disabled) { background: var(--brand); color: #fff; }
+.cal-head button:disabled { opacity: .3; cursor: default; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-grid .wd { font-size: 10.5px; font-weight: 700; color: var(--ink-3); text-align: center; text-transform: uppercase; letter-spacing: .04em; padding: 2px 0 4px; }
+.cal-grid button, .cal-grid span.off { height: 36px; border-radius: 10px; border: 0; font: inherit; font-size: 13px; font-weight: 600; display: grid; place-items: center; position: relative; }
+.cal-grid span.off { color: var(--ink-3); opacity: .45; }
+.cal-grid button { cursor: pointer; color: var(--ink); background: var(--surface-2); }
+.cal-grid button::after { content: ''; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--dot, transparent); }
+.cal-grid button:hover { box-shadow: inset 0 0 0 2px var(--brand); }
+.cal-grid button.sel { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; box-shadow: 0 6px 14px -6px rgba(99,102,241,.8); }
+.cal-grid button.sel::after { background: #fff; }
+.cal-grid button.latest:not(.sel) { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--brand) 45%, transparent); }
+.cal-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.cal-leg { display: flex; gap: 10px; font-size: 11px; color: var(--ink-3); flex-wrap: wrap; }
+.cal-leg i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; }
+.cal-foot button { border: 0; background: var(--brand-soft); color: var(--brand); font-weight: 700; font-size: 12px; border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+select.plain { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 7px 10px; max-width: 220px; box-shadow: var(--shadow); font-weight: 500; }
+.seg { display: inline-flex; border-radius: 12px; background: var(--surface); padding: 3px; flex-wrap: wrap; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.seg button { border: 0; background: none; padding: 5px 12px; border-radius: 9px; cursor: pointer; color: var(--ink-2); white-space: nowrap; font-weight: 500; }
+.seg button:hover { color: var(--brand); }
+.seg button[aria-pressed="true"] { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: #fff; font-weight: 600; box-shadow: 0 4px 12px -4px rgba(99,102,241,.7); }
+
+.page { padding: 22px 28px 60px; max-width: 1480px; }
+
+/* ---------- hero ---------- */
+.hero { cursor: default; position: relative; overflow: hidden; border-radius: 22px; padding: 26px 30px; color: #fff; display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 18px 40px -22px rgba(79,70,229,.7); }
+.hero::before, .hero::after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
+.hero::before { width: 340px; height: 340px; right: -80px; top: -150px; background: radial-gradient(circle, rgba(255,255,255,.22), transparent 70%); }
+.hero::after { width: 220px; height: 220px; right: 260px; bottom: -150px; background: radial-gradient(circle, rgba(255,255,255,.14), transparent 70%); }
+.hero-today { background: linear-gradient(120deg, #4338ca 0%, #6d28d9 55%, #c026d3 100%); }
+.hero-territory { background: linear-gradient(120deg, #0f766e 0%, #0891b2 55%, #4f46e5 100%); box-shadow: 0 18px 40px -22px rgba(8,145,178,.8); }
+.hero-managers { background: linear-gradient(120deg, #7c3aed 0%, #c026d3 55%, #e11d48 100%); box-shadow: 0 18px 40px -22px rgba(192,38,211,.7); }
+.hero-actions { background: linear-gradient(120deg, #be123c 0%, #e11d48 45%, #f97316 100%); box-shadow: 0 18px 40px -22px rgba(225,29,72,.7); }
+.hero-field { background: linear-gradient(120deg, #1d4ed8 0%, #0284c7 50%, #0d9488 100%); box-shadow: 0 18px 40px -22px rgba(2,132,199,.7); }
+.h-txt { position: relative; z-index: 1; max-width: 640px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.hero h2 { margin: 4px 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
+.hero p { margin: 0; font-size: 14.5px; opacity: .95; line-height: 1.55; }
+.hero p b { font-weight: 700; }
+.h-chips { display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 1; }
+.hc { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(6px); border-radius: 16px; padding: 10px 16px; min-width: 112px; }
+.hc b { display: block; font-size: 22px; font-weight: 800; line-height: 1.15; }
+.hc span { font-size: 11.5px; opacity: .9; font-weight: 600; display: block; }
+.hc em { display: block; font-style: normal; font-size: 11px; opacity: .8; margin-top: 2px; line-height: 1.35; max-width: 150px; }
+
+/* ---------- section titles ---------- */
+.sec-title { font-size: 16px; font-weight: 700; margin: 30px 0 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sec-title small { font-weight: 500; color: var(--ink-3); font-size: 12.5px; }
+.sec-title .bar { width: 4px; height: 18px; border-radius: 4px; background: linear-gradient(#6366f1, #ec4899); }
+.note { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 10px 14px; color: var(--ink-2); font-size: 12.5px; margin: 14px 0 0; display: flex; gap: 10px; align-items: flex-start; }
+.note .ic { color: var(--brand); margin-top: 1px; }
+.note b { color: var(--ink); }
+
+/* ---------- KPI tiles ---------- */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 14px; }
+.tiles + .tiles { margin-top: 14px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px 14px; box-shadow: var(--shadow); position: relative; overflow: hidden; transition: transform .15s, box-shadow .15s; text-align: left; font: inherit; color: inherit; }
+.tile::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 3px; background: var(--h); opacity: .9; }
+.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.t-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-direction: row-reverse; }
+.t-ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; color: var(--h); background: color-mix(in srgb, var(--h) 14%, transparent); flex: none; }
+.tile .lbl { font-size: 13px; color: var(--ink-2); font-weight: 600; line-height: 1.3; margin-right: auto; }
+.t-mid { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 10px; }
+.tile .val { font-size: 34px; font-weight: 800; letter-spacing: -.8px; line-height: 1.05; white-space: nowrap; }
+.tile .val small { font-size: 13.5px; font-weight: 600; color: var(--ink-3); margin-left: 6px; letter-spacing: 0; }
+.spark { width: 96px; height: 34px; flex: none; overflow: visible; }
+.tile .sub { font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 22px; padding-top: 10px; border-top: 1px solid var(--line); }
+.tile.click.sel .sub { border-top-color: rgba(255,255,255,.25); }
+.chip { display: inline-flex; align-items: center; gap: 3px; border-radius: 20px; padding: 2px 8px; font-weight: 700; font-size: 11.5px; }
+.chip.up { background: var(--good-bg); color: var(--good-ink); }
+.chip.down { background: var(--crit-bg); color: var(--crit-ink); }
+.chip.flat { background: var(--surface-2); color: var(--ink-3); font-weight: 600; }
+.tile.click { cursor: pointer; width: 100%; }
+.tile.sev-crit { --h: #ef4444; } .tile.sev-serious { --h: #f97316; } .tile.sev-warn { --h: #f59e0b; } .tile.sev-good { --h: #10b981; }
+.tile.click.sel { background: linear-gradient(135deg, var(--h), color-mix(in srgb, var(--h) 70%, #7c3aed)); border-color: transparent; color: #fff; box-shadow: 0 14px 30px -14px var(--h); }
+.tile.click.sel .lbl, .tile.click.sel .sub, .tile.click.sel .val small { color: rgba(255,255,255,.88); }
+.tile.click.sel .t-ic { background: rgba(255,255,255,.2); color: #fff; }
+
+/* ---------- cards & charts ---------- */
+.grid2 { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; margin-top: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; box-shadow: var(--shadow); min-width: 0; }
+.c-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.card h3 { margin: 0; font-size: 14.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.card h3 .dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+.card .cap { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; font-weight: 500; }
+.c-head .legend { flex-wrap: nowrap; white-space: nowrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+svg.chart { width: 100%; display: block; overflow: visible; }
+svg.chart text { fill: var(--ink-3); font-size: 11px; font-family: var(--font); }
+svg.chart .lbl-strong { fill: var(--ink); font-weight: 700; }
+svg.chart .halo { stroke: var(--surface); stroke-width: 4px; paint-order: stroke; font-size: 12.5px; }
+svg.chart .hit { fill: transparent; cursor: pointer; }
+svg.chart .hit:hover { fill: color-mix(in srgb, var(--brand) 7%, transparent); }
+
+/* leaderboard */
+.lb { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.lb li { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 12px; }
+.lb li:hover { background: var(--surface-2); }
+.lb .rk { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--surface-2); color: var(--ink-2); flex: none; }
+.lb li:nth-child(1) .rk { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #78350f; }
+.lb li:nth-child(2) .rk { background: linear-gradient(135deg, #e5e7eb, #9ca3af); color: #1f2937; }
+.lb li:nth-child(3) .rk { background: linear-gradient(135deg, #fed7aa, #ea580c); color: #fff; }
+.lb .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb .nm small { display: block; color: var(--ink-3); font-size: 11.5px; }
+.lb .sc { font-weight: 800; font-size: 16px; color: var(--brand); }
+
+/* ---------- territory cards ---------- */
+.terr { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.tcard { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.tcard::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 84px; background: linear-gradient(135deg, color-mix(in srgb, var(--h) 16%, transparent), transparent 75%); pointer-events: none; }
+.tc-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; position: relative; }
+.tc-head h3 { margin: 0; font-size: 16px; font-weight: 800; }
+.tc-head .cap { font-size: 12px; color: var(--ink-3); }
+.tc-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: var(--h); box-shadow: 0 8px 18px -8px var(--h); flex: none; }
+.tc-ic .ic { width: 20px; height: 20px; }
+.tc-name { display: flex; gap: 12px; align-items: center; }
+.donut { flex: none; }
+.donut .dn { font-weight: 800; font-size: 15px; fill: var(--ink); font-family: var(--font); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; position: relative; }
+.st { background: var(--surface-2); border-radius: 12px; padding: 9px 11px; }
+.st span { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+.st b { font-size: 18px; font-weight: 800; }
+.st b small { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-left: 3px; }
+
+/* ---------- tables ---------- */
+.tbl-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+.tbl-bar { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tbl-bar .cnt { color: var(--ink-2); font-size: 12.5px; margin-right: auto; font-weight: 600; background: var(--surface-2); border-radius: 20px; padding: 3px 10px; }
+.search { position: relative; }
+.search input { border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px 7px 32px; background: var(--surface-2); width: 220px; outline: none; }
+.search input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent); }
+.search .ic { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--ink-3); }
+.btn { border: 0; background: linear-gradient(90deg, #10b981, #0d9488); color: #fff; border-radius: 10px; padding: 7px 13px; cursor: pointer; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 6px 14px -8px rgba(16,185,129,.9); }
+.btn:hover { filter: brightness(1.06); }
+.btn .ic { width: 15px; height: 15px; }
+.tbl-scroll { overflow: auto; max-height: 640px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+th { position: sticky; top: 0; z-index: 1; background: var(--surface-2); text-align: left; font-weight: 700; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); padding: 10px 10px; border-bottom: 1px solid var(--line); cursor: pointer; white-space: nowrap; user-select: none; }
+th:hover { color: var(--brand); }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+th .ar { color: var(--brand); margin-left: 4px; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td.wrap { white-space: normal; min-width: 110px; max-width: 170px; line-height: 1.3; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr { transition: background .1s; }
+tbody tr:hover td { background: var(--brand-soft); }
+tr.total td { font-weight: 800; background: var(--surface-2); border-top: 2px solid var(--line); }
+tr.sub td { background: color-mix(in srgb, var(--brand-soft) 45%, var(--surface)); font-size: 12.5px; }
+.muted { color: var(--ink-3); }
+.who { display: flex; align-items: center; gap: 10px; }
+.who small { display: block; color: var(--ink-3); font-size: 11.5px; line-height: 1.2; }
+.av { width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); color: #fff; font-size: 11.5px; font-weight: 700; flex: none; letter-spacing: .3px; }
+.av-lg { width: 56px; height: 56px; font-size: 19px; border: 3px solid rgba(255,255,255,.6); }
+.av-sm { width: 26px; height: 26px; font-size: 10px; }
+button.rep { color: var(--ink); border: 0; background: none; padding: 0; cursor: pointer; font-weight: 600; text-align: left; }
+button.rep:hover { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
+.exp { border: 0; background: var(--surface-2); cursor: pointer; color: var(--ink-2); width: 24px; height: 24px; border-radius: 7px; padding: 0; font-size: 11px; }
+.exp:hover, .exp.open { background: var(--brand); color: #fff; }
+.empty { padding: 34px; text-align: center; color: var(--ink-3); }
+
+/* progress cells */
+.pc { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.pbar { width: 52px; height: 7px; border-radius: 7px; background: var(--track); overflow: hidden; display: inline-block; }
+.pbar i { display: block; height: 100%; border-radius: 7px; }
+.pc.ok .pbar i { background: linear-gradient(90deg, #34d399, #10b981); }
+.pc.mid .pbar i { background: linear-gradient(90deg, #fcd34d, #f59e0b); }
+.pc.lo .pbar i { background: linear-gradient(90deg, #fca5a5, #ef4444); }
+.pc.br .pbar i { background: linear-gradient(90deg, #a5b4fc, #6366f1); }
+.pc b { min-width: 34px; font-weight: 700; }
+
+/* pills */
+.pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 2px 10px 2px 8px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.crit { background: var(--crit-bg); color: var(--crit-ink); }
+.pill.serious { background: var(--serious-bg); color: var(--serious-ink); }
+.pill.warn { background: var(--warn-bg); color: var(--warn-ink); }
+.pill.good { background: var(--good-bg); color: var(--good-ink); }
+.pill.neutral { background: var(--surface-2); color: var(--ink-2); }
+.pill.brand { background: var(--brand-soft); color: var(--brand); }
+
+/* day strip */
+.strip { display: inline-flex; gap: 3px; vertical-align: middle; }
+.strip i { width: 10px; height: 18px; border-radius: 4px; background: var(--track); }
+.strip i.p1 { background: #c7d2fe; }
+.strip i.p5 { background: linear-gradient(#818cf8, #4f46e5); }
+.strip i.ab { background: linear-gradient(#fda4af, #f43f5e); }
+.strip i.sel { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink-2); }
+
+/* tenure bar */
+.tbar { display: inline-flex; width: 96px; height: 9px; border-radius: 9px; overflow: hidden; vertical-align: middle; gap: 2px; }
+.tbar i:nth-child(1) { background: #f9a8d4; }
+.tbar i:nth-child(2) { background: #a78bfa; }
+.tbar i:nth-child(3) { background: #4f46e5; }
+
+/* toolbar card for thresholds */
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; box-shadow: var(--shadow); margin-bottom: 16px; font-size: 13px; color: var(--ink-2); }
+.toolbar label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.toolbar input { width: 104px; border: 1px solid var(--line); border-radius: 9px; padding: 5px 8px; background: var(--surface-2); }
+.field-bar { justify-content: space-between; }
+.field-bar .thr { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.thr-f { border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 3px 4px 3px 12px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.thr-f:focus-within { border-color: var(--brand); }
+.toolbar .thr-f input { width: auto; border: 0; border-radius: 7px; background: var(--surface); padding: 4px 6px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.toolbar .thr-f input[type=number] { width: 52px; text-align: right; }
+.thr-f .u { color: var(--ink-3); font-weight: 600; padding-right: 8px; }
+
+/* ---------- drawer ---------- */
+.drawer-bg { position: fixed; inset: 0; background: rgba(15,23,42,.45); backdrop-filter: blur(2px); z-index: 20; display: none; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100vw); background: var(--page); z-index: 21; box-shadow: -20px 0 50px rgba(0,0,0,.2); transform: translateX(100%); transition: transform .22s cubic-bezier(.2,.8,.2,1); overflow-y: auto; }
+.drawer.open { transform: none; }
+.drawer-bg.open { display: block; }
+.dr-head { background: linear-gradient(120deg, #4338ca, #7c3aed 60%, #db2777); color: #fff; padding: 26px 24px 22px; display: flex; gap: 16px; align-items: center; position: relative; }
+.dr-head h2 { margin: 0; font-size: 19px; font-weight: 800; }
+.dr-head .meta { font-size: 12.5px; opacity: .9; line-height: 1.6; }
+.dr-body { padding: 18px 20px 30px; display: flex; flex-direction: column; gap: 14px; }
+.dr-body .tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.dr-body .tile .val { font-size: 24px; }
+.drawer .x { position: absolute; top: 14px; right: 14px; border: 0; background: rgba(255,255,255,.2); color: #fff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 14px; }
+.drawer .x:hover { background: rgba(255,255,255,.32); }
+.arealist { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.arealist div { display: grid; grid-template-columns: 110px 1fr 40px; align-items: center; gap: 10px; font-size: 13px; }
+.arealist .pbar { width: 100%; }
+.arealist .pbar i { background: linear-gradient(90deg, #818cf8, #6366f1); }
+.arealist b { text-align: right; }
+
+#tip { position: fixed; z-index: 30; pointer-events: none; background: #0f172a; color: #f8fafc; padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.5; display: none; max-width: 260px; box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+#tip b { font-weight: 700; }
+
+/* ---------- mixed finish ----------
+   Sharp where the page shows a lot of data (tables, chart panels, the cells inside them);
+   rounded and soft for the summary pieces (header bands, KPI and territory cards, controls, menu, calendar, profile). */
+
+/* data: square-ish, hairline borders, no shadow */
+.tbl-wrap { border-radius: 4px; box-shadow: none; }
+.tbl-bar .cnt { border-radius: 3px; }
+td .pill, tr .pill { border-radius: 3px; }
+.pbar, .pbar i { border-radius: 1px; }
+.strip i { border-radius: 1px; }
+.tbar { border-radius: 1px; }
+.exp { border-radius: 3px; }
+.card { border-radius: 6px; box-shadow: none; }
+.card .c-head h3 .dot { border-radius: 1px; }
+th { letter-spacing: .06em; }
+
+/* summary: rounded, soft */
+.hero { border-radius: 22px; }
+.hc { border-radius: 16px; }
+.tile { border-radius: 18px; }
+.tcard { border-radius: 20px; }
+.st { border-radius: 12px; }
+.t-ic { border-radius: 11px; }
+.tc-ic { border-radius: 12px; }
+.note, .toolbar { border-radius: 14px; }
+.chip { border-radius: 20px; }
+.tile .pill, .tcard .pill, .toolbar .pill, .sec-title .pill { border-radius: 20px; }
+.lb li { border-radius: 12px; }
+.tile .val, .hero h2 { letter-spacing: -.5px; }
+
+/* ---------- help: (i) markers, underlined headings, rich tooltips, guide ---------- */
+.qi { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid currentColor; color: var(--ink-3); font: 700 9.5px/1 Georgia, serif; font-style: italic; margin-left: 6px; cursor: help; vertical-align: 1px; flex: none; opacity: .8; }
+.qi:hover, .qi:focus { color: var(--brand); opacity: 1; outline: none; }
+.qi-lt { color: #fff; }
+.hl { cursor: help; }
+.hl:hover { color: var(--brand); }
+.hero .hl:hover, .tile.click.sel .hl:hover { color: inherit; }
+.tile.click.sel .qi { color: #fff; }
+th[data-tip] { cursor: help; }
+
+.st[data-tip] { cursor: help; }
+
+#tip { max-width: 320px; padding: 10px 13px; font-size: 12.5px; line-height: 1.5; }
+#tip .tt-t { font-weight: 700; font-size: 13px; margin-bottom: 3px; color: #fff; }
+#tip .tt-how { margin-top: 7px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,.15); color: #cbd5e1; font-size: 11.5px; }
+#tip .tt-how b { color: #e2e8f0; }
+
+/* ---------- live KPI cards ---------- */
+.tile.drill { cursor: pointer; width: 100%; }
+.tile.drill::after { content: '›'; position: absolute; bottom: 12px; right: 16px; font-size: 20px; line-height: 1; color: var(--ink-3); opacity: 0; transition: opacity .15s, transform .15s; }
+.tile.drill:hover::after { opacity: 1; transform: translateX(2px); color: var(--h); }
+.tile.drill:focus-visible { outline: 2px solid var(--h); outline-offset: 2px; }
+.spark .sp-hit { fill: transparent; cursor: crosshair; }
+.spark .sp-hit:hover { fill: color-mix(in srgb, var(--ink-3) 14%, transparent); }
+.dlist { display: flex; flex-direction: column; margin-top: 6px; }
+.dl-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.dl-row:last-child { border-bottom: 0; }
+.dl-meta { color: var(--ink-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-meta small, .dl-val small { display: block; color: var(--ink-3); font-size: 11.5px; }
+.dl-val { text-align: right; white-space: nowrap; }
+
+.trend-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.trend-stats div { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+.trend-stats span { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+.trend-stats b { font-size: 17px; font-weight: 800; }
+.trend-stats small { display: block; font-size: 11px; color: var(--ink-3); }
+.card .cap b { color: var(--ink-2); }
+
+/* ---------- area buttons: Branch › Main · Remote together, the states apart ---------- */
+.area-seg { gap: 6px; padding: 3px; }
+.area-seg .sg-grp { display: inline-flex; align-items: center; border-radius: 9px; padding: 2px; gap: 1px; }
+.area-seg .sg-branch { background: color-mix(in srgb, var(--brand) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 22%, transparent); }
+.area-seg .sg-branch button:not([aria-pressed="true"]) { color: var(--brand); }
+.area-seg .sg-branch.whole { background: linear-gradient(90deg, #6366f1, #8b5cf6); box-shadow: 0 4px 12px -4px rgba(99,102,241,.7); }
+.area-seg .sg-branch.whole button, .area-seg .sg-branch.whole button[aria-pressed="true"] { background: transparent; box-shadow: none; color: #fff; font-weight: 600; }
+.area-seg .sg-pipe { width: 1px; align-self: stretch; margin: 4px 3px; background: var(--line); }
+.area-seg .sg-grp + .sg-grp { border-left: 1px solid var(--line); border-radius: 0 9px 9px 0; padding-left: 6px; }
+
+/* ---------- managers table (Mumbai style) ---------- */
+.mgr-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.team-toggle { background: transparent; border: 1px solid var(--line); border-radius: 11px; color: var(--ink-2); font: inherit; font-size: 12px; padding: 1px 9px; cursor: pointer; white-space: nowrap; }
+tr:hover .team-toggle, .team-toggle:focus-visible { border-color: var(--brand); color: var(--ink); }
+.team-toggle.open { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+#tw-mgr-manager td:first-child, #tw-mgr-manager th:first-child { width: 1%; }
+#tw-mgr-manager .tbar { width: 64px; }
+#tw-mgr-manager td.wrap { max-width: 150px; }
+#tw-mgr-manager tbody tr:not(.perf-sub) td b { font-weight: 700; }
+tr.perf-sub td { background: color-mix(in srgb, var(--surface-2) 60%, var(--surface)); color: var(--ink-2); font-size: 12.5px; }
+tr.perf-sub td.sub-name { padding-left: 26px; }
+tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
+.ok-t { color: var(--good-ink); font-weight: 600; }
+.mid-t { color: var(--warn-ink); font-weight: 600; }
+.lo-t { color: var(--crit-ink); font-weight: 600; }
+.mgrwrap { position: relative; }
+.mgr-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 7px 12px; cursor: pointer; font-weight: 600; box-shadow: var(--shadow); max-width: 240px; }
+.mgr-btn #mgrLbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mgr-btn .ic { width: 16px; height: 16px; color: var(--brand); }
+.mgr-btn .car { font-size: 10px; color: var(--ink-3); }
+.mgr-btn.on { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); }
+.mgr-pop { position: absolute; top: calc(100% + 8px); left: 0; z-index: 15; width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 50px -16px rgba(15,23,42,.35); padding: 12px; }
+.mgr-pop[hidden] { display: none; }
+.mo-search { display: block; }
+.mo-search input { width: 100%; }
+.mo-leg { font-size: 11px; color: var(--ink-3); margin: 8px 2px 6px; }
+.mo-leg b { color: var(--ink); }
+.mo-list { max-height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
+.mo { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; border: 0; background: none; text-align: left; cursor: pointer; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; color: var(--ink); }
+.mo:hover { background: var(--surface-2); }
+.mo .mo-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mo .mo-x { flex: none; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.mo.is-mgr { margin-top: 6px; background: var(--surface-2); }
+.mo.is-mgr .mo-n, .mo.is-all .mo-n { font-weight: 800; }
+.mo.is-tl .mo-n { font-weight: 500; color: var(--ink-2); }
+.mo.sel { background: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
+.mo.sel .mo-n { color: var(--brand); }
+.mo-empty { padding: 14px; color: var(--ink-3); font-size: 12.5px; text-align: center; }
+.btn-ghost { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 600; font-size: 12px; }
+.btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+
+@media (max-width: 1600px) { .upd { display: none; } }
+@media (max-width: 1400px) { .crumb-pre { display: none; } .mgr-btn { max-width: 190px; } .top { gap: 10px; } }
+@media (max-width: 1180px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 980px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: sticky; top: 0; height: auto; flex-direction: row; overflow-x: auto; padding: 8px 10px; z-index: 6; gap: 4px; }
+  .brand, .rail-foot, .nav-btn[aria-current="page"]::before { display: none; }
+  .side { flex-direction: row; align-items: stretch; }
+  .nav-btn { width: auto; min-width: 64px; white-space: nowrap; padding: 6px 10px; }
+  .upd { display: none; }
+  .top { position: static; padding: 12px 16px; }
+  .page { padding: 16px 16px 50px; }
+  .hero { padding: 20px; border-radius: 18px; }
+  .hero h2 { font-size: 22px; }
+  .tile .val { font-size: 24px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .top > * { max-width: 100%; }
+  .seg { flex-wrap: nowrap; overflow-x: auto; }
+  .hero { display: block; }
+  .h-chips { margin-top: 14px; }
+  .hc { flex: 1; min-width: 0; padding: 8px 12px; }
+  .hc b { font-size: 18px; }
+  .c-head { flex-wrap: wrap; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .tile { padding: 14px; }
+  .t-mid { flex-direction: column; align-items: flex-start; }
+  .spark { width: 100%; height: 28px; }
+  .grid2, .grid3 { grid-template-columns: minmax(0, 1fr); }
+  .search input { width: 150px; }
+  .dr-body .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cal-pop { left: 0; transform: none; width: min(320px, calc(100vw - 32px)); }
+  .mgr-pop { width: min(420px, calc(100vw - 32px)); }
+}
+@media print {
+  .side, .top, .search, .btn { display: none; }
+  .app { display: block; }
+  .tbl-scroll { max-height: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side" aria-label="Reports">
+    <div class="brand"><div class="logo" title="Hyderabad JDA · daily field operations">JD</div></div>
+    <button class="nav-btn" data-page="today" title="Today"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Today</button>
+    <button class="nav-btn" data-page="territory" title="Territories: main city vs remote, Telangana report"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Areas</button>
+    <button class="nav-btn" data-page="managers" title="Managers &amp; tenure"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>Managers</button>
+    <button class="nav-btn" data-page="actions" title="Action list: absenteeism, zero sale, low output"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.5"/></svg>Actions<span class="badge" id="actBadge" hidden></span></button>
+    <button class="nav-btn" data-page="field" title="Field discipline: start, finish, gaps, pacing"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Field</button>
+    <div class="rail-foot">
+      <span class="live-dot" id="liveDot"></span>
+      <button type="button" class="rail-ic" id="themeBtn" title="Switch light / dark" aria-label="Switch light or dark"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+    </div>
+  </nav>
+  <div class="main">
+    <header class="top">
+      <div class="crumb"><span class="crumb-pre">Hyderabad JDA <span>›</span></span> <b id="pageTitle">Today</b><span class="upd" id="footInfo"></span></div>
+      <div class="datewrap"><div class="datebox"><button type="button" id="prevDay" aria-label="Previous working day">‹</button><button type="button" class="cal-btn" id="calBtn" aria-haspopup="dialog" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="calLbl"></span><span class="car">▼</span></button><button type="button" id="nextDay" aria-label="Next working day">›</button></div><div class="cal-pop" id="calPop" role="dialog" aria-label="Pick a day" hidden></div></div>
+      <div class="seg area-seg" id="scopeSeg" role="group" aria-label="Area"></div>
+      <div class="mgrwrap"><button type="button" class="mgr-btn" id="mgrBtn" aria-haspopup="dialog" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg><span id="mgrLbl">All managers</span><span class="car">▼</span></button><div class="mgr-pop" id="mgrPop" role="dialog" aria-label="Pick a manager or TL" hidden></div></div>
+    </header>
+    <main class="page" id="page"></main>
+  </div>
+</div>
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer" aria-label="Rep details"></aside>
+<div id="tip"></div>
+
+<script type="application/json" id="hydData">{}</script>
+<script>
+(function () {
+'use strict';
+const D = JSON.parse(document.getElementById('hydData').textContent || '{}');
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf = (v, dp = 0) => v == null || isNaN(v) ? '—' : Number(v).toLocaleString('en-IN', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const pct = v => v == null || isNaN(v) ? '—' : Math.round(v * 100) + '%';
+// sales are a count of deals closed (a deal shared with a JDS counts 0.5), not rupees
+const nsales = v => v == null ? '—' : nf(v, v % 1 ? 1 : 0);
+const hm = m => m == null ? '—' : String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0');
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dt = s => new Date(s + 'T00:00:00');
+const dlabel = (s, wd) => { const d = dt(s); return (wd ? WD[d.getDay()] + ' ' : '') + d.getDate() + ' ' + MON[d.getMonth()]; };
+const daysBetween = (a, b) => Math.round((dt(b) - dt(a)) / 864e5);
+
+if (!D.days || !D.days.length) { $('#page').innerHTML = '<div class="empty">No data in this page yet. Run main.py to fill it.</div>'; return; }
+
+const TARGET = 5;          // presentations a day that count as "on target"
+const ROSTER_DAYS = 15;    // a rep stays on the roster for this many calendar days after their last presentation (longer gaps: left or long leave)
+const HAS_SALES = !!D.meta.has_sales, HAS_HR = !!D.meta.has_hr;
+// active JDAs come from the HR table (hr_all_daily_copy_ganesh) when it was read (HAS_ROSTER); otherwise: presented in the last ROSTER_DAYS days
+const NDAY = D.days.length, AREAS = D.areas, REPS = D.reps, MGRS = D.mgrs;
+// managers sometimes log presentations themselves: they are not counted as JDAs, except TLs that HR lists as
+// customer-facing field JDAs ("JDA Team Leader + Cust. Facing"): they present daily and count like any JDA
+const MGR_CODES = new Set(MGRS.map(m => String(m[0])));
+const HAS_ROSTER = !!D.meta.has_roster;
+const IS_MGR = REPS.map(p => MGR_CODES.has(String(p.id)) && !(HAS_ROSTER && p.jda));
+
+// ---------- indexes ----------
+const recsByDay = Array.from({ length: NDAY }, () => []);
+const repDays = REPS.map(() => new Map());
+for (const x of D.rd) {
+  const rec = { d: x[0], r: x[1], m: x[2], areas: x[3], times: x[4], nw: x[5], pd: x[6] };
+  rec.n = rec.areas.reduce((s, a) => s + a[1], 0);
+  rec.home = rec.areas[0][0];
+  recsByDay[rec.d].push(rec);
+  repDays[rec.r].set(rec.d, rec);
+}
+const repDayList = repDays.map(m => [...m.keys()].sort((a, b) => a - b));
+// the first day a rep is expected in the field: HR joining date when known, else their first presentation
+const startDay = REPS.map((p, r) => { const j = HAS_ROSTER && p.jda && p.joined ? D.days.findIndex(x => x >= p.joined) : -1; return j >= 0 ? j : p.jda && HAS_ROSTER && !p.joined ? 0 : (repDayList[r][0] ?? Infinity); });
+const salesMap = REPS.map(() => new Map());
+for (const [d, r, v] of D.sales || []) salesMap[r].set(d, v);
+const areaSales = Array.from({ length: NDAY }, () => new Map());
+for (const [d, a, v] of D.area_sales || []) areaSales[d].set(a, v);
+
+// working day = the branch had at least 30% of a normal day's presentations (Sundays and holidays drop out)
+const dayTotal = recsByDay.map(l => l.reduce((s, r) => s + r.n, 0));
+const med = (() => { const v = dayTotal.filter(x => x > 0).sort((a, b) => a - b); return v[Math.floor(v.length / 2)] || 0; })();
+const isWork = dayTotal.map(t => t >= med * 0.3);
+const WORK = D.days.map((_, i) => i).filter(i => isWork[i]);
+const workPos = new Map(WORK.map((d, i) => [d, i]));
+
+// the last record of a rep on or before day d (binary search)
+function lastRec(r, d) {
+  const l = repDayList[r]; let lo = 0, hi = l.length - 1, ans = -1;
+  while (lo <= hi) { const mid = (lo + hi) >> 1; if (l[mid] <= d) { ans = l[mid]; lo = mid + 1; } else hi = mid - 1; }
+  return ans < 0 ? null : repDays[r].get(ans);
+}
+function onRoster(r, d) {
+  if (IS_MGR[r]) return false;
+  if (HAS_ROSTER) {   // HR decides: a JDA who has joined and not left; anyone else who presented that day counts too
+    const p = REPS[r], day = D.days[d];
+    if (p.jda) return (!p.joined || p.joined <= day) && (!p.left || p.left >= day);
+    return repDays[r].has(d);
+  }
+  const last = lastRec(r, d);
+  if (!last) return false;
+  const rep = REPS[r];
+  if (rep.left && rep.left <= D.days[d]) return false;
+  return daysBetween(D.days[last.d], D.days[d]) <= ROSTER_DAYS;
+}
+// working days before d (newest first), d itself excluded
+function prevWork(d, n) { const p = workPos.has(d) ? workPos.get(d) : WORK.findIndex(x => x > d); const out = []; for (let i = (p < 0 ? WORK.length : p) - 1; i >= 0 && out.length < n; i--) out.push(WORK[i]); return out; }
+function lastWork(d, n) { return [d, ...prevWork(d, n - 1)]; }   // d and the working days before it, newest first
+
+// ---------- state ----------
+// Location filters, independent of each other: Main / Remote and State
+const CITY_OPTS = [['all', 'All'], ['main', 'Main'], ['remote', 'Remote']];
+const STATE_OPTS = [['all', 'All'], ['TS', 'Telangana'], ['AP', 'Andhra Pradesh']];
+const locOk = a => (S.city === 'all' || (S.city === 'main') === (AREAS[a].main === 1)) && (S.st === 'all' || AREAS[a].state === S.st);
+const store = { get(k) { try { return localStorage.getItem('hydjda.' + k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem('hydjda.' + k, v); } catch (e) { /* private window */ } } };
+const S = {
+  page: (location.hash.slice(1) || store.get('page') || 'today'),
+  day: WORK[WORK.length - 1],
+  city: store.get('city') || 'all',
+  st: store.get('st') || 'all',
+  mgr: -1,
+  terrState: 'TS',
+  act: 'abs3',
+  fieldThr: { start: 11 * 60, end: 18 * 60, gap: 240 },
+  treeOpen: null,   // TLs whose JDAs are shown on the Managers page
+};
+if (!['today', 'territory', 'managers', 'actions', 'field'].includes(S.page)) S.page = 'today';
+if (!CITY_OPTS.some(o => o[0] === S.city)) S.city = 'all';
+if (!STATE_OPTS.some(o => o[0] === S.st)) S.st = 'all';
+if (S.city !== 'all' && S.st !== 'all') { S.city = 'all'; S.st = 'all'; }   // one area at a time
+
+// the context of a rep on day d: today's record, else the last one before it (for absent reps)
+function ctx(r, d) {
+  const rec = repDays[r].get(d) || null;
+  const last = rec || lastRec(r, d);
+  const ha = REPS[r].harea;
+  return { rec, home: last ? last.home : ha != null ? ha : -1, mgr: last ? last.m : -1, last };
+}
+function inView(r, d, c) {
+  c = c || ctx(r, d);
+  if (c.home < 0 || !locOk(c.home)) return false;
+  return mgrOk(c.mgr, d);
+}
+const rosterCache = new Map();
+function roster(d) {   // [{r, c}] reps on the roster on day d within the current area + manager filter
+  const key = d + '|' + S.city + '|' + S.st + '|' + S.mgr;
+  if (rosterCache.has(key)) return rosterCache.get(key);
+  const out = [];
+  for (let r = 0; r < REPS.length; r++) {
+    if (!onRoster(r, d)) continue;
+    const c = ctx(r, d);
+    if (inView(r, d, c)) out.push({ r, c });
+  }
+  rosterCache.set(key, out);
+  return out;
+}
+function daySummary(d) {
+  const ro = roster(d);
+  let active = 0, pres = 0, onT = 0, sales = 0;
+  for (const { r, c } of ro) {
+    if (c.rec) { active++; pres += c.rec.n; if (c.rec.n >= TARGET) onT++; }
+    sales += salesMap[r].get(d) || 0;
+  }
+  return { roster: ro.length, active, pres, onT, sales, att: ro.length ? active / ro.length : null, avg: active ? pres / active : null, onTp: active ? onT / active : null };
+}
+function avgOf(days, f) { const v = days.map(f).filter(x => x != null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+
+function absentStreak(r, d) {   // working days in a row without a presentation, ending on d
+  let n = 0; const first = startDay[r];
+  for (const w of lastWork(d, 60)) { if (w < first) break; if (repDays[r].has(w)) break; n++; }
+  return n;
+}
+function tenureMonths(r, d) {
+  const rep = REPS[r];
+  const from = rep.joined || rep.first;
+  return from ? daysBetween(from, D.days[d]) / 30.44 : null;
+}
+const TEN_BUCKETS = HAS_HR ? ['Under 3 months', '3–12 months', '1 year +'] : ['Under 1 month', '1–3 months', '3 months +'];
+function tenureBucket(r, d) {
+  const m = tenureMonths(r, d); if (m == null) return -1;
+  return HAS_HR ? (m < 3 ? 0 : m < 12 ? 1 : 2) : (m < 1 ? 0 : m < 3 ? 1 : 2);
+}
+const tenureText = (r, d) => { const m = tenureMonths(r, d); if (m == null) return '—'; const t = m < 1 ? Math.max(0, Math.round(m * 30.44)) + ' d' : m < 12 ? Math.floor(m) + ' m' : (m / 12).toFixed(1) + ' y'; return HAS_HR && REPS[r].joined ? t : t + (REPS[r].first === D.meta.window_start ? '+' : ''); };
+const areaName = a => a < 0 ? '—' : AREAS[a].name;
+const mgrName = m => m < 0 ? '—' : MGRS[m][1];
+const repLink = r => `<button type="button" class="rep" data-rep="${r}">${esc(REPS[r].name)}</button>`;
+
+// ---------- look helpers ----------
+let gid = 0; const uid = () => 'g' + (++gid);
+const HUES = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
+const ICON = {
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  board: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="m7 12 3-3 2 2 4-4"/>',
+  gauge: '<path d="M4 18a8 8 0 1 1 16 0"/><path d="m12 18 4-6"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  rupee: '<path d="M6 4h12M6 9h12M6 4h4a5 5 0 0 1 0 10H6l8 7"/>',
+  alert: '<path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  city: '<path d="M3 21h18M5 21V8l6-4v17M11 21V10h8v11M8 9v.01M8 12v.01M8 15v.01M14 13v.01M17 13v.01M14 16v.01M17 16v.01"/>',
+  road: '<path d="M4 21 9 3M20 21 15 3M12 6v2M12 11v2M12 16v2"/>',
+  calx: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M10 14l4 4M14 14l-4 4"/>',
+  cal2: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 15h3M13 15h3"/>',
+  wave: '<path d="M2 12c2.5-5 5-5 7.5 0s5 5 7.5 0 3-4 5-2"/>',
+  back: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  down: '<path d="m3 7 7 7 4-4 7 7"/><path d="M21 11v6h-6"/>',
+  zero: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6 18.4 18.4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  span: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+  pause: '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
+  team: '<circle cx="12" cy="7" r="3"/><circle cx="5" cy="10" r="2.2"/><circle cx="19" cy="10" r="2.2"/><path d="M7 20c.5-3.2 2.5-5 5-5s4.5 1.8 5 5M1.5 19c.3-2 1.5-3.4 3.5-3.6M22.5 19c-.3-2-1.5-3.4-3.5-3.6"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  dl: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/>',
+};
+const icon = k => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k] || ''}</svg>`;
+function hashHue(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return HUES[h % HUES.length]; }
+const initials = n => String(n).split(/[\s.]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const avatar = (name, size) => `<span class="av${size ? ' av-' + size : ''}" style="--c:${hashHue(name)}">${esc(initials(name))}</span>`;
+const who = r => `<div class="who">${avatar(REPS[r].name)}<div><button type="button" class="rep" data-rep="${r}">${esc(REPS[r].name)}</button><small>${esc(REPS[r].id)}</small></div></div>`;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const longDate = s => { const d = dt(s); return DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); };
+const scopeLabel = () => S.city === 'all' && S.st === 'all' ? 'Whole branch' : [S.city === 'all' ? '' : S.city === 'main' ? 'Main city' : 'Remote', S.st === 'all' ? '' : S.st === 'TS' ? 'Telangana' : 'Andhra Pradesh'].filter(Boolean).join(' · ');
+
+// the banner says what the page is for; the day's summary sentence shows on hover
+const PURPOSE = {
+  today: ['Daily JDA field report', 'Who went out, how much they presented, and who hit target'],
+  territory: ['Main city vs remote', 'How each area and district performed'],
+  managers: ['Managers & TLs', 'Attendance and output of every team'],
+  actions: ['Action list', 'JDAs who need a follow-up today'],
+  field: ['Field discipline', 'When JDAs start, finish and pace their day'],
+};
+function hero(theme, title, text, chips = []) {
+  const [name, what] = PURPOSE[theme] || [title, ''];
+  const tip = `<div class=tt-t>${esc(title)}</div>${text}`;
+  return `<section class="hero hero-${theme}" data-tip="${esc(tip)}"><div class="h-txt"><div class="eyebrow">${esc(longDate(D.days[S.day]))} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
+    <h2>${esc(name)}</h2><p>${esc(what)}</p></div>
+    <div class="h-chips">${chips.map(([l, v, x]) => `<div class="hc"><b>${v}</b><span>${esc(l)}</span>${x ? `<em>${esc(x)}</em>` : ''}</div>`).join('')}</div></section>`;
+}
+const secTitle = (t, small = '', extra = '') => `<div class="sec-title"><span class="bar"></span>${esc(t)}${extra}${small ? ` <small>${small}</small>` : ''}</div>`;
+const note = html => `<div class="note">${icon('info')}<div>${html}</div></div>`;
+function card(title, cap, body, hue = 'var(--c1)', right = '') {
+  return `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:${hue}"></i><span class="${helpOf(title) ? 'hl' : ''}"${tipAttr(title)}>${title}</span></h3>${cap ? `<div class="cap">${cap}</div>` : ''}</div>${right}</div>${body}</div>`;
+}
+const presCell = n => `<span class="pc ${n >= TARGET ? 'ok' : 'mid'}"><span class="pbar"><i style="width:${Math.min(n / 8, 1) * 100}%"></i></span><b>${n}</b></span>`;
+const attCell = v => v == null ? '<span class="muted">—</span>' : `<span class="pc ${v >= .85 ? 'ok' : v >= .7 ? 'mid' : 'lo'}"><span class="pbar"><i style="width:${Math.round(v * 100)}%"></i></span><b>${pct(v)}</b></span>`;
+const barCell = (v, max, txt) => `<span class="pc br"><span class="pbar"><i style="width:${max ? Math.min(v / max, 1) * 100 : 0}%"></i></span><b>${txt}</b></span>`;
+
+function spark(vals, color, tips) {
+  const ok = vals.filter(x => x != null && !isNaN(x));
+  if (ok.length < 2) return '';
+  const W = 96, H = 34, mn = Math.min(...ok), mx = Math.max(...ok), rg = mx - mn || 1;
+  const pts = vals.map((x, i) => x == null || isNaN(x) ? null : [i / (vals.length - 1) * W, H - 4 - (x - mn) / rg * (H - 10)]).filter(Boolean);
+  const id = uid(), line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
+  const last = pts[pts.length - 1];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${color};stop-opacity:.3"/><stop offset="1" style="stop-color:${color};stop-opacity:0"/></linearGradient></defs>
+    <path d="${line}L${last[0].toFixed(1)},${H}L${pts[0][0].toFixed(1)},${H}Z" fill="url(#${id})"/><path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.2" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>${tips ? vals.map((v, i) => `<rect class="sp-hit" x="${(i - .5) / (vals.length - 1) * W}" y="0" width="${W / (vals.length - 1)}" height="${H}" data-tip="${esc(tips[i] || '')}"/>`).join('') : ''}</svg>`;
+}
+function donut(f, color, size = 76) {
+  const r = 29, C = 2 * Math.PI * r, v = f == null ? 0 : Math.max(0, Math.min(1, f)), id = uid();
+  return `<svg class="donut" viewBox="0 0 76 76" width="${size}" height="${size}" role="img" aria-label="Attendance ${pct(f)}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:${color}"/><stop offset="1" style="stop-color:${color};stop-opacity:.6"/></linearGradient></defs>
+    <circle cx="38" cy="38" r="${r}" fill="none" stroke="var(--track)" stroke-width="9"/>
+    <circle cx="38" cy="38" r="${r}" fill="none" stroke="url(#${id})" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(v * C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 38 38)"/>
+    <text x="38" y="43" text-anchor="middle" class="dn">${f == null ? '—' : Math.round(f * 100) + '%'}</text></svg>`;
+}
+
+function strip(r, d, n = 10) {
+  const ws = lastWork(d, n).reverse();
+  return '<span class="strip" aria-hidden="true">' + ws.map(w => {
+    const rec = repDays[r].get(w);
+    const cls = rec ? (rec.n >= TARGET ? 'p5' : 'p1') : (w >= startDay[r] ? 'ab' : '');
+    return `<i class="${cls}${w === d ? ' sel' : ''}" data-tip="${esc('<b>' + dlabel(D.days[w], true) + '</b><br>' + (rec ? rec.n + ' presentations' : 'absent'))}"></i>`;
+  }).join('') + '</span>';
+}
+
+// ---------- generic table ----------
+const tableState = {};
+const tableData = {};
+function table(id, cols, rows, opts = {}) {
+  const st = tableState[id] || (tableState[id] = { sort: opts.sort || null, dir: opts.dir || -1, q: '' });
+  let view = rows;
+  if (st.q) { const q = st.q.toLowerCase(); view = rows.filter(row => cols.some(c => c.search && String(c.search(row)).toLowerCase().includes(q))); }
+  if (st.sort) {
+    const c = cols.find(c => c.k === st.sort);
+    if (c) { const v = c.sortv || (row => row[c.k]); view = [...view].sort((a, b) => { const x = v(a), y = v(b); if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1; return (x < y ? -1 : x > y ? 1 : 0) * st.dir; }); }
+  }
+  tableData[id] = { cols, rows: view, title: opts.title || id };
+  const vis = cols.filter(c => !c.hidden);
+  const head = vis.map(c => { const hk = c.help || c.label, tip = helpOf(hk) ? tipAttr(hk) : (c.title ? ` data-tip="${esc(c.title)}"` : ''); return `<th class="${c.num ? 'num' : ''}" data-sort="${id}|${c.k}"${tip}><span class="thl">${esc(c.label)}</span>${st.sort === c.k ? `<span class="ar">${st.dir < 0 ? '↓' : '↑'}</span>` : ''}</th>`; }).join('');
+  const body = view.length ? view.map(row => `<tr class="${row._cls || ''}">` + vis.map(c => `<td class="${c.num ? 'num' : ''}${c.wrap ? ' wrap' : ''}">${c.html ? c.html(row) : esc(c.fmt ? c.fmt(row[c.k], row) : row[c.k])}</td>`).join('') + '</tr>' + (opts.after ? opts.after(row) : '')).join('')
+    : `<tr><td colspan="${vis.length}" class="empty">🎉 ${esc(opts.empty || 'Nobody here for this day and filter.')}</td></tr>`;
+  const foot = opts.total ? `<tr class="total">${vis.map(c => `<td class="${c.num ? 'num' : ''}">${c.totalHtml ? c.totalHtml(opts.total) : esc(c.fmt ? c.fmt(opts.total[c.k], opts.total) : (opts.total[c.k] ?? ''))}</td>`).join('')}</tr>` : '';
+  return `<div class="tbl-wrap" id="tw-${id}">
+    <div class="tbl-bar"><span class="cnt">${nf(view.length)} ${esc(opts.noun || 'rows')}</span>
+      ${opts.search !== false ? `<label class="search">${icon('search')}<input type="search" placeholder="Search name or code" data-q="${id}" value="${esc(st.q)}"></label>` : ''}
+      <button type="button" class="btn" data-csv="${id}">${icon('dl')}Excel</button></div>
+    <div class="tbl-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}${foot}</tbody></table></div></div>`;
+}
+function downloadCsv(id) {
+  const t = tableData[id]; if (!t) return;
+  const cell = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const cols = t.cols.filter(c => c.csv !== false);
+  const lines = [cols.map(c => cell(c.label)).join(',')];
+  for (const row of t.rows) lines.push(cols.map(c => cell(c.csv ? c.csv(row) : row[c.k])).join(','));
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `Hyderabad JDA - ${t.title} - ${D.days[S.day]}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+// the JDA column every rep table starts with: avatar + name + code (code also goes to Excel as its own column)
+const repCols = () => [
+  { k: 'name', label: 'JDA', html: x => who(x.r), search: x => x.name + ' ' + x.id, csv: x => x.name },
+  { k: 'id', label: 'Emp code', hidden: true },
+];
+
+// ---------- charts (inline SVG) ----------
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+// bars: [{label, v, tip, sel, color}]
+function barChart(bars, { h = 200, fmt = nf, color = '#6366f1', W = 560, ymax = 0, hiSel = true, avg = null } = {}) {
+  const padL = 40, padB = 24, padT = 16, iw = W - padL - 6, ih = h - padB - padT;
+  const max = niceMax(Math.max(ymax, ...bars.map(b => b.v || 0), 0));
+  const bw = iw / Math.max(bars.length, 1), gap = Math.max(3, Math.min(bw * 0.3, 14));
+  const id = uid();
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img"><defs>
+    <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${color}"/><stop offset="1" style="stop-color:${color};stop-opacity:.45"/></linearGradient>
+    <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:#f97316"/><stop offset="1" style="stop-color:#ec4899"/></linearGradient></defs>`;
+  for (const t of [0, .5, 1].map(f => f * max)) { const y = padT + ih - t / max * ih; s += `<line x1="${padL}" x2="${W - 6}" y1="${y}" y2="${y}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${y + 4}" text-anchor="end">${fmt(t)}</text>`; }
+  const every = Math.ceil(bars.length / 12), selI = bars.findIndex(b => b.sel), allSel = bars.every(b => b.sel) || bars.length <= 15;
+  bars.forEach((b, i) => {
+    const x = padL + i * bw + gap / 2, w = Math.max(bw - gap, 1), bh = (b.v || 0) / max * ih, y = padT + ih - bh;
+    const r = Math.min(2, w / 2, bh);
+    const fill = b.color || (b.sel && !allSel && hiSel ? `url(#${id}b)` : `url(#${id}a)`);
+    if (bh > 0) s += `<path d="M${x},${padT + ih} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${padT + ih} Z" fill="${fill}"/>`;
+    if (b.sel) s += `<text x="${x + w / 2}" y="${y - 6}" text-anchor="middle" class="lbl-strong">${fmt(b.v)}</text>`;
+    if (b.sel || ((i % every === 0) && (allSel || selI < 0 || Math.abs(i - selI) >= Math.max(2, every)))) s += `<text x="${x + w / 2}" y="${h - 6}" text-anchor="middle"${b.sel && !allSel ? ' class="lbl-strong"' : ''}>${esc(b.label)}</text>`;
+    s += `<rect class="hit" x="${padL + i * bw}" y="${padT}" width="${bw}" height="${ih}" data-tip="${esc(b.tip || '<b>' + b.label + '</b>: ' + fmt(b.v))}"${b.day != null ? ` data-day="${b.day}"` : ''}/>`;
+  });
+  if (avg != null && isFinite(avg)) { const y = padT + ih - avg / max * ih; s += `<line x1="${padL}" x2="${W - 6}" y1="${y}" y2="${y}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="6 4" opacity=".7" pointer-events="none"/><text x="${padL + 4}" y="${y - 5}" class="lbl-strong">avg ${fmt(avg)}</text>`; }
+  return s + `<line x1="${padL}" x2="${W - 6}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
+}
+// lines on a shared 0-100% axis: series [{name, color, vals:[0..1|null]}]; the first one gets a soft area fill
+function pctLines(series, labels, { h = 200, selIdx = -1, tips = [], W = 560 } = {}) {
+  const padL = 40, padR = 44, padB = 24, padT = 14, iw = W - padL - padR, ih = h - padB - padT, n = labels.length;
+  const X = i => padL + (n <= 1 ? iw / 2 : i / (n - 1) * iw), Y = v => padT + ih - v * ih;
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img">`;
+  for (const t of [0, .5, 1]) s += `<line x1="${padL}" x2="${padL + iw}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${Y(t) + 4}" text-anchor="end">${t * 100}%</text>`;
+  if (selIdx >= 0) s += `<line x1="${X(selIdx)}" x2="${X(selIdx)}" y1="${padT}" y2="${padT + ih}" stroke="var(--axis)" stroke-dasharray="3 3"/>`;
+  series.forEach((se, k) => {
+    const pts = se.vals.map((v, i) => v == null ? null : [X(i), Y(v)]);
+    let dpath = '', pen = false;
+    pts.forEach(p => { if (!p) { pen = false; return; } dpath += (pen ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); pen = true; });
+    const okp = pts.filter(Boolean);
+    if (k === 0 && okp.length > 1) { const id = uid(); s += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${se.color};stop-opacity:.25"/><stop offset="1" style="stop-color:${se.color};stop-opacity:0"/></linearGradient></defs><path d="M${okp[0][0]},${padT + ih} ${okp.map(p => 'L' + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')} L${okp[okp.length - 1][0]},${padT + ih} Z" fill="url(#${id})"/>`; }
+    s += `<path d="${dpath}" fill="none" stroke="${se.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const li = se.vals.length - 1; if (se.vals[li] != null) s += `<circle cx="${X(li)}" cy="${Y(se.vals[li])}" r="4.5" fill="${se.color}" stroke="var(--surface)" stroke-width="2"/><text x="${X(li) + 9}" y="${Y(se.vals[li]) + 4}" class="lbl-strong">${pct(se.vals[li])}</text>`;
+  });
+  const every = Math.ceil(n / 12);
+  labels.forEach((l, i) => { if (i === selIdx || (i % every === 0 && (selIdx < 0 || Math.abs(i - selIdx) >= Math.max(2, every)))) s += `<text x="${X(i)}" y="${h - 6}" text-anchor="middle"${i === selIdx ? ' class="lbl-strong"' : ''}>${esc(l)}</text>`; });
+  const step = n > 1 ? iw / (n - 1) : iw;
+  labels.forEach((l, i) => { s += `<rect class="hit" x="${X(i) - step / 2}" y="${padT}" width="${step}" height="${ih}" data-tip="${esc(tips[i] || l)}"/>`; });
+  return s + `<line x1="${padL}" x2="${padL + iw}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
+}
+
+// ---------- plain-English help: every card, chart, column and figure looks its explanation up here by its label ----------
+// [title, what it means, how it is counted]
+function helpMap() {
+  const T = TARGET, R = ROSTER_DAYS, F = S.fieldThr;
+  const ROSTER = HAS_ROSTER
+    ? 'Active JDA = a Hyderabad-branch field JDA who had joined by that day and had not left. TLs who present count too, and anyone else who presented that day counts for that day. Managers are not counted as JDAs.'
+    : `Active JDAs = JDAs who did at least one presentation in the last ${R} days Managers are not counted as JDAs.`;
+  const PRES = 'A presentation counts when a JDA does it in a Hyderabad-branch pincode and it carries points or revenue.';
+  const SALES = 'Number of deals closed with the JDA as the seller. A deal shared with a JDS counts as half a deal.';
+  return {
+    // KPI cards
+    'Active JDAs': ['Active JDAs', 'Every JDA currently working: everyone expected in the field on this day, present or not.', ROSTER],
+    'Present JDAs': ['Present JDAs', 'Active JDAs who went out and did at least 1 presentation on this day.', 'Count of JDAs with 1 or more presentations that day.'],
+    'Attendance %': ['Attendance %', 'Out of the active JDAs, the share who were present.', 'Present JDAs ÷ active JDAs.'],
+    'Absent %': ['Absent %', 'Out of the active JDAs, the share who did no presentation on this day.', 'Absent JDAs ÷ active JDAs (= 100% − attendance).'],
+    'Attendance': ['Attendance', 'Out of the active JDAs, the share who were present.', 'Present JDAs ÷ active JDAs. ' + ROSTER],
+    'Presentations': ['Presentations', 'Total presentations done by JDAs.', PRES],
+    'Avg per present JDA': ['Average per present JDA', `How many presentations a JDA who went out did, on average. The daily target is ${T}.`, 'Presentations ÷ present JDAs.'],
+    [`On target (${T}+)`]: ['On target', `JDAs who reached the daily target of ${T} or more presentations. The % is out of present JDAs.`, `Count of present JDAs with ${T}+ presentations.`],
+    'JDA deals': ['JDA deals', 'Deals closed by JDAs on this day (a count, not money).', SALES],
+    'Team attendance': ['Team attendance', 'Attendance of all teams together for the area and manager chosen at the top.', 'Present JDAs ÷ active JDAs.'],
+    'Best team (3+ JDAs)': ['Best team', 'The manager whose team had the highest attendance today. Only teams of 3 or more JDAs are compared, so tiny teams do not top the list.', 'Highest present ÷ team, ties broken by average presentations.'],
+    'Needs attention': ['Needs attention', 'The manager whose team (3+ JDAs) had the lowest attendance today.', 'Lowest present ÷ team.'],
+    'Absent 3+ days': ['Absent 3+ days', 'JDAs who have not presented on 3 or more working days in a row, across all teams.', 'Consecutive working days with no presentation, ending on the chosen day.'],
+    'Clean day (no flag)': ['Clean day', 'JDAs with no late start, no early finish and no long gap.', `First presentation by ${hm(F.start)}, last at or after ${hm(F.end)}, no gap over ${F.gap} min.`],
+    'Late start': ['Late start', 'JDAs whose first presentation of the day came late.', `First presentation after ${hm(F.start)}. Change the time in the bar above.`],
+    'Early finish': ['Early finish', 'JDAs whose last presentation of the day came early, which may mean they wrapped up early.', `Last presentation before ${hm(F.end)}. Change the time in the bar above.`],
+    'Long gap': ['Long gap', 'JDAs with a long break between two presentations.', `Longest gap between two presentations in a row is over ${F.gap} minutes.`],
+    'Attendance (30 days)': ['Attendance (30 days)', 'How many of the last 30 working days this JDA went out.', 'Days with a presentation ÷ working days since their first presentation (up to 30).'],
+    'Avg when present': ['Average when present', 'Presentations a day, counting only the days they worked.', 'Presentations ÷ days present, last 30 working days.'],
+    'Usual day': ['Usual day', 'Their usual first and last presentation time.', 'Average first and average last presentation time over the days they worked.'],
+    'Deals (30 days)': ['Deals (30 days)', 'Deals they closed over the last 30 working days.', SALES],
+    'Days on target': ['Days on target', `Days they did ${T}+ presentations, out of the days they worked.`, 'Last 30 working days.'],
+    // action list cards
+    'Absent 3+ days in a row': ['Absent 3+ days in a row', 'Not seen in the field for 3 or more working days in a row. Call them today.', 'No presentation on each of the last 3+ working days, up to the chosen day. Sundays and holidays are skipped. Approved leave also shows here (no leave data yet).'],
+    'Absent 2 days': ['Absent 2 days', 'Missed the last 2 working days. Check before it becomes 3.', 'No presentation on exactly the last 2 working days.'],
+    'On-and-off absence': ['On-and-off absence', 'Keeps skipping days now and then, without one long gap.', 'Absent on 3 or more of the last 10 working days, but not 2+ days in a row right now.'],
+    'Zero sale for 3 days': ['Zero sale for 3 days', 'Went out but closed nothing in the last 3 working days.', 'Presented on at least 1 of the last 3 working days and no sale closed in those days.'],
+    [`Under ${T} for 3 days running`]: [`Under ${T} for 3 days running`, `Working, but below target on each of the last 3 days they worked.`, `Under ${T} presentations today and on each of the 2 previous days they worked.`],
+    'Back at work today': ['Back at work today', 'Returned today after being away 2+ working days. Shows today\'s output against their usual.', 'Present today, absent on the 2+ working days before. Usual = their average on the 7 days they worked before the absence.'],
+    // charts
+    'Presentations per working day': ['Presentations per working day', 'Total presentations on each of the last 30 working days. The orange bar is the chosen day. Click any bar to jump to that day.', PRES],
+    'Attendance & on-target share': ['Attendance & on-target share', 'Green = attendance (present ÷ active). Orange = share of present JDAs who reached the target.', ROSTER],
+    'JDAs by presentations today': ['JDAs by presentations today', 'How the active JDAs split by presentations today: red = absent, yellow = 1–2, light blue = 3–4, blue = 5–7, dark blue = 8+.', 'Each active JDA is counted once, in the group for their number of presentations.'],
+    'Input by day of the week': ['Input by day of the week', 'Which weekdays are stronger or weaker. Each bar is the average presentations per present JDA on that weekday.', 'Average over the last 30 working days.'],
+    'Top performers today': ['Top performers today', 'JDAs with the most presentations today.', 'Ranked by presentations; ties broken by their 7-day average.'],
+    'Presentation pacing by hour': ['Presentation pacing by hour', 'When in the day presentations happen. Bars = the chosen day. Black ticks = the usual (average of the 7 working days before).', 'Presentations counted by the hour they were done.'],
+    'Last 30 working days': ['Last 30 working days', 'This JDA\'s presentations each working day. Dark = on target, light = under target, red = absent.', 'Hover a bar for that day\'s first and last presentation time.'],
+    'Where they presented': ['Where they presented', 'Districts where this JDA presented over the last 30 working days.', 'Presentations by district, from the pincode of each presentation.'],
+    // territory cards and figures
+    'Hyderabad main city': ['Hyderabad main city', 'JDAs working mainly in the Hyderabad district (the main city).', 'Pincodes of Hyderabad city (including Tandur).'],
+    'Telangana remote': ['Telangana remote', 'JDAs working in the 8 other Telangana districts: Warangal, Karimnagar, Khammam, Nizamabad, Nalgonda, Medak, Mahabubnagar, Adilabad.', 'Pincodes starting 50, outside Hyderabad. Newer districts roll up into their old parent district.'],
+    'Andhra Pradesh remote': ['Andhra Pradesh remote', 'JDAs working in Andhra Pradesh towns covered by the Hyderabad branch.', 'Pincodes starting 51, 52 or 53 in the Hyderabad branch.'],
+    'Avg per JDA': ['Average per JDA', 'Presentations per present JDA. "7d" = the same figure over the 7 working days before.', 'Presentations ÷ present JDAs.'],
+    'On target': ['On target', `Present JDAs with ${T}+ presentations.`, ''],
+    'Under target': ['Under target', `JDAs who went out but did fewer than ${T} presentations.`, ''],
+    'Absent': ['Absent', 'Active JDAs who did no presentation on this day.', 'Active JDAs − present JDAs.'],
+    'Active JDAs here': ['Active JDAs', 'Active JDAs in this area: everyone expected in the field, present or not.', ROSTER],
+    'Area deals': ['Area deals', 'JDA deals whose pincode is in this area, whoever closed them.', SALES],
+    // table columns
+    'Manager': ['Manager', 'Reporting manager.', 'The manager on most of their presentations that day (absent JDAs: their last known manager).'],
+    'Area': ['Area', 'District where the JDA did most of their presentations that day (absent JDAs: their last area).', 'From the pincode of each presentation.'],
+    'Today': ['Today', 'Presentations on the chosen day. Green bar = on target, amber = under target.', PRES],
+    'Own 7-day avg': ['Own 7-day average', 'This JDA\'s usual output: their average on the days they worked in the 7 working days before.', ''],
+    'New businesses': ['New businesses', 'Presentations to new businesses (not existing JD contracts).', 'Presentations where the contract type is New.'],
+    'Deals': ['Deals', 'Deals closed on this day.', SALES],
+    'Team deals': ['Team deals', 'Deals closed by the whole team on this day.', SALES],
+    'JDAs': ['JDAs', 'Active JDAs in this list.', ROSTER],
+    '7-day att.': ['7-day attendance', 'Attendance over the 7 working days before, to see if today is unusual.', 'Present ÷ team, added up over those 7 days.'],
+    'Avg': ['Average', 'Presentations per present JDA.', 'Presentations ÷ present JDAs.'],
+    '7-day avg': ['7-day average', 'The same average over the 7 working days before, for comparison.', ''],
+    '3-day avg': ['3-day average', 'Their average over the last 3 days they worked.', ''],
+    [`${T}+`]: [`${T}+`, `JDAs with ${T} or more presentations (on target).`, ''],
+    [`Under ${T}`]: [`Under ${T}`, `JDAs who went out but did fewer than ${T}.`, ''],
+    'Deals per 100 pres.': ['Deals per 100 presentations', 'How many deals every 100 presentations turned into in this area.', 'Area deals ÷ presentations × 100.'],
+    [`Days under ${T}`]: [`Days under ${T}`, `Out of the last 8 days this JDA worked (including today), how many were under ${T}. 5 or more = consistently low.`, ''],
+    'Last 10 working days': ['Last 10 working days', 'One block per working day, oldest on the left. Dark blue = on target, light blue = under target, red = absent, outlined = the chosen day. Hover a block for the count.', ''],
+    'Team': ['Team', 'All JDAs under this manager: their direct JDAs plus the JDAs of every manager below them.', ''],
+    'Manager / TL': ['Manager / TL', 'Bold rows are managers; the rows under them are their TLs (the people JDAs report to directly). Figures on a manager row add up their TLs shown below.', 'A JDA\'s TL is the manager on their presentations; a TL\'s manager is the manager on the TL\'s own presentations.'],
+    'Reports to': ['Reports to', 'The manager this TL reports to. Use the Manager filter at the top to see a manager with all their TLs.', 'Blank when it is not known.'],
+    'Attendance (10 days)': ['Attendance (10 days)', 'How many of the last 10 working days this JDA went out.', 'Days with a presentation ÷ working days (since their first presentation, up to 10).'],
+    'Reporting line': ['Reporting line', 'Who reports to whom. Each manager sits under their own manager; open ▸ to see the managers and JDAs under them. Figures on a manager row add up everyone below.', 'Managers whose own manager is not known appear at the top level.'],
+    'Absent 3+': ['Absent 3+', 'Team members absent 3 or more working days in a row.', ''],
+    'Tenure mix': ['Tenure mix', `Team split by how long they have been with us: pink = ${TEN_BUCKETS[0]}, purple = ${TEN_BUCKETS[1]}, blue = ${TEN_BUCKETS[2]}. Hover the bar for counts.`, HAS_HR ? 'From the joining date.' : 'Counted from the first presentation (since 23 Apr), so long-timers all land in the last group.'],
+    'Tenure': ['Tenure', 'How long the JDA has been working.', HAS_HR ? 'From the joining date.' : 'Counted from their first presentation; "+" = at least that long.'],
+    'Days absent': ['Days absent', 'Working days in a row with no presentation, up to the chosen day.', ''],
+    'Absent (last 10)': ['Absent in the last 10', 'Working days absent out of the last 10 (or since they started).', ''],
+    'Usual': ['Usual', 'Their average presentations on the 7 days they worked before the absence.', ''],
+    'Today vs usual': ['Today vs usual', 'Today\'s presentations as a % of their usual. Green = back to normal or better.', ''],
+    'Days worked (of 3)': ['Days worked (of 3)', 'Of the last 3 working days, how many they went out.', ''],
+    'Presentations (3 days)': ['Presentations (3 days)', 'Total presentations over the last 3 working days, all without a sale.', ''],
+    'Last deal': ['Last deal', 'The last day this JDA closed a deal.', SALES],
+    'First': ['First', 'Time of the first presentation of the day.', 'From the time of the presentation.'],
+    'Last': ['Last', 'Time of the last presentation of the day.', 'From the time of the presentation.'],
+    'Span (h)': ['Span', 'Hours between the first and the last presentation: a rough length of the field day.', 'Last − first.'],
+    'Longest gap': ['Longest gap', 'The longest break between two presentations in a row.', ''],
+    'Per hour': ['Per hour', 'Pace: presentations per hour between the first and the last.', '(Presentations − 1) ÷ span.'],
+    'Flags': ['Flags', `Late = first after ${hm(F.start)}. Early = last before ${hm(F.end)}. Gap = a break over ${F.gap} min. Clean = none of these.`, ''],
+  };
+}
+function tipHtml(h, extra) {
+  return `<div class="tt-t">${h[0]}</div><div>${h[1]}</div>${h[2] ? `<div class="tt-how"><b>How it's counted:</b> ${h[2]}</div>` : ''}${extra ? `<div class="tt-how">${extra}</div>` : ''}`;
+}
+let HELPC = null;   // rebuilt on every render, so thresholds in the text stay current
+const helpOf = k => (HELPC || (HELPC = helpMap()))[k];
+const tipAttr = (k, extra) => { const h = helpOf(k); return h ? ` data-tip="${esc(tipHtml(h, extra))}"` : ''; };
+const qi = (k, extra) => helpOf(k) ? `<span class="qi" tabindex="0" role="button" aria-label="What does this mean?"${tipAttr(k, extra)}>i</span>` : '';
+
+// one series as a line over days: points [{label, v, tip, day}]; selIdx gets an orange dot; avg draws a dashed line
+function lineChart(points, { h = 210, W = 440, color = '#6366f1', fmt = nf, avg = null, selIdx = -1 } = {}) {
+  const padL = 42, padR = 14, padB = 24, padT = 18, iw = W - padL - padR, ih = h - padB - padT, n = points.length;
+  const max = niceMax(Math.max(...points.map(p => p.v || 0), avg || 0, 0));
+  const X = i => padL + (n <= 1 ? iw / 2 : i / (n - 1) * iw), Y = v => padT + ih - (v || 0) / max * ih;
+  const id = uid();
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${color};stop-opacity:.28"/><stop offset="1" style="stop-color:${color};stop-opacity:0"/></linearGradient></defs>`;
+  for (const t of [0, .5, 1].map(f => f * max)) s += `<line x1="${padL}" x2="${padL + iw}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${Y(t) + 4}" text-anchor="end">${fmt(t)}</text>`;
+  const pts = points.map((p, i) => [X(i), Y(p.v)]);
+  const line = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1)).join('');
+  if (n > 1) s += `<path d="${line}L${pts[n - 1][0].toFixed(1)},${padT + ih}L${pts[0][0].toFixed(1)},${padT + ih}Z" fill="url(#${id})"/>`;
+  if (avg != null && isFinite(avg)) s += `<line x1="${padL}" x2="${padL + iw}" y1="${Y(avg)}" y2="${Y(avg)}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="6 4" opacity=".6"/>`;
+  s += `<path d="${line}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach((q, i) => { if (i !== selIdx) s += `<circle cx="${q[0]}" cy="${q[1]}" r="2.6" fill="${color}"/>`; });
+  if (selIdx >= 0) { const q = pts[selIdx]; s += `<line x1="${q[0]}" x2="${q[0]}" y1="${padT}" y2="${padT + ih}" stroke="#f97316" stroke-dasharray="3 3" opacity=".6"/><circle cx="${q[0]}" cy="${q[1]}" r="6" fill="#f97316" stroke="var(--surface)" stroke-width="2.5"/><text x="${Math.min(q[0], padL + iw - 24)}" y="${q[1] - 11}" text-anchor="middle" class="lbl-strong halo">${fmt(points[selIdx].v)}</text>`; }
+  const every = Math.ceil(n / 7);
+  points.forEach((p, i) => { if (i === selIdx || (i % every === 0 && Math.abs(i - selIdx) >= Math.max(2, every))) s += `<text x="${X(i)}" y="${h - 6}" text-anchor="middle"${i === selIdx ? ' class="lbl-strong"' : ''}>${esc(p.label)}</text>`; });
+  const step = n > 1 ? iw / (n - 1) : iw;
+  points.forEach((p, i) => { s += `<rect class="hit" x="${X(i) - step / 2}" y="${padT}" width="${step}" height="${ih}" data-tip="${esc(p.tip || '')}"${p.day != null ? ` data-day="${p.day}"` : ''}/>`; });
+  return s + `<line x1="${padL}" x2="${padL + iw}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
+}
+
+function tile({ lbl, val, unit, sub, delta, invert, ic, hue = HUES[0], sp, click, sel, sev, drill }) {
+  let dl = '';
+  if (delta != null && isFinite(delta.v) && delta.base != null) {
+    const flat = /^[0₹.,\s]*(pts)?$/.test(delta.txt);   // rounds to no change
+    const good = invert ? delta.v < 0 : delta.v > 0;
+    dl = flat ? '<span class="chip flat">● same as 7-day avg</span>' : `<span class="chip ${good ? 'up' : 'down'}">${delta.v > 0 ? '▲' : '▼'} ${esc(delta.txt)}</span><span>vs 7-day avg</span>`;
+  }
+  const open = click ? `button type="button" data-act="${click}"` : drill ? `button type="button" data-drill="${drill}" aria-label="${esc(lbl)}: open the list"` : 'div', close = click || drill ? 'button' : 'div';
+  return `<${open} class="tile${click ? ' click' : ''}${drill ? ' drill' : ''}${sel ? ' sel' : ''}${sev ? ' sev-' + sev : ''}"${sev ? '' : ` style="--h:${hue}"`}>
+    <div class="t-top">${ic ? `<span class="t-ic">${icon(ic)}</span>` : ''}<span class="lbl${helpOf(lbl) ? ' hl' : ''}"${tipAttr(lbl, sp ? 'The small line shows the last 14 working days. ▲ ▼ compare with the average of the 7 working days before.' : '')}>${esc(lbl)}</span></div>
+    <div class="t-mid"><div class="val">${val}${unit ? `<small>${esc(unit)}</small>` : ''}</div>${sp || ''}</div>
+    <div class="sub">${dl || sub || '&nbsp;'}</div></${close}>`;
+}
+const tiles = arr => `<div class="tiles">${arr.join('')}</div>`;
+const dNum = (cur, base, dp = 0) => base == null || cur == null ? null : { v: cur - base, base, txt: nf(Math.abs(cur - base), dp) };
+const dPct = (cur, base) => base == null || cur == null ? null : { v: cur - base, base, txt: Math.abs(Math.round((cur - base) * 100)) + ' pts' };
+
+// ================= PAGE 1: TODAY =================
+function pageToday() {
+  const d = S.day, s = daySummary(d), prev = prevWork(d, 7);
+  const b = { roster: avgOf(prev, x => daySummary(x).roster), att: avgOf(prev, x => daySummary(x).att), pres: avgOf(prev, x => daySummary(x).pres), active: avgOf(prev, x => daySummary(x).active), onT: avgOf(prev, x => daySummary(x).onT), avg: avgOf(prev, x => daySummary(x).avg), sales: avgOf(prev, x => daySummary(x).sales) };
+  const w14 = lastWork(d, 14).reverse().map(w => daySummary(w));
+  const d14 = lastWork(d, 14).reverse();
+  const FMT = { active: v => nf(v), att: pct, pres: v => nf(v), avg: v => nf(v, 1), onT: v => nf(v), sales: nsales };
+  const sp = (k, c) => spark(w14.map(x => x[k]), c, w14.map((x, i) => `<b>${dlabel(D.days[d14[i]], true)}</b><br>${FMT[k](x[k])}`));
+  const L = actionLists(d);
+  let h = hero('today', `${nf(s.active)} JDAs in the field`,
+    `<b>${nf(s.active)}</b> of <b>${nf(s.roster)}</b> JDAs went out and made <b>${nf(s.pres)}</b> presentations. <b>${nf(s.onT)}</b> hit the ${TARGET}-presentation target${L.abs3.length ? `, and <b>${nf(L.abs3.length)}</b> have been absent 3+ days` : ''}.`);
+  const abs = s.att == null ? null : 1 - s.att, bAbs = b.att == null ? null : 1 - b.att;
+  h += tiles([
+    tile({ drill: 'roster', lbl: 'Active JDAs', val: nf(s.roster), delta: dNum(s.roster, b.roster), ic: 'users', hue: '#6366f1' }),
+    tile({ drill: 'active', lbl: 'Present JDAs', val: nf(s.active), unit: 'of ' + nf(s.roster), delta: dNum(s.active, b.active), ic: 'check', hue: '#0ea5e9' }),
+    tile({ drill: 'att', lbl: 'Attendance %', val: pct(s.att), delta: dPct(s.att, b.att), ic: 'gauge', hue: '#10b981' }),
+    tile({ drill: 'abs', lbl: 'Absent %', val: pct(abs), unit: nf(s.roster - s.active) + ' JDAs', delta: dPct(abs, bAbs), invert: true, ic: 'alert', hue: '#f43f5e' }),
+  ]);
+  h += tiles([
+    tile({ drill: 'pres', lbl: 'Presentations', val: nf(s.pres), delta: dNum(s.pres, b.pres), ic: 'board', hue: '#0ea5e9' }),
+    tile({ drill: 'avg', lbl: 'Avg per present JDA', val: nf(s.avg, 1), delta: dNum(s.avg, b.avg, 1), ic: 'gauge', hue: '#8b5cf6' }),
+    tile({ drill: 'onT', lbl: `On target (${TARGET}+)`, val: nf(s.onT), unit: s.active ? pct(s.onTp) + ' of present' : '', delta: dNum(s.onT, b.onT), ic: 'target', hue: '#f97316' }),
+    HAS_SALES ? tile({ drill: 'sales', lbl: 'JDA deals', val: nsales(s.sales), delta: s.sales != null && b.sales != null ? { v: s.sales - b.sales, base: b.sales, txt: nsales(Math.abs(s.sales - b.sales)) } : null, ic: 'trophy', hue: '#ec4899' }) : '',
+  ]);
+  const win = lastWork(d, 30).reverse();
+  const sums = win.map(w => [w, daySummary(w)]);
+  h += `<div class="grid2">
+    ${card('Presentations per working day', `Last ${win.length} working days · the highlighted bar is the chosen day · click a bar to open that day`,
+      barChart(sums.map(([w, x]) => ({ label: dlabel(D.days[w]), v: x.pres, sel: w === d, day: w, tip: `<b>${dlabel(D.days[w], true)}</b><br>${nf(x.pres)} presentations<br>${nf(x.active)} present JDAs · avg ${nf(x.avg, 1)}` })), { h: 220 }), '#6366f1')}
+    ${card('Attendance & on-target share', `On target = ${TARGET}+ presentations, as a share of present JDAs`,
+      pctLines([{ name: 'Attendance', color: '#10b981', vals: sums.map(([, x]) => x.att) }, { name: 'On target', color: '#f97316', vals: sums.map(([, x]) => x.onTp) }], sums.map(([w]) => dlabel(D.days[w])), { h: 220, selIdx: win.indexOf(d), tips: sums.map(([w, x]) => `<b>${dlabel(D.days[w], true)}</b><br>Attendance ${pct(x.att)} (${nf(x.active)} of ${nf(x.roster)})<br>On target ${pct(x.onTp)} (${nf(x.onT)})`) }),
+      '#10b981', `<div class="legend"><span><i style="background:#10b981"></i>Attendance</span><span><i style="background:#f97316"></i>On target</span></div>`)}
+  </div>`;
+  const ro = roster(d), buckets = [['Absent', 0, '#f43f5e'], ['1–2', 0, '#fbbf24'], ['3–4', 0, '#a5b4fc'], ['5–7', 0, '#6366f1'], ['8+', 0, '#4338ca']];
+  for (const { c } of ro) { const n = c.rec ? c.rec.n : 0; buckets[n === 0 ? 0 : n <= 2 ? 1 : n <= 4 ? 2 : n <= 7 ? 3 : 4][1]++; }
+  const top = ro.filter(x => x.c.rec).map(({ r, c }) => ({ r, name: REPS[r].name, id: REPS[r].id, n: c.rec.n, area: areaName(c.home), mgr: mgrName(c.mgr), nw: c.rec.nw, sales: salesMap[r].get(d) || 0, avg7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null) }));
+  const leaders = [...top].sort((a, b) => b.n - a.n || (b.avg7 || 0) - (a.avg7 || 0)).slice(0, 6);
+  h += `<div class="grid3">
+    ${card('JDAs by presentations today', `${nf(ro.length)} active JDAs`, barChart(buckets.map(([l, v, c]) => ({ label: l, v, sel: true, color: c, tip: `<b>${l}</b>: ${nf(v)} JDAs` })), { h: 300, W: 420 }), '#f43f5e')}
+    ${card('Input by day of the week', 'Avg presentations per present JDA, last 30 working days', (() => { const by = [1, 2, 3, 4, 5, 6].map(wd => { const ds = sums.filter(([w]) => dt(D.days[w]).getDay() === wd); return { label: WD[wd], v: ds.length ? avgOf(ds, ([, x]) => x.avg) : 0, tip: `<b>${WD[wd]}</b>: ${ds.length ? nf(avgOf(ds, ([, x]) => x.avg), 1) + ' per present JDA (' + ds.length + ' days)' : 'no working days'}`, sel: wd === dt(D.days[d]).getDay() }; }); return barChart(by, { fmt: v => nf(v, 1), h: 300, W: 420, color: '#8b5cf6' }); })(), '#8b5cf6')}
+    ${card('Top performers today', 'Most presentations · ties broken by 7-day average', `<ol class="lb">${leaders.map((x, i) => `<li><span class="rk">${i + 1}</span>${avatar(x.name, 'sm')}<span class="nm"><button type="button" class="rep" data-rep="${x.r}">${esc(x.name)}</button><small>${esc(x.area)} · ${esc(x.mgr)}</small></span><span class="sc">${x.n}</span></li>`).join('') || '<li class="muted">No presentations</li>'}</ol>`, '#f59e0b', `<span class="t-ic" style="--h:#f59e0b;width:30px;height:30px;color:#f59e0b;background:color-mix(in srgb,#f59e0b 15%,transparent)">${icon('trophy')}</span>`)}
+  </div>`;
+  h += secTitle('Every present JDA today', 'sorted by presentations · click a name for their profile');
+  h += table('today', [
+    ...repCols(),
+    { k: 'mgr', label: 'Manager', search: x => x.mgr, wrap: true },
+    { k: 'area', label: 'Area', search: x => x.area, wrap: true },
+    { k: 'n', label: 'Presentations', num: true, html: x => presCell(x.n), csv: x => x.n },
+    { k: 'avg7', label: 'Own 7-day avg', num: true, fmt: v => nf(v, 1), title: 'Average on the days they worked in the 7 working days before' },
+    { k: 'nw', label: 'New businesses', num: true, title: 'Presentations to New (not existing) contracts' },
+    ...(HAS_SALES ? [{ k: 'sales', label: 'Deals', num: true, fmt: nsales, csv: x => x.sales }] : []),
+  ], top, { sort: 'n', noun: 'present JDAs', title: 'Present JDAs' });
+  return h;
+}
+
+// ================= PAGE 2: TERRITORIES =================
+function areaStats(d, okArea) {   // per area: JDAs, presentations, on target, under target, sales
+  const per = new Map();
+  const get = a => per.get(a) || per.set(a, { a, roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0 }).get(a);
+  for (let r = 0; r < REPS.length; r++) {
+    if (!onRoster(r, d)) continue;
+    const c = ctx(r, d);
+    if (c.home < 0 || !okArea(c.home) || !mgrOk(c.mgr, d)) continue;
+    const x = get(c.home); x.roster++;
+    if (c.rec) { x.active++; x.pres += c.rec.n; c.rec.n >= TARGET ? x.onT++ : x.under++; }
+    x.sales += salesMap[r].get(d) || 0;
+  }
+  for (const [a, v] of areaSales[d]) if (okArea(a)) get(a).aSales += v;
+  return per;
+}
+function finishRow(x) { x.att = x.roster ? x.active / x.roster : null; x.avg = x.active ? x.pres / x.active : null; x.absent = x.roster - x.active; return x; }
+function sumRows(rows, extra) { const t = { roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0, ...extra }; for (const x of rows) for (const k of ['roster', 'active', 'pres', 'onT', 'under', 'sales', 'aSales']) t[k] += x[k] || 0; return finishRow(t); }
+function pageTerritory() {
+  const d = S.day, prev = prevWork(d, 7);
+  const groups = [
+    { k: 'main', name: 'Hyderabad main city', ok: a => AREAS[a].main === 1, hue: '#6366f1', ic: 'city', chip: 'Hyd main' },
+    { k: 'tsr', name: 'Telangana remote', sub: '8 districts', ok: a => AREAS[a].state === 'TS' && !AREAS[a].main, hue: '#14b8a6', ic: 'road', chip: 'TS remote' },
+    { k: 'ap', name: 'Andhra Pradesh remote', ok: a => AREAS[a].state !== 'TS', hue: '#f97316', ic: 'pin', chip: 'AP remote' },
+  ].map(g => ({ ...g, t: sumRows([...areaStats(d, g.ok).values()]), p7: avgOf(prev, w => sumRows([...areaStats(w, g.ok).values()]).avg) }));
+  let h = hero('territory', 'Main city vs remote',
+    groups.map(g => `${esc(g.name)}: <b>${nf(g.t.active)}</b> present, avg <b>${nf(g.t.avg, 1)}</b>`).join(' · ') + '.',
+    groups.map(g => [g.chip + ' attendance', pct(g.t.att)]));
+  h += `<div class="terr">` + groups.map(g => { const t = g.t; return `<div class="tcard" style="--h:${g.hue}">
+      <div class="tc-head"><div class="tc-name"><span class="tc-ic">${icon(g.ic)}</span><div><h3><span class="hl"${tipAttr(g.name)}>${esc(g.name)}</span></h3><div class="cap">${g.sub ? esc(g.sub) + ' · ' : ''}${nf(t.active)} of ${nf(t.roster)} JDAs present</div></div></div>${donut(t.att, g.hue)}</div>
+      <div class="stats">
+        <div class="st"${tipAttr('Presentations')}><span>Presentations</span><b>${nf(t.pres)}</b></div>
+        <div class="st"${tipAttr('Avg per JDA')}><span>Avg per JDA</span><b>${nf(t.avg, 1)}<small>7d ${nf(g.p7, 1)}</small></b></div>
+        <div class="st"${tipAttr('On target')}><span>On target</span><b>${nf(t.onT)}</b></div>
+        <div class="st"${tipAttr('Under target')}><span>Under target</span><b style="color:var(--warn-ink)">${nf(t.under)}</b></div>
+        <div class="st"${tipAttr('Absent')}><span>Absent</span><b style="color:var(--crit-ink)">${nf(t.roster - t.active)}</b></div>
+        <div class="st"${tipAttr(HAS_SALES ? 'Area deals' : 'Active JDAs here')}><span>${HAS_SALES ? 'Area deals' : 'Active JDAs'}</span><b>${HAS_SALES ? nsales(t.aSales) : nf(t.roster)}</b></div>
+      </div></div>`; }).join('') + `</div>`;
+  h += note('Each JDA is counted in the area where they did most of their presentations that day (absent JDAs: their last area). Main city = Hyderabad data city; remote = every other district in the Hyderabad branch.');
+
+  const st = S.terrState;
+  h += secTitle(st === 'TS' ? 'Telangana state daily report' : st === 'AP' ? 'Andhra Pradesh districts' : 'Every area in the branch',
+    st === 'TS' ? 'Hyderabad main + the 8 remote districts (newer districts roll up into their parent)' : '',
+    ` <span class="seg">${[['TS', 'Telangana'], ['AP', 'Andhra Pradesh'], ['ALL', 'All areas']].map(([k, l]) => `<button type="button" data-terr="${k}" aria-pressed="${st === k}">${l}</button>`).join('')}</span>`);
+  const okSt = a => st === 'ALL' || (st === 'TS' ? AREAS[a].state === 'TS' : AREAS[a].state !== 'TS');
+  const stats = areaStats(d, okSt);
+  const p7 = new Map();
+  for (const w of prev) for (const [a, x] of areaStats(w, okSt)) { const v = p7.get(a) || { pres: 0, active: 0 }; v.pres += x.pres; v.active += x.active; p7.set(a, v); }
+  let rows = AREAS.map((A, a) => okSt(a) ? finishRow({ a, area: A.name, type: A.main ? 'Main' : 'Remote', ...(stats.get(a) || { roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0 }) }) : null).filter(Boolean);
+  if (st !== 'TS') rows = rows.filter(x => x.roster || x.pres || x.aSales);
+  rows.forEach(x => { const v = p7.get(x.a); x.avg7 = v && v.active ? v.pres / v.active : null; x.perPres = x.pres ? x.aSales / x.pres * 100 : null; });
+  const tot = sumRows(rows, { area: 'Total', type: '' });
+  { const vs = [...p7.entries()].filter(([a]) => okSt(a)).map(([, v]) => v); const a = vs.reduce((s, v) => s + v.active, 0); tot.avg7 = a ? vs.reduce((s, v) => s + v.pres, 0) / a : null; }
+  const maxP = Math.max(1, ...rows.map(x => x.pres));
+  h += table('terr', [
+    { k: 'area', label: 'Area', search: x => x.area, html: x => `<div class="who">${avatar(x.area, 'sm')}<b>${esc(x.area)}</b></div>`, csv: x => x.area },
+    { k: 'type', label: 'Main / remote', html: x => `<span class="pill ${x.type === 'Main' ? 'brand' : 'neutral'}">${x.type}</span>`, csv: x => x.type },
+    { k: 'roster', label: 'Active JDAs', num: true, help: 'Active JDAs' },
+    { k: 'active', label: 'Present JDAs', num: true, help: 'Present JDAs' },
+    { k: 'att', label: 'Attendance', num: true, html: x => attCell(x.att), csv: x => pct(x.att), totalHtml: t => attCell(t.att) },
+    { k: 'pres', label: 'Presentations', num: true, html: x => barCell(x.pres, maxP, nf(x.pres)), csv: x => x.pres, totalHtml: t => `<b>${nf(t.pres)}</b>` },
+    { k: 'avg', label: 'Avg', num: true, fmt: v => nf(v, 1), title: 'Presentations per present JDA' },
+    { k: 'avg7', label: '7-day avg', num: true, fmt: v => nf(v, 1), title: 'Average per present JDA over the 7 working days before' },
+    { k: 'onT', label: `${TARGET}+`, num: true, title: `JDAs with ${TARGET} or more presentations` },
+    { k: 'under', label: `Under ${TARGET}`, num: true },
+    ...(HAS_SALES ? [{ k: 'aSales', label: 'JDA deals', num: true, fmt: nsales, help: 'Area deals' }, { k: 'perPres', label: 'Deals per 100 pres.', num: true, fmt: v => v == null ? '—' : nf(v, 1) }] : []),
+  ], rows, { sort: st === 'TS' ? null : 'pres', noun: 'areas', search: false, total: tot, title: st === 'TS' ? 'Telangana daily' : 'Areas' });
+
+  const under = [];
+  for (let r = 0; r < REPS.length; r++) {
+    const c = ctx(r, d);
+    if (!c.rec || c.rec.n >= TARGET || !onRoster(r, d) || !inView(r, d, c)) continue;
+    const p = prevWork(d, 7).map(w => repDays[r].get(w)).filter(Boolean);
+    under.push({ r, name: REPS[r].name, id: REPS[r].id, area: areaName(c.home), type: AREAS[c.home].main ? 'Main' : 'Remote', mgr: mgrName(c.mgr), n: c.rec.n, avg7: p.length ? p.reduce((s, x) => s + x.n, 0) / p.length : null, below7: p.filter(x => x.n < TARGET).length + 1, days7: p.length + 1 });
+  }
+  h += secTitle('Under-performers today', `present but under ${TARGET} presentations · the area filter at the top applies`);
+  h += table('under', [
+    ...repCols(),
+    { k: 'type', label: 'Main / remote', html: x => `<span class="pill ${x.type === 'Main' ? 'brand' : 'neutral'}">${x.type}</span>`, csv: x => x.type },
+    { k: 'area', label: 'Area', search: x => x.area, wrap: true },
+    { k: 'mgr', label: 'Manager', search: x => x.mgr, wrap: true },
+    { k: 'n', label: 'Today', num: true, html: x => presCell(x.n), csv: x => x.n },
+    { k: 'avg7', label: 'Own 7-day avg', num: true, fmt: v => nf(v, 1) },
+    { k: 'below7', label: `Days under ${TARGET}`, num: true, title: 'Of the last 8 days they worked', html: x => `<span class="pill ${x.below7 >= 5 ? 'crit' : x.below7 >= 3 ? 'serious' : 'warn'}">${x.below7} of ${x.days7}</span>`, csv: x => x.below7 + ' of ' + x.days7 },
+    { k: 'strip', label: 'Last 10 working days', html: x => strip(x.r, d), csv: false },
+  ], under, { sort: 'below7', noun: 'JDAs', title: 'Under-performers' });
+  return h;
+}
+
+// ================= PAGE 3: MANAGERS =================
+// ---------- reporting hierarchy ----------
+const REPIDX = new Map(REPS.map((p, i) => [String(p.id), i]));
+const parentCache = new Map(), subCache = new Map();
+function mgrParents(d) {   // manager -> their own manager, from the manager's own rows in the feed (last 60 days); loops dropped
+  if (parentCache.has(d)) return parentCache.get(d);
+  const P = new Map();
+  MGRS.forEach(([code], i) => {
+    const r = REPIDX.get(String(code)), rec = r == null ? null : lastRec(r, d);
+    if (rec && rec.m >= 0 && rec.m !== i && daysBetween(D.days[rec.d], D.days[d]) <= 60) P.set(i, rec.m);
+  });
+  for (const i of [...P.keys()]) { const seen = new Set([i]); let x = P.get(i); while (x != null) { if (seen.has(x)) { P.delete(i); break; } seen.add(x); x = P.get(x); } }
+  parentCache.set(d, P);
+  return P;
+}
+function mgrChain(m, d) { const P = mgrParents(d), out = []; for (let x = m; x != null && x >= 0 && !out.includes(x); x = P.get(x)) out.unshift(x); return out; }   // top ... m
+function subtree(m, d) {   // m and every manager below them, at any level
+  const key = m + '|' + d;
+  if (subCache.has(key)) return subCache.get(key);
+  const P = mgrParents(d), out = new Set([m]);
+  for (let grew = true; grew;) { grew = false; for (const [c, x] of P) if (out.has(x) && !out.has(c)) { out.add(c); grew = true; } }
+  subCache.set(key, out);
+  return out;
+}
+const mgrOk = (m, d) => S.mgr < 0 || subtree(S.mgr, d).has(m);
+const newStat = () => ({ team: 0, active: 0, pres: 0, onT: 0, abs3: 0, sales: 0, ten: [0, 0, 0], ro7: 0, act7: 0, pres7: 0, nMgr: 0 });
+function addStat(a, b) { for (const k of ['team', 'active', 'pres', 'onT', 'abs3', 'sales', 'ro7', 'act7', 'pres7', 'nMgr']) a[k] += b[k]; b.ten.forEach((v, i) => a.ten[i] += v); }
+function finishStat(x) { x.att = x.team ? x.active / x.team : null; x.avg = x.active ? x.pres / x.active : null; x.att7 = x.ro7 ? x.act7 / x.ro7 : null; x.avg7 = x.act7 ? x.pres7 / x.act7 : null; return x; }
+function buildTree(d) {   // {nodes: manager -> {kids, reps, own, stat}, roots}; stat adds up everyone below
+  const P = mgrParents(d), nodes = new Map();
+  const node = m => nodes.get(m) || nodes.set(m, { m, kids: [], reps: [], own: newStat() }).get(m);
+  for (const { r, c } of roster(d)) {
+    const n = node(c.mgr), x = n.own;
+    n.reps.push({ r, c }); x.team++;
+    if (c.rec) { x.active++; x.pres += c.rec.n; if (c.rec.n >= TARGET) x.onT++; } else if (absentStreak(r, d) >= 3) x.abs3++;
+    x.sales += salesMap[r].get(d) || 0;
+    const b = tenureBucket(r, d); if (b >= 0) x.ten[b]++;
+  }
+  for (const w of prevWork(d, 7)) for (const { c } of roster(w)) { const n = nodes.get(c.mgr); if (!n) continue; n.own.ro7++; if (c.rec) { n.own.act7++; n.own.pres7 += c.rec.n; } }
+  const top = S.mgr >= 0 ? S.mgr : null;
+  for (const m of [...nodes.keys()]) { let x = m; while (x !== top && P.has(x)) { const up = P.get(x), un = node(up); if (!un.kids.includes(x)) un.kids.push(x); x = up; } }
+  const roots = top != null ? (nodes.has(top) ? [top] : []) : [...nodes.keys()].filter(m => !P.has(m));
+  const roll = m => { const n = nodes.get(m); n.stat = newStat(); addStat(n.stat, n.own); for (const k of n.kids) { addStat(n.stat, roll(k)); n.stat.nMgr++; } finishStat(n.own); return finishStat(n.stat); };
+  roots.forEach(roll);
+  roots.sort((a, b) => nodes.get(b).stat.team - nodes.get(a).stat.team);
+  return { nodes, roots };
+}
+const TEN_C = ['#f9a8d4', '#a78bfa', '#4f46e5'];
+const tenBar = t => { const n = t[0] + t[1] + t[2]; return n ? `<span class="tbar" data-tip="${esc(TEN_BUCKETS.map((l, i) => l + ': <b>' + t[i] + '</b>').join('<br>'))}">${t.map(v => `<i style="flex:${v}"></i>`).join('')}</span>` : '—'; };
+
+// ---------- the Manager filter: managers in bold, their TLs under them ----------
+// TL = a person with JDAs reporting to them directly. Manager = a person with TLs (or other managers) under them.
+function mgrList(d) {   // [{m, depth, isMgr, total, own, pres}] in reporting order: everyone with JDAs in the chosen area on day d
+  const P = mgrParents(d), own = new Map(), ownP = new Map(), kids = new Map();
+  for (let r = 0; r < REPS.length; r++) {
+    if (!onRoster(r, d)) continue;
+    const c = ctx(r, d);
+    if (c.mgr < 0 || c.home < 0 || !locOk(c.home)) continue;   // same area rule as every page
+    own.set(c.mgr, (own.get(c.mgr) || 0) + 1); ownP.set(c.mgr, (ownP.get(c.mgr) || 0) + (c.rec ? c.rec.n : 0));
+  }
+  for (const [c, x] of P) { if (!kids.has(x)) kids.set(x, []); kids.get(x).push(c); }
+  const memoP = new Map();
+  const pres = m => { if (memoP.has(m)) return memoP.get(m); memoP.set(m, 0); const v = (ownP.get(m) || 0) + (kids.get(m) || []).reduce((a, k) => a + pres(k), 0); memoP.set(m, v); return v; };
+  const memo = new Map();
+  const total = m => { if (memo.has(m)) return memo.get(m); memo.set(m, 0); const v = (own.get(m) || 0) + (kids.get(m) || []).reduce((a, k) => a + total(k), 0); memo.set(m, v); return v; };
+  const inc = new Set(MGRS.map((_, i) => i).filter(i => total(i) > 0));
+  const kidsOf = m => (kids.get(m) || []).filter(k => inc.has(k));
+  const out = [];
+  const walk = (m, depth) => {
+    const ks = kidsOf(m);
+    out.push({ m, depth, isMgr: ks.length > 0, total: total(m), own: own.get(m) || 0, pres: pres(m) });
+    ks.sort((a, b) => (kidsOf(b).length > 0) - (kidsOf(a).length > 0) || total(b) - total(a)).forEach(k => walk(k, depth + 1));   // managers first, then TLs
+  };
+  [...inc].filter(i => !(P.has(i) && inc.has(P.get(i)))).sort((a, b) => (kidsOf(b).length > 0) - (kidsOf(a).length > 0) || total(b) - total(a)).forEach(m => walk(m, 0));
+  return out;
+}
+function setMgrLabel() {
+  $('#mgrLbl').textContent = S.mgr >= 0 ? mgrName(S.mgr) + (mgrList(S.day).some(x => x.m === S.mgr) ? '' : ' (no JDAs in this area)') : 'All managers';
+  $('#mgrBtn').classList.toggle('on', S.mgr >= 0);
+}
+function renderMgrPop(q = '') {
+  const list = mgrList(S.day), ql = q.trim().toLowerCase();
+  const hit = x => !ql || (MGRS[x.m][1] + ' ' + MGRS[x.m][0]).toLowerCase().includes(ql);
+  const meta = (role, n, p) => `${role} · ${n} JDA${n === 1 ? '' : 's'} · ${p} pres.`;
+  const row = x => `<button type="button" class="mo ${x.isMgr ? 'is-mgr' : 'is-tl'}${x.m === S.mgr ? ' sel' : ''}" data-mgrpick="${x.m}">
+      <span class="mo-n">${esc(MGRS[x.m][1])}</span><span class="mo-x">${meta(x.isMgr ? 'manager' : 'TL', x.total, x.pres)}</span></button>`;
+  // flat: each manager, then the TLs directly under them; managers under a manager get their own block next
+  const byM = new Map(list.map(x => [x.m, x])), P = mgrParents(S.day);
+  const blocks = [];
+  for (const x of list) {
+    if (x.isMgr) blocks.push([x, list.filter(y => !y.isMgr && P.get(y.m) === x.m)]);
+    else if (!(P.has(x.m) && byM.has(P.get(x.m)))) blocks.push([null, [x]]);   // a TL with no manager in the data
+  }
+  let html = '';
+  for (const [m, tls] of blocks) {
+    const shown = tls.filter(hit);
+    if (m && (hit(m) || shown.length)) html += row(m) + (hit(m) && !ql ? tls : shown).map(row).join('');
+    else if (!m) html += shown.map(row).join('');
+  }
+  const top = list.filter(x => !(P.has(x.m) && byM.has(P.get(x.m))));
+  const allN = top.reduce((a, x) => a + x.total, 0), allP = top.reduce((a, x) => a + x.pres, 0);
+  $('#mgrList').innerHTML = `<button type="button" class="mo is-all${S.mgr < 0 ? ' sel' : ''}" data-mgrpick="-1"><span class="mo-n">All teams</span><span class="mo-x">${meta(esc(scopeLabel()), allN, allP)}</span></button>`
+    + (html || `<div class="mo-empty">${ql ? 'No manager or TL by that name' : 'No teams in this area on this day'}</div>`);
+}
+function openMgrPop() {
+  const pop = $('#mgrPop');
+  pop.innerHTML = `<label class="search mo-search">${icon('search')}<input type="search" id="mgrQ" placeholder="Find a manager or TL" autocomplete="off"></label><div class="mo-list" id="mgrList"></div>`;
+  pop.hidden = false; $('#mgrBtn').setAttribute('aria-expanded', 'true');
+  placeMgrPop();
+  renderMgrPop();
+  $('#mgrQ').focus();
+}
+function placeMgrPop() {   // open towards the side of the button that has room
+  const pop = $('#mgrPop'); if (pop.hidden) return;
+  const br = $('#mgrBtn').getBoundingClientRect(), roomRight = br.left + pop.offsetWidth <= innerWidth - 12;
+  pop.style.left = roomRight ? '0' : 'auto'; pop.style.right = roomRight ? 'auto' : '0';
+}
+addEventListener('resize', placeMgrPop);
+if (document.fonts) document.fonts.ready.then(placeMgrPop);
+function closeMgrPop() { const p = $('#mgrPop'); if (p && !p.hidden) { p.hidden = true; $('#mgrBtn').setAttribute('aria-expanded', 'false'); } }
+
+// ---------- Managers page: a plain table like the Mumbai dashboard's (one row per TL, "▸ N JDAs" opens the team) ----------
+function pageManagers() {
+  const d = S.day, T = buildTree(d), N = T.nodes, P = mgrParents(d);
+  const tls = [...N.values()].filter(n => n.own.team > 0);
+  const tot = newStat(); tls.forEach(n => addStat(tot, n.own)); finishStat(tot);
+  const named = tls.filter(n => n.m >= 0).map(n => ({ m: n.m, name: mgrName(n.m), team: n.own.team, att: n.own.att, avg: n.own.avg }));
+  const big = named.filter(x => x.team >= 3);
+  const best = [...big].sort((a, b) => b.att - a.att || b.avg - a.avg)[0], worst = [...big].sort((a, b) => a.att - b.att)[0];
+  const under70 = named.filter(x => x.att != null && x.att < .7).length;
+  const nMgr = new Set(tls.map(n => P.get(n.m)).filter(x => x != null)).size;
+  let h = hero('managers', 'Managers & TLs',
+    `<b>${nf(named.length)}</b> TLs${nMgr ? ` under <b>${nf(nMgr)}</b> managers` : ''} lead <b>${nf(tot.team)}</b> JDAs today. ${best ? `Best TL attendance: <b>${esc(best.name)}</b> (${pct(best.att)}).` : ''}`,
+    [['TLs', nf(named.length)], ['Avg team', nf(named.length ? tot.team / named.length : null, 1)], ['TLs < 70%', nf(under70)]]);
+  h += tiles([
+    tile({ drill: 'att', lbl: 'Team attendance', val: pct(tot.att), ic: 'check', hue: '#10b981', sub: `${nf(tot.active)} of ${nf(tot.team)} present` }),
+    tile({ lbl: 'Best team (3+ JDAs)', val: best ? pct(best.att) : '—', ic: 'trophy', hue: '#f59e0b', sub: best ? esc(best.name) : '' }),
+    tile({ lbl: 'Needs attention', val: worst ? pct(worst.att) : '—', ic: 'alert', hue: '#ef4444', sub: worst ? esc(worst.name) + ' · lowest attendance' : '' }),
+    tile({ drill: 'abs3', lbl: 'Absent 3+ days', val: nf(tot.abs3), ic: 'calx', hue: '#f43f5e', sub: 'across all teams' }),
+  ]);
+
+  const mainArea = reps => areaName([...reps.reduce((mm, { c }) => mm.set(c.home, (mm.get(c.home) || 0) + 1), new Map())].sort((a, b) => b[1] - a[1])[0]?.[0] ?? -1);
+  const upName = m => { const u = P.get(m); return u == null ? '' : mgrName(u); };
+  const w10 = lastWork(d, 10);
+  const jdaRow = ({ r, c }, tl) => {
+    const first = startDay[r], worked = w10.filter(w => w >= first), here = worked.filter(w => repDays[r].has(w)).length;
+    return { r, name: REPS[r].name, id: REPS[r].id, mgr: mgrName(c.mgr), up: upName(c.mgr), area: areaName(c.home), present: c.rec ? 1 : 0,
+      att10: worked.length ? here / worked.length : null, pres: c.rec ? c.rec.n : 0, own7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null),
+      onT: c.rec && c.rec.n >= TARGET ? 1 : 0, abs: c.rec ? 0 : absentStreak(r, d), ten: tenureText(r, d), tenM: tenureMonths(r, d), sales: salesMap[r].get(d) || 0, tl };
+  };
+  const mgrRows = tls.map(n => { const x = n.own; return { m: n.m, name: n.m < 0 ? 'Manager not recorded' : mgrName(n.m), code: n.m >= 0 ? MGRS[n.m][0] : '', up: upName(n.m), area: mainArea(n.reps),
+    team: x.team, active: x.active, att: x.att, att7: x.att7, pres: x.pres, avg: x.avg, avg7: x.avg7, onT: x.onT, abs3: x.abs3, ten: x.ten, sales: x.sales,
+    reps: n.reps, names: n.reps.map(({ r }) => REPS[r].name + ' ' + REPS[r].id).join(' ') }; });
+
+  const view = S.mgrView || 'manager';
+  const attTxt = v => v == null ? '<span class="muted">—</span>' : `<span class="${v >= .85 ? 'ok-t' : v >= .7 ? 'mid-t' : 'lo-t'}">${pct(v)}</span>`;
+  const absTxt = v => v >= 3 ? `<span class="lo-t">${v} days</span>` : v ? `<span class="mid-t">${v} days</span>` : '<span class="muted">—</span>';
+  const st = tableState['mgr-' + view] || (tableState['mgr-' + view] = { sort: view === 'manager' ? 'team' : 'pres', dir: -1, q: '' });
+  const q = st.q.trim().toLowerCase();
+  const openSet = S.treeOpen || new Set();
+  const allOpen = mgrRows.length && mgrRows.every(x => openSet.has(x.m));
+  h += secTitle('Your managers and JDAs', view === 'manager' ? 'one row per TL · ▸ opens their JDAs · click a column to sort' : 'every active JDA · click a column to sort');
+  h += `<div class="mgr-bar"><div class="seg">${[['manager', 'Manager view'], ['jda', 'JDA view']].map(([k, l]) => `<button type="button" data-mview="${k}" aria-pressed="${view === k}">${l}</button>`).join('')}</div>
+    ${view === 'manager' ? `<button type="button" class="btn-ghost" data-treeall="${allOpen ? 'close' : 'open'}">${allOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}</div>`;
+
+  if (view === 'manager') {
+    const NC = 13 + (HAS_SALES ? 1 : 0);
+    const subRows = x => openSet.has(x.m) ? [...x.reps].map(rc => jdaRow(rc, x.name))
+      .filter(j => !q || (x.name + ' ' + x.code).toLowerCase().includes(q) || (j.name + ' ' + j.id).toLowerCase().includes(q))
+      .sort((a, b) => b.pres - a.pres || a.abs - b.abs)
+      .map(j => `<tr class="perf-sub"><td></td><td class="sub-name"><button type="button" class="rep" data-rep="${j.r}">${esc(j.name)}</button></td><td class="muted">${esc(j.id)}</td><td class="muted">—</td><td>${esc(j.area)}</td>
+        <td class="num muted">—</td><td class="num">${j.present ? '<span class="ok-t">✓</span>' : '<span class="lo-t">✗</span>'}</td><td class="num">${attTxt(j.att10)}</td><td class="num muted">—</td>
+        <td class="num">${nf(j.pres)}</td><td class="num">${nf(j.own7, 1)}</td><td class="num">${j.onT ? '✓' : ''}</td><td class="num">${absTxt(j.abs)}</td><td class="muted">${esc(j.ten)}</td>${HAS_SALES ? `<td class="num">${nsales(j.sales)}</td>` : ''}</tr>`).join('') : '';
+    h += table('mgr-manager', [
+      { k: 'tog', label: '', csv: false, html: x => `<button type="button" class="team-toggle${openSet.has(x.m) ? ' open' : ''}" data-tree="${x.m}" aria-expanded="${openSet.has(x.m)}">${openSet.has(x.m) ? '▾' : '▸'} ${x.team} JDA${x.team === 1 ? '' : 's'}</button>` },
+      { k: 'name', label: 'Manager / TL', wrap: true, search: x => x.name + ' ' + x.code + ' ' + x.names, html: x => `<b>${esc(x.name)}</b>` },
+      { k: 'code', label: 'Emp code' },
+      { k: 'up', label: 'Reports to', help: 'Reports to', wrap: true, search: x => x.up, fmt: v => v || '—' },
+      { k: 'area', label: 'Main area', wrap: true },
+      { k: 'team', label: 'Active JDAs', num: true, help: 'Active JDAs' },
+      { k: 'active', label: 'Present JDAs', num: true, help: 'Present JDAs' },
+      { k: 'att', label: 'Attendance', num: true, html: x => attTxt(x.att), csv: x => pct(x.att) },
+      { k: 'att7', label: '7-day att.', num: true, fmt: pct },
+      { k: 'pres', label: 'Pres.', help: 'Pres.', num: true },
+      { k: 'avg', label: 'Avg', num: true, fmt: v => nf(v, 1) },
+      { k: 'onT', label: `${TARGET}+`, num: true },
+      { k: 'abs3', label: 'Absent 3+', num: true, html: x => x.abs3 ? `<span class="lo-t">${x.abs3}</span>` : '<span class="muted">0</span>', csv: x => x.abs3 },
+      { k: 'ten', label: 'Tenure mix', html: x => tenBar(x.ten), sortv: x => x.ten[0], csv: x => x.ten.join(' / ') },
+      ...(HAS_SALES ? [{ k: 'sales', label: 'Team deals', num: true, fmt: nsales }] : []),
+    ], mgrRows, { noun: 'TLs', title: 'Managers', after: subRows, empty: 'No TL or JDA by that name' });
+  } else {
+    const jrows = tls.flatMap(n => n.reps.map(rc => jdaRow(rc, mgrName(n.m))));
+    h += table('mgr-jda', [
+      { k: 'name', label: 'JDA', search: x => x.name + ' ' + x.id + ' ' + x.mgr, html: x => `<button type="button" class="rep" data-rep="${x.r}">${esc(x.name)}</button>`, csv: x => x.name },
+      { k: 'id', label: 'Emp code' },
+      { k: 'mgr', label: 'TL', search: x => x.mgr },
+      { k: 'up', label: 'Manager', help: 'Reports to', search: x => x.up, fmt: v => v || '—' },
+      { k: 'area', label: 'Area', wrap: true },
+      { k: 'present', label: 'Present', num: true, html: x => x.present ? '<span class="ok-t">✓</span>' : '<span class="lo-t">✗</span>', csv: x => x.present ? 'yes' : 'no' },
+      { k: 'att10', label: 'Attendance (10 days)', num: true, html: x => attTxt(x.att10), csv: x => pct(x.att10) },
+      { k: 'pres', label: 'Presentations', num: true },
+      { k: 'own7', label: 'Own 7-day avg', num: true, fmt: v => nf(v, 1) },
+      { k: 'abs', label: 'Days absent', num: true, html: x => absTxt(x.abs), csv: x => x.abs },
+      { k: 'ten', label: 'Tenure', sortv: x => x.tenM },
+      ...(HAS_SALES ? [{ k: 'sales', label: 'Deals', num: true, fmt: nsales }] : []),
+    ], jrows, { noun: 'JDAs', title: 'JDAs' });
+  }
+  return h;
+}
+
+// ================= PAGE 4: ACTION LIST =================
+function actionLists(d) {
+  const L = { abs3: [], abs2: [], inter: [], back: [], zero: [], low: [] };
+  const w10 = lastWork(d, 10), w3 = lastWork(d, 3);
+  for (const { r, c } of roster(d)) {
+    const base = { r, name: REPS[r].name, id: REPS[r].id, mgr: mgrName(c.mgr), area: areaName(c.home), lastDay: c.last ? D.days[c.last.d] : '', ten: tenureText(r, d) };
+    const first = startDay[r];
+    if (!c.rec) {
+      const s = absentStreak(r, d);
+      if (s >= 3) { L.abs3.push({ ...base, streak: s }); continue; }
+      if (s === 2) { L.abs2.push({ ...base, streak: s }); continue; }
+    }
+    const abs10 = w10.filter(w => w >= first && !repDays[r].has(w)).length;
+    if (abs10 >= 3 && (c.rec || absentStreak(r, d) < 2)) L.inter.push({ ...base, abs10, of10: w10.filter(w => w >= first).length });
+    if (c.rec) {
+      const pw = prevWork(d, 30); let gap = 0;
+      for (const w of pw) { if (w < first || repDays[r].has(w)) break; gap++; }
+      if (gap >= 2) {
+        const before = pw.slice(gap).map(w => repDays[r].get(w)).filter(Boolean).slice(0, 7);
+        L.back.push({ ...base, gap, n: c.rec.n, usual: before.length ? before.reduce((s, x) => s + x.n, 0) / before.length : null });
+      }
+      const worked = pw.map(w => repDays[r].get(w)).filter(Boolean).slice(0, 2);
+      if (c.rec.n < TARGET && worked.length === 2 && worked.every(x => x.n < TARGET)) L.low.push({ ...base, n: c.rec.n, avg3: (c.rec.n + worked[0].n + worked[1].n) / 3 });
+    }
+    if (HAS_SALES) {
+      const presented = w3.filter(w => repDays[r].has(w)).length;
+      const sold = w3.reduce((s, w) => s + (salesMap[r].get(w) || 0), 0);
+      if (presented >= 1 && sold === 0) L.zero.push({ ...base, presented, pres3: w3.reduce((s, w) => s + (repDays[r].get(w)?.n || 0), 0), lastSale: (() => { for (const w of [...WORK].reverse()) if (w <= d && salesMap[r].get(w)) return D.days[w]; return ''; })() });
+    }
+  }
+  return L;
+}
+const ACTS = [
+  { k: 'abs3', lbl: 'Absent 3+ days in a row', sev: 'crit', ic: 'calx', help: 'No presentation on the last 3 or more working days. Call today.' },
+  { k: 'abs2', lbl: 'Absent 2 days', sev: 'serious', ic: 'cal2', help: 'No presentation on the last 2 working days. Check before it becomes 3.' },
+  { k: 'inter', lbl: 'On-and-off absence', sev: 'warn', ic: 'wave', help: 'Absent on 3 or more of the last 10 working days, but not in one long run.' },
+  { k: 'zero', lbl: 'Zero sale for 3 days', sev: 'crit', ic: 'zero', help: 'Presented on at least one of the last 3 working days but closed no deal in them.' },
+  { k: 'low', lbl: `Under ${TARGET} for 3 days running`, sev: 'warn', ic: 'down', help: `Under ${TARGET} presentations on each of the last 3 days they worked.` },
+  { k: 'back', lbl: 'Back at work today', sev: 'good', ic: 'back', help: 'Presented today after 2 or more absent working days: today\'s output against their usual.' },
+];
+function pageActions() {
+  const d = S.day, L = actionLists(d);
+  const urgent = L.abs3.length + (HAS_SALES ? L.zero.length : 0);
+  let h = hero('actions', urgent ? `${nf(urgent)} JDAs need a call today` : 'All clear today',
+    `<b>${nf(L.abs3.length)}</b> absent 3+ days in a row, <b>${nf(L.abs2.length)}</b> absent 2 days, <b>${nf(L.inter.length)}</b> on-and-off. <b>${nf(L.back.length)}</b> came back to work today.`,
+    [['Absent 3+', nf(L.abs3.length)], ['Under 5 × 3 days', nf(L.low.length)], ['Back today', nf(L.back.length)]]);
+  h += tiles(ACTS.map(a => a.k === 'zero' && !HAS_SALES
+    ? tile({ lbl: a.lbl, val: '—', sub: 'Sales data not available', ic: a.ic, sev: a.sev })
+    : tile({ lbl: a.lbl, val: nf(L[a.k].length), sub: a.sev === 'good' ? 'returned' : 'JDAs', ic: a.ic, sev: a.sev, click: a.k, sel: S.act === a.k })));
+  const A = ACTS.find(a => a.k === S.act) || ACTS[0];
+  h += secTitle(A.lbl, esc(A.help));
+  if (A.k === 'zero' && !HAS_SALES) return h + note('This list needs sales data, which is not available right now.');
+  const common = [...repCols(), { k: 'mgr', label: 'Manager', search: x => x.mgr, wrap: true }, { k: 'area', label: 'Area', search: x => x.area }];
+  const tail = [{ k: 'strip', label: 'Last 10 working days', html: x => strip(x.r, d), csv: false }, { k: 'ten', label: 'Tenure', sortv: x => tenureMonths(x.r, d) }];
+  const last = { k: 'lastDay', label: 'Last presented', fmt: v => v ? dlabel(v, true) : '—' };
+  const specific = {
+    abs3: [{ k: 'streak', label: 'Days absent', num: true, html: x => `<span class="pill crit">${x.streak} days</span>`, csv: x => x.streak }, last],
+    abs2: [{ k: 'streak', label: 'Days absent', num: true, html: x => `<span class="pill serious">${x.streak} days</span>`, csv: x => x.streak }, last],
+    inter: [{ k: 'abs10', label: 'Absent (last 10)', num: true, html: x => `<span class="pill warn">${x.abs10} of ${x.of10}</span>`, csv: x => x.abs10 }],
+    back: [{ k: 'gap', label: 'Days away', num: true }, { k: 'n', label: 'Today', num: true, html: x => presCell(x.n), csv: x => x.n }, { k: 'usual', label: 'Usual', num: true, fmt: v => nf(v, 1), title: 'Average before the absence' }, { k: 'vs', label: 'Today vs usual', num: true, sortv: x => x.usual ? x.n / x.usual : null, html: x => x.usual ? `<span class="pill ${x.n >= x.usual ? 'good' : x.n >= x.usual * .6 ? 'warn' : 'crit'}">${Math.round(x.n / x.usual * 100)}%</span>` : '—', csv: x => x.usual ? Math.round(x.n / x.usual * 100) + '%' : '' }],
+    zero: [{ k: 'presented', label: 'Days worked (of 3)', num: true }, { k: 'pres3', label: 'Presentations (3 days)', num: true }, { k: 'lastSale', label: 'Last deal', fmt: v => v ? dlabel(v, true) : 'none in data' }],
+    low: [{ k: 'n', label: 'Today', num: true, html: x => presCell(x.n), csv: x => x.n }, { k: 'avg3', label: '3-day avg', num: true, fmt: v => nf(v, 1) }],
+  }[A.k];
+  const sortK = { abs3: 'streak', abs2: 'name', inter: 'abs10', back: 'gap', zero: 'pres3', low: 'avg3' }[A.k];
+  h += table('act-' + A.k, [...common, ...specific, ...tail], L[A.k], { sort: sortK, dir: A.k === 'low' || A.k === 'abs2' ? 1 : -1, noun: 'JDAs', title: A.lbl });
+  return h;
+}
+
+// ================= PAGE 5: FIELD DISCIPLINE =================
+function pageField() {
+  const d = S.day, T = S.fieldThr;
+  const rows = [];
+  const hours = new Array(24).fill(0), hours7 = new Array(24).fill(0);
+  for (const { r, c } of roster(d)) {
+    if (!c.rec || !c.rec.times.length) continue;
+    const t = c.rec.times, first = t[0], last = t[t.length - 1];
+    let gap = 0; for (let i = 1; i < t.length; i++) gap = Math.max(gap, t[i] - t[i - 1]);
+    for (const m of t) hours[Math.floor(m / 60)]++;
+    const flags = [];
+    if (first > T.start) flags.push(['Late', 'warn']);
+    if (last < T.end) flags.push(['Early', 'serious']);
+    if (gap > T.gap && t.length > 1) flags.push(['Gap', 'warn']);
+    rows.push({ r, name: REPS[r].name, id: REPS[r].id, mgr: mgrName(c.mgr), area: areaName(c.home), n: c.rec.n, first, last, span: t.length > 1 ? (last - first) / 60 : 0, gap: t.length > 1 ? gap : null, perHr: t.length > 1 ? (t.length - 1) / ((last - first) / 60 || 1) : null, flags });
+  }
+  const prev = prevWork(d, 7);
+  for (const w of prev) for (const { c } of roster(w)) if (c.rec) for (const m of c.rec.times) hours7[Math.floor(m / 60)] += 1 / prev.length;
+  const medOf = a => { const v = a.filter(x => x != null).sort((x, y) => x - y); return v.length ? v[Math.floor(v.length / 2)] : null; };
+  const early = rows.filter(x => x.last < T.end).length, late = rows.filter(x => x.first > T.start).length, gaps = rows.filter(x => x.gap != null && x.gap > T.gap).length, clean = rows.filter(x => !x.flags.length).length;
+  const mf = medOf(rows.map(x => x.first)), ml = medOf(rows.map(x => x.last)), ms = medOf(rows.map(x => x.span));
+  let h = hero('field', 'Field discipline',
+    `The typical field day ran <b>${hm(mf)} – ${hm(ml)}</b> (${nf(ms, 1)} h). <b>${nf(late)}</b> started late, <b>${nf(early)}</b> finished early, <b>${nf(clean)}</b> had a clean day.`,
+    [['First presentation', hm(mf)], ['Last presentation', hm(ml)], ['Field span', nf(ms, 1) + ' h']]);
+  h += `<div class="toolbar field-bar"><span class="pill neutral" data-tip="Start = time of the first presentation, end = time of the last presentation. Change the limits on the right to re-check every JDA.">Based on presentation times</span>
+    <div class="thr"><label class="thr-f">Late start after <input type="time" id="thrStart" value="${hm(T.start)}"></label>
+    <label class="thr-f">Early finish before <input type="time" id="thrEnd" value="${hm(T.end)}"></label>
+    <label class="thr-f">Long gap over <input type="number" id="thrGap" min="30" step="15" value="${T.gap}"><span class="u">min</span></label></div></div>`;
+  const share = n => rows.length ? pct(n / rows.length) : '';
+  h += tiles([
+    tile({ drill: 'clean', lbl: 'Clean day (no flag)', val: nf(clean), unit: share(clean), ic: 'check', hue: '#10b981', sub: 'of ' + nf(rows.length) + ' present JDAs' }),
+    tile({ drill: 'late', lbl: 'Late start', val: nf(late), unit: share(late), ic: 'sun', hue: '#f59e0b', sub: 'first presentation after ' + hm(T.start) }),
+    tile({ drill: 'early', lbl: 'Early finish', val: nf(early), unit: share(early), ic: 'moon', hue: '#f97316', sub: 'last presentation before ' + hm(T.end) }),
+    tile({ drill: 'gap', lbl: 'Long gap', val: nf(gaps), unit: share(gaps), ic: 'pause', hue: '#ef4444', sub: 'a gap over ' + T.gap + ' min' }),
+  ]);
+  const hrs = []; for (let i = 8; i <= 22; i++) hrs.push(i);
+  const ymax = Math.max(...hrs.map(i => hours7[i]));
+  let chart = barChart(hrs.map(i => ({ label: i + ':00', v: hours[i], tip: `<b>${i}:00 – ${i + 1}:00</b><br>${nf(hours[i])} presentations<br>7-day avg ${nf(hours7[i], 0)}` })), { h: 230, W: 1100, ymax, color: '#0ea5e9', hiSel: false });
+  { const W = 1100, padL = 40, padT = 16, ih = 230 - 24 - 16, iw = W - padL - 6, bw = iw / hrs.length, max = niceMax(Math.max(...hrs.map(i => Math.max(hours[i], hours7[i])), 0));
+    const ticks = hrs.map((i, k) => { const y = padT + ih - Math.min(hours7[i], max) / max * ih; return `<line x1="${padL + k * bw + bw * .14}" x2="${padL + (k + 1) * bw - bw * .14}" y1="${y}" y2="${y}" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" pointer-events="none"/>`; }).join('');
+    chart = chart.replace(/<\/svg>$/, ticks + '</svg>'); }
+  h += `<div style="margin-top:16px">${card('Presentation pacing by hour', `Presentations started in each hour · ${dlabel(D.days[d], true)} against the 7 working days before`, chart, '#0ea5e9', `<div class="legend"><span><i style="background:#0ea5e9"></i>This day</span><span><i style="background:var(--ink);height:3px;vertical-align:3px"></i>7-day average</span></div>`)}</div>`;
+  h += secTitle('Field day of each present JDA', `${nf(rows.length - clean)} with a flag`);
+  h += table('field', [
+    ...repCols(),
+    { k: 'mgr', label: 'Manager', search: x => x.mgr, wrap: true },
+    { k: 'area', label: 'Area', wrap: true },
+    { k: 'n', label: 'Pres.', num: true, title: 'Presentations' },
+    { k: 'first', label: 'First', num: true, fmt: hm },
+    { k: 'last', label: 'Last', num: true, fmt: hm },
+    { k: 'span', label: 'Span (h)', num: true, fmt: v => nf(v, 1) },
+    { k: 'gap', label: 'Longest gap', num: true, fmt: v => v == null ? '—' : hm(v) },
+    { k: 'perHr', label: 'Per hour', num: true, fmt: v => nf(v, 1), title: 'Presentations per hour between the first and the last' },
+    { k: 'flags', label: 'Flags', title: 'Late = late start · Early = early finish · Gap = long gap between presentations', sortv: x => x.flags.length, html: x => x.flags.map(([l, c]) => `<span class="pill ${c}">${l}</span>`).join(' ') || '<span class="pill good">Clean</span>', csv: x => x.flags.map(f => f[0]).join('; ') },
+  ], rows, { sort: 'flags', noun: 'present JDAs', title: 'Field discipline' });
+  return h;
+}
+
+// ================= KPI drill-down: the real list behind a card, with its 30-day trend =================
+function fieldOf(c) {   // a JDA's field day from their presentation times
+  const t = c.rec ? c.rec.times : [];
+  if (!t.length) return null;
+  let gap = 0; for (let i = 1; i < t.length; i++) gap = Math.max(gap, t[i] - t[i - 1]);
+  const F = S.fieldThr, late = t[0] > F.start, early = t[t.length - 1] < F.end, lg = t.length > 1 && gap > F.gap;
+  return { first: t[0], last: t[t.length - 1], gap, late, early, lg, clean: !late && !early && !lg };
+}
+const DRILL = {
+  roster: { t: 'Active JDAs', sub: 'Every active JDA: present ones first, then absent', pick: () => true, day: s => s.roster, fmt: v => nf(v), color: '#6366f1', all: true },
+  active: { t: 'Present JDAs', sub: 'Every JDA who did at least 1 presentation', pick: x => !!x.c.rec, day: s => s.active, fmt: v => nf(v), color: '#6366f1' },
+  att: { t: 'Attendance %', sub: 'Present JDAs ÷ active JDAs · the JDAs present', pick: x => !!x.c.rec, day: s => s.att, fmt: pct, color: '#10b981' },
+  abs: { t: 'Absent %', sub: 'Absent JDAs ÷ active JDAs · the JDAs absent, longest first', pick: x => !x.c.rec, day: s => s.att == null ? null : 1 - s.att, fmt: pct, color: '#f43f5e', absent: true },
+  pres: { t: 'Presentations', sub: 'Presentations by each present JDA', pick: x => !!x.c.rec, day: s => s.pres, fmt: v => nf(v), color: '#0ea5e9' },
+  avg: { t: 'Average per present JDA', sub: `Each present JDA against the target of ${TARGET}`, pick: x => !!x.c.rec, day: s => s.avg, fmt: v => nf(v, 1), color: '#8b5cf6' },
+  onT: { t: `On target (${TARGET}+)`, sub: `JDAs who did ${TARGET} or more presentations`, pick: x => x.c.rec && x.c.rec.n >= TARGET, day: s => s.onT, fmt: v => nf(v), color: '#f97316' },
+  sales: { t: 'JDA deals', sub: 'JDAs who closed a deal', pick: x => (salesMap[x.r].get(S.day) || 0) > 0, day: s => s.sales, fmt: nsales, color: '#ec4899', sales: true },
+  abs3: { t: 'Absent 3+ days', sub: 'Not seen for 3 or more working days in a row', pick: (x, d) => !x.c.rec && absentStreak(x.r, d) >= 3, count: true, color: '#f43f5e', absent: true },
+  clean: { t: 'Clean day', sub: 'No late start, no early finish, no long gap', pick: x => fieldOf(x.c)?.clean, count: true, color: '#10b981', field: true },
+  late: { t: 'Late start', sub: () => 'First presentation after ' + hm(S.fieldThr.start), pick: x => fieldOf(x.c)?.late, count: true, color: '#f59e0b', field: true },
+  early: { t: 'Early finish', sub: () => 'Last presentation before ' + hm(S.fieldThr.end), pick: x => fieldOf(x.c)?.early, count: true, color: '#f97316', field: true },
+  gap: { t: 'Long gap', sub: () => `A break of more than ${S.fieldThr.gap} min between presentations`, pick: x => fieldOf(x.c)?.lg, count: true, color: '#ef4444', field: true },
+};
+function openDrill(kind) {
+  const K = DRILL[kind]; if (!K) return;
+  const d = S.day, ro = roster(d), rows = ro.filter(x => K.pick(x, d));
+  const ws = lastWork(d, 30).reverse();
+  const dayVal = w => K.count ? roster(w).filter(x => K.pick(x, w)).length : K.day(daySummary(w));
+  const vals = ws.map(dayVal), now = vals[vals.length - 1];
+  const fmt = K.fmt || (v => nf(v)), pctAxis = kind === 'att' || kind === 'abs';
+  // order: absences longest first, field flags by time, everything else by presentations
+  const val = x => K.all ? (x.c.rec ? x.c.rec.n : -absentStreak(x.r, d)) : K.absent ? absentStreak(x.r, d) : K.sales ? (salesMap[x.r].get(d) || 0) : K.field ? (kind === 'late' ? -fieldOf(x.c).first : kind === 'early' ? -fieldOf(x.c).last : kind === 'gap' ? fieldOf(x.c).gap : x.c.rec.n) : x.c.rec.n;
+  rows.sort((a, b) => val(b) - val(a));
+  const right = x => {
+    if (K.all && !x.c.rec || K.absent) { const st = absentStreak(x.r, d); return `<span class="pill ${st >= 3 ? 'crit' : 'warn'}">absent ${st} day${st > 1 ? 's' : ''}</span><small>last ${x.c.last ? dlabel(D.days[x.c.last.d]) : '—'}</small>`; }
+    if (K.sales) return `<b>${nsales(salesMap[x.r].get(d) || 0)}</b><small>${x.c.rec ? x.c.rec.n + ' presentations' : ''}</small>`;
+    if (K.field) { const f = fieldOf(x.c); return `<b>${hm(f.first)} – ${hm(f.last)}</b><small>${x.c.rec.n} pres. · longest gap ${f.gap ? hm(f.gap) : '—'}</small>`; }
+    return presCell(x.c.rec.n);
+  };
+  const sub = typeof K.sub === 'function' ? K.sub() : K.sub;
+  $('#drawer').innerHTML = `<div class="dr-head" style="background:linear-gradient(120deg, ${K.color}, #4338ca)"><div><div class="meta">${esc(longDate(D.days[d]))} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) : ''}</div>
+      <h2>${esc(K.t)}: ${fmt(now)}</h2><div class="meta">${esc(sub)}</div></div>
+      <button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
+    <div class="dr-body">
+      ${(() => {
+        const ok = ws.map((w, i) => [w, vals[i]]).filter(([, v]) => v != null && isFinite(v));
+        const mean = ok.length ? ok.reduce((a, [, v]) => a + v, 0) / ok.length : null;
+        const hi = ok.reduce((a, b) => (b[1] > a[1] ? b : a), ok[0] || [d, null]), lo = ok.reduce((a, b) => (b[1] < a[1] ? b : a), ok[0] || [d, null]);
+        const what = K.count ? `the number of JDAs in this list` : K.t;
+        const chart = lineChart(ws.map((w, i) => ({ label: dlabel(D.days[w]), v: vals[i] == null ? 0 : vals[i], day: w, tip: `<b>${dlabel(D.days[w], true)}</b><br>${esc(K.t)}: <b>${fmt(vals[i])}</b>${mean != null ? '<br>30-day average: ' + fmt(mean) : ''}<br><i>Click to open this day</i>` })), { color: K.color, fmt: pctAxis ? pct : (v => fmt(v)), avg: mean, selIdx: ws.indexOf(d) });
+        return card(`${esc(K.t)} on each working day`, `Each point is one working day (last ${ws.length}): ${esc(what)} that day. <b>Orange dot</b> = ${dlabel(D.days[d])} (${fmt(now)}). <b>Dashed line</b> = 30-day average. Click a point to open that day.`, chart
+          + `<div class="trend-stats"><div><span>30-day average</span><b>${fmt(mean)}</b></div><div><span>Best day</span><b>${fmt(hi[1])}</b><small>${dlabel(D.days[hi[0]], true)}</small></div><div><span>Lowest day</span><b>${fmt(lo[1])}</b><small>${dlabel(D.days[lo[0]], true)}</small></div></div>`, K.color);
+      })()}
+      <div class="card"><div class="c-head"><div><h3><i class="dot" style="background:${K.color}"></i>${nf(rows.length)} JDA${rows.length === 1 ? '' : 's'}</h3><div class="cap">Click a name for their profile</div></div></div>
+        <div class="dlist">${rows.map(x => `<div class="dl-row">${who(x.r)}<span class="dl-meta">${esc(mgrName(x.c.mgr))}<small>${esc(areaName(x.c.home))}</small></span><span class="dl-val">${right(x)}</span></div>`).join('') || '<div class="empty">Nobody in this list for this day and filter.</div>'}</div></div>
+    </div>`;
+  $('#drawer').classList.add('open'); $('#drawerBg').classList.add('open');
+  $('#drawerX').focus();
+}
+
+// ================= rep drawer =================
+function openRep(r) {
+  const d = S.day, c = ctx(r, d), rep = REPS[r];
+  const ws = lastWork(d, 30).reverse();
+  const recs = ws.map(w => repDays[r].get(w)).filter(Boolean);
+  const first = startDay[r];
+  const wsIn = ws.filter(w => w >= first);
+  const sales30 = ws.reduce((s, w) => s + (salesMap[r].get(w) || 0), 0);
+  const avgT = k => recs.length ? recs.reduce((s, x) => s + (k === 'f' ? x.times[0] : x.times[x.times.length - 1]), 0) / recs.length : null;
+  const areas = new Map(); for (const x of recs) for (const [a, n] of x.areas) areas.set(a, (areas.get(a) || 0) + n);
+  const al = [...areas.entries()].sort((a, b) => b[1] - a[1]), amax = al.length ? al[0][1] : 1;
+  const att = wsIn.length ? recs.length / wsIn.length : null;
+  $('#drawer').innerHTML = `<div class="dr-head">${avatar(rep.name, 'lg')}<div><h2>${esc(rep.name)}</h2>
+      <div class="meta">${esc(rep.id)} · reports to <b>${esc(mgrName(c.mgr))}</b><br>${mgrChain(c.mgr, d).length > 1 ? 'Line: ' + mgrChain(c.mgr, d).map(m => esc(mgrName(m))).join(' › ') + '<br>' : ''}${esc(areaName(c.home))} · tenure ${tenureText(r, d)}${rep.joined ? ' (joined ' + dlabel(rep.joined) + ' ' + rep.joined.slice(0, 4) + ')' : ''}${rep.desig ? ' · ' + esc(rep.desig) : ''}</div>
+      ${rep.left ? `<span class="pill crit" style="margin-top:6px">Left on ${esc(rep.left)}</span>` : ''}</div>
+      <button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
+    <div class="dr-body">
+      <div class="tiles">
+        ${tile({ lbl: 'Attendance (30 days)', val: pct(att), unit: `${recs.length}/${wsIn.length} days`, ic: 'check', hue: '#10b981' })}
+        ${tile({ lbl: 'Avg when present', val: nf(recs.length ? recs.reduce((s, x) => s + x.n, 0) / recs.length : null, 1), ic: 'gauge', hue: '#8b5cf6' })}
+        ${tile({ lbl: 'Usual day', val: hm(avgT('f')), unit: '– ' + hm(avgT('l')), ic: 'clock', hue: '#0ea5e9' })}
+        ${HAS_SALES ? tile({ lbl: 'Deals (30 days)', val: nsales(sales30), ic: 'trophy', hue: '#ec4899' }) : tile({ lbl: 'Days on target', val: nf(recs.filter(x => x.n >= TARGET).length), unit: 'of ' + recs.length, ic: 'target', hue: '#f97316' })}
+      </div>
+      ${card('Last 30 working days', 'Presentations a day · red = absent · hover for times',
+        barChart(ws.map(w => { const x = repDays[r].get(w); return { label: dlabel(D.days[w]), v: x ? x.n : (w >= first ? 0.5 : 0), color: x ? (x.n >= TARGET ? '#6366f1' : '#a5b4fc') : '#f43f5e', sel: w === d, tip: `<b>${dlabel(D.days[w], true)}</b><br>${x ? x.n + ' presentations · ' + hm(x.times[0]) + '–' + hm(x.times[x.times.length - 1]) : w >= first ? 'absent' : 'before first presentation'}${HAS_SALES && salesMap[r].get(w) ? '<br>Sales ' + nsales(salesMap[r].get(w)) : ''}` }; }), { h: 180, W: 440, fmt: v => nf(v) }), '#6366f1')}
+      ${card('Where they presented', 'Last 30 working days', `<div class="arealist">${al.map(([a, n]) => `<div><span>${esc(areaName(a))}</span><span class="pbar"><i style="width:${n / amax * 100}%"></i></span><b>${nf(n)}</b></div>`).join('') || '<span class="muted">No presentations</span>'}</div>`, '#14b8a6')}
+    </div>`;
+  $('#drawer').classList.add('open'); $('#drawerBg').classList.add('open');
+  $('#drawerX').focus();
+}
+function closeRep() { $('#drawer').classList.remove('open'); $('#drawerBg').classList.remove('open'); }
+
+// ================= calendar =================
+const DAYIDX = new Map(D.days.map((s, i) => [s, i]));
+let calMonth = [0, 0];
+const iso = (y, m, d) => y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+function closeCal() { const p = $('#calPop'); if (p && !p.hidden) { p.hidden = true; $('#calBtn').setAttribute('aria-expanded', 'false'); } }
+function renderCal() {   // a month grid: working days with data can be picked, each with a dot for that day's attendance
+  const [y, m] = calMonth, first = new Date(y, m, 1), nDays = new Date(y, m + 1, 0).getDate();
+  const lead = (first.getDay() + 6) % 7;   // weeks start on Monday
+  const f = dt(D.days[WORK[0]]), l = dt(D.days[WORK[WORK.length - 1]]);
+  const canPrev = y > f.getFullYear() || (y === f.getFullYear() && m > f.getMonth());
+  const canNext = y < l.getFullYear() || (y === l.getFullYear() && m < l.getMonth());
+  let g = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(w => `<span class="wd">${w}</span>`).join('') + '<span></span>'.repeat(lead);
+  for (let d = 1; d <= nDays; d++) {
+    const i = DAYIDX.get(iso(y, m, d));
+    if (i == null || !isWork[i]) { g += `<span class="off" title="${i == null ? 'No data' : 'Not a working day'}">${d}</span>`; continue; }
+    const s = daySummary(i), dot = s.att == null ? 'transparent' : s.att >= .85 ? '#10b981' : s.att >= .7 ? '#f59e0b' : '#ef4444';
+    g += `<button type="button" data-calday="${i}" class="${i === S.day ? 'sel' : ''}${i === WORK[WORK.length - 1] ? ' latest' : ''}" style="--dot:${dot}" data-tip="${esc('<b>' + dlabel(D.days[i], true) + '</b><br>Attendance ' + pct(s.att) + ' (' + nf(s.active) + ' of ' + nf(s.roster) + ')<br>' + nf(s.pres) + ' presentations')}">${d}</button>`;
+  }
+  $('#calPop').innerHTML = `<div class="cal-head"><button type="button" data-calnav="-1" ${canPrev ? '' : 'disabled'} aria-label="Previous month">‹</button><b>${MONTHS[m]} ${y}</b><button type="button" data-calnav="1" ${canNext ? '' : 'disabled'} aria-label="Next month">›</button></div>
+    <div class="cal-grid">${g}</div>
+    <div class="cal-foot"><div class="cal-leg"><span><i style="background:#10b981"></i>85%+</span><span><i style="background:#f59e0b"></i>70–85%</span><span><i style="background:#ef4444"></i>under 70%</span></div><button type="button" data-callatest="1">Latest day</button></div>`;
+}
+
+// ---------- Branch / Main-Remote / State filters (independent) ----------
+const AREA_BTNS = [   // [key, label, city, state, hover]
+  ['all', 'Branch', 'all', 'all', 'The whole Hyderabad branch: Telangana and Andhra Pradesh.'],
+  ['main', 'Main', 'main', 'all', 'Hyderabad main city only.'],
+  ['remote', 'Remote', 'remote', 'all', 'Every district outside Hyderabad main city (Telangana remote + Andhra Pradesh).'],
+  ['TS', 'Telangana', 'all', 'TS', 'All Telangana districts: Hyderabad + the 8 remote districts.'],
+  ['AP', 'Andhra', 'all', 'AP', 'Andhra Pradesh towns covered by the Hyderabad branch.'],
+];
+const areaKey = () => (AREA_BTNS.find(b => b[2] === S.city && b[3] === S.st) || AREA_BTNS[0])[0];
+function setLocLabel() {
+  const k = areaKey();
+  const on = key => key === k;
+  const btn = ([key, l, , , tip]) => `<button type="button" data-scope="${key}" aria-pressed="${on(key)}" data-tip="${esc('<div class=tt-t>' + l + '</div>' + tip)}">${l}</button>`;
+  // Branch with its two halves (Main, Remote) in one group; the state split in another
+  $('#scopeSeg').innerHTML = `<span class="sg-grp sg-branch${k === 'all' ? ' whole' : ''}">${btn(AREA_BTNS[0])}${btn(AREA_BTNS[1])}${btn(AREA_BTNS[2])}</span>`
+    + `<span class="sg-grp">${btn(AREA_BTNS[3])}<span class="sg-pipe" aria-hidden="true"></span>${btn(AREA_BTNS[4])}</span>`;
+}
+
+// ================= shell =================
+const PAGES = { today: ['Today', pageToday], territory: ['Territories', pageTerritory], managers: ['Managers & TLs', pageManagers], actions: ['Action list', pageActions], field: ['Field discipline', pageField] };
+function render() {
+  HELPC = null;
+  setMgrLabel();
+  setLocLabel();
+  const [title, fn] = PAGES[S.page];
+  $('#pageTitle').textContent = title;
+  document.querySelectorAll('.nav-btn').forEach(b => b.setAttribute('aria-current', b.dataset.page === S.page ? 'page' : 'false'));
+  const notes = (D.meta.notes || []).map(n => note(esc(n))).join('');
+  const y = window.scrollY;
+  gid = 0;
+  $('#page').innerHTML = notes + fn();
+  window.scrollTo(0, y);
+  const L = actionLists(S.day), n = L.abs3.length + (HAS_SALES ? L.zero.length : 0);
+  $('#actBadge').hidden = !n; $('#actBadge').textContent = n;
+  $('#calLbl').textContent = dlabel(D.days[S.day], true) + ' ' + D.days[S.day].slice(0, 4);
+  if (!$('#calPop').hidden) renderCal();
+  $('#prevDay').disabled = workPos.get(S.day) === 0;
+  $('#nextDay').disabled = workPos.get(S.day) === WORK.length - 1;
+}
+function setup() {
+
+  $('#calBtn').dataset.tip = '<div class=tt-t>Pick a day</div>Open the calendar. Dots show that day\'s attendance: green 85%+, amber 70–85%, red under 70%. Greyed days are Sundays, holidays or have no data.';
+  const info = `Data ${dlabel(D.meta.window_start)} – ${dlabel(D.meta.window_end)} ${D.meta.window_end.slice(0, 4)} · updated ${esc(D.meta.generated)}`;
+  $('#footInfo').textContent = 'Data to ' + dlabel(D.meta.window_end) + ' · updated ' + D.meta.generated.slice(11);
+  $('#footInfo').dataset.tip = info; $('#liveDot').dataset.tip = '<b>Live data</b><br>' + info;
+  const theme = store.get('theme'); if (theme) document.documentElement.dataset.theme = theme;
+  $('#themeBtn').onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = dark ? 'light' : 'dark'; store.set('theme', dark ? 'light' : 'dark');
+  };
+  $('#calBtn').onclick = e => { e.stopPropagation(); const pop = $('#calPop'); if (pop.hidden) { const d = dt(D.days[S.day]); calMonth = [d.getFullYear(), d.getMonth()]; pop.hidden = false; renderCal(); } else pop.hidden = true; $('#calBtn').setAttribute('aria-expanded', String(!pop.hidden)); };
+  $('#prevDay').onclick = () => { const p = workPos.get(S.day); if (p > 0) { S.day = WORK[p - 1]; render(); } };
+  $('#nextDay').onclick = () => { const p = workPos.get(S.day); if (p < WORK.length - 1) { S.day = WORK[p + 1]; render(); } };
+  $('#mgrBtn').onclick = e => { e.stopPropagation(); $('#mgrPop').hidden ? openMgrPop() : closeMgrPop(); };
+  $('#mgrBtn').dataset.tip = '<div class=tt-t>Manager / TL</div>Show one manager\'s whole line, or one TL\'s team, on every page. Bold = manager, normal = TL.';
+  document.addEventListener('click', e => {
+    if (e.target.closest('#drawerX')) { closeRep(); return; }   // the panel's close button
+    const q = e.target.closest('.hl');
+    if (q) { const tip = $('#tip'), r = q.getBoundingClientRect(); tip.innerHTML = q.dataset.tip; tip.style.display = 'block'; tip.style.left = Math.max(8, Math.min(r.left, innerWidth - tip.offsetWidth - 8)) + 'px'; tip.style.top = (r.bottom + 8) + 'px'; e.stopPropagation(); return; }
+    const cal = e.target.closest('[data-calday],[data-calnav],[data-callatest]');
+    if (cal) {
+      const c = cal.dataset;
+      if (c.calnav) { let [y, m] = calMonth; m += +c.calnav; if (m < 0) { y--; m = 11; } if (m > 11) { y++; m = 0; } calMonth = [y, m]; renderCal(); return; }
+      S.day = c.callatest ? WORK[WORK.length - 1] : +c.calday; closeCal(); render(); return;
+    }
+    if (!e.target.closest('#calPop')) closeCal();
+    const pick = e.target.closest('[data-mgrpick]');
+    if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
+    if (!e.target.closest('#mgrPop')) closeMgrPop();
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill]');
+    if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
+    const ds = t.dataset;
+    if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
+    else if (ds.page) { S.page = ds.page; store.set('page', ds.page); history.replaceState(null, '', '#' + ds.page); window.scrollTo(0, 0); render(); }
+    else if (ds.rep) openRep(+ds.rep);
+    else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
+    else if (ds.csv) downloadCsv(ds.csv);
+    else if (ds.act) { S.act = ds.act; render(); }
+    else if (ds.terr) { S.terrState = ds.terr; render(); }
+    else if (ds.tree != null) { const m = +ds.tree; if (!S.treeOpen) S.treeOpen = new Set(); S.treeOpen.has(m) ? S.treeOpen.delete(m) : S.treeOpen.add(m); render(); }
+    else if (ds.mview) { S.mgrView = ds.mview; render(); }
+    else if (ds.treeall) { S.treeOpen = ds.treeall === 'open' ? new Set([...buildTree(S.day).nodes.values()].filter(n => n.own.team > 0).map(n => n.m)) : new Set(); render(); }
+    else if (ds.drill) openDrill(ds.drill);
+    else if (ds.day != null) { S.day = +ds.day; if (t.closest('#drawer')) closeRep(); render(); }
+  });
+  document.addEventListener('input', e => {
+    if (e.target.id === 'mgrQ') { renderMgrPop(e.target.value); return; }
+    const q = e.target.dataset && e.target.dataset.q;
+    if (q) { tableState[q].q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.querySelector(`[data-q="${q}"]`); if (el) { el.focus(); el.setSelectionRange(pos, pos); } }
+  });
+  document.addEventListener('change', e => {
+    const id = e.target.id, toMin = v => { const [a, b] = v.split(':').map(Number); return a * 60 + b; };
+    if (id === 'thrStart' && e.target.value) { S.fieldThr.start = toMin(e.target.value); render(); }
+    if (id === 'thrEnd' && e.target.value) { S.fieldThr.end = toMin(e.target.value); render(); }
+    if (id === 'thrGap' && +e.target.value > 0) { S.fieldThr.gap = +e.target.value; render(); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeRep(); closeCal(); closeMgrPop(); } });
+  const tip = $('#tip');
+  document.addEventListener('mousemove', e => {
+    const t = e.target.closest && e.target.closest('[data-tip]');
+    if (!t) { tip.style.display = 'none'; return; }
+    tip.innerHTML = t.dataset.tip; tip.style.display = 'block';
+    const w = tip.offsetWidth, hgt = tip.offsetHeight;
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - w - 8) + 'px';
+    tip.style.top = (e.clientY + 16 + hgt > innerHeight ? e.clientY - hgt - 10 : e.clientY + 16) + 'px';
+  });
+}
+setup();
+render();
+})();
+</script>
+</body>
+</html>

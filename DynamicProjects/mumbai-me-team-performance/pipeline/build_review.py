@@ -26,6 +26,7 @@ import re
 import sys
 
 from records import prepare, tidy
+import tme_tree
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.dirname(PIPE)
@@ -82,11 +83,13 @@ def main():
     NC = sorted((r for r in P["not_counted"] if r["to_date"] >= fy), key=lambda r: (r["to_date"], r["me"]))
     kinds = Counter(" ".join(str(r["disposition_name"] or "Not recorded").split()) for r in NC)
     KINDS = [k for k, _ in kinds.most_common()]
-    nc = {"n": len(NC), "d": [], "me": [], "tme": [], "k": []}
+    nc = {"n": len(NC), "d": [], "me": [], "tme": [], "k": [], "bk": [], "sl": [], "tt": []}   # bk / sl / tt: allocation, appointment time, TME team (30 Oct 2026)
     nc_co, nc_pid = [], []
     for r in NC:
         nc["d"].append((r["to_date"] - fy).days); nc["me"].append(P["me_ix"](r["me"])); nc["tme"].append(P["tme_ix"](r["tme"]))
         nc["k"].append(KINDS.index(" ".join(str(r["disposition_name"] or "Not recorded").split())))
+        nc["bk"].append(mins(r.get("allocationtime"))); nc["sl"].append(mins(r.get("actiontime")))
+        nc["tt"].append(TEAMS.index(r["tme_team_type_name"]) if r.get("tme_team_type_name") in TEAMS else 255)
         nc_co.append(str(r["companyname"] or "").strip()[:60]); nc_pid.append(str(r["parentid"] or ""))
     log(f"Not counted as given: {len(NC):,} ({', '.join(f'{k} {v:,}' for k, v in kinds.most_common(6))})")
 
@@ -124,7 +127,7 @@ def main():
             last_grade[str(r["me"]).strip()] = g
     hr_grade = [last_grade.get(str(code).strip(), "") for code, _name in MES]
     n_att = sum(1 for x in recs if x[5] <= 2)
-    DL = P["deals"]   # deals closed, Sales MIS rule (records.py): (day, me, mgr or -1, TME team, dc_genio)
+    DL = P["deals"]   # deals closed, Sales MIS rule (records.py): (day, me, mgr or -1, TME team, dc_genio, parentid, TME or -1)
     n_deal = round(sum(x[4] for x in DL), 2)
     log(f"Appointments {len(recs):,} (left out: {bad}); attended {n_att:,}; deals closed {n_deal:,.2f} "
         f"({sum(1 for x in recs if x[5] == 0):,} appointments with disposition Dealclosed)")
@@ -134,6 +137,47 @@ def main():
     assert sys.byteorder == "little"
     def pack(code, values):
         return base64.b64encode(array(code, values).tobytes()).decode()
+    # TME mode (29 Oct 2026): the TME tree (tme_tree.py: team leader from each appointment, the lines above from the SSO
+    # dump's tme_lines.json) and each TME's HR record (days present, joining date, designation, home city; else the
+    # SSO lines' designation and joining date)
+    T = tme_tree.build(P, PIPE, log)
+    tl = None
+    if T:
+        hr_t = pickle.load(open(hp, "rb")) if months else None
+        t_days, t_j, t_des, t_city, t_team, team_names = [], [], [], [], [], []   # t_team: HR team per month (2026-10-31)
+        for k, (c, _name) in enumerate(TMES):
+            cc = str(c).strip()
+            mm = hr_t["master"].get(cc) if hr_t else None
+            for y, m in (hr_t["months"] if hr_t else []):
+                v = hr_t["days"].get((cc, y, m))
+                t_days.append(65535 if v is None else int(round(v[0] * 10)))
+                tn = v[4] if v is not None and len(v) > 4 and v[4] else ""
+                if tn and tn not in team_names:
+                    team_names.append(tn)
+                t_team.append(team_names.index(tn) if tn else 255)
+            t_j.append(mm[0].isoformat() if mm and mm[0] else T["j"][k])
+            t_des.append(tidy(mm[3]) if mm and mm[3] else tidy(T["des"][k]))
+            t_city.append(tidy(mm[4]) if mm else "")
+        tl = {"nodes": T["nodes"], "up": T["up"], "root": T["root"], "a": pack("H", T["atl"]), "d": pack("H", T["dtl"]),
+              "days": pack("H", t_days), "j": t_j, "des": t_des, "city": t_city, "src": T["src"], "srcDate": T["srcDate"],
+              "team": {"names": team_names, "ix": pack("B", t_team)}}   # the TME's team in HR (team_type_name), per month
+        # the TMEs' dialer calls per day (fetch_calls.py, 30 Oct 2026; TME mode's funnel): calls and connected, for the TMEs
+        # on the appointments (matched by employee code); the page counts a TME's calls when the TME is on a line
+        cp = os.path.join(PIPE, "cache", "calls.pkl")
+        if os.path.exists(cp):
+            cl = pickle.load(open(cp, "rb"))
+            tix = {str(c).strip().lstrip("0"): k for k, (c, _name) in enumerate(TMES)}
+            crow = [(tix[a], (d - fy).days, n, c) for a, d, n, c in cl["rows"] if a in tix and fy <= d <= end]
+            tl["calls"] = {"n": len(crow), "tm": pack("H", [x[0] for x in crow]), "d": pack("H", [x[1] for x in crow]),
+                           "c": pack("H", [min(x[2], 65535) for x in crow]), "k": pack("H", [min(x[3], 65535) for x in crow]),
+                           "to": str(cl.get("to") or ""), "pulled": cl["pulled"].strftime("%Y-%m-%dT%H:%M")}
+            allc = sum(r[2] for r in cl["rows"])
+            log(f"TME calls: {sum(x[2] for x in crow):,} of {allc:,} dialer calls are by TMEs on the appointments "
+                f"({sum(x[3] for x in crow):,} connected), to {cl.get('to')}")
+        else:
+            log("calls.pkl is missing from the cache folder (fetch_calls.py): TME mode has no calls.")
+        log(f"TME HR: {sum(1 for v in t_j if v):,} of {len(TMES):,} TMEs with a joining date, "
+            f"{len({k for k in range(len(TMES)) if any(t_days[k * len(months) + i] != 65535 for i in range(len(months)))}) if months else 0:,} with days present")
     data = {
         "meta": {"city": tidy(raw["city"]), "fy": fy.isoformat(), "end": end.isoformat(), "days": D_end + 1,
                  "refreshed": raw["pulled"].strftime("%Y-%m-%dT%H:%M"),
@@ -149,12 +193,17 @@ def main():
         "co": [x[6] for x in recs], "pid": [x[7] for x in recs],
         "dl": {"n": len(DL), "d": pack("H", [x[0] for x in DL]), "me": pack("H", [x[1] for x in DL]),
                "mg": pack("H", [x[2] if x[2] >= 0 else 65535 for x in DL]), "tt": pack("B", [x[3] for x in DL]),
-               "w": pack("f", [x[4] for x in DL]), "pid": [x[5] for x in DL]},
+               "w": pack("f", [x[4] for x in DL]), "pid": [x[5] for x in DL],
+               "tm": pack("H", [x[6] if x[6] >= 0 else 65535 for x in DL]),   # the deal's TME (65535 = none), 28 Oct 2026
+               "rv": pack("f", [x[7] if len(x) > 7 else 0.0 for x in DL])},   # RV_3yr credited (x dc_genio), 30 Oct 2026
         "nc": {"n": nc["n"], "d": pack("H", nc["d"]), "me": pack("H", nc["me"]), "tme": pack("H", nc["tme"]), "k": pack("B", nc["k"]),
+               "bk": pack("i", nc["bk"]), "sl": pack("i", nc["sl"]), "tt": pack("B", nc["tt"]),
                "kinds": KINDS, "co": nc_co, "pid": nc_pid},
         "hr": {"days": pack("H", hr_days), "j": hr_j, "des": hr_des, "city": hr_city, "grade": hr_grade, "mis": pack("B", hr_mis)},
     }
-    assert len(MES) < 65536 and len(TMES) < 65536 and len(MGRS) < 65535 and len(TEAMS) < 256 and len(KINDS) < 256
+    if tl:
+        data["tl"] = tl
+    assert len(MES) < 65536 and len(TMES) < 65535 and len(MGRS) < 65535 and len(TEAMS) < 256 and len(KINDS) < 256
     blob = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
     log(f"Data: {len(blob) / 1e6:.1f} MB; {len(MES):,} MEs, {len(TMES):,} TMEs")
 

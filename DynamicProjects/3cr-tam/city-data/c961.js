@@ -1,1 +1,1 @@
-window.__CITY_DATA(961,{"Bungalows On Hire":"3rsBBC","Food & Food Products":"2w6BBC","Insurance Agents":"xulBDII","Inverter Dealers":"l6uBBC"});
+window.__CITY_DATA(961,{"":"3iuBBC","Building Materials":"pnhCBC","Gynaecologist & Obstetrician Doctors":"wm_BFCC","Hospitals":"2w6BFCCi6DBC","Hotels":"7puBFCCpBFCC","Packers & Movers":"0rzBBC","Pets & Accessories Product & Services":"iilBBC","Schools":"tkxBBC","Tiles":"_vzBBC"});

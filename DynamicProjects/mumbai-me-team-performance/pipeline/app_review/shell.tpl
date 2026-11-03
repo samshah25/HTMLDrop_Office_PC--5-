@@ -12,8 +12,9 @@
 <a class="skip" href="#main">Skip to the dashboard</a>
 <div class="topbar" id="topbar">
   <div class="band-top">
-    <a class="brand" href="#" id="home" aria-label="ME team, Mumbai: back to the dashboard"><span class="logo"><img src="/*LOGO*/" alt="Justdial"></span><span class="brand-txt"><span class="brand-name">ME team <span class="city">Mumbai</span></span><span class="upd-top" id="updTop"></span></span></a>
+    <a class="brand" href="#" id="home" aria-label="ME team, Mumbai: back to the dashboard"><span class="logo"><img src="/*LOGO*/" alt="Justdial"></span><span class="brand-txt"><span class="brand-name"><span id="brandWho">ME</span> team <span class="city">Mumbai</span><span class="linetag" id="lineTag" hidden></span></span><span class="upd-top" id="updTop"></span></span></a>
     <div class="controls">
+      <div class="seg views mode" id="modeSw" role="group" aria-label="People"><button type="button" data-mode="me" title="MEs: the people who took the appointments">ME</button><button type="button" data-mode="tme" class="vtme" title="TMEs: the people who fixed the appointments (the page reloads)">TME</button></div>
       <div class="seg views" id="viewSw" role="group" aria-label="Show"><button type="button" data-view="table">Table</button><button type="button" data-view="team">Overview</button></div>
     </div>
     <div class="right">
@@ -44,9 +45,33 @@
 
 <main id="main">
   <div id="vTeam">
+    <!-- TME mode (2026-10-30): one section at a time, picked here; the row stays under the top bar -->
+    <nav class="tsec" id="tSec" aria-label="Sections" hidden><button type="button" data-sec="teams">TME teams → ME managers</button><button type="button" data-sec="tmes">TMEs <small></small></button><button type="button" data-sec="sum">Summary</button></nav>
+    <section class="card sumcard" id="sumCard" aria-label="Summary" hidden><div class="sumg"><div id="sumL"></div><div id="sumR"></div></div></section>
+
+
     <section class="card tmstrip" aria-labelledby="tmH">
-      <div class="card-h"><div><h2 id="tmH">Where the appointments came from</h2><p class="sub">By TME team · click one to see which MEs took its appointments</p></div></div>
+      <div class="card-h"><div><h2 id="tmH">Where the appointments came from</h2><p class="sub" id="tmSub">By TME team</p></div></div>
       <div class="tiles3" id="teams"></div>
+    </section>
+
+    <!-- TME mode (2026-10-30): where the appointments went, from the TME teams to the ME managers' teams -->
+    <section class="card flowcard" id="flowCard" aria-labelledby="flowH" hidden>
+      <div class="card-h">
+        <div><h2 id="flowH">Where the appointments went</h2><p class="sub" id="flowSub"></p></div>
+        <div class="tctools"><!-- the From: TME teams | TME managers' teams switch was removed on 31 Oct 2026 (the user: not needed, cluttered) --><div class="xlv" id="flowMw"><span class="slab" id="flowMLab">Measure</span><div class="seg small" id="flowM" role="group" aria-labelledby="flowMLab"><button type="button" data-v="c">Conversion</button><button type="button" data-v="a">Attended %</button></div></div><div class="xlv"><span class="slab" id="flowVLab">Show</span><div class="seg small" id="flowV" role="group" aria-labelledby="flowVLab"><button type="button" data-v="conv">Who converts</button><button type="button" data-v="lines">Lines</button><button type="button" data-v="grid">Share grid</button></div></div></div>
+      </div>
+      <p class="flcap" id="flowFrom">From: TME teams</p>
+      <div class="flsvg" id="flowSvg"></div>
+      <p class="flcap">To: ME managers' teams</p>
+      <div id="flowDet"></div>
+    </section>
+
+    <!-- TME mode (2026-10-30): the ME managers' teams as cards, for all TME teams or one -->
+    <section class="card mgrcard" id="mgrCard" aria-labelledby="mgrH" hidden>
+      <div class="card-h"><div><h2 id="mgrH">The ME managers' teams</h2><p class="sub" id="mgrSub"></p></div></div>
+      <div class="sortrow"><span class="slab" id="mgrTLab">TME team</span><div class="chips" id="mgrT" role="group" aria-labelledby="mgrTLab"></div></div>
+      <div class="tiles3 mgrtiles" id="mgrTiles"></div>
     </section>
 
     <!-- one card for the team: managers / team leaders (the ladder) or MEs (the list); Show is shared with the Table -->
@@ -69,6 +94,12 @@
         </div>
         <div id="meList"></div>
       </div>
+    </section>
+    <!-- Super Cat skewness (2026-10-19): moved to the end and hidden on 31 Oct 2026 (the user is still working on it);
+         it shows only with sk=1 in the page link -->
+    <section class="card skcard" id="skCard" aria-labelledby="skH" hidden>
+      <div class="card-h"><div><h2 id="skH">Skewness factor · Super Cat</h2><p class="sub" id="skSub"></p></div></div>
+      <div class="skb" id="skBody"></div>
     </section>
   </div>
   <div id="vTable" hidden>
@@ -133,14 +164,17 @@
 <div class="pop tlpop" id="tlPop" role="dialog" aria-label="Choose a team leader" hidden></div>
 <div class="pop" id="periodPop" role="dialog" aria-label="Choose dates" hidden></div>
 <div class="pop setpop" id="setPop" role="dialog" aria-label="Settings" hidden>
-  <p class="setl">Conversion on</p>
+  <p class="setl">MEs counted</p>
+      <div class="seg cbsw" id="lnSw" role="group" aria-label="MEs counted"></div>
+  <p class="seth" id="lnHelp"></p>
+  <p class="setl setg">Conversion on</p>
       <div class="seg cbsw" id="cbSw" role="group" aria-label="Conversion on"><button type="button" data-cb="att" title="Deals closed as a share of attended">Attended</button><button type="button" data-cb="given" title="Deals closed as a share of appointments given">Given</button></div>
   <p class="seth">Deals closed as a share of attended, or of appointments given. Applies to the whole dashboard.</p>
   <p class="setl setg">Hot Data and Online</p>
       <div class="seg cbsw" id="hoSw" role="group" aria-label="Hot Data and Online"><button type="button" data-v="0" title="Hot Data and Online as two TME team groups">Separate</button><button type="button" data-v="1" title="Hot Data and Online as one group, Hot Data + Online">Together</button></div>
   <p class="setl setg">Expiry team (Revival)</p>
       <div class="seg cbsw" id="exSw" role="group" aria-label="Expiry team"><button type="button" data-v="1" title="Revival (Expiry) as its own TME team group">Separate</button><button type="button" data-v="0" title="Revival (Expiry) inside Other teams">In other teams</button></div>
-  <p class="seth">The TME team groups everywhere: the team cards, Team shares, the ME page and the Table's team columns.</p>
+  <p class="seth">The TME team groups everywhere: the team cards, Who converts, the ME page and the Table's team columns.</p>
 </div>
 <div class="pop colspop" id="colsPop" role="dialog" aria-label="Show or hide columns" hidden></div>
 <div class="pop colpop" id="colPop" role="dialog" aria-label="Sort and filter this column" hidden></div>

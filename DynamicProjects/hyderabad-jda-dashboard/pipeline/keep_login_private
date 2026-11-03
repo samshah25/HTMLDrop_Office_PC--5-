@@ -1,0 +1,1 @@
+Marker: this copy runs on a web host; the database login is read from the private folder (~/.hyd_jda_dashboard), never from here.

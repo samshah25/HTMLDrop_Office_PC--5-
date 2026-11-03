@@ -1,1 +1,1 @@
-window.__CITY_DATA(962,{"Car Hire":"ig4BBC","Hotels":"lm_BBC","Jewellery Showrooms":"86jCBC","Security System/CCTV":"jxtBBC","Tiles":"_vzBBC","Transporters":"pziCFCC"});
+window.__CITY_DATA(962,{"Beauty Parlours":"1vzBBC","Computer Training Institutes":"s-wBBC","Electronic Goods Showrooms":"z78BBC","Gynaecologist & Obstetrician Doctors":"_vhCFCC","Opticians":"-qnBBC","Precast Wall":"wm_BBC","Projector Dealers":"ovsBBC","Restaurants":"l2wBDCC","Tiles":"_vzBBC","Tools & Hardware Products & Services":"i3nBBC"});

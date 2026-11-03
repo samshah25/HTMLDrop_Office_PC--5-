@@ -9,7 +9,8 @@ each morning, matched by parentid), so the morning refresh is up to date even be
 Deals closed as the Sales MIS counts them (JDS-ME: every deal row of an ME of this city that month, with or without an
 appointment, MIS_SQL) also go into cache\\deals.pkl ('mis'): they are the page's 'Deals closed' since 15 Oct 2026.
 HR (same server, read-only): db_paidcontracts.tbl_working_days_final_data (monthly present / active days per empcode)
-and db_paidcontracts.hr_all_daily_copy_ganesh (joining date, designation, home city), for every ME in raw.pkl.
+and db_paidcontracts.hr_all_daily_copy_ganesh (joining date, designation, home city), for every ME in raw.pkl;
+the monthly row also gives the person's team (team_type_name: Super Cat, Hot Data...), used for the TMEs.
 
     python fetch_deals.py
 """
@@ -141,7 +142,7 @@ def main():
 # an ME of this city in the deal's month (tbl_working_days_final_data: city, emptype ME, team not Corporate / JDA; no row
 # for that month -> the HR master's city). Deals with no appointment behind them (no TME: the MIS's 'Cold Call') count too.
 MIS_SQL = """SELECT d.dealclosed_date, TRIM(d.parentid), d.dc_genio, TRIM(LEADING '0' FROM TRIM(d.me)), TRIM(IFNULL(d.tme, '')),
-                    TRIM(IFNULL(d.final_team_type_name, '')), d.jda_flag
+                    TRIM(IFNULL(d.final_team_type_name, '')), d.jda_flag, IFNULL(d.RV_3yr, 0)
              FROM {table} d
              LEFT JOIN (SELECT TRIM(LEADING '0' FROM TRIM(empcode)) AS emp, year_no, month_no,
                                MAX(city) AS city, MAX(emptype) AS emptype, MAX(team_type_name) AS team
@@ -161,7 +162,7 @@ MIS_SQL = """SELECT d.dealclosed_date, TRIM(d.parentid), d.dc_genio, TRIM(LEADIN
 
 def fetch_mis_deals(cur, raw, dump_to):
     """Deals closed as the Sales MIS counts them, since the start of the year; days after the dump's last day from the
-    30-day rolling table (same rows). Returns [(day, parentid, dc_genio, me, tme, team, jda_flag)], the last day, and
+    30-day rolling table (same rows). Returns [(day, parentid, dc_genio, me, tme, team, jda_flag, RV_3yr)], the last day, and
     the HR names of those MEs."""
     t0 = time.time()
     city, ym = str(raw["city"]).strip().title(), raw["fy"].year * 100 + raw["fy"].month
@@ -174,8 +175,8 @@ def fetch_mis_deals(cur, raw, dump_to):
             out += cur.fetchall()
         except pymysql.MySQLError as e:
             log(f"The 30-day rolling deals table could not be read for the MIS deals ({e}); deals dump only.")
-    mis = [(d if isinstance(d, datetime.date) and not isinstance(d, datetime.datetime) else d.date(), pid or "", float(dc or 0), me, tme, team, int(jf or 0))
-           for d, pid, dc, me, tme, team, jf in out]
+    mis = [(d if isinstance(d, datetime.date) and not isinstance(d, datetime.datetime) else d.date(), pid or "", float(dc or 0), me, tme, team, int(jf or 0), float(rv or 0))
+           for d, pid, dc, me, tme, team, jf, rv in out]   # RV_3yr: the deal's 3-year revenue (30 Oct 2026, TME mode)
     mis_to = max((m[0] for m in mis), default=None)
     names = {}
     codes = sorted({m[3] for m in mis})
@@ -191,10 +192,13 @@ def fetch_mis_deals(cur, raw, dump_to):
 
 def fetch_hr(raw, env, more=()):
     """Days present per month (to compare appointment volume fairly) and joining date / designation / home city, for the
-    MEs in raw.pkl and the MEs with deals closed (more: codes without leading zeros)."""
+    MEs in raw.pkl and the MEs with deals closed (more: codes without leading zeros); also for the TMEs in raw.pkl, for
+    the dashboard's TME mode (29 Oct 2026)."""
     t0 = time.time()
-    ix = raw["cols"].index("me")
+    ix, it = raw["cols"].index("me"), raw["cols"].index("tme")
     codes = {str(r[ix]).strip() for r in raw["rows"] if r[ix]}
+    n_me = len(codes)
+    codes |= {str(r[it]).strip() for r in raw["rows"] if r[it]}
     have = {c.lstrip("0") for c in codes}
     codes = sorted(codes | {c for c in more if c and c not in have})
     months = []
@@ -210,12 +214,13 @@ def fetch_hr(raw, env, more=()):
         ch = codes[i:i + 1000]
         ph = ",".join(["%s"] * len(ch))
         for yy, mm in months:
-            cur.execute(f"""SELECT TRIM(empcode), present_days, active_days, emptype, city FROM db_paidcontracts.tbl_working_days_final_data
+            # team_type_name: the person's team that month (Super Cat, Hot Data...; the user, 31 Oct 2026: a TME's team)
+            cur.execute(f"""SELECT TRIM(empcode), present_days, active_days, emptype, city, team_type_name FROM db_paidcontracts.tbl_working_days_final_data
                             WHERE year_no = %s AND month_no = %s AND TRIM(empcode) IN ({ph})""", [yy, mm] + ch)
-            for code, pres, act, et, city in cur.fetchall():
+            for code, pres, act, et, city, team in cur.fetchall():
                 prev = days.get((code, yy, mm))
                 if prev is None or float(pres or 0) > prev[0]:      # one row per person and month; keep the fuller one
-                    days[(code, yy, mm)] = (float(pres or 0), float(act or 0), str(et or ""), str(city or ""))
+                    days[(code, yy, mm)] = (float(pres or 0), float(act or 0), str(et or ""), str(city or ""), " ".join(str(team or "").split()))
         cur.execute(f"""SELECT TRIM(empcode), date_of_joining, date_of_leaving, emp_status, designation, city
                         FROM db_paidcontracts.hr_all_daily_copy_ganesh WHERE TRIM(empcode) IN ({ph})""", ch)
         for code, doj, dol, st, des, city in cur.fetchall():
@@ -226,7 +231,7 @@ def fetch_hr(raw, env, more=()):
     tmp = os.path.join(CACHE, "hr.pkl.tmp")
     pickle.dump(out, open(tmp, "wb"))
     os.replace(tmp, os.path.join(CACHE, "hr.pkl"))
-    log(f"HR for {len(codes):,} MEs: {len({k[0] for k in days}):,} with days present, {len(master):,} with joining dates "
+    log(f"HR for {n_me:,} MEs and {len(codes) - n_me:,} more TMEs: {len({k[0] for k in days}):,} with days present, {len(master):,} with joining dates "
         f"({time.time() - t0:.0f}s). Saved cache\\hr.pkl")
 
 

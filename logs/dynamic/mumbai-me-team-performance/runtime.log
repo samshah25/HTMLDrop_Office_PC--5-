@@ -120,3 +120,58 @@
 [2026-10-19 11:38:29] ===== ME dashboards refresh =====
 [2026-10-19 11:38:29] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
 [2026-10-19T11:38:29] Data generation returned code 2.
+
+[2026-11-02T16:10:46] Running data generation (main.py)...
+[2026-11-02 16:10:47] ===== ME dashboards refresh =====
+[2026-11-02 16:10:47] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\environment.py.
+[2026-11-02T16:10:48] Data generation returned code 2.
+
+[2026-11-02T16:23:24] Running data generation (main.py)...
+[2026-11-02 16:23:26] ===== ME dashboards refresh =====
+[2026-11-02 16:23:26] -- fetch_data.py
+[2026-11-02 16:24:01]    [16:23:56] mumbai: 49,756 appointments given and 5,823 not counted, 2026-04-01 to 2026-10-31 (25s)
+[2026-11-02 16:24:01]    [16:24:00] Saved cache\raw.pkl
+[2026-11-02 16:24:01]    ok (34s)
+[2026-11-02 16:24:01] -- fetch_api.py
+[2026-11-02 16:24:30]    [16:24:07] Appointment table runs to 2026-10-31; building 2026-11-01 to 2026-11-01 from the allocation API (cut-off 2026-11-02 00:00:00)
+[2026-11-02 16:24:30]    [16:24:09]   mumbai partition: 27,728 records since 2026-10-12 (2s)
+[2026-11-02 16:24:30]    [16:24:28]   remote: 8 appointments by Mumbai TMEs
+[2026-11-02 16:24:30]    [16:24:29] Provisional appointments given: 2026-11-01 16 (25 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-02 16:24:30]    ok (29s)
+[2026-11-02 16:24:30] -- fetch_deals.py
+[2026-11-02 16:27:00]    [16:26:36] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,256.46 since 2026-04-01 to 2026-11-02, 15,069 deal rows, 163 MEs (7s)
+[2026-11-02 16:27:00]    [16:26:36] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
+[2026-11-02 16:27:00]    [16:26:36] Deals for 49,313 businesses: 12,863 deal rows since 2026-03-30 (123s). Saved cache\deals.pkl
+[2026-11-02 16:27:00]    [16:27:00] HR for 1,335 MEs and 933 more TMEs: 2,128 with days present, 2,266 with joining dates (24s). Saved cache\hr.pkl
+[2026-11-02 16:27:00]    ok (151s)
+[2026-11-02 16:27:00] -- fetch_calls.py
+[2026-11-02 16:27:44]    [16:27:13] 202604: 2,037,645 calls with an agent, 1,548,914 connected, 510 agents (10s)
+[2026-11-02 16:27:44]    [16:27:22] 202605: 2,003,346 calls with an agent, 1,539,732 connected, 507 agents (9s)
+[2026-11-02 16:27:44]    [16:27:32] 202606: 2,129,646 calls with an agent, 1,647,329 connected, 516 agents (10s)
+[2026-11-02 16:27:44]    Traceback (most recent call last):
+[2026-11-02 16:27:44]      File "C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\pipeline\fetch_calls.py", line 171, in <module>
+[2026-11-02 16:27:44]        sys.exit(main())
+[2026-11-02 16:27:44]                 ~~~~^^
+[2026-11-02 16:27:44]      File "C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\pipeline\fetch_calls.py", line 127, in main
+[2026-11-02 16:27:44]        pickle.dump(got, open(cp + ".tmp", "wb")); os.replace(cp + ".tmp", cp)
+[2026-11-02 16:27:44]                                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[2026-11-02 16:27:44]    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\DynamicProjects\\mumbai-me-team-performance\\pipeline\\cache\\calls2_202607.pkl.tmp' -> 'C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\DynamicProjects\\mumbai-me-team-performance\\pipeline\\cache\\calls2_202607.pkl'
+[2026-11-02 16:27:44]    fetch_calls.py did not finish (exit 1); the pages keep the calls they had.
+[2026-11-02 16:27:44] -- build_review.py --full
+[2026-11-02 16:28:04]    [16:27:47] Provisional days from the allocation API: 2026-11-01 (25 rows, pulled 02 Nov 16:24)
+[2026-11-02 16:28:04]    [16:27:48] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,172 Sunday appointments reported on the Saturday before
+[2026-11-02 16:28:04]    [16:27:52] Deals from the deals table: 12,280 appointments converted (the appointment table marks 12,483); 4 marked not deal there, 207 marked deal there but their business's deal went to another appointment
+[2026-11-02 16:28:04]    [16:27:54] Deals closed (Sales MIS rule): 12,249.46 from 12,323 deal rows
+[2026-11-02 16:28:04]    [16:27:54] 'Not available' appointments with the 30 days over: 7,572; customer attended within 30 days: 251
+[2026-11-02 16:28:04]    [16:27:55] Record checks since 1 April: pending 2,010, no_booking 3,477, deal_before_booked 270, na_early 277, same_day 359
+[2026-11-02 16:28:04]    [16:27:56] Not counted as given: 5,831 (Not Available (Online) 4,341, TME Cancelled 399, Fake Appt 255, Call Back 255, Bounced Collection 203, Appointment Refixed 135)
+[2026-11-02 16:28:04]    [16:27:56] HR: 1,338 of 1,338 MEs with a joining date
+[2026-11-02 16:28:04]    [16:27:56] Appointments 49,759 (left out: 0); attended 39,072; deals closed 12,249.46 (12,280 appointments with disposition Dealclosed)
+[2026-11-02 16:28:04]    [16:28:02] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
+[2026-11-02 16:28:04]    [16:28:02] calls.pkl is missing from the cache folder (fetch_calls.py): TME mode has no calls.
+[2026-11-02 16:28:04]    [16:28:02] TME HR: 1,009 of 1,074 TMEs with a joining date, 933 with days present
+[2026-11-02 16:28:04]    [16:28:03] Data: 6.1 MB; 1,338 MEs, 1,074 TMEs
+[2026-11-02 16:28:04]    [16:28:03] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.8 MB, built from the design files)
+[2026-11-02 16:28:04]    ok (19s)
+[2026-11-02 16:28:04] ===== done in 277s =====
+[2026-11-02T16:28:04] Data generation completed successfully.

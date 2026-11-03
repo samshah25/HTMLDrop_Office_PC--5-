@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Justdial Ad and Call Metrics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14213D; --muted:#566178; --paper:#F2F5F9; --card:#ffffff; --line:#DCE2EB; --soft:#EEF2F7;
+  --accent:#1F4E79; --accent-soft:#E6EEF7; --gold:#F59F00;
+  --good:#1E7A4C; --good-bg:#E6F4EC; --warn:#A66300; --warn-bg:#FFF3DF; --bad:#C2392B; --bad-bg:#FDECEA;
+  --blue:#2F5DB3; --blue-bg:#EAF0FB; --grey-bg:#EEF0F3;
+  --stage:#1F4E79; --shadow:0 8px 24px rgba(20,40,80,.09);
+}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:var(--paper);color:var(--ink);font:15.5px/1.55 'DM Sans',"Segoe UI",system-ui,sans-serif}
+main{max-width:1120px;margin:0 auto;padding:26px 16px 70px}
+/* hero + switch */
+.hero{text-align:center;margin:4px 0 18px}
+.hero .logo{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#1F4E79,#0C8599);color:#fff;font-weight:800;font-size:15px;margin-bottom:8px}
+.hero h1{margin:0;font-size:28px;font-weight:800;line-height:1.2}
+.hero p{margin:6px auto 0;color:var(--muted);max-width:640px}
+.switch-row{display:flex;justify-content:center;margin:0 0 28px;position:relative;z-index:5}
+.switch{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:5px;box-shadow:var(--shadow);gap:4px;max-width:100%;overflow-x:auto}
+.jbtn{font-family:inherit;font-size:14.5px;font-weight:700;padding:11px 22px;border-radius:9px;border:none;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s}
+.jbtn:hover{color:var(--ink)}
+.jbtn.on{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(31,78,121,.3)}
+@media (max-width:520px){.jbtn{padding:10px 13px;font-size:13.5px}}
+.pane{display:none}.pane.on{display:block}
+h2.st{font-size:12.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;margin:0 0 10px;text-align:center}
+p.intro{text-align:center;font-size:14.5px;color:var(--muted);max-width:680px;margin:0 auto 28px}
+/* step rail */
+.srail{display:flex;justify-content:space-between;position:relative;margin:0 auto 4px;max-width:1000px}
+.srail::before{content:"";position:absolute;top:26px;left:40px;right:40px;height:2px;background:var(--line)}
+.node{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;cursor:pointer;font-family:inherit;padding:0 2px}
+.node .dot{width:52px;height:52px;border-radius:16px;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;font-size:22px;transition:all .18s}
+.node .lbl{font-size:12px;font-weight:600;color:var(--muted);text-align:center;max-width:110px;line-height:1.25}
+.node:hover .dot{border-color:var(--c)}
+.node.on .dot{background:var(--c);border-color:var(--c);transform:scale(1.12);box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.node.on .lbl{color:var(--c);font-weight:700}
+@media (max-width:620px){.node .dot{width:42px;height:42px;font-size:18px}.srail::before{top:21px}.node .lbl{font-size:10.5px}}
+/* part card */
+.part{display:none;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-top:26px;padding:28px 30px;border-left:6px solid var(--c);animation:fade .22s ease}
+.part.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:620px){.part{padding:20px 16px}}
+.dh{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.dh .ic{width:58px;height:58px;border-radius:16px;background:color-mix(in srgb,var(--c) 13%,white);display:grid;place-items:center;font-size:28px;flex:none}
+.dh .ht{flex:1;min-width:200px}
+.step-no{font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--c);text-transform:uppercase}
+.dh h3{margin:2px 0 0;font-size:24px;font-weight:800}
+.ready{font-size:12px;font-weight:700;border-radius:999px;padding:5px 12px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.ready.full{background:var(--good-bg);color:var(--good)}
+.desc{font-size:15px;color:var(--muted);margin:0 0 18px}
+/* inner tabs */
+.itabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:18px}
+.itab{font-family:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:8px 12px;cursor:pointer;margin-bottom:-1px}
+.itab:hover{color:var(--ink)}
+.itab.on{color:var(--c);border-bottom-color:var(--c)}
+.blk{display:none}.blk.on{display:block;animation:fade .18s ease}
+.nextrow{display:flex;justify-content:space-between;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.nb{font-family:inherit;font-size:13.5px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:9px 16px;cursor:pointer}
+.nb:hover{border-color:var(--c);color:var(--c)}
+.nb.nx{margin-left:auto;background:var(--c);border-color:var(--c);color:#fff}
+.nb.nx:hover{filter:brightness(1.08);color:#fff}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:8px 0;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+table.mini{min-width:0}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--soft);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+tr:last-child td{border-bottom:0}
+tr.grp td{background:var(--soft);font-weight:600;font-size:13.5px}
+td.r,.r{color:var(--bad)} td.g{color:var(--good)}
+table.collect td:last-child{text-align:center}
+table.collect input{width:18px;height:18px;accent-color:var(--good);cursor:pointer}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.c-good{background:var(--good-bg);color:var(--good)} .c-warn{background:var(--warn-bg);color:var(--warn)} .c-bad{background:var(--bad-bg);color:var(--bad)} .c-grey{background:var(--grey-bg);color:var(--muted)}
+.c-brand{background:var(--blue-bg);color:var(--blue)} .c-act{background:var(--warn-bg);color:var(--warn)}
+.c-int{background:var(--good-bg);color:var(--good)} .c-call{background:var(--warn-bg);color:var(--warn)} .c-pub{background:var(--blue-bg);color:var(--blue)}
+.muted{color:var(--muted)} .small{font-size:13px} .mono{font-family:Consolas,monospace;font-size:12.5px}
+/* buckets */
+.bk{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bk>div{border-radius:14px;padding:14px 16px;border-top:4px solid}
+.bk .b-bad{background:#FEF5F4;border-color:var(--bad)} .bk .b-neu{background:#FFF9EE;border-color:#E3A13A} .bk .b-good{background:#F3FAF6;border-color:var(--good)}
+.bk h4{margin:0 0 6px;font-size:15.5px}
+.bk ul{margin:0;padding-left:18px;font-size:14px}
+.bk li{margin:4px 0}
+.bk .eg{display:block;font-family:Consolas,monospace;font-size:12.5px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0}
+@media (max-width:760px){.bk{grid-template-columns:1fr}}
+/* weights */
+.two{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:start}
+.two .tw{margin:0}
+.formula{background:var(--blue-bg);border-radius:12px;padding:14px 16px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+/* what we calculate */
+.hero-score{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:center;background:color-mix(in srgb,var(--c) 6%,white);border:1px solid color-mix(in srgb,var(--c) 22%,white);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.hero-score .k{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--c)}
+.hero-score .big{font-size:19px;font-weight:800;line-height:1.25;margin-top:2px}
+.hero-score .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.stack{display:flex;height:34px;border-radius:9px;overflow:hidden;font-size:12px;font-weight:700;color:#fff}
+.stack span{display:grid;place-items:center;white-space:nowrap;overflow:hidden}
+.s-bad{background:var(--bad)} .s-neu{background:#E3A13A} .s-good{background:var(--good)}
+.eq{font-size:13.5px;margin-top:8px;color:var(--muted)} .eq b{color:var(--ink);font-size:15px}
+@media (max-width:680px){.hero-score{grid-template-columns:1fr}}
+.mlist{display:flex;flex-direction:column;gap:10px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.mrow .mn{display:flex;gap:10px;align-items:flex-start}
+.mrow .no{flex:none;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--c) 13%,white);color:var(--c);font-size:12px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.mrow b{font-size:15px}
+.mrow .f{display:inline-block;margin-top:3px;font-family:Consolas,monospace;font-size:12.5px;color:var(--ink);background:var(--soft);border-radius:6px;padding:1px 7px}
+.mrow .w{font-size:13px;color:var(--muted);margin-top:3px}
+.gauge{display:grid;grid-template-columns:repeat(3,1fr);border-radius:10px;overflow:hidden;font-size:13px;text-align:center}
+.gauge div{padding:7px 6px;line-height:1.3}
+.gauge small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.gauge .gg{background:var(--good-bg)} .gauge .gg small{color:var(--good)}
+.gauge .ga{background:var(--warn-bg)} .gauge .ga small{color:var(--warn)}
+.gauge .gr{background:var(--bad-bg)} .gauge .gr small{color:var(--bad)}
+@media (max-width:760px){.mrow{grid-template-columns:1fr}}
+/* health score */
+.wbar{display:flex;height:40px;border-radius:10px;overflow:hidden;font-size:12.5px;font-weight:700;color:#fff;margin:6px 0 14px}
+.wbar span{display:grid;place-items:center;white-space:nowrap;overflow:hidden;padding:0 4px}
+/* ads tab */
+.short{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:10px;padding:11px 15px;margin:0 auto 6px;max-width:900px}
+.short b{color:var(--accent)}
+.adcard{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 28px;margin-top:22px}
+.adcard h2{font-size:19px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.adcard h2 .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12.5px}
+@media (max-width:620px){.adcard{padding:18px 14px}}
+.vs th:not(:first-child){font-size:13.5px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.vs td:first-child{font-weight:600;color:var(--muted);width:20%}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.tile{background:var(--soft);border-radius:12px;padding:12px 14px}
+.tile p{font-size:14px;margin:2px 0 0}
+.tile .ic{font-size:18px;margin-right:4px}
+.foot{color:var(--muted);font-size:12.5px;margin-top:30px;text-align:center}
+/* ---------- v7 (2 Nov 2026): header band, tab cards, key points, status tags ---------- */
+body{background:var(--paper)}
+.band{background:linear-gradient(120deg,#132F4C 0%,#1F4E79 48%,#0C8599 100%);color:#fff;padding:30px 16px 78px}
+.band .in{max-width:1120px;margin:0 auto;display:flex;gap:24px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.eyebrow .logo{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-weight:800;letter-spacing:0;font-size:12.5px;color:#fff}
+.band h1{font-size:36px;line-height:1.15;margin:12px 0 14px;font-weight:800;color:#fff}
+.pills{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.pills li{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:5px 13px;font-size:13.5px}
+.nosurvey{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:12px 16px;font-size:13.5px;min-width:250px}
+.nosurvey b{display:block;margin-bottom:4px}
+.nosurvey ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;color:rgba(255,255,255,.9)}
+main{padding-top:0}
+.switch-row{margin:-50px 0 30px}
+.switch{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:min(780px,100%);padding:6px;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(20,40,80,.16)}
+.jbtn{display:flex;align-items:center;gap:11px;text-align:left;padding:10px 12px;border-radius:12px;font-weight:600;box-shadow:none}
+.jbtn .ji{flex:none;font-size:20px;width:40px;height:40px;border-radius:11px;background:var(--soft);display:grid;place-items:center}
+.jbtn b{display:block;font-size:15.5px;color:var(--ink)}
+.jbtn small{display:block;font-size:12px;color:var(--muted);font-weight:500;white-space:normal;line-height:1.3}
+.jbtn:hover{background:var(--soft)}
+.jbtn.on{background:var(--accent);box-shadow:0 4px 12px rgba(31,78,121,.3)}
+.jbtn.on b,.jbtn.on small{color:#fff}
+.jbtn.on .ji{background:rgba(255,255,255,.18)}
+@media (max-width:640px){.jbtn small{display:none}.jbtn{padding:8px;gap:8px}.jbtn .ji{width:32px;height:32px;font-size:17px}.band h1{font-size:28px}.nosurvey{display:none}}
+/* section head + key points */
+.sechead{margin:0 0 14px}
+.sechead h2{font-size:25px;font-weight:800;margin:0;line-height:1.2}
+.sechead p{margin:4px 0 0;color:var(--muted)}
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:0 0 12px}
+.key{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.key .ki{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:19px}
+.key b{display:block;font-size:14.5px;line-height:1.3}
+.key span{display:block;font-size:13px;color:var(--muted);line-height:1.4;margin-top:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--muted);margin:4px 0 26px}
+.legend > b{color:var(--ink);font-size:12.5px}
+/* status tags */
+.st{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;border-radius:7px;padding:2px 8px;white-space:nowrap;line-height:1.5}
+.st.have{background:#E6F4EC;color:#1E7A4C} .st.ask{background:#E7F0FB;color:#1F4E79} .st.set{background:#FFF1DB;color:#9A5B00} .st.conf{background:#F1EBFF;color:#5F3DC4}
+/* step rail progress */
+.srail::after{content:"";position:absolute;top:26px;left:40px;height:2px;width:calc((100% - 80px) * var(--p,0));background:var(--accent);transition:width .25s}
+.srail{margin-top:6px}
+.node .dot{box-shadow:0 2px 6px rgba(20,40,80,.06)}
+.node.done .dot{border-color:var(--c)}
+/* card */
+.part{padding:26px 30px 22px}
+ul.desc{list-style:none;padding:0;margin:4px 0 12px;display:grid;gap:5px;font-size:14.5px;color:var(--ink)}
+ul.desc li{position:relative;padding-left:18px}
+ul.desc li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:50%;background:var(--c)}
+ul.desc li b{color:var(--c)}
+.glance{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.glance span{background:var(--soft);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.glance span b{color:var(--ink)}
+.itabs{display:inline-flex;gap:4px;background:var(--soft);padding:4px;border-radius:12px;border:0;margin-bottom:18px;flex-wrap:wrap}
+.itab{border:0;border-radius:9px;padding:7px 13px;margin:0}
+.itab.on{background:#fff;color:var(--c);box-shadow:0 1px 4px rgba(20,40,80,.14)}
+table.collect tr:nth-child(odd) td{background:#FBFCFE}
+.rule{display:flex;gap:10px;align-items:flex-start;background:var(--soft);border-radius:12px;padding:10px 14px;margin-top:12px;font-size:13.5px}
+.rule .ri{flex:none;font-size:16px;line-height:1.4}
+.rule ul{margin:0;padding-left:16px}
+.rule li{margin:2px 0}
+.mrow .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bk>div{box-shadow:0 1px 0 rgba(20,40,80,.03)}
+.points{margin:6px 0 0;padding-left:18px;font-size:13.5px}
+.points li{margin:3px 0}
+/* health score: still deciding (2 Nov 2026) */
+.tbd{border:2px dashed var(--line);border-radius:14px;padding:18px 20px;background:#fff}
+.tbd-badge{display:inline-block;background:#FFF1DB;color:#9A5B00;font-size:12px;font-weight:800;letter-spacing:.04em;border-radius:999px;padding:4px 12px}
+.tbd h4{margin:10px 0 4px;font-size:17px}
+.tbd-parts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tbd-parts span{background:var(--soft);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<header class="band"><div class="in">
+  <div>
+    <div class="eyebrow"><span class="logo">JD</span>Justdial brand measurement</div>
+    <h1>Ad &amp; call metrics</h1>
+    <ul class="pills">
+      <li>📣 How each ad is measured</li>
+      <li>👤 How users feel</li>
+      <li>🏪 How merchants feel</li>
+    </ul>
+  </div>
+  <div class="nosurvey">
+    <b>No surveys. Only:</b>
+    <ul><li>📞 Calls (CS, sales, user → business)</li><li>📱 App data</li><li>🔎 Google searches</li><li>🌐 Public posts and reviews</li></ul>
+  </div>
+</div></header>
+<main>
+<div class="switch-row"><div class="switch" id="tabs">
+  <button class="jbtn" data-t="ads"><span class="ji">📣</span><span><b>Ads</b><small>12 ad types, how each is judged</small></span></button>
+  <button class="jbtn" data-t="users"><span class="ji">👤</span><span><b>Users</b><small>CS calls, social, app, searches</small></span></button>
+  <button class="jbtn" data-t="merchants"><span class="ji">🏪</span><span><b>Merchants</b><small>Sales calls + 4 more parts</small></span></button>
+</div></div>
+<!-- ================================ ADS ================================ -->
+<section class="pane" id="p-ads">
+<div class="sechead"><h2>How each type of ad is measured</h2><p>Judge every ad only on its own job.</p></div>
+<div class="keys">
+  <div class="key"><span class="ki">🎯</span><div><b>One job per ad</b><span>Be remembered (brand ad) or get an action now (action ad)</span></div></div>
+  <div class="key"><span class="ki">⚖️</span><div><b>Judge it on that job only</b><span>Don't judge a TV ad on clicks, or a search ad on reach</span></div></div>
+  <div class="key"><span class="ki">🧪</span><div><b>Prove it with a comparison</b><span>People or cities that saw it vs those that didn't</span></div></div>
+</div>
+
+<div class="adcard">
+<h2><span class="n">1</span>Brand ads vs action ads</h2>
+<div class="tw"><table class="vs">
+<tr><th></th><th><span class="chip c-brand">Brand ads</span></th><th><span class="chip c-act">Action ads</span></th></tr>
+<tr><td>Job</td><td>Be remembered and thought of first</td><td>Get an install, call, sign-up or payment now</td></tr>
+<tr><td>Examples</td><td>TV, IPL, YouTube, OTT, outdoor, print, radio, sponsorship, influencers</td><td>Google search, Meta / Instagram, app install, banners, SMS / WhatsApp / email, referral</td></tr>
+<tr><td>Effect shows</td><td>Over weeks to months</td><td>Same day</td></tr>
+<tr><td>Count</td><td>Reach, how often seen, how much was watched</td><td>Clicks, installs, leads, and the cost of each</td></tr>
+<tr><td>Proof it worked</td><td>"justdial" searches and direct app opens go up; ad cities beat non-ad cities</td><td>People who saw it vs a held-back group who didn't</td></tr>
+<tr><td>Wrong way to judge</td><td class="r">Clicks (nobody clicks a TV ad)</td><td class="r">The platform's own report alone (it claims people who'd have come anyway)</td></tr>
+<tr><td>Final check</td><td>Installs, users and sales over the following weeks</td><td>Cost per user who <b>stays</b>, cost per business that <b>pays</b></td></tr>
+</table></div>
+</div>
+
+<div class="adcard">
+<h2><span class="n">2</span>Each ad type at a glance</h2>
+<div class="tw"><table>
+<tr><th style="width:17%">Ad</th><th style="width:9%">Type</th><th style="width:37%">What to count</th><th>Proof it worked (no survey)</th></tr>
+<tr><td><b>TV and IPL</b></td><td><span class="chip c-brand">Brand</span></td><td>GRPs / TRPs (BARC), reach at 1+ and 3+ views, cost per GRP</td><td>"justdial" searches and app opens jump in the days after; "saw your ad" mentioned on calls</td></tr>
+<tr><td><b>YouTube / video</b></td><td><span class="chip c-brand">Brand</span></td><td>Views, % not skipped, % watched to the end, cost per view</td><td>YouTube Search Lift (do viewers search us more?); searches and app opens after</td></tr>
+<tr><td><b>OTT / smart TV</b></td><td><span class="chip c-brand">Brand</span></td><td>Impressions, homes reached, times per home</td><td>Searches and app opens after, as for TV</td></tr>
+<tr><td><b>Outdoor</b></td><td><span class="chip c-brand">Brand</span></td><td>Boards × days, people passing (vendor estimate), cost per 1,000</td><td>Board cities vs similar cities without boards</td></tr>
+<tr><td><b>Print and radio</b></td><td><span class="chip c-brand">Brand</span></td><td>Size / position / spots, cost</td><td>Responses to a QR code or number used only in that ad; city search jump</td></tr>
+<tr><td><b>Sponsorship, influencers</b></td><td><span class="chip c-brand">Brand</span></td><td>Logo time on screen; views, likes + comments ÷ followers</td><td>A code or link per creator; tone of the comments</td></tr>
+<tr><td><b>Google search ads</b></td><td><span class="chip c-act">Action</span></td><td>Clicks, cost per click, installs / calls / sign-ups, impression share</td><td>Keep "justdial" searches apart from "plumber near me"; switch off in some cities and compare</td></tr>
+<tr><td><b>Meta / Instagram</b></td><td><span class="chip c-act">Action</span></td><td>Reach, cost per lead / sign-up / install</td><td>Conversion Lift: a held-back group that never sees the ad</td></tr>
+<tr><td><b>App install ads</b></td><td><span class="chip c-act">Action</span></td><td>Installs, cost per install, <b>cost per user still active on day 7 and 30</b></td><td>Judge on users who stay, not installs</td></tr>
+<tr><td><b>Banners</b></td><td><span class="chip c-act">Action</span></td><td>Impressions, % actually on screen, clicks</td><td>Only a held-back group test; platform credit is high here</td></tr>
+<tr><td><b>SMS / WhatsApp / email</b></td><td><span class="chip c-act">Action</span></td><td>Delivered, read, clicked, acted, <b>opt-outs and spam reports</b></td><td>Always keep a group that gets nothing</td></tr>
+<tr><td><b>Referral / partners</b></td><td><span class="chip c-act">Action</span></td><td>Leads or sales per partner, cost per sale, fake-lead rate</td><td>A unique link or code per partner</td></tr>
+</table></div>
+</div>
+
+<div class="adcard">
+<h2><span class="n">3</span>Four ways to prove any ad worked, without a survey</h2>
+<div class="grid">
+  <div class="tile"><b><span class="ic">🔎</span>Search jump</b><p>Google Trends for "justdial" in ad cities: 2 weeks before, during, 2 weeks after vs non-ad cities. Same data as Users → Searches.</p></div>
+  <div class="tile"><b><span class="ic">🚶</span>Coming on their own</b><p>App opens and visits <i>not</i> from a paid ad (typed the name, opened the app). Same metric as Users → App usage.</p></div>
+  <div class="tile"><b><span class="ic">🗺️</span>City test</b><p>Run in some cities, not in similar ones. The gap in installs, searches and calls = what the ad did.</p></div>
+  <div class="tile"><b><span class="ic">📞</span>On the calls</b><p>Calls mentioning the ad ("IPL pe dekha"), and fewer sales-call hang-ups after a big campaign (Merchants → Sales calls).</p></div>
+</div>
+</div>
+</section>
+
+
+<!-- ================================ USERS ================================ -->
+<section class="pane" id="p-users">
+<div class="sechead"><h2>Users: people who search on Justdial</h2><p>Four parts show how users feel. Pick a part below.</p></div>
+<div class="keys">
+  <div class="key"><span class="ki">🚦</span><div><b>Every item gets a bucket</b><span>Each call, review, user or search is Bad, Neutral or Good</span></div></div>
+  <div class="key"><span class="ki">🧮</span><div><b>Part score = % good − % bad</b><span>From −100 (all bad) to +100 (all good), tracked monthly</span></div></div>
+  <div class="key"><span class="ki">🧭</span><div><b>Health score: still deciding</b><span>How the 4 part scores combine is not decided yet</span></div></div>
+  <div class="key"><span class="ki">↔️</span><div><b>One side only</b><span>Anything from a business counts on the Merchants tab, never on both</span></div></div>
+</div>
+<div class="legend"><b>Can we get it?</b>
+  <span class="st have">✅ Have it</span> already pulled weekly ·
+  <span class="st ask">🏢 Ask a team</span> exists inside Justdial ·
+  <span class="st set">🛠 Set up</span> needs new work ·
+  <span class="st conf">❓ Confirm</span> not sure the field exists</div>
+<div class="srail"></div>
+
+<!-- 1 CS calls -->
+<div class="part" data-ic="🎧" data-lbl="CS calls" data-c="#C2255C">
+<ul class="desc">
+  <li><b>Who:</b> users who call or write to Justdial support</li>
+  <li><b>Shows:</b> what goes wrong, how upset users are, and whether we fix it</li>
+  <li><b>Main source:</b> the CS complaint log, with the complaint types CS already uses</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Complaint log</b></td><td>CS system</td><td>date, city, type, contactable (y/n), status, date closed, caller's phone (to spot repeats)</td><td>Daily</td><td><span class="st ask">🏢 Ask CS team</span></td><td><input type="checkbox" data-k="ucs1"></td></tr>
+<tr><td><b>CS call recordings</b></td><td>Recordings</td><td>transcript with word times, talk seconds, tone</td><td>Every call</td><td><span class="st set">🛠 Speech-to-text + tagging</span></td><td><input type="checkbox" data-k="ucs2"></td></tr>
+<tr><td><b>Call-back tries</b></td><td>CS dialer</td><td>tries to reach the user, reached (y/n)</td><td>Every call</td><td><span class="st ask">🏢 Ask CS team</span></td><td><input type="checkbox" data-k="ucs3"></td></tr>
+<tr><td><b>Searches and enquiries</b></td><td>App / web data</td><td>totals per month, to turn counts into rates</td><td>Monthly</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="ucs4"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="📋 Complaint types">
+<div class="tw"><table>
+<tr><th style="width:21%">Type (as CS records it)</th><th style="width:37%">What the user is saying</th><th style="width:11%">Bucket</th><th>Why it matters</th></tr>
+<tr class="grp"><td colspan="4">Total complaints → <b>Contactable</b> (we could reach the user) → split by type</td></tr>
+<tr><td><b>Complain against Vendor</b></td><td>The business let me down: didn't come, poor work, overcharged, rude</td><td><span class="chip c-bad">Bad</span></td><td>Users blame Justdial for the business</td></tr>
+<tr><td><b>Fraud – No business info</b></td><td>Fake listing, business doesn't exist, took money and vanished</td><td><span class="chip c-bad">Bad</span></td><td>Biggest trust hit; also counted on its own</td></tr>
+<tr><td><b>Fraud – Contract edits</b></td><td>Business details changed without permission <span class="st conf">❓ Confirm with CS</span></td><td><span class="chip c-bad">Bad</span></td><td>Users reach the wrong person</td></tr>
+<tr><td><b>Block Number</b></td><td>Stop calls and SMS to my number</td><td><span class="chip c-bad">Bad</span></td><td>Too many calls after a search</td></tr>
+<tr><td><b>Opt Out request</b></td><td>Remove me / my number from Justdial</td><td><span class="chip c-bad">Bad</span></td><td>The user is leaving</td></tr>
+<tr><td><b>JD Pay</b></td><td>Payment failed, money cut, refund pending</td><td><span class="chip c-warn">Neutral</span></td><td>Counts as <b>Bad</b> if not refunded within 7 days</td></tr>
+<tr><td><b>Search Plus</b></td><td>A booking, order or bill payment through Justdial went wrong <span class="st conf">❓ Confirm with CS</span></td><td><span class="chip c-warn">Neutral</span></td><td>A Justdial service failed; fixable</td></tr>
+<tr><td><b>APP Related</b></td><td>App not working, login, OTP, crash</td><td><span class="chip c-warn">Neutral</span></td><td>Product fix; compare with crash rate</td></tr>
+<tr><td><b>Review</b></td><td>Fake, abusive or wrong review; wants it removed</td><td><span class="chip c-warn">Neutral</span></td><td>Trust in ratings</td></tr>
+<tr><td><b>Service</b></td><td>General complaint about Justdial's service</td><td><span class="chip c-warn">Neutral</span></td><td>Read a sample monthly: may hide a Bad reason</td></tr>
+</table></div>
+<div class="rule"><span class="ri">↔️</span><ul>
+  <li>"Contactable" read as: complaints where CS reached the user <span class="st conf">❓ Confirm with CS</span></li>
+  <li>Complaints from <b>businesses</b> (leads, ECS, plan refunds) go to Merchants → Leads &amp; renewals</li></ul></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Call under 15 s, or the user hangs up</li>
+    <li>Angry or abusive tone</li>
+    <li>Says "fraud", "chor", "scam", "loot"</li>
+    <li>Threatens police, consumer court, social media</li>
+    <li>"App delete kar dunga"</li>
+    <li>Same complaint again within 7 days</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Listens, but nothing is decided</li>
+    <li>"Baad mein call karo", "busy hoon"</li>
+    <li>Issue logged, still open</li>
+    <li>Passed to another team</li>
+    <li>Not reachable on call-back</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>Fixed on the call (number blocked, removed, refund done)</li>
+    <li>Details or status sent on SMS / WhatsApp</li>
+    <li>Call-back done, complaint closed</li>
+    <li>Calm, says "thank you"</li></ul></div>
+</div>
+<div class="rule"><span class="ri">🛠</span><ul><li>Talk time and repeats come from the CS log straight away</li><li>Tone and words need the recordings turned into text and tagged</li></ul></div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="u-cs"></div></div>
+</div>
+
+<!-- 2 Social media -->
+<div class="part" data-ic="🌐" data-lbl="Social media" data-c="#7048E8">
+<ul class="desc">
+  <li><b>What:</b> what people say about Justdial in public</li>
+  <li><b>Shows:</b> our public image, and how many people saw the bad parts</li>
+  <li><b>Already pulled every Monday:</b> Play / App Store, YouTube, consumercomplaints.in, news (JD_Brand_Comments.xlsx)</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>App reviews</b></td><td>Play / App Store</td><td>Justdial, JD Lite, JdMart: stars, text, date, thumbs-up, reason</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="uso1" checked></td></tr>
+<tr><td><b>YouTube</b></td><td>YouTube API</td><td>videos about Justdial: views, tone; comments + likes</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="uso2" checked></td></tr>
+<tr><td><b>Complaint site, news</b></td><td>consumercomplaints.in, Google News</td><td>posts, headlines, outlet, tone</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="uso3" checked></td></tr>
+<tr><td><b>Instagram, Facebook, X, Quora</b></td><td>Google search snippets</td><td>post text only (no likes or reach)</td><td>Weekly</td><td><span class="st set">🛠 Free Serper key</span></td><td><input type="checkbox" data-k="uso4"></td></tr>
+<tr><td><b>Complaints on our handles</b></td><td>Social media team</td><td>complaints received, replied within 24 h</td><td>Monthly</td><td><span class="st ask">🏢 Ask social team</span></td><td><input type="checkbox" data-k="uso5"></td></tr>
+</table></div>
+<div class="rule"><span class="ri">↔️</span><ul>
+  <li>Business app reviews, posts by owners and "stop ECS" videos → Merchants tab</li>
+  <li>All comments on Instagram / Facebook posts: not possible without account access or a paid tool, so not in the score</li></ul></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>1–2★ reviews</li>
+    <li>Spam calls, fake listings, fraud, money cut</li>
+    <li>Complaint-site posts</li>
+    <li>Negative news</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>3★ reviews</li>
+    <li>Questions: "number kya hai?"</li>
+    <li>Mixed or no opinion</li>
+    <li>Plain news (results, appointments)</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>4–5★ reviews</li>
+    <li>"mil gaya", "helpful", "quick service"</li>
+    <li>Positive news (awards, growth)</li></ul></div>
+</div>
+<div class="rule"><span class="ri">✅</span><ul><li>The weekly pull already labels each item positive / negative / neutral with a reason</li></ul></div>
+</div>
+
+<div class="blk" data-n="⚖️ Weights">
+<div class="two">
+<div class="tw"><table class="mini">
+<tr><th>Item</th><th>Counts as</th></tr>
+<tr><td>Review</td><td>1 + thumbs-up</td></tr>
+<tr><td>YouTube video</td><td>views ÷ 1,000</td></tr>
+<tr><td>YouTube comment</td><td>1 + likes</td></tr>
+<tr><td>News story</td><td>3 national outlet · 1 other</td></tr>
+<tr><td>Complaint-site post</td><td>1</td></tr>
+<tr><td>Snippet post (Insta, FB, X, Quora)</td><td>1 (no reach numbers)</td></tr>
+</table></div>
+<div class="formula">
+  <b>Why weight</b>
+  <ul class="points">
+    <li>A bad video seen by 50,000 people matters more than one review</li>
+    <li>Weighted score = (weight of good − weight of bad) ÷ total weight</li>
+  </ul>
+  <b>Example</b>
+  <ul class="points">
+    <li>100 reviews: 60 good, 30 bad, 10 neutral → <b>+30</b></li>
+    <li>Add 1 bad video, 50,000 views (weight 50) → (60 − 80) ÷ 150 = <b class="r">−13</b></li>
+    <li>One video turns the month negative</li>
+  </ul>
+</div>
+</div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="u-social"></div></div>
+</div>
+
+<!-- 3 App usage -->
+<div class="part" data-ic="📱" data-lbl="App usage" data-c="#1971C2">
+<ul class="desc">
+  <li><b>What:</b> what users actually do in the app and on the website</li>
+  <li><b>Includes:</b> how their calls to businesses went</li>
+  <li><b>Why it matters:</b> the most honest signal; people only come back if it works</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Installs, uninstalls</b></td><td>Play Console / App Store Connect</td><td>daily totals</td><td>Weekly</td><td><span class="st ask">🏢 Ask app team</span></td><td><input type="checkbox" data-k="uap1"></td></tr>
+<tr><td><b>Active users</b></td><td>App analytics</td><td>user ID, daily and monthly active, last visit</td><td>Weekly</td><td><span class="st ask">🏢 Ask app team</span></td><td><input type="checkbox" data-k="uap2"></td></tr>
+<tr><td><b>Searches</b></td><td>App / web logs</td><td>user ID, date, city, category, results shown (0 = none)</td><td>Daily</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="uap3"></td></tr>
+<tr><td><b>Contacts after a search</b></td><td>App / web logs</td><td>call, enquiry, WhatsApp, booking</td><td>Daily</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="uap4"></td></tr>
+<tr><td><b>User → business calls</b></td><td>Justdial call system + recordings</td><td>answered, talk seconds; result words ("kal aa jaiye", "galat number")</td><td>Every call</td><td><span class="st ask">🏢 Log: ask telephony</span> <span class="st set">🛠 Words: tagging</span></td><td><input type="checkbox" data-k="uap7"></td></tr>
+<tr><td><b>How they arrived</b></td><td>App analytics</td><td>typed our name or opened the app · Google · paid ad · notification</td><td>Weekly</td><td><span class="st ask">🏢 Ask marketing team</span></td><td><input type="checkbox" data-k="uap5"></td></tr>
+<tr><td><b>Crashes</b></td><td>Play Console vitals</td><td>crash-free users, freezes</td><td>Weekly</td><td><span class="st ask">🏢 Ask app team</span></td><td><input type="checkbox" data-k="uap6"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<p class="muted small" style="margin-top:0">Each user, each month:</p>
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Uninstalled within 7 days (Android shows this per user)</li>
+    <li>Searched, got 0 results, left</li>
+    <li>First call to a business wasted, never came back</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Opened only from a notification or ad</li>
+    <li>Searched but contacted no one</li>
+    <li>Only a quick price-check call</li>
+    <li>Used once this month</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>Had a good call or enquiry with a business</li>
+    <li>Came back within 30 days</li>
+    <li>Came on their own (typed "Justdial", opened the app)</li></ul></div>
+</div>
+<div class="rule"><span class="ri">📏</span><ul><li>Good call = answered <b>and</b> over 60 s (or the transcript shows a result)</li><li>Wasted call = not answered, or cut under 15 s</li></ul></div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="u-app"></div></div>
+</div>
+
+<!-- 4 Searches -->
+<div class="part" data-ic="🔎" data-lbl="Searches" data-c="#0C8599">
+<ul class="desc">
+  <li><b>What:</b> what people type on Google about Justdial</li>
+  <li><b>Shows:</b> whether people think of Justdial, and what they want when they do</li>
+  <li><b>Keyword list and filters:</b> JD_Search_Keywords.xlsx (118 keywords, 17 groups)</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Google Trends</b></td><td>trends.google.com</td><td>"Justdial" (topic) + IndiaMART, Sulekha.com, Urban Company, TradeIndia; India + top cities</td><td>Weekly</td><td><span class="st have">✅ Free, do it yourself</span></td><td><input type="checkbox" data-k="use1"></td></tr>
+<tr><td><b>Search Console</b></td><td>justdial.com (SEO team)</td><td>Justdial searches by group; keeps only 16 months, so export monthly</td><td>Monthly</td><td><span class="st ask">🏢 Ask SEO team</span></td><td><input type="checkbox" data-k="use2"></td></tr>
+<tr><td><b>Keyword Planner</b></td><td>Google Ads (marketing team)</td><td>monthly numbers for "justdial + service" and "service near me"</td><td>Quarterly</td><td><span class="st ask">🏢 Ask marketing team</span></td><td><input type="checkbox" data-k="use3"></td></tr>
+</table></div>
+<div class="rule"><span class="ri">↔️</span><ul><li>Searches with a business word (business, listing, seller, package, leads, ECS) → Merchants tab</li><li>Share price and job searches count nowhere</li></ul></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li><b>Complaints, trust</b><span class="eg">justdial fraud · is justdial safe</span></li>
+    <li><b>Stopping calls, leaving</b><span class="eg">how to stop justdial calls · delete justdial account</span></li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li><b>What is Justdial?</b><span class="eg">justdial kya hai</span></li>
+    <li><b>Contacting Justdial</b><span class="eg">justdial customer care number</span></li>
+    <li><b>Company, owner</b><span class="eg">justdial reliance</span></li>
+    <li><b>Comparing</b><span class="eg">apps like justdial</span></li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li><b>Brand name</b><span class="eg">justdial · just dial · जस्ट डायल</span></li>
+    <li><b>Using Justdial to find</b><span class="eg">justdial plumber · justdial number</span></li>
+    <li><b>Getting the app</b><span class="eg">justdial app download</span></li></ul></div>
+</div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="u-search"></div></div>
+</div>
+
+<!-- 5 Health -->
+<div class="part" data-ic="🧭" data-lbl="User health score" data-c="#1F4E79">
+<ul class="desc">
+  <li><b>What:</b> one number for the user side</li>
+  <li><b>Status:</b> still deciding how to build it</li>
+</ul>
+<div class="blk" data-n="⏳ Health score"><div class="tbd"><span class="tbd-badge">⏳ Still deciding</span><h4>How the 4 part scores become one user health score is not decided yet</h4><ul class="points"><li><b>Decided:</b> each part has its own score (% good − % bad), tracked monthly</li><li><b>Not decided:</b> how the parts are combined into one number</li><li><b>Until then:</b> read each part's score on its own</li></ul><div class="tbd-parts"><span>🎧 CS calls</span><span>🌐 Social media</span><span>📱 App usage</span><span>🔎 Searches</span></div></div></div>
+<div class="blk" data-n="📏 Rules">
+<div class="tw"><table>
+<tr><th style="width:26%">Rule</th><th>What it says</th></tr>
+<tr><td>Limits on the metrics</td><td>Placeholders; set them after the first month of real data</td></tr>
+<tr><td>Checking the buckets</td><td>Each week, mark 50 random calls by ear; if the automatic bucket is wrong on more than 1 in 5, change the rules</td></tr>
+<tr><td>One side only</td><td>Every call, post and search counts on Users or Merchants, never both</td></tr>
+<tr><td>Real change</td><td>Outside the range of the last 8 weeks, with at least 100 calls behind it</td></tr>
+<tr><td>Recordings</td><td>Written OK from legal first; only calls with the "this call is recorded" notice; mask phone numbers</td></tr>
+<tr><td>To confirm with CS</td><td>"Contactable", "Fraud – Contract edits", "Search Plus"</td></tr>
+</table></div>
+</div>
+</div>
+</section>
+
+<!-- ================================ MERCHANTS ================================ -->
+<section class="pane" id="p-merchants">
+<div class="sechead"><h2>Merchants: businesses that list and pay</h2><p>Sales calls are the main source; four more parts back them up. Pick a part below.</p></div>
+<div class="keys">
+  <div class="key"><span class="ki">☎️</span><div><b>Sales calls first</b><span>Thousands of businesses hear "Justdial" every day and react</span></div></div>
+  <div class="key"><span class="ki">🚦</span><div><b>Same buckets</b><span>Bad, Neutral or Good for every call, post, business and search</span></div></div>
+  <div class="key"><span class="ki">🧭</span><div><b>Health score: still deciding</b><span>How the 5 part scores combine is not decided yet</span></div></div>
+  <div class="key"><span class="ki">↔️</span><div><b>One side only</b><span>Anything from a user counts on the Users tab</span></div></div>
+</div>
+<div class="legend"><b>Can we get it?</b>
+  <span class="st have">✅ Have it</span> already pulled weekly ·
+  <span class="st ask">🏢 Ask a team</span> exists inside Justdial ·
+  <span class="st set">🛠 Set up</span> needs new work ·
+  <span class="st conf">❓ Confirm</span> not sure the field exists</div>
+<div class="srail"></div>
+
+<!-- 1 Sales calls -->
+<div class="part" data-ic="☎️" data-lbl="Sales calls" data-c="#C2255C">
+<ul class="desc">
+  <li><b>Who:</b> businesses called by Justdial's sales team</li>
+  <li><b>Shows:</b> how they react to the Justdial name, and what stops them buying</li>
+  <li><b>Main source:</b> dialer log + call recordings</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Sales call log</b></td><td>Dialer</td><td>business ID, agent, sales number used, answered, talk seconds, outcome code ("call later", "not interested"…)</td><td>Every call</td><td><span class="st ask">🏢 Ask dialer team</span></td><td><input type="checkbox" data-k="msa1"></td></tr>
+<tr><td><b>Who hung up first</b></td><td>Dialer</td><td>business or agent ended the call</td><td>Every call</td><td><span class="st conf">❓ Confirm with dialer team</span></td><td><input type="checkbox" data-k="msa5"></td></tr>
+<tr><td><b>Recordings</b></td><td>Recordings</td><td>transcript with word times → second "Justdial" was said; objection words</td><td>Every call</td><td><span class="st set">🛠 Speech-to-text + tagging</span></td><td><input type="checkbox" data-k="msa2"></td></tr>
+<tr><td><b>Follow-ups and sales</b></td><td>CRM</td><td>next step promised, done (y/n), sale (y/n)</td><td>Every call</td><td><span class="st ask">🏢 Ask CRM team</span></td><td><input type="checkbox" data-k="msa3"></td></tr>
+<tr><td><b>Do-not-call requests</b></td><td>Dialer / CRM</td><td>DND asked on the call</td><td>Weekly</td><td><span class="st ask">🏢 Ask dialer team</span></td><td><input type="checkbox" data-k="msa4"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Cut under 15 s</li>
+    <li>Hangs up within 10 s of hearing "Justdial"</li>
+    <li>Angry; "call mat karo"; asks for DND</li>
+    <li>Bad past experience: "pehle liya tha, kuch nahi hua", "fake leads", "paise kaat liye"</li>
+    <li>Says "fraud"</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Listens (over 15 s), takes no step</li>
+    <li>"Baad mein call karo", "partner se pooch ke batata hoon"</li>
+    <li>"Abhi budget nahi", "season ke baad"</li>
+    <li>"IndiaMART / Google se aata hai"</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>"Details WhatsApp kar do", gives an email</li>
+    <li>Fixes a meeting or demo time</li>
+    <li>Asks price and plan details</li>
+    <li>Takes a payment link, or buys</li></ul></div>
+</div>
+<div class="rule"><span class="ri">⚪</span><ul><li>Not counted: wrong number, shop closed, not the owner (fix the data)</li><li>Start with talk time + outcome codes; add words once recordings are tagged</li></ul></div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="m-sales"></div></div>
+
+<div class="blk" data-n="🧪 Name test">
+<ul class="points" style="margin-top:0">
+  <li><b>Question:</b> does the word "Justdial" itself cost us calls?</li>
+  <li><b>Script A:</b> "Namaste, main Justdial se bol raha hoon …"</li>
+  <li><b>Script B:</b> "Namaste, aapki business listing ke baare mein call hai, main Justdial se bol raha hoon …"</li>
+  <li><b>Fair split:</b> each agent alternates A, B, A, B for 2–4 weeks; at least 100 answered calls per script</li>
+  <li><b>Count:</b> hang-ups within 10 s of the word "Justdial", Good-bucket calls, sales</li>
+  <li><b>Read:</b> if B loses far fewer calls at the word, the name puts people off before they hear the offer</li>
+  <li><b>Needs:</b> <span class="st set">🛠 word times from recordings</span> <span class="st conf">❓ who hung up first</span></li>
+</ul>
+</div>
+</div>
+
+<!-- 2 Social media -->
+<div class="part" data-ic="🌐" data-lbl="Social media" data-c="#7048E8">
+<ul class="desc">
+  <li><b>What:</b> what business owners say about Justdial in public</li>
+  <li><b>Today:</b> about 8 in 10 public merchant comments are negative</li>
+  <li><b>Already pulled every Monday</b> (JD_Brand_Comments.xlsx, side = customer)</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Business app reviews</b></td><td>Play / App Store</td><td>stars, text, thumbs-up, reason</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="mso1" checked></td></tr>
+<tr><td><b>Complaint-site posts</b></td><td>consumercomplaints.in</td><td>posts written by businesses</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="mso2" checked></td></tr>
+<tr><td><b>"Stop Justdial ECS" videos</b></td><td>YouTube</td><td>views, comments, likes</td><td>Weekly, auto</td><td><span class="st have">✅ Have it</span></td><td><input type="checkbox" data-k="mso3" checked></td></tr>
+<tr><td><b>LinkedIn, Quora, X, Facebook groups</b></td><td>Google search snippets</td><td>posts by owners (text only)</td><td>Weekly</td><td><span class="st set">🛠 Free Serper key</span></td><td><input type="checkbox" data-k="mso4"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Fake, poor or no leads</li>
+    <li>Money cut by ECS, refund refused</li>
+    <li>"Salesperson promised, nothing came"</li>
+    <li>1–2★ on the Business app</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Questions on price or listing</li>
+    <li>3★, mixed</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>"Customers aa rahe hain"</li>
+    <li>4–5★</li>
+    <li>Thanks to support</li></ul></div>
+</div>
+<div class="rule"><span class="ri">⚖️</span><ul><li>Weights: same as Users → Social media (thumbs-up, views, likes)</li></ul></div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="m-social"></div></div>
+</div>
+
+<!-- 3 Business app -->
+<div class="part" data-ic="📱" data-lbl="Business app" data-c="#1971C2">
+<ul class="desc">
+  <li><b>What:</b> how paying businesses use the Justdial Business app and web</li>
+  <li><b>Why it matters:</b> a business that never opens its leads won't renew</li>
+  <li><b>Early warning:</b> shows up months before the renewal date</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Logins</b></td><td>Business app / web</td><td>business ID, last login, logins per month</td><td>Weekly</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="map1"></td></tr>
+<tr><td><b>Leads opened</b></td><td>Business app</td><td>lead sent time, opened (y/n), opened time</td><td>Daily</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="map2"></td></tr>
+<tr><td><b>Leads called back</b></td><td>Justdial call system</td><td>call-back made (only visible if made through the app or a Justdial number)</td><td>Daily</td><td><span class="st conf">❓ Confirm it is tracked</span></td><td><input type="checkbox" data-k="map5"></td></tr>
+<tr><td><b>Listing upkeep</b></td><td>Listing edit log</td><td>photos, timings, prices updated; replies to reviews</td><td>Monthly</td><td><span class="st ask">🏢 Ask product team</span></td><td><input type="checkbox" data-k="map3"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<p class="muted small" style="margin-top:0">Each paying business, each month:</p>
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Not logged in for 30 days</li>
+    <li>Leads left unopened for 7 days</li>
+    <li>Uninstalled the app</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Logs in, but opens leads late (after a day)</li>
+    <li>Listing not updated in 90 days</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>Opens leads within an hour</li>
+    <li>Calls back or replies to leads</li>
+    <li>Updates the listing, replies to reviews</li></ul></div>
+</div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="m-app"></div></div>
+</div>
+
+<!-- 4 Searches -->
+<div class="part" data-ic="🔎" data-lbl="Searches" data-c="#0C8599">
+<ul class="desc">
+  <li><b>What:</b> Justdial searches by business owners on Google</li>
+  <li><b>Shows:</b> whether more businesses want to join Justdial or leave it</li>
+  <li><b>Rule:</b> only searches with a business word (business, listing, seller, package, leads, ECS)</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Google Trends</b></td><td>trends.google.com</td><td>"justdial ecs" (big enough for Trends)</td><td>Weekly</td><td><span class="st have">✅ Free, do it yourself</span></td><td><input type="checkbox" data-k="mse1"></td></tr>
+<tr><td><b>Search Console</b></td><td>justdial.com (SEO team)</td><td>merchant groups: joining, price, value, leaving (filters in JD_Search_Keywords.xlsx)</td><td>Monthly</td><td><span class="st ask">🏢 Ask SEO team</span></td><td><input type="checkbox" data-k="mse2"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li><b>Leaving, stopping payment</b><span class="eg">how to stop justdial ecs · justdial refund</span></li>
+    <li><b>Business complaints</b><span class="eg">justdial ecs complaint number</span></li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li><b>Judging value</b><span class="eg">is justdial good for business</span></li>
+    <li><b>Comparing</b><span class="eg">justdial vs indiamart for business</span></li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li><b>Joining, listing</b><span class="eg">justdial free listing · add business in justdial</span></li>
+    <li><b>Checking price</b><span class="eg">justdial packages</span></li></ul></div>
+</div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="m-search"></div></div>
+</div>
+
+<!-- 5 Leads, payments, renewals -->
+<div class="part" data-ic="💳" data-lbl="Leads &amp; renewals" data-c="#E67700">
+<ul class="desc">
+  <li><b>What:</b> the end result for each paying business</li>
+  <li><b>Shows:</b> did Justdial pay off, and did the business stay</li>
+  <li><b>Includes:</b> merchant CS calls (leads, ECS, refunds)</li>
+</ul>
+
+<div class="blk" data-n="📥 What to collect">
+<div class="tw"><table class="collect">
+<tr><th style="width:19%">What</th><th style="width:14%">From</th><th>Key fields</th><th style="width:10%">How often</th><th style="width:15%">Can we get it?</th><th style="width:7%">Have it?</th></tr>
+<tr><td><b>Leads delivered</b></td><td>Justdial call system</td><td>per business: leads sent, answered, talk seconds, wrong category</td><td>Monthly</td><td><span class="st ask">🏢 Ask telephony team</span></td><td><input type="checkbox" data-k="mre1"></td></tr>
+<tr><td><b>Plans</b></td><td>CRM</td><td>plan, amount, start, renewal date</td><td>Monthly</td><td><span class="st ask">🏢 Ask CRM team</span></td><td><input type="checkbox" data-k="mre2"></td></tr>
+<tr><td><b>Leads promised</b></td><td>CRM / contract</td><td>number of leads in the plan</td><td>Monthly</td><td><span class="st conf">❓ Confirm with CRM team</span></td><td><input type="checkbox" data-k="mre6"></td></tr>
+<tr><td><b>Payments, ECS</b></td><td>Billing</td><td>on ECS (y/n), stop requests, bounces, refunds, chargebacks</td><td>Monthly</td><td><span class="st ask">🏢 Ask billing team</span></td><td><input type="checkbox" data-k="mre3"></td></tr>
+<tr><td><b>Renewals</b></td><td>CRM</td><td>renewed (y/n), cancel date + reason, came back within 12 months</td><td>Monthly</td><td><span class="st ask">🏢 Ask CRM team</span></td><td><input type="checkbox" data-k="mre4"></td></tr>
+<tr><td><b>Merchant CS calls</b></td><td>CS system + recordings</td><td>reason, how it ended, called again within 7 days; tone from transcript</td><td>Every call</td><td><span class="st ask">🏢 Ask CS team</span> <span class="st set">🛠 Tone: tagging</span></td><td><input type="checkbox" data-k="mre5"></td></tr>
+</table></div>
+</div>
+
+<div class="blk" data-n="🚦 3 buckets">
+<p class="muted small" style="margin-top:0">Each paying business, each month:</p>
+<div class="bk">
+  <div class="b-bad"><h4>🔴 Bad</h4><ul>
+    <li>Asked to stop ECS, cancelled, or wants a refund</li>
+    <li>Angry CS call: "fraud", police, bank, court</li>
+    <li>Leads well below the promise</li></ul></div>
+  <div class="b-neu"><h4>🟡 Neutral</h4><ul>
+    <li>Renewal due, no decision yet</li>
+    <li>ECS bounce (money issue, not anger)</li>
+    <li>CS call about the app or listing</li></ul></div>
+  <div class="b-good"><h4>🟢 Good</h4><ul>
+    <li>Renewed or upgraded</li>
+    <li>Good leads at or above the promise</li>
+    <li>Came back after leaving</li></ul></div>
+</div>
+<div class="rule"><span class="ri">📏</span><ul><li>Good lead = answered by the business <b>and</b> over 60 s (same rule as a good call on the Users tab)</li></ul></div>
+</div>
+
+<div class="blk" data-n="🧮 What we calculate"><div class="calc" data-m="m-results"></div></div>
+</div>
+
+<!-- 6 Health -->
+<div class="part" data-ic="🧭" data-lbl="Merchant health score" data-c="#1F4E79">
+<ul class="desc">
+  <li><b>What:</b> one number for the merchant side</li>
+  <li><b>Status:</b> still deciding how to build it</li>
+</ul>
+<div class="blk" data-n="⏳ Health score"><div class="tbd"><span class="tbd-badge">⏳ Still deciding</span><h4>How the 5 part scores become one merchant health score is not decided yet</h4><ul class="points"><li><b>Decided:</b> each part has its own score (% good − % bad), tracked monthly</li><li><b>Not decided:</b> how the parts are combined into one number</li><li><b>Until then:</b> read each part's score on its own</li></ul><div class="tbd-parts"><span>☎️ Sales calls</span><span>🌐 Social media</span><span>📱 Business app</span><span>🔎 Searches</span><span>💳 Leads &amp; renewals</span></div></div></div>
+<div class="blk" data-n="📏 Rules">
+<div class="tw"><table>
+<tr><th style="width:26%">Rule</th><th>What it says</th></tr>
+<tr><td>Limits on the metrics</td><td>Placeholders; set them after the first month of real data</td></tr>
+<tr><td>Checking the buckets</td><td>50 random calls marked by ear each week; businesses with more good leads should renew more</td></tr>
+<tr><td>One side only</td><td>Every call, post and search counts on Users or Merchants, never both</td></tr>
+<tr><td>Recordings</td><td>Written OK from legal first; mask phone numbers</td></tr>
+<tr><td>To confirm</td><td>"Who hung up first" (dialer team); "leads promised" (CRM team); lead call-backs tracked (product team)</td></tr>
+</table></div>
+</div>
+</div>
+</section>
+
+<p class="foot">Structure only: metric limits are placeholders until real data. Court-reviewed 2 Nov 2026 · Public comments: jd_brand_comments\JD_Brand_Comments.xlsx · Search keywords: search_keywords\JD_Search_Keywords.xlsx</p>
+</main>
+
+<script>
+/* ---------- What we calculate: hero score + metric rows.
+   hero: [title, formula, example bad %, neutral %, good %, note, status]
+   row:  [name, how counted, what it tells you, healthy, watch, problem, status]
+   status: [kind, text]  kind = have (already pulled) | ask (a team has it) | set (needs new work) | conf (confirm the field exists)
+   All limits are PLACEHOLDERS until the first month of real data. */
+var A=function(t){return ['ask','🏢 Ask '+t];}, HAVE=['have','✅ Have it'], FREE=['have','✅ Free'], SET=function(t){return ['set','🛠 '+t];}, CONF=function(t){return ['conf','❓ '+t];};
+var CALC = {
+'u-cs':{hero:['Part score','% good calls − % bad calls',20,30,50,'Example month',SET('Needs tagged recordings')],rows:[
+ ['Complaints','complaints ÷ searches × 1,00,000','Are more users running into problems?','falling','flat','rising 2 months',A('CS team')],
+ ['Contactable','contactable ÷ total complaints','Can we reach those who complain?','over 80%','60–80%','under 60%',A('CS team')],
+ ['Bad-type share','(Vendor + both Fraud + Block + Opt-out) ÷ contactable','Is the pain about trust, or small fixes?','under 30%','30–50%','over 50%',A('CS team')],
+ ['Fraud complaints','both Fraud types ÷ searches × 1,00,000','Fake listings hit trust hardest','falling','flat','rising',A('CS team')],
+ ['Block + opt-out','(Block + Opt-out) ÷ enquiries × 10,000','Are users called too much after a search?','under 1','1–3','over 3',A('CS team')],
+ ['Fixed first time','no repeat from the same phone in 7 days ÷ complaints','Solved, or did the user have to chase us?','over 80%','60–80%','under 60%',A('CS team')],
+ ['Days to close','median (closed date − opened date)','How long the user stays unhappy','2 or less','3–7','over 7',A('CS team')]]},
+'u-social':{hero:['Part score (weighted)','(weight of good − weight of bad) ÷ total weight',53,7,40,'Example from ⚖️ Weights',HAVE],rows:[
+ ['App rating','average stars of this month\'s Justdial app reviews','The first thing a new user sees on the store','over 4.2★','3.8–4.2★','under 3.8★',HAVE],
+ ['Bad share','bad items ÷ all items (not weighted)','How many people complain, whatever their reach','under 15%','15–25%','over 25%',HAVE],
+ ['Views of bad videos','views this month of videos tagged Bad','How many people saw something bad about us','falling','flat','rising',HAVE],
+ ['Top reasons','top 5 reasons in bad items','What to fix first','same ones, shrinking','new one in top 5','new one in top 2',HAVE],
+ ['Complaints answered on our handles','replied within 24 h ÷ complaints','Do we look like we listen?','over 90%','70–90%','under 70%',A('social team')]]},
+'u-app':{hero:['Part score','% good users − % bad users',15,45,40,'Example month',A('app + product teams')],rows:[
+ ['Monthly active users','vs the same month last year','Is Justdial growing?','growing','flat','falling',A('app team')],
+ ['Daily ÷ monthly users','daily active ÷ monthly active','A habit, or a once-a-year app?','over 20%','10–20%','under 10%',A('app team')],
+ ['Search → contact','searches with a call / enquiry ÷ searches','Do people find someone to contact?','over 35%','20–35%','under 20%',A('product team')],
+ ['Good first call','good user → business calls ÷ all calls','Did the business answer and help?','over 50%','30–50%','under 30%',A('telephony team')],
+ ['Back in 30 days','searched again within 30 days ÷ users','Did the visit work well enough to return?','over 35%','20–35%','under 20%',A('product team')],
+ ['Came on their own','typed our name or opened the app ÷ new users','Is the brand pulling people in, or only ads?','over 50%','30–50%','under 30%',A('marketing team')],
+ ['Uninstalls','uninstalls ÷ installs, monthly','Who gave up on us','under 20%','20–35%','over 35%',A('app team')],
+ ['Crash-free users','from Play Console','Is the app itself the problem?','over 99.5%','99–99.5%','under 99%',A('app team')]]},
+'u-search':{hero:['Part score','% good − % bad of user-side Justdial searches',4,26,70,'Example month',A('SEO team')],rows:[
+ ['"Justdial" searches','last 12 weeks vs the same weeks last year (Trends)','Do more people think of Justdial?','up','flat','down',FREE],
+ ['Share of search','Justdial ÷ (Justdial + 4 rivals) (Trends)','Our slice vs rivals; it tends to lead market share','over 40%','25–40%','under 25%',FREE],
+ ['Bad searches','(complaints + stopping calls) ÷ user-side searches','How many look us up to complain or get away','under 3%','3–6%','over 6%',A('SEO team')],
+ ['Using Justdial vs the market','"justdial plumber" ÷ "plumber near me", per service (Keyword Planner)','Do people add our name when they need a service?','rising','flat','falling',A('marketing team')],
+ ['Looking for alternatives','"apps like justdial" + "justdial alternative"','Are people trying to replace us?','falling','flat','rising',A('SEO team')]]},
+'m-sales':{hero:['Part score','% good − % bad of answered sales calls',35,50,15,'Example month',A('dialer team')],rows:[
+ ['Pick-up rate','answered ÷ calls made','Do businesses even pick up?','over 50%','30–50%','under 30%',A('dialer team')],
+ ['Hang-up on "Justdial"','hang-ups within 10 s of the word ÷ answered','Is the name itself putting people off?','under 10%','10–20%','over 20%',SET('Word times + who hung up')],
+ ['Bad past experience','calls with it ÷ calls over 30 s','How many we lost before and must win back','under 10%','10–20%','over 20%',SET('Tagged recordings')],
+ ['"Call later" that turned good','"call later" outcomes with a good next call within 14 days','Are the excuses real, or polite no\'s?','over 20%','10–20%','under 10%',A('dialer + CRM')],
+ ['"Stop calling me"','DND requests ÷ answered','Are we calling too much?','under 2%','2–5%','over 5%',A('dialer team')],
+ ['Numbers losing pick-up','sales numbers whose pick-up rate fell by half vs their first month','Likely marked spam on caller-ID apps','under 10% of numbers','10–30%','over 30%',A('dialer team')],
+ ['Calls per sale','sales calls ÷ new paying businesses','A weak brand needs more calls per sale','under 50','50–120','over 120',A('dialer + CRM')]]},
+'m-social':{hero:['Part score (weighted)','(weight of good − weight of bad) ÷ total weight',75,10,15,'Close to today: ~8 in 10 negative',HAVE],rows:[
+ ['Business app rating','average stars of this month\'s reviews','What owners see before they install','over 4★','3.5–4★','under 3.5★',HAVE],
+ ['Bad share','bad ÷ all merchant items','How many owners complain in public','under 30%','30–50%','over 50%',HAVE],
+ ['"Stop ECS" video views','views per month','How many owners are learning to leave us','falling','flat','rising',HAVE],
+ ['Complaint-site posts','new posts by businesses per month','Formal complaints other owners will read','falling','flat','rising 2 months',HAVE],
+ ['Top merchant reasons','top 5 reasons in bad items','What to fix first','same ones, shrinking','new one in top 5','new one in top 2',HAVE]]},
+'m-app':{hero:['Part score','% good − % bad of paying businesses',25,40,35,'Example month',A('product team')],rows:[
+ ['Active paying businesses','logged in within 30 days ÷ paying','Do they use what they paid for?','over 70%','40–70%','under 40%',A('product team')],
+ ['Leads opened','opened ÷ leads sent','Do they look at what we send?','over 80%','60–80%','under 60%',A('product team')],
+ ['Time to open a lead','median (opened time − sent time)','Fast reply = more business = renewal','under 1 hour','1–6 hours','over 6 hours',A('product team')],
+ ['Leads called back','call-backs ÷ leads (only through the app or a Justdial number)','Do they act on leads?','over 60%','30–60%','under 30%',CONF('Is it tracked?')],
+ ['Listing kept fresh','updated in 90 days ÷ paying','Do they care about their page?','over 50%','25–50%','under 25%',A('product team')]]},
+'m-search':{hero:['Part score','% good − % bad of merchant searches',30,20,50,'Example month',A('SEO team')],rows:[
+ ['Joining ÷ leaving','(joining + price) ÷ leaving searches','Do more businesses want in than out?','over 3','1.5–3','under 1.5',A('SEO team')],
+ ['"justdial ecs" searches','Google Trends, 12 weeks','The main "how do I leave" signal','falling','flat','rising',FREE],
+ ['Leaving share','leaving ÷ all merchant searches','Share of owners looking for the exit','under 15%','15–30%','over 30%',A('SEO team')],
+ ['Price searches','"justdial packages" group, trend','Businesses close to buying','rising','flat','falling',A('SEO team')]]},
+'m-results':{hero:['Part score','% good − % bad of paying businesses',20,45,35,'Example month',A('CRM + billing')],rows:[
+ ['Renewal rate','renewed ÷ plans ending this month','The final verdict on value','over 60%','40–60%','under 40%',A('CRM team')],
+ ['ECS stop requests','÷ businesses on ECS, monthly','Leaving the quiet way','under 1%','1–3%','over 3%',A('billing team')],
+ ['Refunds and chargebacks','÷ payments, monthly','Money disputes','under 0.5%','0.5–2%','over 2%',A('billing team')],
+ ['Good leads','good leads ÷ leads sent','Were the leads worth anything?','over 50%','30–50%','under 30%',A('telephony team')],
+ ['Leads vs promised','leads sent ÷ leads in the plan','Did we keep our promise?','100% or more','70–100%','under 70%',CONF('Leads promised')],
+ ['Merchant CS calls','per 100 paying businesses, monthly','How often owners need help','under 10','10–25','over 25',A('CS team')],
+ ['Angry / legal calls','÷ merchant CS calls','These become public complaints','under 2%','2–5%','over 5%',SET('Tagged recordings')]]}
+};
+function el(tag,cls,html){var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e;}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function sign(n){return (n>0?'+':n<0?'−':'')+Math.abs(n);}
+function st(s){return '<span class="st '+s[0]+'">'+esc(s[1])+'</span>';}
+
+document.querySelectorAll('.calc').forEach(function(box){
+  var d=CALC[box.dataset.m]; if(!d) return; var h=d.hero, score=h[4]-h[2];
+  box.appendChild(el('div','hero-score',
+    '<div><div class="k">'+esc(h[0])+'</div><div class="big">'+esc(h[1])+'</div><div class="sub">The one number for this part, tracked monthly. '+st(h[6])+'</div></div>'+
+    '<div><div class="stack"><span class="s-bad" style="width:'+h[2]+'%">'+h[2]+'% bad</span><span class="s-neu" style="width:'+h[3]+'%">'+h[3]+'%</span><span class="s-good" style="width:'+h[4]+'%">'+h[4]+'% good</span></div>'+
+    '<div class="eq">'+esc(h[5])+': '+h[4]+' − '+h[2]+' = <b>'+sign(score)+'</b></div></div>'));
+  box.appendChild(el('p','muted small','<b>Then watch these numbers.</b> Limits are placeholders until the first month of real data.'));
+  var list=el('div','mlist');
+  d.rows.forEach(function(r,i){
+    list.appendChild(el('div','mrow',
+      '<div class="mn"><span class="no">'+(i+1)+'</span><div><div class="top"><b>'+esc(r[0])+'</b>'+st(r[6])+'</div><span class="f">'+esc(r[1])+'</span><div class="w">'+esc(r[2])+'</div></div></div>'+
+      '<div class="gauge"><div class="gg"><small>Healthy</small>'+esc(r[3])+'</div><div class="ga"><small>Watch</small>'+esc(r[4])+'</div><div class="gr"><small>Problem</small>'+esc(r[5])+'</div></div>'));
+  });
+  box.appendChild(list);
+});
+
+/* ---------- Parts: step rail, one card at a time, inner tabs, prev / next */
+var STATE={};
+function buildSide(pane){
+  var side=pane.id.slice(2), parts=[].slice.call(pane.querySelectorAll('.part')), rail=pane.querySelector('.srail');
+  parts.forEach(function(p,i){
+    var c=p.dataset.c; p.style.setProperty('--c',c);
+    var n=el('button','node','<span class="dot">'+p.dataset.ic+'</span><span class="lbl">'+p.dataset.lbl+'</span>');
+    n.style.setProperty('--c',c); n.onclick=function(){go(side,i,true);}; rail.appendChild(n);
+    var boxes=p.querySelectorAll('table.collect input'), last=i===parts.length-1;
+    var head=el('div','dh','<div class="ic">'+p.dataset.ic+'</div><div class="ht"><div class="step-no">'+(last?'The result':'Part '+(i+1)+' of '+(parts.length-1))+'</div><h3>'+p.dataset.lbl+'</h3></div>'+(boxes.length?'<span class="ready"></span>':''));
+    p.insertBefore(head,p.firstChild);
+    var calc=p.querySelector('.calc'), g=[];
+    if(boxes.length) g.push('📥 <b>'+boxes.length+'</b> things to collect');
+    if(calc&&CALC[calc.dataset.m]){
+      var rs=CALC[calc.dataset.m].rows; g.push('🧮 <b>'+rs.length+'</b> metrics');
+      var k={have:0,ask:0,set:0,conf:0}; rs.forEach(function(r){k[r[6][0]]++;});
+      if(k.have) g.push('✅ <b>'+k.have+'</b> have it'); if(k.ask) g.push('🏢 <b>'+k.ask+'</b> ask a team');
+      if(k.set) g.push('🛠 <b>'+k.set+'</b> set up'); if(k.conf) g.push('❓ <b>'+k.conf+'</b> confirm');
+    }
+    var desc=p.querySelector('ul.desc');
+    if(g.length){ var gl=el('div','glance','<span>'+g.join('</span><span>')+'</span>'); desc.parentNode.insertBefore(gl,desc.nextSibling); }
+    var blks=[].slice.call(p.querySelectorAll('.blk')), tabs=el('div','itabs');
+    blks.forEach(function(b,j){ var t=el('button','itab',b.dataset.n); t.onclick=function(){openBlk(p,j);}; tabs.appendChild(t); });
+    p.insertBefore(tabs,blks[0]);
+    var nr=el('div','nextrow');
+    if(i>0){var pb=el('button','nb','← '+parts[i-1].dataset.lbl); pb.onclick=function(){go(side,i-1,true);}; nr.appendChild(pb);}
+    if(!last){var nb=el('button','nb nx','Next: '+parts[i+1].dataset.lbl+' →'); nb.onclick=function(){go(side,i+1,true);}; nr.appendChild(nb);}
+    p.appendChild(nr);
+    openBlk(p,0);
+  });
+}
+function openBlk(p,j){
+  p.querySelectorAll('.itab').forEach(function(t,k){t.classList.toggle('on',k===j);});
+  p.querySelectorAll('.blk').forEach(function(b,k){b.classList.toggle('on',k===j);});
+}
+function go(side,i,scroll){
+  var pane=document.getElementById('p-'+side), parts=pane.querySelectorAll('.part'), nodes=pane.querySelectorAll('.node');
+  i=Math.max(0,Math.min(parts.length-1,i)); STATE[side]=i;
+  parts.forEach(function(p,k){p.classList.toggle('on',k===i);});
+  nodes.forEach(function(n,k){n.classList.toggle('on',k===i); n.classList.toggle('done',k<i);});
+  pane.querySelector('.srail').style.setProperty('--p', parts.length>1? i/(parts.length-1) : 0);
+  try{history.replaceState(null,'','#'+side+'-'+(i+1));}catch(e){}
+  if(scroll){var r=pane.querySelector('.srail').getBoundingClientRect(); if(r.top<0||r.top>innerHeight*.6) scrollTo({top:scrollY+r.top-110,behavior:'smooth'});}
+}
+function show(t){
+  var m=/^(ads|users|merchants)(?:-(\d+))?$/.exec(t||''); var tab=m?m[1]:'ads';
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+tab);});
+  document.querySelectorAll('#tabs .jbtn').forEach(function(b){b.classList.toggle('on',b.dataset.t===tab);});
+  if(tab!=='ads') go(tab, m&&m[2]?(+m[2]-1):(STATE[tab]||0), false);
+  else try{history.replaceState(null,'','#ads');}catch(e){}
+}
+document.querySelectorAll('#tabs .jbtn').forEach(function(b){b.onclick=function(){show(b.dataset.t);};});
+['users','merchants'].forEach(function(s){buildSide(document.getElementById('p-'+s));});
+addEventListener('hashchange',function(){show(location.hash.slice(1));});
+show(location.hash.slice(1));
+
+/* ---------- "Have it?" ticks (saved in this browser) */
+var HKEY='jdacm-have-v2', have={};
+try{have=JSON.parse(localStorage.getItem(HKEY)||'{}');}catch(e){}
+function countAll(){
+  document.querySelectorAll('.part').forEach(function(p){
+    var b=p.querySelector('.ready'); if(!b) return;
+    var boxes=p.querySelectorAll('table.collect input'), n=0; boxes.forEach(function(c){if(c.checked) n++;});
+    b.textContent='Data ready: '+n+' of '+boxes.length; b.classList.toggle('full',n===boxes.length);
+  });
+}
+document.querySelectorAll('table.collect input').forEach(function(c){
+  if(c.dataset.k in have) c.checked=have[c.dataset.k];
+  c.addEventListener('change',function(){have[c.dataset.k]=c.checked; try{localStorage.setItem(HKEY,JSON.stringify(have));}catch(e){} countAll();});
+});
+countAll();
+</script>
+</body>
+</html>

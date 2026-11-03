@@ -212,7 +212,12 @@ def prepare(pipe, log=print):
     # deals closed and its conversion. Each deal sits with its ME, the ME's team leader that month, and the deal's TME
     # team (final_team_type_name; none = 'Cold call (no TME)'). Days the deals tables do not have yet (the morning's
     # provisional day) use the Dealclosed appointments of that day instead.
-    deals = []   # (day, me, mgr or -1, team, dc_genio, parentid)
+    deals = []   # (day, me, mgr or -1, team, dc_genio, parentid, TME or -1, RV_3yr credited (x dc_genio; 0 when not known))
+    # the deal's TME (the deals table's tme code; 28 Oct 2026, for the TME view): matched to the TME code on the
+    # appointments, ignoring leading zeros; a code with no appointment gets its own entry, named by the code
+    tme_code = {}
+    for r in list(R) + list(NC):
+        tme_code.setdefault(str(r["tme"] or "").strip().lstrip("0"), r["tme"])
     mgr_month = defaultdict(Counter)
     for r in R:
         mgr_month[(str(r["me"]).strip().lstrip("0"), r["to_date"].year, r["to_date"].month)][r["me_manager_code"]] += 1
@@ -226,7 +231,9 @@ def prepare(pipe, log=print):
         for code, nm in (dl.get("names") or {}).items():
             if code not in code_of and nm:
                 me_name[code][tidy(nm)] += 0
-        for d, pid, dc, me, tme, team, jf in mis:
+        for row in mis:
+            d, pid, dc, me, tme, team, jf = row[:7]
+            rv = row[7] if len(row) > 7 else 0.0   # the deal's RV_3yr (pulled since 30 Oct 2026)
             if d < fy or d > end or not dc:   # dc_genio 0: a payment version that is not a deal
                 continue
             code = code_of.get(me, me)
@@ -236,7 +243,9 @@ def prepare(pipe, log=print):
                 mg = mc.most_common(1)[0][0]
                 gi = mg_ix(mg, [mg, mg_name[mg].most_common(1)[0][0] if mg_name[mg] else str(mg)])
             tt = team_ix(team if team and team.upper() != "BLANK" else "Cold call (no TME)")
-            deals.append(((d - fy).days, me_ix(code), gi, tt, dc, pid))
+            tk = str(tme or "").strip().lstrip("0")
+            ti = tme_ix(tme_code.get(tk, tme)) if tk else -1
+            deals.append(((d - fy).days, me_ix(code), gi, tt, dc, pid, ti, rv * dc))
     # days after the deals tables (or every day, when they could not be read): the Dealclosed appointments stand in, with
     # the MIS's city rule - an ME of another city that month (HR month row, else the HR master) closes deals elsewhere
     hp = os.path.join(pipe, "cache", "hr.pkl")
@@ -253,7 +262,7 @@ def prepare(pipe, log=print):
     for x in recs:
         day = fy + datetime.timedelta(days=x[0])
         if x[5] == 0 and (cover is None or day > cover) and here(MES[x[1]][0], day):
-            deals.append((x[0], x[1], x[2], x[4], 1.0, x[7]))
+            deals.append((x[0], x[1], x[2], x[4], 1.0, x[7], x[3], 0.0))   # no revenue for these until the deals table has them
     deals.sort()
     deal_src.update({"mis": round(sum(x[4] for x in deals), 2), "misTo": str(cover or "")})
     log(f"Deals closed (Sales MIS rule): {sum(x[4] for x in deals):,.2f} from {len(deals):,} deal rows"

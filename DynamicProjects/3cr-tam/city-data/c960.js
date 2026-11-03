@@ -1,1 +1,1 @@
-window.__CITY_DATA(960,{"Grocery Retailers":"il_BDCC","Grocery Stores":"v99BDCCy9FDCC","Hotels":"pl_BBC","Mobile Phone Repair & Services":"76-BBC","Ngos":"z78BDCC","Restaurants":"4g6BDCC","Tutorials":"swhCBC"});
+window.__CITY_DATA(960,{"Apparels & Clothing - Retailer":"v-yBDCC","Bungalows On Hire":"3rsBBC","Cyber Cafes":"yuzBBC","Food & Food Products":"2w6BBC","General Physician Doctors":"t5wBBC","Grocery Stores":"qhhCBC","Hobby Classes":"_ixBBC","Insurance Agents":"xulBDII","Inverter Dealers":"l6uBBC","Mobile Phone Repair & Services":"9icBC"});

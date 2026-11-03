@@ -291,9 +291,9 @@
   "jd-india-sales-overview": {
     "title": "JD India sales overview",
     "user": "sarvesh",
-    "version": 2,
+    "version": 3,
     "created": "2026-10-08T18:41:45",
-    "updated": "2026-10-27T11:25:06",
+    "updated": "2026-11-02T15:11:06",
     "entry": "index.html",
     "hub": {
       "show": true,
@@ -309,9 +309,9 @@
   "call-review": {
     "title": "sales_calling_insight_report",
     "user": "vaibhav",
-    "version": 19,
+    "version": 20,
     "created": "2026-10-12T15:20:06",
-    "updated": "2026-10-13T13:05:51",
+    "updated": "2026-10-28T16:19:10",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -577,11 +577,11 @@
     }
   },
   "sales-call-analysis": {
-    "title": "What distinguishes appointment booked calls from non-appointment calls?",
+    "title": "Best Practices Doc",
     "user": "vaibhav",
-    "version": 2,
+    "version": 3,
     "created": "2026-10-26T20:05:02",
-    "updated": "2026-10-27T14:19:24",
+    "updated": "2026-10-28T16:16:32",
     "entry": "index.html",
     "hub": {
       "show": true,
@@ -648,24 +648,6 @@
       "legacy_id": ""
     }
   },
-  "hyderabad-jda-dashboard": {
-    "title": "Hyderabad JDA Dashboard",
-    "user": "muskan",
-    "version": 2,
-    "created": "2026-10-28T12:41:41",
-    "updated": "2026-10-28T15:22:32",
-    "entry": "index.html",
-    "hub": {
-      "show": false,
-      "scope": "general",
-      "reviewed": false,
-      "category": "funnel",
-      "branch": "",
-      "tags": [],
-      "title": "",
-      "legacy_id": ""
-    }
-  },
   "cs-analyis-v2": {
     "title": "docid issue overlap",
     "user": "vaibhav",
@@ -678,6 +660,42 @@
       "scope": "general",
       "reviewed": false,
       "category": "funnel",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "brand-strength-guide": {
+    "title": "Brand Strength Guide",
+    "user": "priyal",
+    "version": 5,
+    "created": "2026-10-29T15:57:03",
+    "updated": "2026-11-02T15:01:28",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "jd-ad-call-metrics": {
+    "title": "Justdial Ad & Call Metrics",
+    "user": "priyal",
+    "version": 4,
+    "created": "2026-11-02T17:00:47",
+    "updated": "2026-11-02T17:25:28",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
       "branch": "",
       "tags": [],
       "title": "",

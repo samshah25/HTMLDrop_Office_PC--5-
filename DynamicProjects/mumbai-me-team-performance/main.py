@@ -6,11 +6,16 @@
 Steps:
   1. fetch_data.py      appointments from server 240 (datagrowth.tbl_final_data_appt), into cache\\raw.pkl
   2. fetch_api.py       the days the appointment table does not have yet (it loads around 2 pm), up to yesterday, rebuilt
-                        from the live ME allocation API and marked provisional (cache\\api_rows.pkl); removed once the
+                        from the live ME allocation API and shown like any other day (cache\\api_rows.pkl); removed once the
                         table has those days. If the API cannot be reached, the refresh carries on without them.
   3. fetch_deals.py     deals (+ the 30-day rolling table for the newest days) and HR from server 216, into cache\\
-  4. build_dashboard.py the team page,            jd-me-team-performance.html (only if that page is in the folder)
-  5. build_review.py    the ME Head's dashboard,  Mumbai ME Team Performance.html
+     fetch_calls.py     the TMEs' dialer calls from server 120, for TME mode's funnel (cache\\calls.pkl; the refresh carries
+                        on without them when there is no server 120 login or the server does not answer)
+  4. build_review.py    the ME Head's dashboard,  Mumbai ME Team Performance.html (ME and TME mode; TME mode's reporting
+                        lines from tme_lines.json, which tme_lines.py makes from the SSO dump: run on its own when a newer
+                        "SSO dump*.xlsx" is put in exports\\)
+(The older team page jd-me-team-performance.html is no longer rebuilt: the ME Head's final page is Mumbai ME Team
+Performance.html, 14 Oct 2026. build_dashboard.py stays for reference.)
 
 Run it twice a day (Task Scheduler, run_daily.bat): in the morning (yesterday comes from the API, provisional) and in the
 afternoon after the appointment table loads (yesterday from the table). A third run later in the afternoon covers a late load.
@@ -19,7 +24,7 @@ A step that fails stops the run, so the pages keep their last good data. Every r
 
 Database logins are read from pipeline\\db_240.env and pipeline\\db_216.env; if those are not here, from the files named
 by ME_DB_ENV / ME_DEALS_DB_ENV, then from DB_240 / DB_216 in pipeline\\environment.py, or else from the package's shared
-pipeline folder (..\\..\\pipeline\\). Logins are never copied into the pages.
+pipeline folder (..\\..\\Kolkata\\pipeline\\). Logins are never copied into the pages.
 """
 import datetime
 import os
@@ -31,7 +36,7 @@ import time
 # at its top level, with the scripts in pipeline\)
 HERE = os.path.dirname(os.path.abspath(__file__))
 PIPE = os.path.join(HERE, "pipeline") if os.path.isfile(os.path.join(HERE, "pipeline", "fetch_data.py")) else HERE
-SHARED = os.path.normpath(os.path.join(PIPE, "..", "..", "pipeline"))   # kolkata_lite_package\pipeline
+SHARED = os.path.normpath(os.path.join(PIPE, "..", "..", "Kolkata", "pipeline"))   # kolkata_lite_package\Kolkata\pipeline
 LOG = os.path.join(PIPE, "refresh_log.txt")
 
 
@@ -118,8 +123,35 @@ def run(step_name, *args):
     log(f"   ok ({time.time() - t0:.0f}s)")
 
 
+def sso_lines():
+    """the TME mode's reporting lines (tme_lines.json, 29 Oct 2026): read again from the SSO dump when a newer
+    "SSO dump*.xlsx" sits in exports\\ (or pipeline\\); without one (the shared kit) the json in pipeline\\ is used"""
+    import glob
+    found = [f for f in glob.glob(os.path.join(PIPE, "..", "exports", "SSO dump*.xlsx")) + glob.glob(os.path.join(PIPE, "SSO dump*.xlsx"))
+             if not os.path.basename(f).startswith("~$")]
+    js = os.path.join(PIPE, "tme_lines.json")
+    if not found or (os.path.exists(js) and os.path.getmtime(js) >= max(os.path.getmtime(f) for f in found)):
+        return
+    t0 = time.time()
+    log("-- tme_lines.py (a newer SSO dump)")
+    p = step("tme_lines.py")
+    for line in (p.stdout + p.stderr).strip().splitlines():
+        log("   " + line)
+    log(f"   ok ({time.time() - t0:.0f}s)" if p.returncode == 0 else f"   tme_lines.py failed (exit {p.returncode}); the TME lines stay as they were.")
+
+
+def run_soft(step_name, *args):
+    """a step the pages can do without (the TMEs' calls): a failure or a missing login is logged and the refresh carries on"""
+    t0 = time.time()
+    log(f"-- {step_name} {' '.join(args)}".rstrip())
+    p = step(step_name, *args)
+    for line in (p.stdout + p.stderr).strip().splitlines():
+        log("   " + line)
+    log(f"   ok ({time.time() - t0:.0f}s)" if p.returncode == 0 else f"   {step_name} did not finish (exit {p.returncode}); the pages keep the calls they had.")
+
+
 # the steps find environment.py next to main.py as well as in pipeline
-ENV = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONPATH=os.pathsep.join(x for x in (HERE, PIPE, os.environ.get("PYTHONPATH", "")) if x))
+ENV =dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONPATH=os.pathsep.join(x for x in (HERE, PIPE, os.environ.get("PYTHONPATH", "")) if x))
 
 if __name__ == "__main__":
     build_only = "--build-only" in sys.argv
@@ -140,8 +172,9 @@ if __name__ == "__main__":
         run("fetch_data.py")
         run_optional("fetch_api.py")
         run("fetch_deals.py")
-    # the older team page is rebuilt only where it is kept (not in the shared kit, which hosts just the ME Head's page)
-    if os.path.exists(os.path.join(os.path.dirname(PIPE), "jd-me-team-performance.html")):
-        run("build_dashboard.py", "--full")
+        e120 = env_file("ME_CALLS_DB_ENV", "db_120.env")   # the TMEs' dialer calls (server 120), for TME mode's funnel
+        if e120: ENV["ME_CALLS_DB_ENV"] = e120
+        run_soft("fetch_calls.py")
+    sso_lines()
     run("build_review.py", "--full")
     log(f"===== done in {time.time() - t0:.0f}s =====")

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paid Penetration</title>
+<link rel="stylesheet" href="app.css?v=202611031057">
+</head>
+<body>
+<div class="page"><div class="shell">
+  <div id="hd"></div>
+  <div class="fwrap" id="fw"><div class="fbar" id="fb"></div></div>
+
+  <!-- 1. Market to customers: addressable -> reachable -> sellable -> paying, rates, customer pools -->
+  <section class="card" id="fun" style="margin-bottom:var(--gap)"></section>
+
+  <!-- 2. Where: map + the selected area (rates, opportunity, revenue quality) -->
+  <section class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+    <div class="card" id="map"></div>
+    <aside class="card" id="sel"></aside>
+  </section>
+
+  <!-- 3. Which customers: customer type x offering type -->
+  <section class="card" id="seg" style="margin-bottom:var(--gap)"></section>
+
+  <!-- 4. Where the opportunity is: branches / states / cities with headroom -->
+  <section class="card" id="tbl"></section>
+</div></div>
+
+<script src="portal_data.js?v=202611031057"></script>
+<script src="app.js?v=202611031057"></script>
+<script>
+$('#hd').innerHTML = header();
+filterBar($('#fb'));
+// shadow under the frozen filter bar once the page scrolls beneath it
+const fw = $('#fw'), stuck = () => fw.classList.toggle('stuck', fw.getBoundingClientRect().top <= 0 && scrollY > 40);
+addEventListener('scroll', stuck, { passive: true });
+const draw = () => { headline($('#fun')); mapView($('#map')); selPanel($('#sel')); segGrid($('#seg')); rankTable($('#tbl')); };
+onChange(draw);
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,978 @@
+city,displayName,branch,main_city_flag,mainRemote,lat,lon,x,y,stateId,stateName
+delhi,Delhi,delhi,1,Main,28.6568,77.2096,350,325,DL,Delhi
+mumbai,Mumbai,mumbai,1,Main,19.1985,72.9548,236,625,MH,Maharashtra
+bangalore,Bangalore,bangalore,1,Main,12.9773,77.5974,352,812,KA,Karnataka
+hyderabad,Hyderabad,hyderabad,1,Main,17.4308,78.4809,395,672,TG,Telangana
+pune,Pune,pune,1,Main,18.5775,73.8517,268,652,MH,Maharashtra
+chennai,Chennai,chennai,1,Main,13.0568,80.2277,432,808,TN,Tamil Nadu
+ahmedabad,Ahmedabad,ahmedabad,1,Main,23.0272,72.5887,215,505,GJ,Gujarat
+kolkata,Kolkata,kolkata,1,Main,22.5695,88.3693,672,545,WB,West Bengal
+jaipur,Jaipur,jaipur,1,Main,26.9211,75.7823,310,395,RJ,Rajasthan
+lucknow,Lucknow,delhi,0,Remote,26.8496,80.9585,458,392.2,UP,Uttar Pradesh
+chandigarh,Chandigarh,chandigarh,1,Main,30.6965,76.7392,336,254,CH,Chandigarh
+coimbatore,Coimbatore,coimbatore,1,Main,11.0229,76.9793,345,878,TN,Tamil Nadu
+nagpur,Nagpur,pune,0,Remote,21.1373,79.0776,404.7,566.3,MH,Maharashtra
+indore,Indore,pune,0,Remote,22.7239,75.8657,313.8,513.2,MP,Madhya Pradesh
+surat,Surat,ahmedabad,0,Remote,21.2099,72.8551,228.6,556.2,GJ,Gujarat
+ernakulam,Ernakulam,coimbatore,0,Remote,9.9796,76.2923,325.8,907.5,KL,Kerala
+nashik,Nashik,pune,0,Remote,19.9885,73.8354,256.4,595.2,MH,Maharashtra
+ludhiana,Ludhiana,chandigarh,0,Remote,30.8952,75.8668,313.9,260.7,PB,Punjab
+bhopal,Bhopal,pune,0,Remote,23.2444,77.4301,358.1,499.1,MP,Madhya Pradesh
+patna,Patna,kolkata,0,Remote,25.6054,85.1165,575.6,435.9,BR,Bihar
+vadodara,Vadodara,ahmedabad,0,Remote,22.3055,73.1695,237.5,522.7,GJ,Gujarat
+kanpur,Kanpur,delhi,0,Remote,26.4588,80.3123,439.7,403.4,UP,Uttar Pradesh
+varanasi,Varanasi,delhi,0,Remote,25.3062,82.98,515.1,442.4,UP,Uttar Pradesh
+dehradun,Dehradun,delhi,0,Remote,30.3035,78.0393,375.4,281.8,UT,Uttarakhand
+visakhapatnam,Visakhapatnam,hyderabad,0,Remote,17.7295,83.2948,524,676.9,AP,Andhra Pradesh
+vijayawada,Vijayawada,hyderabad,0,Remote,16.513,80.6524,449.2,711.2,AP,Andhra Pradesh
+aurangabad-maharashtra,Aurangabad Maharashtra,pune,0,Remote,19.8711,75.3397,298.9,600.7,MH,Maharashtra
+raipur-chhattisgarh,Raipur Chhattisgarh,pune,0,Remote,21.2496,81.6363,477.1,566.1,CT,Chhattisgarh
+goa,Goa,pune,0,Remote,15.529,73.8274,256.1,733,GA,Goa
+madurai,Madurai,chennai,0,Remote,9.9323,78.1296,377.7,911.3,TN,Tamil Nadu
+mysore,Mysore,bangalore,0,Remote,12.3123,76.6278,335.3,835.9,KA,Karnataka
+rajkot,Rajkot,ahmedabad,0,Remote,22.2503,70.7801,169.9,521.4,GJ,Gujarat
+agra,Agra,delhi,0,Remote,27.1965,77.9983,374.2,377.7,UP,Uttar Pradesh
+bhubaneshwar,Bhubaneshwar,kolkata,0,Remote,20.2842,85.8237,595.5,601.2,OR,Odisha
+gandhinagar-gujarat,Gandhinagar Gujarat,ahmedabad,0,Remote,23.195,72.6281,222.2,494.6,GJ,Gujarat
+meerut,Meerut,delhi,0,Remote,28.9741,77.714,366.2,322.4,UP,Uttar Pradesh
+trichy,Trichy,coimbatore,0,Remote,10.8167,78.696,393.8,884.7,TN,Tamil Nadu
+kolhapur,Kolhapur,pune,0,Remote,16.6914,74.2338,267.6,697.6,MH,Maharashtra
+jodhpur,Jodhpur,jaipur,0,Remote,26.277,73.0043,232.9,399.8,RJ,Rajasthan
+allahabad,Allahabad,delhi,0,Remote,25.4408,81.8373,482.8,436.8,UP,Uttar Pradesh
+tirupur,Tirupur,coimbatore,0,Remote,11.1226,77.3293,355.1,873.5,TN,Tamil Nadu
+salem,Salem,coimbatore,0,Remote,11.6631,78.1421,378.1,857.9,TN,Tamil Nadu
+solapur,Solapur,pune,0,Remote,17.6764,75.8824,314.2,669.2,MH,Maharashtra
+thiruvananthapuram,Thiruvananthapuram,coimbatore,0,Remote,8.5012,76.9547,344.5,925,KL,Kerala
+gorakhpur,Gorakhpur,delhi,0,Remote,26.7526,83.3868,526.7,398.2,UP,Uttar Pradesh
+ranchi,Ranchi,kolkata,0,Remote,23.3806,85.3118,581.1,504.9,JH,Jharkhand
+amritsar,Amritsar,chandigarh,0,Remote,31.6349,74.8772,286,236.6,PB,Punjab
+udaipur-rajasthan,Udaipur Rajasthan,jaipur,0,Remote,24.5771,73.7218,253.2,453.2,RJ,Rajasthan
+jalandhar,Jalandhar,chandigarh,0,Remote,31.317,75.5764,305.7,247.3,PB,Punjab
+guntur,Guntur,hyderabad,0,Remote,16.3155,80.44,443.2,717,AP,Andhra Pradesh
+kozhikode,Kozhikode,coimbatore,0,Remote,11.2727,75.8072,312,867,KL,Kerala
+jabalpur,Jabalpur,pune,0,Remote,23.1805,79.9231,428.6,504.2,MP,Madhya Pradesh
+erode,Erode,coimbatore,0,Remote,11.3377,77.71,365.9,867.4,TN,Tamil Nadu
+guwahati,Guwahati,kolkata,0,Remote,26.1696,91.7652,763.7,426.8,AS,Assam
+thrissur,Thrissur,coimbatore,0,Remote,10.3611,76.2042,323.3,895.6,KL,Kerala
+sangli,Sangli,pune,0,Remote,16.849,74.6113,278.3,693.2,MH,Maharashtra
+gwalior,Gwalior,pune,0,Remote,26.2041,78.1628,378.9,408.6,MP,Madhya Pradesh
+warangal,Warangal,hyderabad,0,Remote,17.9807,79.5669,418.5,664.5,TG,Telangana
+mangalore,Mangalore,bangalore,0,Remote,12.8732,74.8558,285.1,816.3,KA,Karnataka
+pondicherry,Pondicherry,chennai,0,Remote,11.934,79.8142,425.4,851.6,PY,Puducherry
+ahmednagar,Ahmednagar,pune,0,Remote,19.0886,74.7369,281.9,624.1,MH,Maharashtra
+amravati,Amravati,pune,0,Remote,20.9305,77.7573,367.3,571,MH,Maharashtra
+howrah,Howrah,kolkata,0,Remote,22.5868,88.3079,665.8,533.2,WB,West Bengal
+tirupati,Tirupati,hyderabad,0,Remote,13.624,79.4194,414.3,798.9,AP,Andhra Pradesh
+satara,Satara,pune,0,Remote,17.7004,73.9971,260.9,666.1,MH,Maharashtra
+ambala,Ambala,chandigarh,0,Remote,30.3376,76.8484,341.7,279.2,HR,Haryana
+malappuram,Malappuram,coimbatore,0,Remote,11.1136,76.1149,320.8,872.3,KL,Kerala
+latur,Latur,pune,0,Remote,18.4017,76.5702,333.7,647.7,MH,Maharashtra
+belgaum,Belgaum,pune,0,Remote,15.8588,74.5169,275.6,723.6,KA,Karnataka
+bareilly,Bareilly,delhi,0,Remote,28.3666,79.4295,414.7,343.4,UP,Uttar Pradesh
+palakkad,Palakkad,coimbatore,0,Remote,10.7936,76.6385,335.6,882.8,KL,Kerala
+kota-rajasthan,Kota Rajasthan,jaipur,0,Remote,25.1784,75.8715,314,437.4,RJ,Rajasthan
+patiala,Patiala,chandigarh,0,Remote,30.3387,76.4058,329.2,278.6,PB,Punjab
+hooghly,Hooghly,kolkata,0,Remote,22.8078,88.3347,666.6,526.4,WB,West Bengal
+jamshedpur,Jamshedpur,kolkata,0,Remote,22.8048,86.2049,606.4,523.8,JH,Jharkhand
+durg,Durg,pune,0,Remote,21.2077,81.336,468.6,567,CT,Chhattisgarh
+siliguri,Siliguri,kolkata,0,Remote,26.7279,88.433,669.4,405.4,WB,West Bengal
+tirunelveli,Tirunelveli,chennai,0,Remote,8.7265,77.7226,366.2,925,TN,Tamil Nadu
+bilaspur-chhattisgarh,Bilaspur Chhattisgarh,pune,0,Remote,22.0856,82.156,491.8,540.9,CT,Chhattisgarh
+kottayam,Kottayam,coimbatore,0,Remote,9.5845,76.5326,332.6,920.1,KL,Kerala
+ajmer,Ajmer,jaipur,0,Remote,26.472,74.6365,279.1,395.9,RJ,Rajasthan
+jammu,Jammu,delhi,0,Remote,32.7167,74.8659,285.6,203.2,JK,Jammu & Kashmir
+hosur,Hosur,coimbatore,0,Remote,12.7243,77.8314,369.3,824.7,TN,Tamil Nadu
+hubli,Hubli,bangalore,0,Remote,15.356,75.1263,292.8,739.9,KA,Karnataka
+haridwar,Haridwar,delhi,0,Remote,29.9314,78.1134,377.5,293.4,UT,Uttarakhand
+sonepat,Sonepat,delhi,0,Remote,28.9888,77.0206,346.6,321.1,HR,Haryana
+chengalpattu,Chengalpattu,chennai,0,Remote,12.7822,80.0585,432.3,825.7,TN,Tamil Nadu
+valsad,Valsad,ahmedabad,0,Remote,20.3751,72.9201,230.5,582.1,DH,Dadra & Nagar Haveli and Daman & Diu
+rajahmundry,Rajahmundry,hyderabad,0,Remote,17.0071,81.789,481.4,697.3,AP,Andhra Pradesh
+ujjain,Ujjain,pune,0,Remote,23.1764,75.7932,311.8,499.1,MP,Madhya Pradesh
+karnal,Karnal,delhi,0,Remote,29.693,76.9924,345.8,299.3,HR,Haryana
+panipat,Panipat,delhi,0,Remote,29.3886,76.9712,345.2,308.7,HR,Haryana
+alappuzha,Alappuzha,coimbatore,0,Remote,9.5311,76.3365,327,921.5,KL,Kerala
+nellore,Nellore,hyderabad,0,Remote,14.4362,79.9841,430.3,774.5,AP,Andhra Pradesh
+nanded,Nanded,pune,0,Remote,19.1711,77.3063,354.5,624.8,MH,Maharashtra
+jalgaon,Jalgaon,pune,0,Remote,21.0056,75.5564,305.1,565.9,MH,Maharashtra
+bhatinda,Bhatinda,chandigarh,0,Remote,30.2156,74.9524,288.1,280.6,PB,Punjab
+kanchipuram,Kanchipuram,chennai,0,Remote,12.8287,79.7152,422.6,823.8,TN,Tamil Nadu
+aligarh,Aligarh,delhi,0,Remote,27.8931,78.0762,376.4,356.3,UP,Uttar Pradesh
+kollam,Kollam,coimbatore,0,Remote,8.9261,76.6646,336.3,925,KL,Kerala
+moradabad,Moradabad,delhi,0,Remote,28.8332,78.7661,396,328.1,UP,Uttar Pradesh
+akola,Akola,pune,0,Remote,20.7123,77.0105,346.2,576.8,MH,Maharashtra
+bikaner,Bikaner,jaipur,0,Remote,28.0166,73.3168,241.8,346.5,RJ,Rajasthan
+kannur,Kannur,coimbatore,0,Remote,11.8835,75.3837,300.1,847.6,KL,Kerala
+kurnool,Kurnool,hyderabad,0,Remote,15.8227,78.041,375.3,729.2,AP,Andhra Pradesh
+north 24 parganas,North 24 Parganas,kolkata,0,Remote,22.8227,88.6163,674.6,526.3,WB,West Bengal
+mathura,Mathura,delhi,0,Remote,27.5009,77.6632,364.7,367.9,UP,Uttar Pradesh
+udupi,Udupi,bangalore,0,Remote,13.3499,74.7561,282.3,801.5,KA,Karnataka
+anand,Anand,ahmedabad,0,Remote,22.5404,72.9302,230.8,515.2,GJ,Gujarat
+vellore,Vellore,chennai,0,Remote,12.9316,79.1315,406.1,819.9,TN,Tamil Nadu
+khammam,Khammam,hyderabad,0,Remote,17.2515,80.1477,434.9,687.7,TG,Telangana
+karimnagar,Karimnagar,hyderabad,0,Remote,18.4461,79.1254,406,649.5,TG,Telangana
+tumkur,Tumkur,bangalore,0,Remote,13.3298,77.0978,348.6,805,KA,Karnataka
+gulbarga,Gulbarga,bangalore,0,Remote,17.3362,76.8347,341.2,680.9,KA,Karnataka
+shimoga,Shimoga,bangalore,0,Remote,13.9281,75.5694,305.3,784.6,KA,Karnataka
+raigad-maharashtra,Raigad Maharashtra,pune,0,Remote,18.7913,73.3117,241.5,631.5,MH,Maharashtra
+srinagar,Srinagar,delhi,0,Remote,34.0739,74.816,284.3,161.2,JK,Jammu & Kashmir
+thanjavur,Thanjavur,chennai,0,Remote,10.7705,79.1277,406,886.7,TN,Tamil Nadu
+hassan,Hassan,bangalore,0,Remote,13.0051,76.103,320.4,813.8,KA,Karnataka
+rohtak,Rohtak,delhi,0,Remote,28.8973,76.6007,334.7,323.4,HR,Haryana
+haldwani,Haldwani,delhi,0,Remote,29.2086,79.5141,417.1,317.5,UT,Uttarakhand
+kangra,Kangra,chandigarh,0,Remote,32.1069,76.4214,329.7,224,HP,Himachal Pradesh
+jamnagar,Jamnagar,ahmedabad,0,Remote,22.4669,70.0537,149.4,513.8,GJ,Gujarat
+pathanamthitta,Pathanamthitta,coimbatore,0,Remote,9.33,76.6802,336.7,925,KL,Kerala
+muzaffarpur,Muzaffarpur,kolkata,0,Remote,26.1196,85.373,582.9,420.3,BR,Bihar
+davangere,Davangere,bangalore,0,Remote,14.451,75.9149,315.1,768.9,KA,Karnataka
+anantapur,Anantapur,hyderabad,0,Remote,14.6821,77.5946,362.7,763.9,AP,Andhra Pradesh
+alwar,Alwar,jaipur,0,Remote,27.5757,76.6438,335.9,364.3,RJ,Rajasthan
+karur,Karur,coimbatore,0,Remote,10.9581,78.0757,376.2,879.6,TN,Tamil Nadu
+dhanbad,Dhanbad,kolkata,0,Remote,23.8005,86.4294,612.7,493.3,JH,Jharkhand
+jhansi,Jhansi,delhi,0,Remote,25.4573,78.5656,390.2,432.2,UP,Uttar Pradesh
+solan,Solan,chandigarh,0,Remote,30.9257,76.9622,344.9,261.2,HP,Himachal Pradesh
+chandrapur,Chandrapur,pune,0,Remote,19.966,79.2953,410.8,602.8,MH,Maharashtra
+lonavala,Lonavala,pune,0,Remote,18.7608,73.4095,244.3,632.6,MH,Maharashtra
+saharanpur,Saharanpur,delhi,0,Remote,29.9744,77.5427,361.4,291.3,UP,Uttar Pradesh
+kakinada,Kakinada,hyderabad,0,Remote,16.9651,82.2321,493.9,699.2,AP,Andhra Pradesh
+bhavnagar,Bhavnagar,ahmedabad,0,Remote,21.7646,72.127,208,538.1,GJ,Gujarat
+dindigul,Dindigul,chennai,0,Remote,10.3604,77.9754,373.4,897.9,TN,Tamil Nadu
+cuttack,Cuttack,kolkata,0,Remote,20.4676,85.8991,597.7,595.6,OR,Odisha
+mehsana,Mehsana,ahmedabad,0,Remote,23.5943,72.3764,215.1,481.9,GJ,Gujarat
+rewa,Rewa,pune,0,Remote,24.5441,81.3065,467.8,463.9,MP,Madhya Pradesh
+kurukshetra,Kurukshetra,delhi,0,Remote,29.9726,76.8635,342.1,290.5,HR,Haryana
+hissar,Hissar,delhi,0,Remote,29.1449,75.7345,310.2,314.6,HR,Haryana
+rewari,Rewari,delhi,0,Remote,28.1989,76.6107,335,345,HR,Haryana
+beed,Beed,pune,0,Remote,18.9207,75.9084,315,630.8,MH,Maharashtra
+namakkal,Namakkal,coimbatore,0,Remote,11.2186,78.162,378.7,871.6,TN,Tamil Nadu
+ayodhya,Ayodhya,delhi,0,Remote,26.7769,82.1526,491.7,395.9,UP,Uttar Pradesh
+pollachi,Pollachi,coimbatore,0,Remote,10.6617,77.0088,346,887.4,TN,Tamil Nadu
+thoothukudi,Thoothukudi,chennai,0,Remote,8.8023,78.1229,377.5,925,TN,Tamil Nadu
+nadia,Nadia,kolkata,0,Remote,23.2657,88.5194,671.8,512.5,WB,West Bengal
+bharuch,Bharuch,ahmedabad,0,Remote,21.7197,72.9846,232.3,540.6,GJ,Gujarat
+wayanad,Wayanad,coimbatore,0,Remote,11.6697,76.1447,321.6,855.1,KL,Kerala
+bijapur-karnataka,Bijapur Karnataka,bangalore,0,Remote,16.8298,75.7141,309.5,695.1,KA,Karnataka
+idukki,Idukki,coimbatore,0,Remote,9.9054,76.9876,345.4,910.7,KL,Kerala
+bhiwadi,Bhiwadi,jaipur,0,Remote,28.2026,76.8232,341,345.1,RJ,Rajasthan
+durgapur,Durgapur,kolkata,0,Remote,23.5317,87.3206,637.9,502.7,WB,West Bengal
+shimla,Shimla,chandigarh,0,Remote,31.1028,77.1771,351,256,HP,Himachal Pradesh
+ratnagiri,Ratnagiri,pune,0,Remote,16.9953,73.3534,242.7,687.1,MH,Maharashtra
+bulandshahr,Bulandshahr,delhi,0,Remote,28.398,77.8413,369.8,340.4,UP,Uttar Pradesh
+yamunanagar,Yamunanagar,delhi,0,Remote,30.1511,77.2973,354.4,285.5,HR,Haryana
+nagercoil,Nagercoil,chennai,0,Remote,8.1896,77.4262,357.8,925,TN,Tamil Nadu
+osmanabad,Osmanabad,pune,0,Remote,18.1894,76.041,318.7,653.6,MH,Maharashtra
+jhajjar,Jhajjar,delhi,0,Remote,28.6893,76.9163,343.6,330.2,HR,Haryana
+sikar,Sikar,jaipur,0,Remote,27.6014,75.1737,294.3,361.6,RJ,Rajasthan
+chikmagalur,Chikmagalur,bangalore,0,Remote,13.3287,75.7679,311,803.4,KA,Karnataka
+satna,Satna,pune,0,Remote,24.5712,80.8055,453.6,462.4,MP,Madhya Pradesh
+kullu,Kullu,chandigarh,0,Remote,32.1188,77.1859,351.3,224.6,HP,Himachal Pradesh
+ongole,Ongole,hyderabad,0,Remote,15.5103,80.0404,431.9,741.4,AP,Andhra Pradesh
+baramati,Baramati,pune,0,Remote,18.1607,74.5837,277.5,652.6,MH,Maharashtra
+yavatmal,Yavatmal,pune,0,Remote,20.3739,78.1195,377.6,588.7,MH,Maharashtra
+cuddalore,Cuddalore,chennai,0,Remote,11.7195,79.6911,421.9,858.1,TN,Tamil Nadu
+jalna,Jalna,pune,0,Remote,19.8376,75.8935,314.6,602.4,MH,Maharashtra
+krishnagiri,Krishnagiri,coimbatore,0,Remote,12.4213,78.2228,380.4,834.5,TN,Tamil Nadu
+karad,Karad,pune,0,Remote,17.2782,74.1807,266.1,679.4,MH,Maharashtra
+asansol,Asansol,kolkata,0,Remote,23.6897,86.9584,627.7,497.4,WB,West Bengal
+rishikesh,Rishikesh,delhi,0,Remote,30.1098,78.2885,382.5,288.1,UT,Uttarakhand
+dharmapuri,Dharmapuri,coimbatore,0,Remote,12.1299,78.1541,378.5,843.5,TN,Tamil Nadu
+kadapa,Kadapa,hyderabad,0,Remote,14.4765,78.8154,397.2,771.8,AP,Andhra Pradesh
+muzaffarnagar,Muzaffarnagar,delhi,0,Remote,29.4688,77.7259,366.5,307.2,UP,Uttar Pradesh
+coorg,Coorg,bangalore,0,Remote,12.4289,75.7724,311.1,831.2,KA,Karnataka
+theni,Theni,chennai,0,Remote,10.0034,77.4683,359,908.3,TN,Tamil Nadu
+tiruvannamalai,Tiruvannamalai,chennai,0,Remote,12.2381,79.0713,404.4,841.3,TN,Tamil Nadu
+kumbakonam,Kumbakonam,chennai,0,Remote,10.9574,79.3883,413.4,881.2,TN,Tamil Nadu
+midnapore,Midnapore,kolkata,0,Remote,22.4002,87.7292,649.5,538.2,WB,West Bengal
+ooty,Ooty,coimbatore,0,Remote,11.4054,76.7089,337.6,864,TN,Tamil Nadu
+vrindavan,Vrindavan,delhi,0,Remote,27.5718,77.6742,365,365.7,UP,Uttar Pradesh
+sagar,Sagar,pune,0,Remote,23.8543,78.783,396.4,482,MP,Madhya Pradesh
+bellary,Bellary,bangalore,0,Remote,15.1483,76.9204,343.6,748.6,KA,Karnataka
+junagadh,Junagadh,ahmedabad,0,Remote,21.5147,70.446,160.5,543.7,GJ,Gujarat
+navsari,Navsari,ahmedabad,0,Remote,20.9433,72.9423,231.1,564.5,DH,Dadra & Nagar Haveli and Daman & Diu
+morbi,Morbi,ahmedabad,0,Remote,22.8199,70.838,171.6,503.9,GJ,Gujarat
+darbhanga,Darbhanga,kolkata,0,Remote,26.1355,85.9003,597.8,420.5,BR,Bihar
+tiruvallur,Tiruvallur,chennai,0,Remote,13.1364,79.9101,428.1,814.6,TN,Tamil Nadu
+roorkee,Roorkee,delhi,0,Remote,29.8729,77.88,370.9,294.9,UP,Uttar Pradesh
+nainital,Nainital,delhi,0,Remote,29.3955,79.1314,406.3,311.2,UT,Uttarakhand
+kanyakumari,Kanyakumari,chennai,0,Remote,8.1837,77.3749,356.4,925,TN,Tamil Nadu
+mahabubnagar,Mahabubnagar,hyderabad,0,Remote,16.9671,78.1863,379.4,694,TG,Telangana
+nizamabad,Nizamabad,hyderabad,0,Remote,18.6739,78.1097,377.3,641.2,TG,Telangana
+sri ganganagar-rajasthan,Sri Ganganagar Rajasthan,jaipur,0,Remote,29.906,73.8781,257.7,288.8,RJ,Rajasthan
+shirdi,Shirdi,pune,0,Remote,19.7659,74.4757,274.5,602.9,MH,Maharashtra
+dhule,Dhule,pune,0,Remote,20.9022,74.7749,282.9,568.1,MH,Maharashtra
+rudrapur,Rudrapur,delhi,0,Remote,28.9798,79.4008,413.9,324.4,UT,Uttarakhand
+ankleshwar,Ankleshwar,ahmedabad,0,Remote,21.615,73.021,233.3,543.9,GJ,Gujarat
+palnadu,Palnadu,hyderabad,0,Remote,16.2327,80.0517,432.2,719.1,AP,Andhra Pradesh
+mandya,Mandya,bangalore,0,Remote,12.5246,76.8917,342.7,829.7,KA,Karnataka
+vizianagaram,Vizianagaram,hyderabad,0,Remote,18.1182,83.4081,527.2,665.1,AP,Andhra Pradesh
+dharwad,Dharwad,bangalore,0,Remote,15.4586,75.0023,289.3,736.6,KA,Karnataka
+nalgonda,Nalgonda,hyderabad,0,Remote,17.0613,79.261,409.8,692.5,TG,Telangana
+gandhidham,Gandhidham,ahmedabad,0,Remote,23.0724,70.1062,150.9,495.2,GJ,Gujarat
+south 24 parganas,South 24 Parganas,kolkata,0,Remote,22.2777,88.2629,664.6,542.7,WB,West Bengal
+bijnor,Bijnor,delhi,0,Remote,29.3858,78.3756,384.9,310.5,UT,Uttarakhand
+virudhunagar,Virudhunagar,chennai,0,Remote,9.5205,77.9184,371.8,923.8,TN,Tamil Nadu
+chhindwara,Chhindwara,pune,0,Remote,22.0644,78.9298,400.5,537.5,MP,Madhya Pradesh
+bhagalpur,Bhagalpur,kolkata,0,Remote,25.2443,86.993,628.7,449.4,BR,Bihar
+gaya,Gaya,kolkata,0,Remote,24.7793,84.9896,572,461.2,BR,Bihar
+buldhana,Buldhana,pune,0,Remote,20.5283,76.3454,327.4,581.7,MH,Maharashtra
+bardhaman,Bardhaman,kolkata,0,Remote,23.2445,87.8678,653.4,512.3,WB,West Bengal
+bokaro,Bokaro,kolkata,0,Remote,23.6474,86.1654,605.2,497.7,JH,Jharkhand
+east godavari,East Godavari,hyderabad,0,Remote,16.9346,81.9358,485.5,699.8,AP,Andhra Pradesh
+bhilwara,Bhilwara,jaipur,0,Remote,25.3429,74.6357,279.1,430.7,RJ,Rajasthan
+parbhani,Parbhani,pune,0,Remote,19.269,76.7717,339.4,621.1,MH,Maharashtra
+hoshiarpur,Hoshiarpur,chandigarh,0,Remote,31.6705,75.6694,308.4,236.5,PB,Punjab
+uttara kannada,Uttara Kannada,bangalore,0,Remote,14.8056,74.4618,274,756.1,KA,Karnataka
+villupuram,Villupuram,chennai,0,Remote,11.9413,79.4942,416.4,851,PY,Puducherry
+kolar,Kolar,bangalore,0,Remote,13.0924,78.1319,377.8,813.7,KA,Karnataka
+chittoor,Chittoor,hyderabad,0,Remote,13.2624,79.0459,403.7,809.6,AP,Andhra Pradesh
+pathankot,Pathankot,chandigarh,0,Remote,32.2714,75.65,307.8,217.9,PB,Punjab
+eluru,Eluru,hyderabad,0,Remote,16.7116,81.1016,461.9,705.6,AP,Andhra Pradesh
+sivakasi,Sivakasi,chennai,0,Remote,9.448,77.8018,368.5,925,TN,Tamil Nadu
+deoria,Deoria,delhi,0,Remote,26.4957,83.7864,538,406.7,UP,Uttar Pradesh
+tenkasi,Tenkasi,chennai,0,Remote,8.9534,77.3125,354.6,925,TN,Tamil Nadu
+dewas,Dewas,pune,0,Remote,22.9672,76.0476,319,505.9,MP,Madhya Pradesh
+wardha,Wardha,pune,0,Remote,20.7452,78.6208,391.8,577.8,MH,Maharashtra
+alibaug,Alibaug,pune,0,Remote,18.6512,72.8787,229.3,635.3,MH,Maharashtra
+puri,Puri,kolkata,0,Remote,19.7998,85.8164,595.3,616.1,OR,Odisha
+hapur,Hapur,delhi,0,Remote,28.7308,77.7837,368.2,330,UP,Uttar Pradesh
+kasaragod,Kasaragod,coimbatore,0,Remote,12.3903,75.0693,291.2,831.5,KL,Kerala
+ratlam,Ratlam,pune,0,Remote,23.331,75.0466,290.7,493.4,MP,Madhya Pradesh
+sirsa-haryana,Sirsa Haryana,delhi,0,Remote,29.5325,75.0361,290.4,301.8,HR,Haryana
+karaikudi,Karaikudi,chennai,0,Remote,10.0733,78.7738,396,907.8,TN,Tamil Nadu
+udumalpet,Udumalpet,coimbatore,0,Remote,10.5852,77.25,352.9,890,TN,Tamil Nadu
+palwal,Palwal,delhi,0,Remote,28.1415,77.3317,355.4,347.7,HR,Haryana
+agartala,Agartala,kolkata,0,Remote,23.8348,91.2815,750,498.4,TR,Tripura
+bagalkot,Bagalkot,bangalore,0,Remote,16.1761,75.658,307.9,715.3,KA,Karnataka
+pudukkottai,Pudukkottai,chennai,0,Remote,10.3793,78.8101,397,898.4,TN,Tamil Nadu
+ranipet,Ranipet,chennai,0,Remote,12.9576,79.4656,415.6,819.5,TN,Tamil Nadu
+srikakulam,Srikakulam,hyderabad,0,Remote,18.3072,83.8999,541.1,659.8,AP,Andhra Pradesh
+perambalur,Perambalur,coimbatore,0,Remote,11.2357,78.8751,398.8,872,TN,Tamil Nadu
+mayiladuthurai,Mayiladuthurai,chennai,0,Remote,11.0987,79.6536,420.9,877.2,TN,Tamil Nadu
+samastipur,Samastipur,kolkata,0,Remote,25.8571,85.7812,594.4,428.9,BR,Bihar
+moga,Moga,chandigarh,0,Remote,30.821,75.1773,294.4,262.2,PB,Punjab
+pali-rajasthan,Pali Rajasthan,jaipur,0,Remote,25.7497,73.3244,242,416.5,RJ,Rajasthan
+katni,Katni,pune,0,Remote,23.8204,80.3863,441.7,485.1,MP,Madhya Pradesh
+jaunpur,Jaunpur,delhi,0,Remote,25.7381,82.6822,506.7,428.7,UP,Uttar Pradesh
+murshidabad,Murshidabad,kolkata,0,Remote,24.0969,88.2588,664.5,486.5,WB,West Bengal
+berhampur-odisha,Berhampur Odisha,kolkata,0,Remote,19.3112,84.8,566.6,630,OR,Odisha
+raichur,Raichur,bangalore,0,Remote,16.1952,77.3396,355.5,716.8,KA,Karnataka
+sangrur,Sangrur,chandigarh,0,Remote,30.2554,75.8434,313.3,280.5,PB,Punjab
+gurdaspur,Gurdaspur,chandigarh,0,Remote,31.8434,75.226,295.8,230.6,PB,Punjab
+rourkela,Rourkela,kolkata,0,Remote,22.2269,84.8253,567.3,539.9,OR,Odisha
+tiruchengode,Tiruchengode,coimbatore,0,Remote,11.3787,77.8921,371,866.3,TN,Tamil Nadu
+mandi,Mandi,chandigarh,0,Remote,31.6191,76.9213,343.8,239.7,HP,Himachal Pradesh
+deoghar-jharkhand,Deoghar Jharkhand,kolkata,0,Remote,24.4857,86.698,620.3,472.5,JH,Jharkhand
+barabanki,Barabanki,delhi,0,Remote,26.9252,81.1687,463.9,390.1,UP,Uttar Pradesh
+chickballapur,Chickballapur,bangalore,0,Remote,13.4291,77.7332,366.6,802.8,KA,Karnataka
+bhuj,Bhuj,ahmedabad,0,Remote,23.2408,69.6659,138.4,489.4,GJ,Gujarat
+chitradurga,Chitradurga,bangalore,0,Remote,14.2168,76.4014,328.9,776.8,KA,Karnataka
+azamgarh,Azamgarh,delhi,0,Remote,26.0655,83.1825,520.9,419.2,UP,Uttar Pradesh
+ferozepur,Ferozepur,chandigarh,0,Remote,30.9264,74.6208,278.7,258.2,PB,Punjab
+bidar,Bidar,bangalore,0,Remote,17.9126,77.5159,360.5,664,KA,Karnataka
+hazaribagh,Hazaribagh,kolkata,0,Remote,23.9931,85.3596,582.4,486,JH,Jharkhand
+west godavari,West Godavari,hyderabad,0,Remote,16.5201,81.7048,479,712.3,AP,Andhra Pradesh
+basti,Basti,delhi,0,Remote,26.8013,82.7287,508,395.9,UP,Uttar Pradesh
+purnia,Purnia,kolkata,0,Remote,25.7794,87.483,642.5,433.5,BR,Bihar
+bhimavaram,Bhimavaram,hyderabad,0,Remote,16.5447,81.5219,473.8,711.3,AP,Andhra Pradesh
+ramanathapuram,Ramanathapuram,chennai,0,Remote,9.3667,78.8313,397.6,925,TN,Tamil Nadu
+sangamner,Sangamner,pune,0,Remote,19.574,74.2078,266.9,608.5,MH,Maharashtra
+pandharpur,Pandharpur,pune,0,Remote,17.6756,75.3261,298.5,668.5,MH,Maharashtra
+dhar,Dhar,pune,0,Remote,22.5965,75.5148,303.9,516.7,MP,Madhya Pradesh
+korba,Korba,pune,0,Remote,22.3633,82.7133,507.6,533,CT,Chhattisgarh
+ichalkaranji,Ichalkaranji,pune,0,Remote,16.6964,74.4602,274,697.7,MH,Maharashtra
+ropar,Ropar,chandigarh,0,Remote,30.9651,76.5233,332.5,259.4,PB,Punjab
+kallakurichi,Kallakurichi,coimbatore,0,Remote,11.7305,78.9638,401.4,856.8,TN,Tamil Nadu
+washim,Washim,pune,0,Remote,20.1221,77.1307,349.6,595.2,MH,Maharashtra
+dharamshala,Dharamshala,chandigarh,0,Remote,32.2168,76.3241,326.9,220.5,HP,Himachal Pradesh
+raebareli,Raebareli,delhi,0,Remote,26.223,81.2549,466.3,411.9,UP,Uttar Pradesh
+unnao,Unnao,delhi,0,Remote,26.5313,80.4785,444.4,401.4,UP,Uttar Pradesh
+jind,Jind,delhi,0,Remote,29.3248,76.3139,326.6,309.8,HR,Haryana
+mahabaleshwar,Mahabaleshwar,pune,0,Remote,17.924,73.6586,251.3,658.7,MH,Maharashtra
+bhiwani,Bhiwani,delhi,0,Remote,28.8021,76.1336,321.5,325.7,HR,Haryana
+ramanagara,Ramanagara,bangalore,0,Remote,12.6487,77.3489,355.7,826.4,KA,Karnataka
+hospet,Hospet,bangalore,0,Remote,15.2731,76.3854,328.5,744.1,KA,Karnataka
+kashipur,Kashipur,delhi,0,Remote,29.2107,78.9638,401.6,316.7,UP,Uttar Pradesh
+betul,Betul,pune,0,Remote,21.9013,77.9022,371.4,541.2,MP,Madhya Pradesh
+nadiad,Nadiad,ahmedabad,0,Remote,22.6896,72.8708,229.1,510.5,GJ,Gujarat
+kaithal,Kaithal,delhi,0,Remote,29.7987,76.4091,329.3,295.3,HR,Haryana
+hamirpur-himachal pradesh,Hamirpur Himachal Pradesh,chandigarh,0,Remote,31.6884,76.5192,332.4,237.1,HP,Himachal Pradesh
+surguja,Surguja,pune,0,Remote,23.1341,83.1808,520.8,509.8,CT,Chhattisgarh
+una-himachal pradesh,Una Himachal Pradesh,chandigarh,0,Remote,31.484,76.2527,324.9,243,HP,Himachal Pradesh
+etawah,Etawah,delhi,0,Remote,26.7845,79.0207,403.1,391.7,UP,Uttar Pradesh
+jalpaiguri,Jalpaiguri,kolkata,0,Remote,26.564,88.7666,678.9,410.9,WB,West Bengal
+kushinagar,Kushinagar,delhi,0,Remote,26.7469,83.9146,541.6,399.1,UP,Uttar Pradesh
+sindhudurg,Sindhudurg,pune,0,Remote,16.2659,73.6868,252.1,710,MH,Maharashtra
+nalanda,Nalanda,kolkata,0,Remote,25.1985,85.5126,586.8,448.9,BR,Bihar
+chittorgarh,Chittorgarh,jaipur,0,Remote,24.8836,74.6247,278.7,444.9,RJ,Rajasthan
+vaishali,Vaishali,kolkata,0,Remote,25.6932,85.2152,578.4,433.3,BR,Bihar
+gobichettipalayam,Gobichettipalayam,coimbatore,0,Remote,11.4521,77.4329,358,863.5,TN,Tamil Nadu
+firozabad,Firozabad,delhi,0,Remote,27.1646,78.3926,385.4,379.2,UP,Uttar Pradesh
+nagaur,Nagaur,jaipur,0,Remote,27.0371,74.7321,281.8,378.5,RJ,Rajasthan
+raigarh-chhattisgarh,Raigarh Chhattisgarh,pune,0,Remote,21.8977,83.3876,526.6,548.3,CT,Chhattisgarh
+fatehgarh sahib,Fatehgarh Sahib,chandigarh,0,Remote,30.6411,76.3856,328.6,269.2,PB,Punjab
+balaghat,Balaghat,pune,0,Remote,21.8126,80.1884,436.1,546.8,MP,Madhya Pradesh
+hoshangabad,Hoshangabad,pune,0,Remote,22.7513,77.7262,366.5,514.7,MP,Madhya Pradesh
+kodaikanal,Kodaikanal,chennai,0,Remote,10.2427,77.4901,359.6,900.9,TN,Tamil Nadu
+sultanpur,Sultanpur,delhi,0,Remote,26.253,82.0718,489.5,412,UP,Uttar Pradesh
+panchmahal,Panchmahal,ahmedabad,0,Remote,22.7741,73.6119,250.1,508.8,GJ,Gujarat
+mancherial,Mancherial,hyderabad,0,Remote,18.8771,79.4487,415.2,636.6,TG,Telangana
+begusarai,Begusarai,kolkata,0,Remote,25.4281,86.1252,604.1,442.6,BR,Bihar
+gondia,Gondia,pune,0,Remote,21.4559,80.1947,436.3,557.9,MH,Maharashtra
+jhunjhunu,Jhunjhunu,jaipur,0,Remote,28.1277,75.3981,300.7,345.7,RJ,Rajasthan
+nandyal,Nandyal,hyderabad,0,Remote,15.4817,78.4854,387.9,740.3,AP,Andhra Pradesh
+kalka,Kalka,chandigarh,0,Remote,30.8117,76.9207,343.8,264.6,HR,Haryana
+suryapet,Suryapet,hyderabad,0,Remote,17.0006,79.9589,429.6,695.2,TG,Telangana
+tiruvarur,Tiruvarur,chennai,0,Remote,10.7649,79.6298,420.2,887.5,TN,Tamil Nadu
+malda,Malda,kolkata,0,Remote,24.9967,88.1392,661.1,458.5,WB,West Bengal
+vidisha,Vidisha,pune,0,Remote,23.5219,77.8127,368.9,491,MP,Madhya Pradesh
+rasipuram,Rasipuram,coimbatore,0,Remote,11.4596,78.1906,379.5,864.2,TN,Tamil Nadu
+siwan,Siwan,kolkata,0,Remote,26.2168,84.3623,554.3,416,BR,Bihar
+jyotiba phule nagar,Jyotiba Phule Nagar,delhi,0,Remote,28.8022,78.2626,381.7,328.4,UP,Uttar Pradesh
+jaisalmer,Jaisalmer,jaipur,0,Remote,26.9132,70.9125,173.7,377.5,RJ,Rajasthan
+khandwa,Khandwa,pune,0,Remote,21.8267,76.3453,327.4,541.5,MP,Madhya Pradesh
+sonbhadra,Sonbhadra,delhi,0,Remote,24.6698,83.0595,517.4,462.2,UP,Uttar Pradesh
+phagwara,Phagwara,chandigarh,0,Remote,31.2218,75.7709,311.2,250.5,PB,Punjab
+sambalpur,Sambalpur,kolkata,0,Remote,21.4824,83.9814,543.4,561.8,OR,Odisha
+khanna,Khanna,chandigarh,0,Remote,30.7044,76.2198,323.9,267.1,PB,Punjab
+shahdol,Shahdol,pune,0,Remote,23.2957,81.3669,469.5,502.5,MP,Madhya Pradesh
+bhojpur,Bhojpur,kolkata,0,Remote,25.5656,84.6685,562.9,436.5,BR,Bihar
+gangtok,Gangtok,kolkata,0,Remote,27.3286,88.609,674.4,387,SK,Sikkim
+kovilpatti,Kovilpatti,chennai,0,Remote,9.1738,77.8627,370.2,925,TN,Tamil Nadu
+shahjahanpur,Shahjahanpur,delhi,0,Remote,27.8751,79.9107,428.3,359.2,UP,Uttar Pradesh
+krishna,Krishna,hyderabad,0,Remote,16.5223,80.7119,450.9,711,AP,Andhra Pradesh
+himatnagar,Himatnagar,ahmedabad,0,Remote,23.5931,72.9615,231.7,482.7,GJ,Gujarat
+palani,Palani,chennai,0,Remote,10.4495,77.5189,360.5,894.6,TN,Tamil Nadu
+guna,Guna,pune,0,Remote,24.6471,77.3106,354.7,455.6,MP,Madhya Pradesh
+chhatarpur,Chhatarpur,pune,0,Remote,24.9106,79.5855,419.1,450.4,MP,Madhya Pradesh
+silvassa,Silvassa,ahmedabad,0,Remote,20.274,73.002,232.8,585.3,DH,Dadra & Nagar Haveli and Daman & Diu
+madhubani,Madhubani,kolkata,0,Remote,26.3533,86.074,602.7,414,BR,Bihar
+barmer,Barmer,jaipur,0,Remote,25.7523,71.421,188.1,414,RJ,Rajasthan
+rajnandgaon,Rajnandgaon,pune,0,Remote,21.0955,81.0338,460,570.1,CT,Chhattisgarh
+farrukhabad,Farrukhabad,delhi,0,Remote,27.3702,79.604,419.6,374.4,UP,Uttar Pradesh
+sivaganga,Sivaganga,chennai,0,Remote,9.8473,78.5534,389.7,914.5,TN,Tamil Nadu
+baghpat,Baghpat,delhi,0,Remote,29.0391,77.2469,353,319.8,UP,Uttar Pradesh
+kharagpur,Kharagpur,kolkata,0,Remote,22.3428,87.3351,638.3,539.5,WB,West Bengal
+mirzapur,Mirzapur,delhi,0,Remote,25.1493,82.5708,503.6,446.7,UP,Uttar Pradesh
+pratapgarh-uttar pradesh,Pratapgarh Uttar Pradesh,delhi,0,Remote,25.9184,81.9937,487.2,422.3,UP,Uttar Pradesh
+karaikal,Karaikal,chennai,0,Remote,10.9278,79.8318,425.9,882.7,TN,Tamil Nadu
+rohtas,Rohtas,kolkata,0,Remote,24.953,84.0278,544.8,454.7,BR,Bihar
+malegaon,Malegaon,pune,0,Remote,20.5491,74.5187,275.7,578.7,MH,Maharashtra
+perundurai,Perundurai,coimbatore,0,Remote,11.2814,77.5842,362.3,869,TN,Tamil Nadu
+daman,Daman,ahmedabad,0,Remote,20.4192,72.8436,228.3,580.6,DH,Dadra & Nagar Haveli and Daman & Diu
+gadag,Gadag,bangalore,0,Remote,15.4303,75.6366,307.3,738.3,KA,Karnataka
+bankura,Bankura,kolkata,0,Remote,23.2126,87.0705,630.8,512.3,WB,West Bengal
+bharatpur,Bharatpur,jaipur,0,Remote,27.213,77.4819,359.6,376.6,RJ,Rajasthan
+siddipet,Siddipet,hyderabad,0,Remote,18.0932,78.8516,398.3,660.1,TG,Telangana
+sehore,Sehore,pune,0,Remote,23.185,77.0638,347.7,500.5,MP,Madhya Pradesh
+saran,Saran,kolkata,0,Remote,25.7823,84.7467,565.1,429.9,BR,Bihar
+dharapuram,Dharapuram,coimbatore,0,Remote,10.7329,77.5222,360.6,885.8,TN,Tamil Nadu
+bhandara,Bhandara,pune,0,Remote,21.1642,79.6477,420.8,566.2,MH,Maharashtra
+haveri,Haveri,bangalore,0,Remote,14.6999,75.4781,302.8,760.7,KA,Karnataka
+ballia,Ballia,delhi,0,Remote,25.7641,84.1505,548.3,429.8,UP,Uttar Pradesh
+madanapalle,Madanapalle,hyderabad,0,Remote,13.5581,78.5028,388.3,799.8,AP,Andhra Pradesh
+palanpur,Palanpur,ahmedabad,0,Remote,24.175,72.425,216.5,464,GJ,Gujarat
+amreli,Amreli,ahmedabad,0,Remote,21.5975,71.2244,182.5,542.2,GJ,Gujarat
+tenali,Tenali,hyderabad,0,Remote,16.2404,80.6482,449.1,719.6,AP,Andhra Pradesh
+chidambaram,Chidambaram,chennai,0,Remote,11.398,79.6947,422,868,TN,Tamil Nadu
+balasore,Balasore,kolkata,0,Remote,21.5076,86.9225,626.6,564.8,OR,Odisha
+dibrugarh,Dibrugarh,kolkata,0,Remote,27.4733,94.914,852.8,390.5,AS,Assam
+muktsar,Muktsar,chandigarh,0,Remote,30.2547,74.5082,275.5,278.8,PB,Punjab
+rampur,Rampur,delhi,0,Remote,28.7961,79.023,403.2,329.6,UP,Uttar Pradesh
+hingoli,Hingoli,pune,0,Remote,19.7174,77.1482,350.1,607.7,MH,Maharashtra
+dausa,Dausa,jaipur,0,Remote,26.9521,76.5986,334.6,383.5,RJ,Rajasthan
+motihari,Motihari,kolkata,0,Remote,26.6478,84.9122,569.8,403.4,BR,Bihar
+mandsaur,Mandsaur,pune,0,Remote,24.071,75.0704,291.3,470.6,MP,Madhya Pradesh
+silchar,Silchar,kolkata,0,Remote,24.811,92.797,792.9,470.1,AS,Assam
+nawanshahr,Nawanshahr,chandigarh,0,Remote,31.1334,76.0655,319.6,253.6,PB,Punjab
+bhusawal,Bhusawal,pune,0,Remote,21.0435,75.7837,311.5,565,MH,Maharashtra
+prakasam,Prakasam,hyderabad,0,Remote,15.7327,79.2824,410.4,733.6,AP,Andhra Pradesh
+bastar,Bastar,pune,0,Remote,19.0865,82.0244,488,633.4,CT,Chhattisgarh
+medak,Medak,hyderabad,0,Remote,17.6321,78.2776,382,673.6,TG,Telangana
+tanuku,Tanuku,hyderabad,0,Remote,16.7556,81.6857,478.4,705,AP,Andhra Pradesh
+gonda,Gonda,delhi,0,Remote,27.1384,81.9685,486.5,384.5,UP,Uttar Pradesh
+sitamarhi,Sitamarhi,kolkata,0,Remote,26.592,85.5037,586.6,405.9,BR,Bihar
+hanumangarh,Hanumangarh,jaipur,0,Remote,29.6053,74.291,269.3,298.6,RJ,Rajasthan
+narsinghpur,Narsinghpur,pune,0,Remote,22.9336,79.1806,407.6,510.9,MP,Madhya Pradesh
+sangareddy,Sangareddy,hyderabad,0,Remote,17.6063,78.0814,376.5,674.1,TG,Telangana
+tindivanam,Tindivanam,chennai,0,Remote,12.2314,79.6508,420.8,842.2,TN,Tamil Nadu
+darjeeling,Darjeeling,kolkata,0,Remote,27.0322,88.264,664.7,395.8,WB,West Bengal
+thalassery,Thalassery,coimbatore,0,Remote,11.7502,75.494,303.2,851.8,KL,Kerala
+nandurbar,Nandurbar,pune,0,Remote,21.3875,74.2474,268,552.5,MH,Maharashtra
+veraval,Veraval,ahmedabad,0,Remote,20.9103,70.3651,158.2,562.3,GJ,Gujarat
+kapurthala,Kapurthala,chandigarh,0,Remote,31.3802,75.3836,300.3,245.1,PB,Punjab
+bhadohi,Bhadohi,delhi,0,Remote,25.3115,82.5152,502,441.7,UP,Uttar Pradesh
+daund,Daund,pune,0,Remote,18.46,74.5754,277.3,643.3,MH,Maharashtra
+singrauli,Singrauli,pune,0,Remote,24.0747,82.6215,505,480,MP,Madhya Pradesh
+chirala,Chirala,hyderabad,0,Remote,15.8221,80.3571,440.8,732.2,AP,Andhra Pradesh
+jorhat,Jorhat,kolkata,0,Remote,26.7571,94.2143,833,411.8,AS,Assam
+ghazipur,Ghazipur,delhi,0,Remote,25.5779,83.5616,531.6,434.8,UP,Uttar Pradesh
+shrirampur,Shrirampur,pune,0,Remote,19.6187,74.6554,279.6,607.6,MH,Maharashtra
+churu,Churu,jaipur,0,Remote,27.6977,74.4688,274.4,357.8,RJ,Rajasthan
+ramgarh-jharkhand,Ramgarh Jharkhand,kolkata,0,Remote,23.6281,85.5175,586.9,497.5,JH,Jharkhand
+chandauli,Chandauli,delhi,0,Remote,25.2788,83.2149,521.8,443.6,UP,Uttar Pradesh
+rameswaram,Rameswaram,chennai,0,Remote,9.2869,79.3145,411.3,925,TN,Tamil Nadu
+hardoi,Hardoi,delhi,0,Remote,27.3947,80.1263,434.4,374.3,UP,Uttar Pradesh
+mau,Mau,delhi,0,Remote,25.9328,83.566,531.7,423.8,UP,Uttar Pradesh
+sitapur,Sitapur,delhi,0,Remote,27.5658,80.6813,450.1,369.7,UP,Uttar Pradesh
+buxar,Buxar,kolkata,0,Remote,25.5712,83.9817,543.5,435.5,BR,Bihar
+pauri,Pauri,delhi,0,Remote,29.7512,78.5203,389,299.4,UT,Uttarakhand
+lakhimpur kheri,Lakhimpur Kheri,delhi,0,Remote,27.9463,80.7783,452.9,358.1,UT,Uttarakhand
+seoni,Seoni,pune,0,Remote,22.0849,79.5512,418.1,537.6,MP,Madhya Pradesh
+dwarka-gujarat,Dwarka Gujarat,ahmedabad,0,Remote,22.2425,68.969,118.7,519.4,GJ,Gujarat
+katihar,Katihar,kolkata,0,Remote,25.5417,87.5689,645,440.9,BR,Bihar
+shajapur,Shajapur,pune,0,Remote,23.8417,76.2371,324.3,479.1,MP,Madhya Pradesh
+katra,Katra,delhi,0,Remote,32.9908,74.9324,287.5,194.8,JK,Jammu & Kashmir
+ariyalur,Ariyalur,chennai,0,Remote,11.1344,79.1233,405.9,875.4,TN,Tamil Nadu
+chamarajanagar,Chamarajanagar,bangalore,0,Remote,11.9292,76.9407,344.1,848.1,KA,Karnataka
+mussoorie,Mussoorie,delhi,0,Remote,30.4577,78.0771,376.5,277,UT,Uttarakhand
+hathras,Hathras,delhi,0,Remote,27.5968,78.0503,375.7,365.4,UP,Uttar Pradesh
+jajpur,Jajpur,kolkata,0,Remote,20.9477,86.132,604.3,581.1,OR,Odisha
+jalaun,Jalaun,delhi,0,Remote,26,79.4526,415.3,416.5,UP,Uttar Pradesh
+mandla,Mandla,pune,0,Remote,22.6016,80.3716,441.3,522.7,MP,Madhya Pradesh
+surendra nagar-gujarat,Surendra Nagar Gujarat,ahmedabad,0,Remote,22.7098,71.6309,194,508.3,GJ,Gujarat
+cooch behar,Cooch Behar,kolkata,0,Remote,26.3255,89.4509,698.2,419.1,WB,West Bengal
+purulia,Purulia,kolkata,0,Remote,23.3296,86.362,610.8,507.8,WB,West Bengal
+morena,Morena,pune,0,Remote,26.5002,77.997,374.2,399.2,MP,Madhya Pradesh
+jalore,Jalore,jaipur,0,Remote,25.3391,72.6077,221.7,428.3,RJ,Rajasthan
+mainpuri,Mainpuri,delhi,0,Remote,27.2272,79.0375,403.6,378.1,UP,Uttar Pradesh
+bolpur,Bolpur,kolkata,0,Remote,23.6657,87.6857,648.3,499.1,WB,West Bengal
+tirupattur,Tirupattur,chennai,0,Remote,12.574,78.5695,390.2,830.3,TN,Tamil Nadu
+gopalganj,Gopalganj,kolkata,0,Remote,26.4355,84.4409,556.5,409.4,BR,Bihar
+giridih,Giridih,kolkata,0,Remote,24.1886,86.3062,609.2,481.2,JH,Jharkhand
+barnala,Barnala,chandigarh,0,Remote,30.3695,75.5465,304.9,276.6,PB,Punjab
+west champaran,West Champaran,kolkata,0,Remote,26.8037,84.5132,558.5,398.1,BR,Bihar
+narnaul,Narnaul,delhi,0,Remote,28.0532,76.1064,320.7,348.9,HR,Haryana
+kutch,Kutch,ahmedabad,0,Remote,23.1215,70.0323,148.8,493.6,GJ,Gujarat
+pushkar,Pushkar,jaipur,0,Remote,26.4892,74.5537,276.7,395.2,RJ,Rajasthan
+fatehpur-uttar pradesh,Fatehpur Uttar Pradesh,delhi,0,Remote,25.9265,80.8026,453.5,420.5,UP,Uttar Pradesh
+ambedkar nagar,Ambedkar Nagar,delhi,0,Remote,26.442,82.6426,505.6,406.9,UP,Uttar Pradesh
+machilipatnam,Machilipatnam,hyderabad,0,Remote,16.1828,81.132,462.8,722,AP,Andhra Pradesh
+saharsa,Saharsa,kolkata,0,Remote,25.8775,86.5966,617.5,429.3,BR,Bihar
+rajsamand,Rajsamand,jaipur,0,Remote,25.0621,73.8733,257.5,438.5,RJ,Rajasthan
+maharajganj,Maharajganj,delhi,0,Remote,27.1455,83.5497,531.3,386.3,UP,Uttar Pradesh
+proddatur,Proddatur,hyderabad,0,Remote,14.749,78.5544,389.8,763,AP,Andhra Pradesh
+damoh,Damoh,pune,0,Remote,23.833,79.4366,414.9,483.5,MP,Madhya Pradesh
+shillong,Shillong,kolkata,0,Remote,25.577,91.8849,767.1,445.3,ML,Meghalaya
+neemuch,Neemuch,pune,0,Remote,24.4615,74.8679,285.6,458.3,MP,Madhya Pradesh
+shamli,Shamli,delhi,0,Remote,29.45,77.302,354.5,307.2,UP,Uttar Pradesh
+fatehabad-haryana,Fatehabad Haryana,delhi,0,Remote,29.5141,75.4561,302.3,302.9,HR,Haryana
+panchgani,Panchgani,pune,0,Remote,17.9235,73.7999,255.3,658.9,MH,Maharashtra
+akkalkot,Akkalkot,pune,0,Remote,17.5263,76.2042,323.3,674.2,MH,Maharashtra
+patan-gujarat,Patan Gujarat,ahmedabad,0,Remote,23.8525,72.1294,208.1,473.6,GJ,Gujarat
+koppal,Koppal,bangalore,0,Remote,15.4269,76.3875,328.5,739.3,KA,Karnataka
+budaun,Budaun,delhi,0,Remote,28.0364,79.1255,406.1,353.2,UP,Uttar Pradesh
+neyveli,Neyveli,chennai,0,Remote,11.6177,79.5202,417.1,861,TN,Tamil Nadu
+peddapalli,Peddapalli,hyderabad,0,Remote,18.63,79.3879,413.4,644.2,TG,Telangana
+malvan,Malvan,pune,0,Remote,16.0548,73.4808,246.3,716.3,MH,Maharashtra
+sant kabir nagar,Sant Kabir Nagar,delhi,0,Remote,26.7668,83.0611,517.4,397.4,UP,Uttar Pradesh
+alipurduar,Alipurduar,kolkata,0,Remote,26.658,89.3876,696.4,408.7,WB,West Bengal
+khargone,Khargone,pune,0,Remote,22.125,75.6727,308.4,531.5,MP,Madhya Pradesh
+angul,Angul,kolkata,0,Remote,20.8444,85.1496,576.5,583,OR,Odisha
+nagapattinam,Nagapattinam,chennai,0,Remote,10.7704,79.8407,426.2,887.6,TN,Tamil Nadu
+pattukottai,Pattukottai,chennai,0,Remote,10.4236,79.3184,411.4,897.6,TN,Tamil Nadu
+munnar,Munnar,coimbatore,0,Remote,10.0871,77.0618,347.5,905.2,KL,Kerala
+harda,Harda,pune,0,Remote,22.3382,77.0905,348.5,526.7,MP,Madhya Pradesh
+indapur,Indapur,pune,0,Remote,18.1159,75.0226,289.9,654.5,MH,Maharashtra
+sonitpur,Sonitpur,kolkata,0,Remote,26.65,92.7967,792.9,413.3,AS,Assam
+banaskantha,Banaskantha,ahmedabad,0,Remote,24.2851,72.1859,209.7,460.3,GJ,Gujarat
+etah,Etah,delhi,0,Remote,27.5605,78.6535,392.8,367.3,UP,Uttar Pradesh
+bahraich,Bahraich,delhi,0,Remote,27.5768,81.5884,475.8,370.5,UP,Uttar Pradesh
+birbhum,Birbhum,kolkata,0,Remote,24.1181,87.7836,651,485.2,WB,West Bengal
+kavali,Kavali,hyderabad,0,Remote,14.9099,79.992,430.5,759.9,AP,Andhra Pradesh
+burhanpur,Burhanpur,pune,0,Remote,21.3101,76.2256,324,557.4,MP,Madhya Pradesh
+yercaud,Yercaud,coimbatore,0,Remote,11.7808,78.2113,380.1,854.3,TN,Tamil Nadu
+porbandar,Porbandar,ahmedabad,0,Remote,21.6409,69.6097,136.8,538.8,GJ,Gujarat
+bilaspur-himachal pradesh,Bilaspur Himachal Pradesh,chandigarh,0,Remote,31.4364,76.713,337.9,245.1,HP,Himachal Pradesh
+dapoli,Dapoli,pune,0,Remote,17.7602,73.1251,236.2,663.1,MH,Maharashtra
+mundra,Mundra,ahmedabad,0,Remote,22.843,69.7293,140.2,501.8,GJ,Gujarat
+amalapuram,Amalapuram,hyderabad,0,Remote,16.5764,82.0046,487.4,710.9,AP,Andhra Pradesh
+sambhal,Sambhal,delhi,0,Remote,28.5526,78.5733,390.5,336.5,UP,Uttar Pradesh
+tadepalligudem,Tadepalligudem,hyderabad,0,Remote,16.817,81.527,473.9,702.9,AP,Andhra Pradesh
+tinsukia,Tinsukia,kolkata,0,Remote,27.4888,95.3624,865.5,390.6,AS,Assam
+aurangabad-bihar,Aurangabad Bihar,kolkata,0,Remote,24.7515,84.361,554.2,461.3,BR,Bihar
+sawai madhopur,Sawai Madhopur,jaipur,0,Remote,26.0184,76.3597,327.8,412,RJ,Rajasthan
+vriddhachalam,Vriddhachalam,chennai,0,Remote,11.5189,79.3255,411.6,863.8,TN,Tamil Nadu
+faridkot,Faridkot,chandigarh,0,Remote,30.6764,74.7599,282.6,266.1,PB,Punjab
+mahendergarh,Mahendergarh,delhi,0,Remote,28.2678,76.1507,322,342.3,HR,Haryana
+palamu,Palamu,kolkata,0,Remote,24.0414,84.0634,545.8,482.9,BR,Bihar
+koraput,Koraput,kolkata,0,Remote,18.8118,82.712,507.5,642.8,OR,Odisha
+kheda,Kheda,ahmedabad,0,Remote,22.7536,72.8411,228.3,508.5,GJ,Gujarat
+jagtial,Jagtial,hyderabad,0,Remote,18.7928,78.9202,400.2,638.5,TG,Telangana
+bhavani,Bhavani,coimbatore,0,Remote,11.4449,77.6837,365.1,864,TN,Tamil Nadu
+nilgiri,Nilgiri,coimbatore,0,Remote,11.4185,76.8642,342,863.8,TN,Tamil Nadu
+jharsuguda,Jharsuguda,kolkata,0,Remote,21.8694,84.0177,544.5,549.9,OR,Odisha
+port blair,Port Blair,hyderabad,0,Remote,11.6333,92.7245,790.7,877.2,AN,Andaman & Nicobar
+sawantwadi,Sawantwadi,pune,0,Remote,15.864,73.7996,255.3,722.6,MH,Maharashtra
+bhind,Bhind,pune,0,Remote,26.5641,78.7845,396.5,398.2,MP,Madhya Pradesh
+coonoor,Coonoor,coimbatore,0,Remote,11.349,76.7944,340,865.9,TN,Tamil Nadu
+kannauj,Kannauj,delhi,0,Remote,27.0557,79.909,428.3,384.5,UP,Uttar Pradesh
+pilibhit,Pilibhit,delhi,0,Remote,28.6251,79.8118,425.5,335.9,UT,Uttarakhand
+abu road,Abu Road,jaipur,0,Remote,24.4831,72.7837,226.6,455,RJ,Rajasthan
+datia,Datia,pune,0,Remote,25.6676,78.459,387.2,425.5,MP,Madhya Pradesh
+kangayam,Kangayam,coimbatore,0,Remote,11.0043,77.5608,361.7,877.5,TN,Tamil Nadu
+srivilliputtur,Srivilliputtur,chennai,0,Remote,9.5135,77.6321,363.7,923.6,TN,Tamil Nadu
+dhamtari,Dhamtari,pune,0,Remote,20.7062,81.55,474.6,582.7,CT,Chhattisgarh
+mount abu,Mount Abu,jaipur,0,Remote,24.5888,72.7135,224.7,451.6,RJ,Rajasthan
+saswad,Saswad,pune,0,Remote,18.3477,74.0286,261.8,646.1,MH,Maharashtra
+mannargudi,Mannargudi,chennai,0,Remote,10.6635,79.4484,415.1,890.4,TN,Tamil Nadu
+tikamgarh,Tikamgarh,pune,0,Remote,24.9352,78.8075,397.1,448.6,MP,Madhya Pradesh
+sidhi,Sidhi,pune,0,Remote,24.41,81.8762,483.9,468.7,MP,Madhya Pradesh
+mahabalipuram,Mahabalipuram,chennai,0,Remote,12.6313,80.1983,436.3,830.5,TN,Tamil Nadu
+tarn taran,Tarn Taran,chandigarh,0,Remote,31.4582,74.923,287.3,242.1,PB,Punjab
+adilabad,Adilabad,hyderabad,0,Remote,19.6678,78.5288,389.1,611,TG,Telangana
+shivpuri,Shivpuri,pune,0,Remote,25.4258,77.655,364.5,432,MP,Madhya Pradesh
+auraiya,Auraiya,delhi,0,Remote,26.4758,79.5106,417,401.9,UP,Uttar Pradesh
+gadchiroli,Gadchiroli,pune,0,Remote,20.1836,79.9943,430.6,596.9,MH,Maharashtra
+hindupur,Hindupur,hyderabad,0,Remote,13.8291,77.4949,359.8,790.1,AP,Andhra Pradesh
+gudivada,Gudivada,hyderabad,0,Remote,16.4351,80.9928,458.8,714,AP,Andhra Pradesh
+yeola,Yeola,pune,0,Remote,20.0415,74.4868,274.8,594.4,MH,Maharashtra
+itarsi,Itarsi,pune,0,Remote,22.6096,77.768,367.6,519.2,MP,Madhya Pradesh
+dahod,Dahod,ahmedabad,0,Remote,22.8381,74.2509,268.1,507.6,GJ,Gujarat
+keonjhar,Keonjhar,kolkata,0,Remote,21.6378,85.6108,589.5,559.1,OR,Odisha
+leh ladakh,Leh Ladakh,delhi,0,Remote,34.1606,77.5843,362.6,162,LA,Ladakh
+panruti,Panruti,chennai,0,Remote,11.7703,79.5511,418,856.3,TN,Tamil Nadu
+tiruchendur,Tiruchendur,chennai,0,Remote,8.4997,78.1188,377.4,925,TN,Tamil Nadu
+sidhart nagar,Sidhart Nagar,delhi,0,Remote,27.2315,82.9309,513.8,382.9,UP,Uttar Pradesh
+janjgir champa,Janjgir Champa,pune,0,Remote,22.0141,82.5784,503.7,543.6,CT,Chhattisgarh
+nathdwara,Nathdwara,jaipur,0,Remote,24.9298,73.8213,256,442.5,RJ,Rajasthan
+puttur,Puttur,bangalore,0,Remote,12.7609,75.2011,294.9,820.2,KA,Karnataka
+mayurbhanj,Mayurbhanj,kolkata,0,Remote,21.9356,86.7284,621.2,551.3,OR,Odisha
+haldia,Haldia,kolkata,0,Remote,22.0736,88.1127,660.3,548.8,WB,West Bengal
+sirohi,Sirohi,jaipur,0,Remote,24.8452,72.8604,228.8,443.9,RJ,Rajasthan
+bapatla,Bapatla,hyderabad,0,Remote,15.9042,80.4725,444.1,729.8,AP,Andhra Pradesh
+bhadrak,Bhadrak,kolkata,0,Remote,21.0705,86.5068,614.9,577.8,OR,Odisha
+khurda,Khurda,kolkata,0,Remote,20.1629,85.6181,589.7,604.7,OR,Odisha
+aruppukottai,Aruppukottai,chennai,0,Remote,9.5124,78.1014,376.9,924.3,TN,Tamil Nadu
+nawada,Nawada,kolkata,0,Remote,24.8911,85.54,587.6,458.5,BR,Bihar
+munger,Munger,kolkata,0,Remote,25.3648,86.4876,614.4,445,BR,Bihar
+rajgarh,Rajgarh,pune,0,Remote,23.8969,76.8991,343.1,478.3,MP,Madhya Pradesh
+east champaran,East Champaran,kolkata,0,Remote,26.969,84.8467,568,393.4,BR,Bihar
+udham singh nagar,Udham Singh Nagar,delhi,0,Remote,28.9358,79.7022,422.4,326.1,UT,Uttarakhand
+almora,Almora,delhi,0,Remote,29.6333,79.6587,421.2,304.5,UT,Uttarakhand
+banda,Banda,delhi,0,Remote,25.4774,80.3366,440.4,433.8,UP,Uttar Pradesh
+kaushambi,Kaushambi,delhi,0,Remote,25.5217,81.3771,469.8,433.7,UP,Uttar Pradesh
+ambur,Ambur,chennai,0,Remote,12.7832,78.7163,394.4,824,TN,Tamil Nadu
+lalitpur,Lalitpur,delhi,0,Remote,24.6908,78.4083,385.8,455.7,UP,Uttar Pradesh
+gudiyattam,Gudiyattam,chennai,0,Remote,12.9451,78.8674,398.6,819.2,TN,Tamil Nadu
+rudraprayag,Rudraprayag,delhi,0,Remote,30.5443,79.027,403.4,275.6,UT,Uttarakhand
+anakapalle,Anakapalle,hyderabad,0,Remote,17.6888,83.0038,515.7,677.8,AP,Andhra Pradesh
+dinajpur,Dinajpur,kolkata,0,Remote,25.3677,88.6443,675.4,447.7,WB,West Bengal
+raisen,Raisen,pune,0,Remote,23.3315,77.7867,368.2,496.9,MP,Madhya Pradesh
+kotkapura,Kotkapura,chandigarh,0,Remote,30.5827,74.8237,284.4,269.1,PB,Punjab
+tuni,Tuni,hyderabad,0,Remote,17.3573,82.5445,502.7,687.5,AP,Andhra Pradesh
+yadgir,Yadgir,bangalore,0,Remote,16.7491,77.129,349.5,699.4,KA,Karnataka
+anantnag,Anantnag,delhi,0,Remote,33.7375,75.1502,293.7,172,JK,Jammu & Kashmir
+amethi,Amethi,delhi,0,Remote,26.2052,81.7116,479.3,413,UP,Uttar Pradesh
+charkhi dadri,Charkhi Dadri,delhi,0,Remote,28.595,76.2705,325.3,332.3,HR,Haryana
+kamareddy,Kamareddy,hyderabad,0,Remote,18.3255,78.3378,383.7,652.2,TG,Telangana
+dholpur,Dholpur,jaipur,0,Remote,26.6998,77.8887,371.1,392.9,RJ,Rajasthan
+balangir,Balangir,kolkata,0,Remote,20.7056,83.4831,529.3,585.2,OR,Odisha
+jagatsinghapur,Jagatsinghapur,kolkata,0,Remote,20.3026,86.5486,616,601.5,OR,Odisha
+khajuraho,Khajuraho,pune,0,Remote,24.8457,79.9274,428.8,452.8,MP,Madhya Pradesh
+chitrakoot-up,Chitrakoot Up,delhi,0,Remote,25.2154,80.9149,456.7,442.6,UP,Uttar Pradesh
+diu,Diu,ahmedabad,0,Remote,20.716,70.9861,175.8,569.1,GJ,Gujarat
+tehri garhwal,Tehri Garhwal,delhi,0,Remote,30.3877,78.396,385.5,279.6,UT,Uttarakhand
+bhadrachalam,Bhadrachalam,hyderabad,0,Remote,17.6711,80.8924,456,675.7,TG,Telangana
+koderma,Koderma,kolkata,0,Remote,24.4367,85.535,587.4,472.5,JH,Jharkhand
+kovalam,Kovalam,coimbatore,0,Remote,8.3963,76.9786,345.2,925,KL,Kerala
+mahbubabad,Mahbubabad,hyderabad,0,Remote,17.5967,80.003,430.8,676.9,TG,Telangana
+sabarkantha,Sabarkantha,ahmedabad,0,Remote,23.5169,72.99,232.5,485.1,GJ,Gujarat
+baramulla,Baramulla,delhi,0,Remote,34.2057,74.4115,272.8,156.6,JK,Jammu & Kashmir
+tiruttani,Tiruttani,chennai,0,Remote,13.1768,79.6112,419.7,812.9,TN,Tamil Nadu
+kasganj,Kasganj,delhi,0,Remote,27.809,78.647,392.6,359.6,UP,Uttar Pradesh
+srikalahasti,Srikalahasti,hyderabad,0,Remote,13.7528,79.7058,422.4,795.3,AP,Andhra Pradesh
+omkareshwar,Omkareshwar,pune,0,Remote,22.2309,76.1192,321,528.8,MP,Madhya Pradesh
+sirmaur,Sirmaur,chandigarh,0,Remote,30.5714,77.2912,354.2,272.5,HP,Himachal Pradesh
+cumbum,Cumbum,chennai,0,Remote,9.7354,77.2838,353.8,916.3,TN,Tamil Nadu
+mansa,Mansa,chandigarh,0,Remote,29.9857,75.4,300.7,288.2,PB,Punjab
+narmada,Narmada,ahmedabad,0,Remote,21.8748,73.5996,249.7,536.6,GJ,Gujarat
+poonch,Poonch,delhi,0,Remote,33.7114,74.2429,268,171.7,JK,Jammu & Kashmir
+diveagar,Diveagar,pune,0,Remote,18.1738,72.9887,232.4,650.2,MH,Maharashtra
+itanagar,Itanagar,kolkata,0,Remote,27.1013,93.6918,818.2,400.5,AR,Arunachal Pradesh
+paonta sahib,Paonta Sahib,chandigarh,0,Remote,30.4411,77.6156,363.4,277,HP,Himachal Pradesh
+jhalawar,Jhalawar,jaipur,0,Remote,24.5569,76.1656,322.3,457,RJ,Rajasthan
+arani,Arani,chennai,0,Remote,12.6715,79.287,410.5,828.2,TN,Tamil Nadu
+kathua,Kathua,delhi,0,Remote,32.3891,75.5195,304.1,214.1,JK,Jammu & Kashmir
+anuppur,Anuppur,pune,0,Remote,23.1101,81.7053,479.1,508.7,MP,Madhya Pradesh
+kalimpong,Kalimpong,kolkata,0,Remote,27.0634,88.4713,670.5,395.1,WB,West Bengal
+bargarh,Bargarh,kolkata,0,Remote,21.3438,83.6143,533,565.7,OR,Odisha
+chamba,Chamba,chandigarh,0,Remote,32.5616,76.1131,320.9,209.6,HP,Himachal Pradesh
+banswara,Banswara,jaipur,0,Remote,23.5532,74.4342,273.3,485.8,RJ,Rajasthan
+nirmal,Nirmal,hyderabad,0,Remote,19.0963,78.3429,383.9,628.4,TG,Telangana
+murud,Murud,pune,0,Remote,18.3426,72.9552,231.4,644.9,MH,Maharashtra
+nagaon,Nagaon,kolkata,0,Remote,26.3513,92.6838,789.7,422.4,AS,Assam
+gudalur,Gudalur,coimbatore,0,Remote,11.5164,76.492,331.4,860.3,TN,Tamil Nadu
+narayangaon,Narayangaon,pune,0,Remote,19.1176,73.9736,260.3,622.3,MH,Maharashtra
+dalhousie,Dalhousie,chandigarh,0,Remote,32.5377,75.967,316.8,210.1,HP,Himachal Pradesh
+raiganj,Raiganj,kolkata,0,Remote,25.6192,88.1302,660.9,439.3,WB,West Bengal
+mahasamund,Mahasamund,pune,0,Remote,21.1359,82.1714,492.2,570.3,CT,Chhattisgarh
+tonk,Tonk,jaipur,0,Remote,26.1673,75.7886,311.7,406.7,RJ,Rajasthan
+bongaigaon,Bongaigaon,kolkata,0,Remote,26.4828,90.5554,729.5,415.6,AS,Assam
+jangaon,Jangaon,hyderabad,0,Remote,17.7192,79.1611,407,672,TG,Telangana
+jangareddygudem,Jangareddygudem,hyderabad,0,Remote,17.1221,81.2927,467.3,693.2,AP,Andhra Pradesh
+ravulapalem,Ravulapalem,hyderabad,0,Remote,16.7623,81.8419,482.8,705,AP,Andhra Pradesh
+jamui,Jamui,kolkata,0,Remote,24.9301,86.2335,607.2,458.2,BR,Bihar
+dumka,Dumka,kolkata,0,Remote,24.2674,87.2493,635.9,479.9,JH,Jharkhand
+ganjam,Ganjam,kolkata,0,Remote,19.4784,84.7302,564.6,624.7,OR,Odisha
+alirajpur,Alirajpur,pune,0,Remote,22.3063,74.3538,271,524.2,MP,Madhya Pradesh
+bundi,Bundi,jaipur,0,Remote,25.4283,75.6498,307.7,429.4,RJ,Rajasthan
+west singhbhum,West Singhbhum,kolkata,0,Remote,22.5497,85.8046,595,531.2,JH,Jharkhand
+dimapur,Dimapur,kolkata,0,Remote,25.9063,93.7276,819.2,437.5,NL,Nagaland
+ashoknagar,Ashoknagar,pune,0,Remote,24.5728,77.7306,366.6,458.4,MP,Madhya Pradesh
+paramakudi,Paramakudi,chennai,0,Remote,9.5464,78.5927,390.8,923.8,TN,Tamil Nadu
+devakottai,Devakottai,chennai,0,Remote,9.9483,78.8192,397.2,911.7,TN,Tamil Nadu
+jehanabad,Jehanabad,kolkata,0,Remote,25.2108,84.9878,571.9,447.9,BR,Bihar
+jejuri,Jejuri,pune,0,Remote,18.2803,74.1573,265.4,648.4,MH,Maharashtra
+umariya,Umariya,pune,0,Remote,23.5413,80.8927,456.1,494.3,MP,Madhya Pradesh
+panna,Panna,pune,0,Remote,24.7317,80.1911,436.2,456.6,MP,Madhya Pradesh
+tadipatri,Tadipatri,hyderabad,0,Remote,14.9089,78.0089,374.4,757.4,AP,Andhra Pradesh
+dharmavaram,Dharmavaram,hyderabad,0,Remote,14.4139,77.7209,366.2,772.3,AP,Andhra Pradesh
+sircilla,Sircilla,hyderabad,0,Remote,18.393,78.8123,397.1,650.8,TG,Telangana
+khagaria,Khagaria,kolkata,0,Remote,25.5043,86.4786,614.1,440.7,BR,Bihar
+garhmukteshwar,Garhmukteshwar,delhi,0,Remote,28.784,78.0854,376.7,328.8,UP,Uttar Pradesh
+vaniyambadi,Vaniyambadi,chennai,0,Remote,12.6778,78.6163,391.5,827.1,TN,Tamil Nadu
+madhepura,Madhepura,kolkata,0,Remote,25.9218,86.7966,623.1,428.2,BR,Bihar
+bhigwan,Bhigwan,pune,0,Remote,18.2972,74.7538,282.3,648.6,MH,Maharashtra
+gingee,Gingee,chennai,0,Remote,12.2526,79.4168,414.2,841.3,TN,Tamil Nadu
+chamoli,Chamoli,delhi,0,Remote,30.4334,79.4797,416.2,279.6,UT,Uttarakhand
+kaimur,Kaimur,kolkata,0,Remote,25.1626,83.6169,533.2,447.7,BR,Bihar
+kumarakom,Kumarakom,coimbatore,0,Remote,9.6168,76.4322,329.7,918.9,KL,Kerala
+sibsagar,Sibsagar,kolkata,0,Remote,26.9846,94.6975,846.7,405.4,AS,Assam
+kendrapara,Kendrapara,kolkata,0,Remote,20.5105,86.4212,612.4,595,OR,Odisha
+kishanganj,Kishanganj,kolkata,0,Remote,26.1039,87.9436,655.6,424,BR,Bihar
+kawardha,Kawardha,pune,0,Remote,21.9997,81.2233,465.4,542.4,CT,Chhattisgarh
+udhampur,Udhampur,delhi,0,Remote,32.9208,75.1365,293.3,197.2,JK,Jammu & Kashmir
+imphal,Imphal,kolkata,0,Remote,24.8084,93.9387,825.2,471.7,MN,Manipur
+pachmarhi,Pachmarhi,pune,0,Remote,22.4726,78.4358,386.5,524.2,MP,Madhya Pradesh
+khambhalia,Khambhalia,ahmedabad,0,Remote,22.2126,69.6532,138.1,521.2,GJ,Gujarat
+sundargarh,Sundargarh,kolkata,0,Remote,22.1212,84.0378,545,542.2,OR,Odisha
+banka,Banka,kolkata,0,Remote,24.8861,86.9214,626.6,460.4,BR,Bihar
+dakshina kannada,Dakshina Kannada,bangalore,0,Remote,12.9661,75.2277,295.7,813.9,KA,Karnataka
+kandukur,Kandukur,hyderabad,0,Remote,15.2167,79.9034,428,750.3,AP,Andhra Pradesh
+rajgir,Rajgir,kolkata,0,Remote,25.0294,85.4223,584.2,454.1,BR,Bihar
+araria,Araria,kolkata,0,Remote,26.1342,87.4557,641.8,422.5,BR,Bihar
+barwani,Barwani,pune,0,Remote,22.0344,74.9018,286.5,533.3,MP,Madhya Pradesh
+lakhisarai,Lakhisarai,kolkata,0,Remote,25.1747,86.0953,603.3,450.4,BR,Bihar
+aravalli,Aravalli,ahmedabad,0,Remote,23.4644,73.2988,241.2,487.1,GJ,Gujarat
+zahirabad,Zahirabad,hyderabad,0,Remote,17.6813,77.6147,363.3,671.2,TG,Telangana
+east singhbhum,East Singhbhum,kolkata,0,Remote,22.593,86.4722,613.9,530.7,JH,Jharkhand
+dhenkanal,Dhenkanal,kolkata,0,Remote,20.6585,85.5946,589.1,589.3,OR,Odisha
+melmaruvathur,Melmaruvathur,chennai,0,Remote,12.4363,79.8283,425.8,836.1,TN,Tamil Nadu
+sojat,Sojat,jaipur,0,Remote,25.9229,73.6752,251.9,411.6,RJ,Rajasthan
+baran,Baran,jaipur,0,Remote,25.0962,76.5113,332.1,440.7,RJ,Rajasthan
+khandala,Khandala,pune,0,Remote,18.7598,73.3683,243.1,632.5,MH,Maharashtra
+kadiri,Kadiri,hyderabad,0,Remote,14.1129,78.161,378.7,782.2,AP,Andhra Pradesh
+uttarkashi,Uttarkashi,delhi,0,Remote,30.7549,78.3566,384.4,268.2,UT,Uttarakhand
+gadwal,Gadwal,hyderabad,0,Remote,16.2371,77.8068,368.7,716.1,TG,Telangana
+bhor,Bhor,pune,0,Remote,18.1566,73.8492,256.7,651.8,MH,Maharashtra
+mahisagar,Mahisagar,ahmedabad,0,Remote,23.1262,73.6058,249.9,497.9,GJ,Gujarat
+golaghat,Golaghat,kolkata,0,Remote,26.5634,93.969,826.1,417.5,AS,Assam
+pithoragarh,Pithoragarh,delhi,0,Remote,29.6061,80.2118,436.9,306.1,UT,Uttarakhand
+supaul,Supaul,kolkata,0,Remote,26.1227,86.606,617.7,421.8,BR,Bihar
+adoni,Adoni,hyderabad,0,Remote,15.6215,77.2781,353.7,734.5,AP,Andhra Pradesh
+east khasi hills,East Khasi Hills,kolkata,0,Remote,25.4924,91.7997,764.7,447.8,ML,Meghalaya
+balrampur,Balrampur,delhi,0,Remote,27.4203,82.3152,496.4,376.3,UP,Uttar Pradesh
+godda,Godda,kolkata,0,Remote,24.8276,87.2122,634.9,462.6,JH,Jharkhand
+gudur,Gudur,hyderabad,0,Remote,14.1469,79.8474,426.4,783.3,AP,Andhra Pradesh
+kamrup,Kamrup,kolkata,0,Remote,26.1368,91.6467,760.4,427.7,AS,Assam
+spiti,Spiti,chandigarh,0,Remote,32.2965,77.1896,351.4,219.1,HP,Himachal Pradesh
+guntakal,Guntakal,hyderabad,0,Remote,15.1662,77.3764,356.5,748.7,AP,Andhra Pradesh
+dungarpur,Dungarpur,jaipur,0,Remote,23.842,73.7171,253.1,476,RJ,Rajasthan
+kanker,Kanker,pune,0,Remote,20.2711,81.4903,472.9,596.1,CT,Chhattisgarh
+armoor,Armoor,hyderabad,0,Remote,18.7885,78.2937,382.5,637.9,TG,Telangana
+jhabua,Jhabua,pune,0,Remote,22.907,74.5964,277.9,506,MP,Madhya Pradesh
+velankanni,Velankanni,chennai,0,Remote,10.682,79.8476,426.4,890.3,TN,Tamil Nadu
+mandvi,Mandvi,ahmedabad,0,Remote,22.8374,69.347,129.4,501.5,GJ,Gujarat
+mettur,Mettur,coimbatore,0,Remote,11.7915,77.7997,368.4,853.5,TN,Tamil Nadu
+parwanoo,Parwanoo,chandigarh,0,Remote,30.8422,76.9611,344.9,263.8,HP,Himachal Pradesh
+mahoba,Mahoba,delhi,0,Remote,25.2939,79.8788,427.4,438.9,UP,Uttar Pradesh
+rayagada,Rayagada,kolkata,0,Remote,19.1703,83.4203,527.5,632.6,OR,Odisha
+sahibganj,Sahibganj,kolkata,0,Remote,25.24,87.6448,647.1,450.4,JH,Jharkhand
+barpeta,Barpeta,kolkata,0,Remote,26.4955,90.9687,741.2,415.8,AS,Assam
+matheran,Matheran,pune,0,Remote,18.9904,73.2707,240.4,625.3,MH,Maharashtra
+dhubri,Dhubri,kolkata,0,Remote,26.0316,89.9684,712.9,428.8,AS,Assam
+garhwa,Garhwa,kolkata,0,Remote,24.1597,83.8088,538.6,478.9,BR,Bihar
+ganpatipule,Ganpatipule,pune,0,Remote,17.1497,73.2703,240.3,682.2,MH,Maharashtra
+kokrajhar,Kokrajhar,kolkata,0,Remote,26.4082,90.2705,721.4,417.6,AS,Assam
+kinnaur,Kinnaur,chandigarh,0,Remote,31.5382,78.2703,382,243.9,HP,Himachal Pradesh
+paithan,Paithan,pune,0,Remote,19.4783,75.3865,300.2,612.9,MH,Maharashtra
+hamirpur-uttar pradesh,Hamirpur Uttar Pradesh,delhi,0,Remote,25.6863,80.0999,433.7,427,UP,Uttar Pradesh
+ganderbal,Ganderbal,delhi,0,Remote,34.2174,74.7791,283.2,156.7,JK,Jammu & Kashmir
+valparai,Valparai,coimbatore,0,Remote,10.3237,76.952,344.4,897.7,TN,Tamil Nadu
+chikhaldara,Chikhaldara,pune,0,Remote,21.4016,77.3279,355.2,555.9,MH,Maharashtra
+rayachoti,Rayachoti,hyderabad,0,Remote,14.0537,78.751,395.4,784.8,AP,Andhra Pradesh
+bhandardara,Bhandardara,pune,0,Remote,19.5416,73.7789,254.8,608.9,MH,Maharashtra
+vijapur,Vijapur,ahmedabad,0,Remote,23.5609,72.7494,225.7,483.4,GJ,Gujarat
+pulwama,Pulwama,delhi,0,Remote,33.9346,74.9089,286.9,165.6,JK,Jammu & Kashmir
+basirhat,Basirhat,kolkata,0,Remote,22.6607,88.8576,681.4,531.6,WB,West Bengal
+nayagarh,Nayagarh,kolkata,0,Remote,20.1287,85.1098,575.3,605.1,OR,Odisha
+jhargram,Jhargram,kolkata,0,Remote,22.4479,86.9952,628.7,535.8,WB,West Bengal
+jamtara,Jamtara,kolkata,0,Remote,23.9607,86.8093,623.5,488.8,JH,Jharkhand
+kalna,Kalna,kolkata,0,Remote,23.2174,88.3536,667.1,513.8,WB,West Bengal
+aizawl,Aizawl,kolkata,0,Remote,23.7406,92.7162,790.6,503.1,MZ,Mizoram
+seraikela kharsawan,Seraikela Kharsawan,kolkata,0,Remote,22.7883,86.0961,603.3,524.2,JH,Jharkhand
+west tripura,West Tripura,kolkata,0,Remote,23.6913,91.2837,750.1,502.8,TR,Tripura
+daang,Daang,ahmedabad,0,Remote,20.5958,73.7451,253.8,576.3,GJ,Gujarat
+vuyyuru,Vuyyuru,hyderabad,0,Remote,16.3652,80.843,454.6,716,AP,Andhra Pradesh
+budgam,Budgam,delhi,0,Remote,34.0384,74.7834,283.3,162.2,JK,Jammu & Kashmir
+jashpur,Jashpur,pune,0,Remote,22.8814,84.1384,547.9,518.8,CT,Chhattisgarh
+rajpipla,Rajpipla,ahmedabad,0,Remote,21.8683,73.5097,247.2,536.7,GJ,Gujarat
+morigaon,Morigaon,kolkata,0,Remote,26.2509,92.3405,780,425.1,AS,Assam
+karauli,Karauli,jaipur,0,Remote,26.5168,77.0137,346.3,397.5,RJ,Rajasthan
+srisailam,Srisailam,hyderabad,0,Remote,16.0745,78.8982,399.6,722.5,AP,Andhra Pradesh
+chitrakoot-mp,Chitrakoot Mp,pune,0,Remote,25.1542,80.8574,455.1,444.4,MP,Madhya Pradesh
+khunti,Khunti,kolkata,0,Remote,23.078,85.2818,580.2,514.2,JH,Jharkhand
+bandipora,Bandipora,delhi,0,Remote,34.4211,74.6378,279.2,150.2,JK,Jammu & Kashmir
+ranikhet,Ranikhet,delhi,0,Remote,29.6436,79.4339,414.9,303.9,UT,Uttarakhand
+lakhimpur,Lakhimpur,kolkata,0,Remote,27.2344,94.1022,829.8,396.9,AS,Assam
+sheopur,Sheopur,pune,0,Remote,25.6718,76.7006,337.5,423.2,MP,Madhya Pradesh
+dindori,Dindori,pune,0,Remote,22.8812,80.9605,458,514.8,MP,Madhya Pradesh
+kupwara,Kupwara,delhi,0,Remote,34.5061,74.2586,268.5,147.1,JK,Jammu & Kashmir
+kanigiri,Kanigiri,hyderabad,0,Remote,15.4043,79.5054,416.7,744,AP,Andhra Pradesh
+puttaparthi,Puttaparthi,hyderabad,0,Remote,14.1653,77.8098,368.7,780.1,AP,Andhra Pradesh
+surajpur,Surajpur,pune,0,Remote,23.2154,82.8672,511.9,506.9,CT,Chhattisgarh
+aundipatti,Aundipatti,chennai,0,Remote,9.9988,77.6194,363.3,908.6,TN,Tamil Nadu
+karimganj,Karimganj,kolkata,0,Remote,24.8646,92.3651,780.7,467.9,AS,Assam
+chatra,Chatra,kolkata,0,Remote,24.2066,84.8725,568.7,478.8,JH,Jharkhand
+bhawanipatna,Bhawanipatna,kolkata,0,Remote,19.9062,83.1664,520.4,609.5,OR,Odisha
+pulivendula,Pulivendula,hyderabad,0,Remote,14.4184,78.2261,380.5,772.8,AP,Andhra Pradesh
+sakti,Sakti,pune,0,Remote,22.024,82.9602,514.5,543.8,CT,Chhattisgarh
+yemmiganur,Yemmiganur,hyderabad,0,Remote,15.7659,77.4781,359.4,730.3,AP,Andhra Pradesh
+repalle,Repalle,hyderabad,0,Remote,16.0191,80.831,454.2,726.7,AP,Andhra Pradesh
+tandur,Tandur,hyderabad,0,Remote,17.2599,77.5875,362.5,684.2,TG,Telangana
+gumla,Gumla,kolkata,0,Remote,23.0419,84.5454,559.4,514.4,JH,Jharkhand
+kandhamal,Kandhamal,kolkata,0,Remote,20.1036,84.1747,548.9,604.7,OR,Odisha
+papanasam,Papanasam,chennai,0,Remote,10.9151,79.2272,408.8,882.3,TN,Tamil Nadu
+samba,Samba,delhi,0,Remote,32.5576,75.1151,292.7,208.4,JK,Jammu & Kashmir
+koratla,Koratla,hyderabad,0,Remote,18.8265,78.7114,394.3,637.2,TG,Telangana
+namchi,Namchi,kolkata,0,Remote,27.1599,88.3401,666.8,391.9,SK,Sikkim
+nabarangpur,Nabarangpur,kolkata,0,Remote,19.2294,82.5472,502.8,629.6,OR,Odisha
+champawat,Champawat,delhi,0,Remote,29.0731,80.0874,433.3,322.4,UT,Uttarakhand
+pakur,Pakur,kolkata,0,Remote,24.6376,87.8272,652.3,469.2,JH,Jharkhand
+pratapgarh-rajasthan,Pratapgarh Rajasthan,jaipur,0,Remote,24.0343,74.7805,283.1,471.4,RJ,Rajasthan
+mahe,Mahe,coimbatore,0,Remote,11.7002,75.5406,304.5,853.4,KL,Kerala
+rajouri,Rajouri,delhi,0,Remote,33.3665,74.318,270.2,182.4,JK,Jammu & Kashmir
+darrang,Darrang,kolkata,0,Remote,26.4463,92.0309,771.2,418.6,AS,Assam
+dhone,Dhone,hyderabad,0,Remote,15.3967,77.874,370.6,742.2,AP,Andhra Pradesh
+nalbari,Nalbari,kolkata,0,Remote,26.4407,91.4349,754.4,418.1,AS,Assam
+goalpara,Goalpara,kolkata,0,Remote,26.1516,90.6212,731.3,426,AS,Assam
+lohardaga,Lohardaga,kolkata,0,Remote,23.4391,84.6824,563.3,502.3,JH,Jharkhand
+paramathi,Paramathi,coimbatore,0,Remote,11.1554,78.0383,375.2,873.4,TN,Tamil Nadu
+kulgam,Kulgam,delhi,0,Remote,33.6425,75.0339,290.4,174.8,JK,Jammu & Kashmir
+darsi,Darsi,hyderabad,0,Remote,15.771,79.6791,421.6,732.9,AP,Andhra Pradesh
+manendragarh,Manendragarh,pune,0,Remote,23.2124,82.2018,493.1,506.1,CT,Chhattisgarh
+geyzing,Geyzing,kolkata,0,Remote,27.3007,88.2366,663.9,387.4,SK,Sikkim
+kedarnath,Kedarnath,delhi,0,Remote,30.7337,79.0638,404.4,269.8,UT,Uttarakhand
+dhemaji,Dhemaji,kolkata,0,Remote,27.5948,94.7222,847.4,386.5,AS,Assam
+sheikhpura,Sheikhpura,kolkata,0,Remote,25.1422,85.8355,595.9,451.1,BR,Bihar
+sonepur,Sonepur,kolkata,0,Remote,20.847,83.8953,541,581.4,OR,Odisha
+kondagaon,Kondagaon,pune,0,Remote,19.5895,81.6667,477.9,617.4,CT,Chhattisgarh
+hindaun,Hindaun,jaipur,0,Remote,26.7388,77.0303,346.8,390.6,RJ,Rajasthan
+kishtwar,Kishtwar,delhi,0,Remote,33.3173,75.7689,311.2,185.8,JK,Jammu & Kashmir
+kaikalur,Kaikalur,hyderabad,0,Remote,16.5509,81.2116,465,710.7,AP,Andhra Pradesh
+jhanjharpur,Jhanjharpur,kolkata,0,Remote,26.2594,86.283,608.6,417.1,BR,Bihar
+dantewada,Dantewada,pune,0,Remote,18.8792,81.3838,469.9,639,CT,Chhattisgarh
+bageshwar,Bageshwar,delhi,0,Remote,29.8453,79.7693,424.3,298.1,UT,Uttarakhand
+hojai,Hojai,kolkata,0,Remote,26.0032,92.8554,794.5,433.4,AS,Assam
+gooty,Gooty,hyderabad,0,Remote,15.1127,77.6347,363.8,750.6,AP,Andhra Pradesh
+sheohar,Sheohar,kolkata,0,Remote,26.5134,85.2962,580.7,408,BR,Bihar
+nuapada,Nuapada,kolkata,0,Remote,20.8501,82.5586,503.2,579.6,OR,Odisha
+guhagar,Guhagar,pune,0,Remote,17.4836,73.1991,238.3,671.8,MH,Maharashtra
+egra,Egra,kolkata,0,Remote,21.907,87.5372,644,553.2,WB,West Bengal
+chengam,Chengam,chennai,0,Remote,12.3093,78.7932,396.5,838.7,TN,Tamil Nadu
+dharmanagar,Dharmanagar,kolkata,0,Remote,24.3782,92.1639,775,482.7,TR,Tripura
+nira,Nira,pune,0,Remote,18.1028,74.2131,267,653.9,MH,Maharashtra
+koppa,Koppa,bangalore,0,Remote,13.537,75.3685,299.7,796.5,KA,Karnataka
+shencottah,Shencottah,chennai,0,Remote,8.973,77.2497,352.8,925,TN,Tamil Nadu
+kalahandi,Kalahandi,kolkata,0,Remote,19.8606,82.9372,513.9,610.6,OR,Odisha
+kohima,Kohima,kolkata,0,Remote,25.6715,94.1076,830,445.2,NL,Nagaland
+adampur,Adampur,delhi,0,Remote,29.2839,75.4688,302.7,310,HR,Haryana
+kargil,Kargil,delhi,0,Remote,34.431,76.137,321.6,151.8,LA,Ladakh
+panhala,Panhala,pune,0,Remote,16.8108,74.1124,264.2,693.7,MH,Maharashtra
+south tripura,South Tripura,kolkata,0,Remote,23.5346,91.4879,755.8,507.9,TR,Tripura
+sendhwa,Sendhwa,pune,0,Remote,21.6834,75.1043,292.3,544.4,MP,Madhya Pradesh
+korea,Korea,pune,0,Remote,23.1865,82.3531,497.4,507.1,CT,Chhattisgarh
+north tripura,North Tripura,kolkata,0,Remote,24.1911,92.036,771.3,488.3,TR,Tripura
+rangpo,Rangpo,kolkata,0,Remote,27.1769,88.5191,671.9,391.6,SK,Sikkim
+arwal,Arwal,kolkata,0,Remote,25.2428,84.6692,562.9,446.5,BR,Bihar
+latehar,Latehar,kolkata,0,Remote,23.7512,84.5032,558.2,492.4,JH,Jharkhand
+lakshadweep,Lakshadweep,coimbatore,0,Remote,10.8592,72.42,216.2,875.5,KL,Kerala
+jammalamadugu,Jammalamadugu,hyderabad,0,Remote,14.8253,78.3759,384.8,760.4,AP,Andhra Pradesh
+simdega,Simdega,kolkata,0,Remote,22.6106,84.5016,558.2,527.6,JH,Jharkhand
+gariaband,Gariaband,pune,0,Remote,20.6339,82.0615,489.1,585.6,CT,Chhattisgarh
+manuguru,Manuguru,hyderabad,0,Remote,17.9364,80.8177,453.9,667.4,TG,Telangana
+north cachar hills,North Cachar Hills,kolkata,0,Remote,24.7918,92.8262,793.7,470.8,AS,Assam
+gajapati,Gajapati,kolkata,0,Remote,18.7931,84.0935,546.6,645.1,OR,Odisha
+north lakhimpur,North Lakhimpur,kolkata,0,Remote,27.2384,94.1052,829.9,396.8,AS,Assam
+giddalur,Giddalur,hyderabad,0,Remote,15.3771,78.9238,400.3,744.1,AP,Andhra Pradesh
+sravasti,Sravasti,delhi,0,Remote,27.7031,81.935,485.6,367,UP,Uttar Pradesh
+narsampet,Narsampet,hyderabad,0,Remote,17.9266,79.8942,427.8,666.5,TG,Telangana
+tawang,Tawang,kolkata,0,Remote,27.5962,91.8683,766.6,382.9,AR,Arunachal Pradesh
+malkangiri,Malkangiri,kolkata,0,Remote,18.3519,81.8858,484.1,655.9,OR,Odisha
+walchandnagar,Walchandnagar,pune,0,Remote,18.0365,74.7885,283.3,656.7,MH,Maharashtra
+aravakurichi,Aravakurichi,chennai,0,Remote,10.7794,77.9092,371.5,884.9,TN,Tamil Nadu
+birpara,Birpara,kolkata,0,Remote,26.7091,89.1407,689.5,406.9,WB,West Bengal
+velhe,Velhe,pune,0,Remote,18.2212,74.1322,264.7,650.2,MH,Maharashtra
+baikunthpur,Baikunthpur,pune,0,Remote,23.2622,82.5623,503.3,505,CT,Chhattisgarh
+belthangady,Belthangady,bangalore,0,Remote,12.9903,75.2854,297.3,813.2,KA,Karnataka
+badrinath,Badrinath,delhi,0,Remote,30.7431,79.4952,416.6,270,UT,Uttarakhand
+megamalai,Megamalai,chennai,0,Remote,9.8414,77.3808,356.6,913.2,TN,Tamil Nadu
+dallirajhara,Dallirajhara,pune,0,Remote,20.582,81.0729,461.1,586,CT,Chhattisgarh
+sainthia,Sainthia,kolkata,0,Remote,23.9446,87.6873,648.3,490.4,WB,West Bengal
+horanadu,Horanadu,bangalore,0,Remote,13.2719,75.3429,298.9,804.6,KA,Karnataka
+alangudi,Alangudi,chennai,0,Remote,10.3624,78.9843,401.9,899.1,TN,Tamil Nadu
+rajam,Rajam,hyderabad,0,Remote,18.4505,83.6622,534.4,655.1,AP,Andhra Pradesh
+islampur-west bengal,Islampur West Bengal,kolkata,0,Remote,26.2638,88.1892,662.5,419.4,WB,West Bengal
+ravangla,Ravangla,kolkata,0,Remote,27.308,88.362,667.4,387.4,SK,Sikkim
+mangan,Mangan,kolkata,0,Remote,27.6881,88.7355,678,376.1,SK,Sikkim
+boudh,Boudh,kolkata,0,Remote,20.834,84.2746,551.7,582.2,OR,Odisha
+sanchi,Sanchi,pune,0,Remote,23.4927,77.7239,366.4,491.8,MP,Madhya Pradesh
+kandi,Kandi,kolkata,0,Remote,23.9573,88.042,658.3,490.5,WB,West Bengal
+chintalapudi,Chintalapudi,hyderabad,0,Remote,17.0616,80.9846,458.6,694.6,AP,Andhra Pradesh
+rangia,Rangia,kolkata,0,Remote,26.4399,91.6229,759.7,418.3,AS,Assam
+mirik,Mirik,kolkata,0,Remote,26.8908,88.182,662.3,400,WB,West Bengal
+jog falls,Jog Falls,bangalore,0,Remote,14.215,74.8091,283.8,774.8,KA,Karnataka
+shopian,Shopian,delhi,0,Remote,33.7144,74.8354,284.8,172.3,JK,Jammu & Kashmir
+sveda,Sveda,pune,0,Remote,19.0283,72.8108,227.4,623.5,DL,Delhi
+saundatti,Saundatti,bangalore,0,Remote,15.7699,75.1156,292.5,727.1,KA,Karnataka
+reasi,Reasi,delhi,0,Remote,33.0908,74.8348,284.8,191.6,JK,Jammu & Kashmir
+huzurnagar,Huzurnagar,hyderabad,0,Remote,16.9004,79.8746,427.2,698.2,TG,Telangana
+asifabad,Asifabad,hyderabad,0,Remote,19.3658,79.2648,410,621.3,TG,Telangana
+west kameng,West Kameng,kolkata,0,Remote,27.385,92.4202,782.2,390.1,AR,Arunachal Pradesh
+jodumarga,Jodumarga,bangalore,0,Remote,12.883,75.0252,289.9,816.2,KA,Karnataka
+bankikodla,Bankikodla,bangalore,0,Remote,14.5695,74.3073,269.6,763.2,KA,Karnataka
+diphu,Diphu,kolkata,0,Remote,25.8771,93.4458,811.2,438,AS,Assam
+kalyandurg,Kalyandurg,hyderabad,0,Remote,14.5496,77.1156,349.1,767.4,AP,Andhra Pradesh
+devarapalli,Devarapalli,hyderabad,0,Remote,17.0366,81.5646,475,696.2,AP,Andhra Pradesh
+chirang,Chirang,kolkata,0,Remote,26.5046,90.5281,728.7,414.9,AS,Assam
+hailakandi,Hailakandi,kolkata,0,Remote,24.6836,92.585,786.9,473.8,AS,Assam
+kemmanagundi,Kemmanagundi,bangalore,0,Remote,13.568,75.7939,311.7,796,KA,Karnataka
+gangotri,Gangotri,delhi,0,Remote,30.9945,78.7171,394.6,261.3,UT,Uttarakhand
+narayanpur,Narayanpur,pune,0,Remote,19.7121,81.2487,466.1,613.1,CT,Chhattisgarh
+bijapur-chhattisgarh,Bijapur Chhattisgarh,pune,0,Remote,18.7943,80.8154,453.8,640.9,CT,Chhattisgarh
+koyyalagudem,Koyyalagudem,hyderabad,0,Remote,17.1289,81.4277,471.1,693.1,AP,Andhra Pradesh
+parulia,Parulia,kolkata,0,Remote,23.4467,88.309,665.9,506.6,WB,West Bengal
+debagarh,Debagarh,kolkata,0,Remote,21.538,84.7322,564.7,561.1,OR,Odisha
+amerigog,Amerigog,kolkata,0,Remote,26.1449,91.8196,765.2,427.7,AS,Assam
+ramban,Ramban,delhi,0,Remote,33.2411,75.2396,296.2,187.5,JK,Jammu & Kashmir
+radhakishorepur,Radhakishorepur,kolkata,0,Remote,23.5379,91.4967,756.1,507.8,TR,Tripura
+bara jaguli,Bara Jaguli,kolkata,0,Remote,22.9431,88.5437,672.5,522.5,WB,West Bengal
+tura,Tura,kolkata,0,Remote,25.511,90.2206,720,445.2,ML,Meghalaya
+dibang valley,Dibang Valley,kolkata,0,Remote,28.1418,95.8303,878.7,371,AR,Arunachal Pradesh
+lohit,Lohit,kolkata,0,Remote,27.6673,95.8728,879.9,385.8,AR,Arunachal Pradesh
+amla,Amla,pune,0,Remote,21.9579,78.145,378.3,539.8,MP,Madhya Pradesh
+alampur,Alampur,hyderabad,0,Remote,15.8834,78.122,377.6,727.4,TG,Telangana
+pundibari,Pundibari,kolkata,0,Remote,26.3862,89.3814,696.3,417.1,WB,West Bengal
+anavatti,Anavatti,bangalore,0,Remote,14.5662,75.1524,293.6,764.4,KA,Karnataka
+madakasira,Madakasira,hyderabad,0,Remote,13.9288,77.2722,353.5,786.8,AP,Andhra Pradesh
+jaintia hills,Jaintia Hills,kolkata,0,Remote,25.2074,92.0156,770.8,456.9,ML,Meghalaya
+bilashipara,Bilashipara,kolkata,0,Remote,26.24,90.2317,720.3,422.7,AS,Assam
+kurhani,Kurhani,kolkata,0,Remote,25.9917,85.3185,581.3,424.2,BR,Bihar
+abinashpur,Abinashpur,kolkata,0,Remote,23.7998,87.5761,645.2,494.8,WB,West Bengal
+jawali,Jawali,bangalore,0,Remote,13.1654,75.4854,303,808.1,KA,Karnataka
+bijni,Bijni,kolkata,0,Remote,26.4961,90.7071,733.8,415.4,AS,Assam
+doda,Doda,delhi,0,Remote,33.1441,75.5472,304.9,190.8,JK,Jammu & Kashmir
+attili,Attili,hyderabad,0,Remote,16.6859,81.6021,476.1,707,AP,Andhra Pradesh
+dhalai,Dhalai,kolkata,0,Remote,24.1076,91.8328,765.6,490.6,TR,Tripura
+senapati,Senapati,kolkata,0,Remote,25.2777,94.0301,827.8,457.3,MN,Manipur
+mudalgi,Mudalgi,bangalore,0,Remote,16.3344,74.9671,288.3,709.5,KA,Karnataka
+aswaraopet,Aswaraopet,hyderabad,0,Remote,17.2445,81.1312,462.7,689.2,TG,Telangana
+jowai,Jowai,kolkata,0,Remote,25.4583,92.2105,776.3,449.4,ML,Meghalaya
+madangeri,Madangeri,bangalore,0,Remote,14.6316,74.492,274.9,761.5,KA,Karnataka
+east siang,East Siang,kolkata,0,Remote,28.0606,95.3265,864.5,372.9,AR,Arunachal Pradesh
+tamenglong,Tamenglong,kolkata,0,Remote,25.0145,93.6124,816,464.9,MN,Manipur
+hirehally,Hirehally,bangalore,0,Remote,13.288,77.186,351.1,806.4,KA,Karnataka
+bakshirhat,Bakshirhat,kolkata,0,Remote,26.3508,89.7598,707,418.7,WB,West Bengal
+west garo hills,West Garo Hills,kolkata,0,Remote,25.6046,89.9601,712.6,442,ML,Meghalaya
+west khasi hills,West Khasi Hills,kolkata,0,Remote,25.5461,91.4506,754.8,445.7,ML,Meghalaya
+tirap,Tirap,kolkata,0,Remote,27.0043,95.3502,865.1,405.6,AR,Arunachal Pradesh
+champhai,Champhai,kolkata,0,Remote,23.7367,93.3132,807.5,504,MZ,Mizoram
+churachandpur,Churachandpur,kolkata,0,Remote,24.3274,93.6908,818.2,486.2,MN,Manipur
+bishnupur,Bishnupur,kolkata,0,Remote,24.5646,93.6587,817.3,478.8,MN,Manipur
+mantripukhri,Mantripukhri,kolkata,0,Remote,24.8569,93.9352,825.1,470.1,MN,Manipur
+sukma,Sukma,pune,0,Remote,18.3923,81.6577,477.7,654.4,CT,Chhattisgarh
+aigali,Aigali,bangalore,0,Remote,16.8021,75.212,295.3,695.4,KA,Karnataka
+amingad,Amingad,bangalore,0,Remote,16.0589,75.9392,315.8,719.3,KA,Karnataka
+palvancha,Palvancha,hyderabad,0,Remote,18.009,78.0167,374.6,661.6,TG,Telangana
+uravakonda,Uravakonda,hyderabad,0,Remote,14.997,77.2236,352.2,753.7,AP,Andhra Pradesh
+kharupetia,Kharupetia,kolkata,0,Remote,26.5237,92.1522,774.7,416.4,AS,Assam
+west siang,West Siang,kolkata,0,Remote,28.1375,94.8134,850,369.9,AR,Arunachal Pradesh
+kawalgundi,Kawalgundi,bangalore,0,Remote,13.8748,75.6529,307.7,786.4,KA,Karnataka
+seegur,Seegur,bangalore,0,Remote,12.4445,76.1021,320.4,831.1,KA,Karnataka
+yelandur,Yelandur,bangalore,0,Remote,11.9959,77.1426,349.8,846.3,KA,Karnataka
+malgi,Malgi,bangalore,0,Remote,14.8427,75.0424,290.4,755.7,KA,Karnataka
+hosaritti,Hosaritti,bangalore,0,Remote,14.8983,75.5878,305.9,754.7,KA,Karnataka
+nandangadda,Nandangadda,bangalore,0,Remote,14.8161,74.1458,265.1,755.4,KA,Karnataka
+mudigubba,Mudigubba,hyderabad,0,Remote,14.4932,77.9682,373.2,770.2,AP,Andhra Pradesh
+vayalpad,Vayalpad,hyderabad,0,Remote,13.6344,78.6249,391.8,797.6,AP,Andhra Pradesh
+ri bhoi,Ri Bhoi,kolkata,0,Remote,26.1051,91.8561,766.3,429,ML,Meghalaya
+upper siang,Upper Siang,kolkata,0,Remote,28.6404,95.0264,856,354.6,AR,Arunachal Pradesh
+lower subansiri,Lower Subansiri,kolkata,0,Remote,27.4047,93.7458,819.8,391.2,AR,Arunachal Pradesh
+ambasa,Ambasa,kolkata,0,Remote,23.9545,91.8271,765.4,495.4,TR,Tripura
+mon,Mon,kolkata,0,Remote,26.9032,95.0826,857.6,408.4,AS,Assam
+tigadi-belgaum,Tigadi Belgaum,bangalore,0,Remote,15.7951,74.7584,282.4,725.9,KA,Karnataka
+shirguppi,Shirguppi,bangalore,0,Remote,16.6226,74.6896,280.5,700.3,KA,Karnataka
+holealur,Holealur,bangalore,0,Remote,15.8242,75.6244,306.9,726.1,KA,Karnataka
+kaiga,Kaiga,bangalore,0,Remote,14.8947,74.3302,270.3,753.2,KA,Karnataka
+herur,Herur,bangalore,0,Remote,14.54,74.7386,281.9,764.7,KA,Karnataka
+baksa,Baksa,kolkata,0,Remote,26.6595,91.3412,751.7,411.2,AS,Assam
+south garo hills,South Garo Hills,kolkata,0,Remote,25.3566,90.6602,732.4,450.6,ML,Meghalaya
+changlang,Changlang,kolkata,0,Remote,27.4864,96.2039,889.3,391.8,AR,Arunachal Pradesh
+kalain,Kalain,kolkata,0,Remote,24.9413,92.5203,785.1,465.8,AS,Assam
+wokha,Wokha,kolkata,0,Remote,26.0913,94.261,834.3,432.4,NL,Nagaland
+tuensang,Tuensang,kolkata,0,Remote,26.2176,94.6798,846.2,429,AS,Assam
+zunheboto,Zunheboto,kolkata,0,Remote,26.0128,94.5242,841.8,435.2,AS,Assam
+biramaharajpur,Biramaharajpur,kolkata,0,Remote,20.948,84.0833,546.3,578.5,OR,Odisha
+ulunda,Ulunda,kolkata,0,Remote,20.9572,83.8765,540.5,577.9,OR,Odisha
+balikuda,Balikuda,kolkata,0,Remote,20.1551,86.2927,608.8,605.8,OR,Odisha
+lunglei,Lunglei,kolkata,0,Remote,22.9104,92.7525,791.6,528.8,MZ,Mizoram
+serchhip,Serchhip,kolkata,0,Remote,23.3343,92.8553,794.5,515.8,MZ,Mizoram
+noida,Noida,delhi,0,Remote,28.5355,77.391,355,329,UP,Uttar Pradesh
+gurgaon,Gurgaon,delhi,0,Remote,28.4595,77.0266,345,331,HR,Haryana
+janmane,Janmane,bangalore,0,Remote,13.7205,77.129,339,789,KA,Karnataka
+belekeri,Belekeri,bangalore,0,Remote,13.2698,77.7087,355,803,KA,Karnataka
+nidasoshi,Nidasoshi,bangalore,0,Remote,13.6561,77.5638,351,791,KA,Karnataka
+shriwada,Shriwada,bangalore,0,Remote,13.4629,76.7304,328,797,KA,Karnataka
+heggarni,Heggarni,bangalore,0,Remote,13.4951,77.9261,361,796,KA,Karnataka
+ammasandra,Ammasandra,bangalore,0,Remote,12.7546,78.1072,366,819,KA,Karnataka
+melkote,Melkote,bangalore,0,Remote,12.7868,77.3826,346,818,KA,Karnataka
+bellad bagewadi,Bellad Bagewadi,bangalore,0,Remote,13.0444,76.8391,331,810,KA,Karnataka
+nerli,Nerli,bangalore,0,Remote,13.7205,77.4551,348,789,KA,Karnataka
+ginigera,Ginigera,bangalore,0,Remote,13.5595,78.2522,370,794,KA,Karnataka
+shirali,Shirali,bangalore,0,Remote,13.302,77.9986,363,802,KA,Karnataka
+yelagiri hills,Yelagiri Hills,chennai,0,Remote,12.5786,78.6399,412,815,TN,Tamil Nadu
+yerraguntla,Yerraguntla,hyderabad,0,Remote,14.6333,78.5333,395,760,AP,Andhra Pradesh
+atmakur,Atmakur,hyderabad,0,Remote,16.7861,77.6829,373,692,TG,Telangana
+east garo hills,East Garo Hills,kolkata,0,Remote,23.0207,88.1788,643,528,ML,Meghalaya
+longleng,Longleng,kolkata,0,Remote,22.3446,88.6499,656,549,AS,Assam
+dhanmandal,Dhanmandal,kolkata,0,Remote,21.8617,87.4542,623,564,OR,Odisha
+barkot,Barkot,delhi,0,Remote,22.0871,89.1571,670,557,UT,Uttarakhand
+burnihat,Burnihat,kolkata,0,Remote,22.1515,89.0122,666,555,ML,Meghalaya
+lower chandmari,Lower Chandmari,kolkata,0,Remote,22.3768,88.4325,650,548,ML,Meghalaya
+haflong,Haflong,kolkata,0,Remote,23.0851,87.8528,634,526,AS,Assam
+east kameng,East Kameng,kolkata,0,Remote,23.1495,88.1426,642,524,AR,Arunachal Pradesh
+titabor,Titabor,kolkata,0,Remote,22.7632,89.1571,670,536,AS,Assam
+mokokchung,Mokokchung,kolkata,0,Remote,22.248,88.36,648,552,AS,Assam
+upper subansiri,Upper Subansiri,kolkata,0,Remote,22.0871,88.1064,641,557,AR,Arunachal Pradesh
+kurung kumey,Kurung Kumey,kolkata,0,Remote,22.57,87.5991,627,542,AR,Arunachal Pradesh
+khawzawl,Khawzawl,kolkata,0,Remote,23.3105,88.7223,658,519,MZ,Mizoram
+zemabawk,Zemabawk,kolkata,0,Remote,22.0549,88.7586,659,558,MZ,Mizoram
+lawngtlai,Lawngtlai,kolkata,0,Remote,21.8295,88.6861,657,565,MZ,Mizoram
+saiha,Saiha,kolkata,0,Remote,22.248,88.3238,647,552,MZ,Mizoram
+kolasib,Kolasib,kolkata,0,Remote,21.8617,87.9977,638,564,MZ,Mizoram
+peren,Peren,kolkata,0,Remote,21.7651,88.0701,640,567,NL,Nagaland
+thoubal,Thoubal,kolkata,0,Remote,22.8276,88.6136,655,534,MN,Manipur
+chandel,Chandel,kolkata,0,Remote,22.7954,88.7586,659,535,MN,Manipur
+ukhrul,Ukhrul,kolkata,0,Remote,23.0529,89.2658,673,527,MN,Manipur
+phek,Phek,kolkata,0,Remote,22.9885,88.6499,656,529,NL,Nagaland
+kiphire,Kiphire,kolkata,0,Remote,21.9261,87.9977,638,562,AS,Assam
+melchhamunda,Melchhamunda,kolkata,0,Remote,22.248,87.5629,626,552,OR,Odisha
+dunguripali,Dunguripali,kolkata,0,Remote,23.1173,88.1788,643,525,OR,Odisha
+athamallick,Athamallick,kolkata,0,Remote,22.0227,87.9252,636,559,OR,Odisha
+jeypore,Jeypore,kolkata,0,Remote,22.6666,89.2296,672,539,OR,Odisha
+sairang,Sairang,kolkata,0,Remote,23.0851,89.0122,666,526,MZ,Mizoram
+mammit,Mammit,kolkata,0,Remote,22.892,87.8165,633,532,MZ,Mizoram
+aska,Aska,kolkata,0,Remote,22.57,88.36,648,542,,
+chomu,Chomu,jaipur,0,Remote,26.91,75.79,298,385,,
+bangarpet,Bangarpet,bangalore,0,Remote,12.5615,77.0928,338,825,,
+chilakaluripeta,Chilakaluripeta,hyderabad,0,Remote,16.6573,79.2771,417,696,,
