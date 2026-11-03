@@ -14,6 +14,7 @@ data/sessions.json
 data/tmp/
 data/trash/
 data/history/
+data/thumbs/
 
 # Temporary files
 *.tmp
