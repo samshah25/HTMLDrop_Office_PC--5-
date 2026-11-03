@@ -1678,6 +1678,37 @@ def sync_task_to_slack_script(task_name):
             pass
 
 
+def remove_task_from_slack_script(task_name):
+    """Automatically removes a deleted or disabled refresh task from the Slack monitoring script (task_1.py)."""
+    if not task_name:
+        return
+    candidate_paths = [
+        r"C:\Users\hp\Downloads\task_1.py",
+        Path.home() / "Downloads" / "task_1.py",
+        BASE_DIR / "task_1.py",
+        BASE_DIR.parent / "task_1.py",
+    ]
+    raw_name = str(task_name).strip().lstrip("\\")
+    for script_path in candidate_paths:
+        try:
+            sp = Path(script_path)
+            if not sp.is_file():
+                continue
+            lines = sp.read_text(encoding="utf-8").splitlines()
+            new_lines = []
+            modified = False
+            for line in lines:
+                clean_line = line.strip().lstrip("r").strip('"').strip("'").strip(",").strip().lstrip("\\")
+                if clean_line.lower() == raw_name.lower():
+                    modified = True
+                    continue
+                new_lines.append(line)
+            if modified:
+                sp.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        except Exception:
+            pass
+
+
 def register_refresh_task(slug, rec, settings):
     if os.name != "nt":
         raise UserError("Windows Task Scheduler is only available on Windows. Schedule settings were not registered on this computer.", 501)
@@ -1731,6 +1762,7 @@ def delete_refresh_task(slug, rec=None, is_external=False):
             else:
                 subprocess.run(["schtasks.exe", "/Delete", "/TN", t_name, "/F"],
                                capture_output=True, text=True, timeout=15, check=False)
+            remove_task_from_slack_script(t_name)
         else:
             for cand in get_task_candidates(slug):
                 if is_external:
@@ -1739,6 +1771,8 @@ def delete_refresh_task(slug, rec=None, is_external=False):
                 else:
                     subprocess.run(["schtasks.exe", "/Delete", "/TN", cand, "/F"],
                                    capture_output=True, text=True, timeout=15, check=False)
+                remove_task_from_slack_script(cand)
+        remove_task_from_slack_script(refresh_task_name(slug))
 
 
 # ---------------------------------------------------------------- dashboard snapshots
