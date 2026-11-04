@@ -363,9 +363,9 @@
   "apparel-gym-cohorts": {
     "title": "Apparel & Gym Cohorts",
     "user": "priyal",
-    "version": 9,
+    "version": 13,
     "created": "2026-10-16T16:03:38",
-    "updated": "2026-10-26T14:59:16",
+    "updated": "2026-11-04T11:15:17",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -399,9 +399,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 15,
+    "version": 36,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-10-28T11:29:51",
+    "updated": "2026-11-04T18:29:28",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -561,9 +561,9 @@
   "apparel-gsc-analysis": {
     "title": "Apparel Search Analysis",
     "user": "priyal",
-    "version": 22,
+    "version": 28,
     "created": "2026-10-26T14:59:01",
-    "updated": "2026-10-27T16:28:29",
+    "updated": "2026-11-04T18:58:10",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -579,9 +579,9 @@
   "sales-call-analysis": {
     "title": "Best Practices Doc",
     "user": "vaibhav",
-    "version": 3,
+    "version": 4,
     "created": "2026-10-26T20:05:02",
-    "updated": "2026-10-28T16:16:32",
+    "updated": "2026-11-03T16:36:20",
     "entry": "index.html",
     "hub": {
       "show": true,
@@ -687,9 +687,27 @@
   "jd-ad-call-metrics": {
     "title": "Justdial Ad & Call Metrics",
     "user": "priyal",
-    "version": 4,
+    "version": 6,
     "created": "2026-11-02T17:00:47",
-    "updated": "2026-11-02T17:25:28",
+    "updated": "2026-11-04T11:09:26",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "apparel-market-trend": {
+    "title": "Apparel Market Trend",
+    "user": "priyal",
+    "version": 4,
+    "created": "2026-11-04T11:07:44",
+    "updated": "2026-11-04T11:15:17",
     "entry": "index.html",
     "hub": {
       "show": false,

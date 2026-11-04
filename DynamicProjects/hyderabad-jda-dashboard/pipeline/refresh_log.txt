@@ -99,3 +99,17 @@
 2026-11-03 12:51:58  HR: 4256 branch field JDAs on the HR list ({'left': 4063, 'working': 193}); HR details for 560 of 560 people who presented
 2026-11-03 12:51:58  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
 2026-11-03 12:52:05  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 191 days, 600 reps, 93 managers, 32916 rep-days
+2026-11-04 12:50:05  === Hyderabad dashboard refresh: 2026-04-21 to 2026-11-03 ===
+2026-11-04 12:50:24  1947 Hyderabad-branch pincodes in 82 areas
+2026-11-04 12:51:12  Presentations: 192 days with Hyderabad JDA presentations, 33082 rep-days, 560 reps (saved 181, fetched 14, not in feed 2)
+2026-11-04 12:51:15  Sales 2026-04-21..2026-04-30: 335 JDA deal rows
+2026-11-04 12:51:17  Sales 2026-05-01..2026-05-31: 1089 JDA deal rows
+2026-11-04 12:51:19  Sales 2026-06-01..2026-06-30: 1163 JDA deal rows
+2026-11-04 12:51:22  Sales 2026-07-01..2026-07-31: 1256 JDA deal rows
+2026-11-04 12:51:24  Sales 2026-08-01..2026-08-31: 1175 JDA deal rows
+2026-11-04 12:51:26  Sales 2026-09-01..2026-09-30: 1288 JDA deal rows
+2026-11-04 12:51:29  Sales 2026-10-01..2026-10-31: 1129 JDA deal rows
+2026-11-04 12:51:31  Sales 2026-11-01..2026-11-03: 108 JDA deal rows
+2026-11-04 12:51:37  HR: 4256 branch field JDAs on the HR list ({'left': 4063, 'working': 193}); HR details for 560 of 560 people who presented
+2026-11-04 12:51:37  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4138, 'JDA CUSTOMER FACING': 59, 'JDA Team Leader + Cust. Facing': 54, 'JDA Sales Manager': 44, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2, 'JDA Sales manager': 1}
+2026-11-04 12:51:42  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 192 days, 600 reps, 93 managers, 33082 rep-days
