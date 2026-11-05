@@ -1150,8 +1150,16 @@ def dynamic_owner_allowed(user, rec):
 
 def detect_dynamic_entry(project: Path):
     """Detect launch method separately from refresh capability.
-    HTML dashboards take precedence so they are served directly on port 8150."""
+    Explicit web application servers (app.py, server.py, run.py) take precedence as Python services.
+    HTML dashboards take precedence when only static HTML or main.py refresh scripts are present."""
     ignored = {".venv", ".git", "node_modules"}
+
+    # Explicit Python web server entries run as isolated background services on dynamic ports
+    for name in ("app.py", "server.py", "run.py"):
+        candidate = project / name
+        if candidate.is_file():
+            return name, "python", None
+
     indexes = [p for p in project.rglob("index.html") if p.is_file() and not ignored.intersection(p.parts)]
     if len(indexes) == 1:
         return str(indexes[0].relative_to(project)).replace("\\", "/"), "static", indexes[0].parent
@@ -1165,10 +1173,8 @@ def detect_dynamic_entry(project: Path):
         root_html = [p for p in html_files if p.parent == project]
         chosen = root_html[0] if root_html else html_files[0]
         return str(chosen.relative_to(project)).replace("\\", "/"), "static", chosen.parent
-    for name in ("app.py", "main.py", "run.py", "server.py"):
-        candidate = project / name
-        if candidate.is_file():
-            return name, "python", None
+    if (project / "main.py").is_file():
+        return "main.py", "python", None
     return None, None, None
 
 
