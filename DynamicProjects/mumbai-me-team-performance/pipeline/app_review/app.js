@@ -129,14 +129,32 @@
   /* ---------- the page's people and teams (2026-10-29): the MEs and the ME tree, or the TMEs and the TME tree ---------- */
   // NOTME: in TME mode, one more 'TME' for the deals closed with no TME on the deal record (at the top of the tree), so
   // the TMEs add up to the same totals as the MEs
-  const NOTME = TME_L.length;
-  const MES = TM ? [...TME_L, ['', 'No TME on the deal record']] : ME_L, TMES = TM ? ME_L : TME_L;
+  // SELFME (2026-11-04): one more line for the appointments an ME fixed themselves (below)
+  const NOTME = TME_L.length, SELFME = NOTME + 1;
+  const MES = TM ? [...TME_L, ['', 'No TME on the deal record'], ['', 'Fixed by the ME']] : ME_L, TMES = TM ? ME_L : TME_L;
+  const notTme = me => TM && (me === NOTME || me === SELFME);   // TME mode: lines that are not a TME (the counts of TMEs leave them out)
   const MGRS = TM ? RAW.tl.nodes : RAW.mgrs, MGUP = TM ? RAW.tl.up : RAW.mgUp;
   const NME = MES.length, NTM = TMES.length, NMG = MGRS.length, OUTN = NMG;
-  const ATL0 = TM ? b64(RAW.tl.a, Uint16Array) : null;
+  const ATL0 = TM ? b64(RAW.tl.a, Uint16Array) : null, DTL0 = TM ? b64(RAW.tl.d, Uint16Array) : null;
+  // an appointment the ME fixed themselves (2026-11-04, the user: "why is Hemang Shah in TME mode, he's an ME"): its TME is
+  // the ME who took it (TME team BDE, the ME's own manager as its team leader). TME mode shows these as one line, SELFME,
+  // with no team leader, so they stay in the group outside the TME head's line where they sat, instead of the MEs as TMEs
+  // and their managers as team leaders; the same for the deal records and the not-counted rows. ME mode is unchanged
+  if (TM) {
+    const meOf = new Map(ME_L.map((x, k) => [ncode(x[0]), k])), same = TME_L.map(x => x[0] && meOf.has(ncode(x[0])) ? meOf.get(ncode(x[0])) : -1);
+    const self = (t, m) => t < TME_L.length && same[t] >= 0 && same[t] === m;
+    for (let i = 0; i < N0; i++) if (self(ATM0[i], AME0[i])) { ATM0[i] = SELFME; ATL0[i] = 65535; }
+    for (let j = 0; j < DLN0; j++) if (self(DLTM0[j], DLME0[j])) { DLTM0[j] = SELFME; DTL0[j] = 65535; }
+    for (let k = 0; k < NCN0; k++) if (self(NCTM0[k], NCME0[k])) NCTM0[k] = SELFME;
+  }
   const ST = TM ? makeTree(MGRS, MGUP, MES, ATM0, ATL0, RAW.tl.root) : MT;
   const ROOT = ST.ROOT, DEPTH = ST.DEPTH, TEAMOF = ST.TEAMOF, ME_OWN = ST.OWN, ME_LEAD = ST.LEAD;
   const UPN = m => m === OUTN ? ROOT : MGUP[m];   // a team's parent team
+  // a manager's page (2026-11-02, Kushal via the user: each manager sees only their own line, behind a login): the page
+  // holds only that manager's records and stays on their team; 'Mumbai' adds the rest of the ME head's line as anonymous
+  // records under one placeholder ME at the head (manager_pages.py). -1 on the full page
+  const MGRN = META.mgr && !TM ? META.mgr.node : -1;
+  const inMgr = m => { for (let c = m, g = 0; c >= 0 && g < 8; g++) { if (c === MGRN) return true; if (c === ROOT) return false; c = UPN(c); } return false; };
   const NDEP = m => m === OUTN ? 1 : DEPTH[m];    // 0 the head, 1 a manager, 2 a team leader
   const HEADNAME = MGRS[ROOT][1];
   const OUT_NAME = `Not in ${HEADNAME}'s line`;
@@ -144,8 +162,8 @@
   const N = KA.length, AD = keep(AD0, KA), AME = keep(TM ? ATM0 : AME0, KA), AMG = keep(TM ? ATL0 : AMG0, KA), ATM = keep(TM ? AME0 : ATM0, KA), ATT = keep(ATT0, KA), AO = keep(AO0, KA),
     ARL = keep(ARL0, KA), AF = keep(AF0, KA), ASL = keep(ASL0, KA), ABK = keep(ABK0, KA), AEN = keep(AEN0, KA), ADC = keep(ADC0, KA);
   const CO = KA.map(i => RAW.co[i]), PID = KA.map(i => RAW.pid[i]);
-  const DLME_S = TM ? DLTM0.map(v => v < NOTME ? v : NOTME) : DLME0;
-  const DLN = KD.length, DLD = keep(DLD0, KD), DLME = keep(DLME_S, KD), DLMG = keep(TM ? b64(RAW.tl.d, Uint16Array) : DLMG0, KD), DLT = keep(DLT0, KD), DLW = keep(DLW0, KD),
+  const DLME_S = TM ? DLTM0.map(v => v < NOTME || v === SELFME ? v : NOTME) : DLME0;
+  const DLN = KD.length, DLD = keep(DLD0, KD), DLME = keep(DLME_S, KD), DLMG = keep(TM ? DTL0 : DLMG0, KD), DLT = keep(DLT0, KD), DLW = keep(DLW0, KD),
     DLPID = DLPID0.length ? KD.map(j => DLPID0[j]) : [], DLTM = keep(TM ? DLME0 : DLTM0, KD);
   const NCN = KN.length, NCD = keep(NCD0, KN), NCME = keep(TM ? NCTM0 : NCME0, KN), NCTM = keep(TM ? NCME0 : NCTM0, KN), NCK = keep(NCK0, KN);
   // TME mode's calls (fetch_calls.py; the user's rules, 31 Oct 2026): per TME and day, the dialer calls whose agent is a
@@ -246,7 +264,7 @@
 
   /* ---------- view state ---------- */
   // scope: one team of the hierarchy (ROOT = all Mumbai); lvl: the table's Show (1 managers, 2 team leaders, 3 MEs)
-  const V = { scope: ROOT, cb: 'att', from: 0, to: LAST, pa: null, pb: null, pl: '', preset: null, view: 'table', sortBy: 'n',
+  const V = { scope: MGRN >= 0 ? MGRN : ROOT, cb: 'att', from: 0, to: LAST, pa: null, pb: null, pl: '', preset: null, view: 'table', sortBy: 'n',
     qKind: 'all', qTeam: -1, qSev: 'all', qStat: 'open', qAll: false, lvl: 1, xOpen: new Set(), xShut: new Set(), ovOpen: new Set(), ovShut: new Set(), ovSort: 'n',
     // the TME view (2026-10-28): the TME team shown (kept as a team, so it follows the grouping settings; -1 = Hot Data),
     // By TME or By ME, its order, and the view to go back to
@@ -595,9 +613,13 @@
   // ME head's line so nobody takes it for all of Mumbai, and show the gap to the Sales MIS)
   function lineNote() {
     if (!LINE_ONLY) return '';
+    if (MGRN >= 0) return '';   // a manager's page: no note (the user, 2 Nov: unnecessary; the top tag names the team)
     const h = outsideIn(V.from, V.to);
     const what = [h.n ? plural(h.n, 'appointment') + ' given' : '', h.dl ? `${n0(h.dl)} ${Math.round(h.dl) === 1 ? 'deal' : 'deals'} closed` : '', h.nc ? `${n0(h.nc)} not counted` : ''].filter(Boolean).join(', ');
-    return `<p class="linenote">${esc(META.city)} = ${esc(MEHEAD)}'s line only. ${h.mes ? `Left out in these dates: ${plural(h.mes, 'ME')} outside the line (${what}), so the totals are below the Sales MIS by that much.` : 'No MEs outside the line in these dates.'} <button type="button" class="lnk on-navy" data-open-set="1">Change in settings</button></p>`;
+    // 2026-11-02 (the user: the band reads text-heavy; polish only): one short line, the whole sentence on hover
+    const full = `${META.city} = ${MEHEAD}'s line only. ${h.mes ? `Left out in these dates: ${plural(h.mes, 'ME')} outside the line (${what}), so the totals are below the Sales MIS by that much.` : 'No MEs outside the line in these dates.'}`;
+    const brief = [h.n ? plural(h.n, 'appointment') + ' given' : '', h.dl ? `${n0(h.dl)} ${Math.round(h.dl) === 1 ? 'deal' : 'deals'} closed` : ''].filter(Boolean).join(', ');
+    return `<p class="linenote" title="${esc(full)}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>${h.mes ? `Left out: ${esc(plural(h.mes, 'ME'))} outside the line${brief ? ` (${esc(brief)})` : ''}` : 'No MEs outside the line in these dates'} · <button type="button" class="lnk on-navy" data-open-set="1">Change in settings</button></p>`;
   }
   const ARROW = `<div class="sarr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>`;
   // a team's chain from the top: [ROOT, manager, team leader]
@@ -606,15 +628,19 @@
   // the way back up above the heading: All Mumbai > manager > (this team, named in the heading)
   function crumbs() {
     if (!scoped()) return '';
-    const c = chainOf(V.scope).slice(0, -1);
+    const c0 = chainOf(V.scope), c = (MGRN >= 0 ? c0.slice(Math.max(0, c0.indexOf(MGRN))) : c0).slice(0, -1);
+    if (!c.length) return '';
     return `<nav class="crumbs" aria-label="Teams above">${c.map(m => `<button type="button" class="lnk" data-scope="${m}" title="Show ${esc(m === ROOT ? `all of ${META.city}` : `${NNAME(m)}'s whole team`)}">${esc(m === ROOT ? `All ${META.city}` : NNAME(m))}</button><span aria-hidden="true">›</span>`).join('')}</nav>`;
   }
   const teamHead = () => scoped() ? `${esc(NNAME(V.scope))}${V.scope === OUTN ? '' : "'s team"} · ` : '';
   // one step of the band's funnel: bar (width = share of appointments given) and its words; `open` makes the bar a button
+  // 2026-11-02 (the user: polish): the words sit right after the bar, the rate as a figure (its meaning on hover); the
+  // bars keep their widths, against the band less room for the words (--flw)
   function fRow(w, cls, val, lab, sub, chg, open) {
-    const out = w < 17, bar = `<span class="fbar ${cls}" style="width:${Math.max(w, 1.5).toFixed(1)}%">${out ? '' : `<span class="tn">${val}</span>`}</span>${out ? `<span class="fout tn">${val}</span>` : ''}`;
-    return `<div class="fr">${open ? `<button type="button" class="ftrack fgo" data-open="${open}" title="See the deals closed">${bar}</button>` : `<div class="ftrack">${bar}</div>`}` +
-      `<div class="flab"><span class="l1"><b>${lab}</b> · ${sub}</span>${chg ? `<span class="l2">${chg}</span>` : ''}</div></div>`;
+    const out = w < 17, ww = `style="width:calc((100% - var(--flw)) * ${(Math.max(w, 1.5) / 100).toFixed(4)})"`;
+    const bar = `<span class="fbar ${cls}">${out ? '' : `<span class="tn">${val}</span>`}</span>`;
+    return `<div class="fr">${open ? `<button type="button" class="ftrack fgo" data-open="${open}" title="See the deals closed" ${ww}>${bar}</button>` : `<div class="ftrack" ${ww}>${bar}</div>`}${out ? `<span class="fout tn">${val}</span>` : ''}` +
+      `<div class="flab"><span class="l1"><b>${lab}</b>${sub}</span>${chg ? `<span class="l2">${chg}</span>` : ''}</div></div>`;
   }
   function renderBand() {
     renderPills();
@@ -646,7 +672,7 @@
     const chN = ch(dN, `${dN >= 0 ? '+' : '−'}${n0(Math.abs(dN))} (was ${n0(P.n)})`);
     const chA = ch(dA, `${dA > 0 ? 'up' : dA < 0 ? 'down' : 'same,'} ${Math.abs(dA).toFixed(1)} pts (was ${fP(pAttP)})`);
     const chC = ch(dC, `${dC > 0 ? 'up' : dC < 0 ? 'down' : 'same,'} ${Math.abs(dC).toFixed(1)} pts (was ${fP(pConv)})`);
-    const cityR = x => scoped() ? ` <span class="chg flat">· ${esc(META.city)} ${fP(x)}</span>` : '';
+    const cityR = x => scoped() ? ` <span class="chg flat">${hasP ? '· ' : ''}${esc(META.city)} ${fP(x)}</span>` : '';   // no leading dot when there is no change before it (2026-11-02)
     // MEs with appointments; MEs who only closed a deal (no appointment in the dates) are named apart, so the count
     // matches the Table's 'N MEs' (both together)
     // TME mode: 'No TME on the deal record' is not a TME
@@ -670,12 +696,14 @@
     // Overview: the funnel (bar width = share of appointments given), each step with its own change (2026-10-15: the
     // side panel that repeated the rates is gone); deals closed and each not-attended reason open their records
     const frow = fRow;
-    const why = k => R.o[k] ? `<button type="button" class="lnk on-navy" data-o="${k}" title="See these appointments">${n0(R.o[k])} ${OUT[k]}</button>` : `${n0(R.o[k])} ${OUT[k]}`;
+    // the not-attended reasons as small chips (2026-11-02, polish); each still opens its appointments
+    const why = k => R.o[k] ? `<button type="button" class="mchip" data-o="${k}" title="See these appointments"><b class="tn">${n0(R.o[k])}</b>${OUT[k]}</button>` : `<span class="mchip off"><b class="tn">0</b>${OUT[k]}</span>`;
+    const fpc = (v, tip, word) => `<span class="fpc tn" title="${esc(tip)}">${v}</span>${word ? `<span class="fsub">${word}</span>` : ''}`;
     $('#hero').innerHTML = `<div class="fx"><div class="fmain">${head}${callStrip(R, P, hasP)}<div class="fn">` +
-      frow(100, 'g', n0(R.n), 'appointments given', `${W.toS} ${plural(R.gMes.size, W.s)}`, chN + dOnly) +
-      frow(attP || 0, 'a', n0(a), 'attended', `${fP(attP)} of appointments given`, chA + cityR(cA)) +
-      frow(Math.min(100, pc(R.dl, R.n) || 0), 'd', n0(R.dl), 'deals closed', `${fP(conv)} ${CVOF()} (conversion)${TM && R.rv ? ` · ${fRv(R.rv)} RV3yr` : ''}`, chC + cityR(cC), 'deals') +
-      `</div><p class="miss">Not attended: <b>${n0(R.n - a)}</b> (${fP(pc(R.n - a, R.n))}) · ${why(3)} · ${why(4)} · ${why(5)}</p></div>` +
+      frow(100, 'g', n0(R.n), 'appointments given', `<span class="fsub">${W.toS} ${plural(R.gMes.size, W.s)}</span>`, chN + dOnly) +
+      frow(attP || 0, 'a', n0(a), 'attended', fpc(fP(attP), `${fP(attP)} of appointments given`), chA + cityR(cA)) +
+      frow(Math.min(100, pc(R.dl, R.n) || 0), 'd', n0(R.dl), 'deals closed', fpc(fP(conv), `${fP(conv)} ${CVOF()} (conversion)`, 'conversion') + (TM && R.rv ? `<span class="fsub">${fRv(R.rv)} RV3yr</span>` : ''), chC + cityR(cC), 'deals') +
+      `</div><p class="miss"><span class="mlab"><b class="tn">${n0(R.n - a)}</b>not attended (${fP(pc(R.n - a, R.n))})</span>${why(3)}${why(4)}${why(5)}</p></div>` +
       `<div class="fside">${TM ? tmeSide() : ''}${movers()}${trend()}</div></div>`;
   }
   // TME mode's band (2026-10-30, the user: the TME funnel with the calls, as in the Hot Data TME report): the TMEs' calls,
@@ -714,11 +742,15 @@
     const cur = list(V.from, V.to), prv = list(V.pa, V.pb);
     if (!cur.length && !prv.length) return '';
     if (V.from !== V.to && cur.length === prv.length) return '';   // one in each: still like for like
-    const say = ds => ds.map(d => `${esc(dayName(d))} (${n0(DAYN[d])} appointments given in ${esc(META.city)})`).join(', ');
+    const say = ds => ds.map(d => `${dayName(d)} (${n0(DAYN[d])} appointments given in ${META.city})`).join(', ');
     const parts = [];
     if (cur.length) parts.push(V.from === V.to ? `${say(cur)} was a low day` : `These dates include ${say(cur)}`);
-    if (prv.length) parts.push(`${esc(prevName())} ${V.pa === V.pb ? 'was' : 'includes'} ${V.pa === V.pb ? `a low day (${n0(DAYN[V.pa])} appointments given)` : say(prv)}`);
-    return `<p class="lownote">${parts.join('; ')}. A usual day has about ${n0(Math.round(USUAL / 10) * 10)}, so the changes are not like for like.</p>`;
+    if (prv.length) parts.push(`${prevName()} ${V.pa === V.pb ? 'was' : 'includes'} ${V.pa === V.pb ? `a low day (${n0(DAYN[V.pa])} appointments given)` : say(prv)}`);
+    const full = `${parts.join('; ')}. A usual day has about ${n0(Math.round(USUAL / 10) * 10)}, so the changes are not like for like.`;
+    // 2026-11-02 (the user: text-heavy; polish): one line naming the low days, the whole sentence on hover
+    const brief = [cur.length ? (V.from === V.to ? `${dayName(cur[0])} was a low day` : `low ${cur.length === 1 ? 'day' : 'days'} ${cur.map(dayName).join(', ')}`) : '',
+      prv.length ? `${prevName()}: ${V.pa === V.pb ? 'a low day' : prv.map(dayName).join(', ')}` : ''].filter(Boolean).join(' · ');
+    return `<p class="lownote" title="${esc(full)}"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Not like for like: ${esc(brief)}</p>`;
   }
   // the band's 'Across managers' lines: plain facts about the level below the team shown (managers, team leaders or MEs)
   // a TME's appointments given a day present against the usual of their own TME team (2026-10-31, the user: a TME's main
@@ -732,7 +764,7 @@
     PACE = new Map();
     const R = CITY, rows = scoped() ? rowsOfMes(CITY) : MEROWS, by = new Map();
     const team = me => { let b = hrTeamOf(me), bn = 0; if (b >= 0) return b; for (let t = 0; t < NT; t++) { const g = R.meT[(me * NT + t) * 3]; if (g > bn) { bn = g; b = t; } } return b; };
-    for (const r of rows) { if (r.me === NOTME || r.pd === null || r.pd < PACE_PD || !r.n) continue; const t = team(r.me); if (t < 0) continue; if (!by.has(t)) by.set(t, []); by.get(t).push(r); }
+    for (const r of rows) { if (notTme(r.me) || r.pd === null || r.pd < PACE_PD || !r.n) continue; const t = team(r.me); if (t < 0) continue; if (!by.has(t)) by.set(t, []); by.get(t).push(r); }
     for (const [t, rs] of by) {
       if (rs.length < PACE_N) continue;
       const med = median(rs.map(r => r.perDay)); let cn = 0, ca = 0;
@@ -748,7 +780,7 @@
   // against the same MEs (a click orders the TME list by it), when the appointments were allocated, and a pointer to
   // longer dates when most appointments sit with TMEs who fixed too few to compare
   function tmeSide() {
-    const R = CUR, rows = MEROWS.filter(r => r.me !== NOTME && r.n > 0), L = rows.map(lfOf).filter(Boolean);
+    const R = CUR, rows = MEROWS.filter(r => !notTme(r.me) && r.n > 0), L = rows.map(lfOf).filter(Boolean);
     // where to look first (2026-10-30, the review): the TMEs past the usual swing below the same MEs on conversion, the
     // most deals short first (size and gap in one number), with how many of the last 3 months they were below
     const short = rows.map(r => ({ r, x: lfOf(r) })).filter(o => o.x && !tFew(o.x).c && o.x.zC <= -TZ).map(o => Object.assign(o, { s: o.x.ed - o.x.deals })).sort((a, b) => b.s - a.s);
@@ -811,7 +843,7 @@
     $('#sumL').innerHTML = s.lookA + (s.look || `<div class="mv tmv"><h3>Through deals <span class="h3s">· the added view</span></h3><p class="mu sumnone">No TME is past the usual swing below the same MEs on conversion in these dates.${V.to - V.from < 27 ? ' Longer dates give more TMEs enough appointments to compare.' : ''}</p></div>`);
     $('#sumR').innerHTML = s.rest + movers() + trend();
     // the counts on the tabs
-    const nP = MEROWS.filter(r => r.me !== NOTME).length;   // as the TMEs list: with appointments or deals closed
+    const nP = MEROWS.filter(r => !notTme(r.me)).length;   // as the TMEs list: with appointments or deals closed
     const sm = (k, v) => { const e = $(`#tSec [data-sec="${k}"] small`); if (e) e.textContent = v ? n0(v) : ''; };
     sm('tmes', nP);
   }
@@ -842,8 +874,10 @@
     const span = (key, lab) => {
       const v = ok.filter(u => u.s[key] !== null && u.s[key] !== undefined && isFinite(u.s[key])).sort((x, y) => x.s[key] - y.s[key]);
       if (v.length < 2 || Math.round(v[0].s[key]) === Math.round(v[v.length - 1].s[key])) return;
-      out.push(`<p><span class="k">${lab}</span><span>lowest <b>${esc(v[0].name)}</b> ${fPi(v[0].s[key])} · highest <b>${esc(v[v.length - 1].name)}</b> ${fPi(v[v.length - 1].s[key])}</span></p>`);
+      out.push(`<span class="k">${lab}</span>${cell(v[0].name, fPi(v[0].s[key]))}${cell(v[v.length - 1].name, fPi(v[v.length - 1].s[key]))}`);
     };
+    // ME mode (2026-11-02, the user: text-heavy; polish): a grid, lowest | highest, names cut with ... (whole on hover)
+    const cell = (nm, v, pre, post) => `<span class="mvc" title="${esc(`${pre ? pre + ': ' : ''}${nm} ${v}${post ? ' ' + post : ''}`)}">${pre ? `<span class="mvx">${pre}</span>` : ''}<span class="mvn">${esc(nm)}</span><b class="mvf tn">${v}</b>${post ? `<small>${post}</small>` : ''}</span>`;
     if (TM) {   // TME mode (2026-10-30, the review): raw rates would compare lead types (Super Cat converts far above the rest)
       const f = x => `${x > 0 ? '+' : x < 0 ? MINUS : ''}${Math.abs(Math.round(x))} pts`;
       const spanL = (k, lab) => { const v = ok.map(u => ({ u, x: lfPts(u.s, k) })).filter(o => o.x !== null).sort((a, b) => a.x - b.x); if (v.length < 2 || Math.round(v[0].x) === Math.round(v[v.length - 1].x)) return;
@@ -851,9 +885,12 @@
       spanL('a', 'Attended % vs same MEs'); spanL('c', 'Conversion vs same MEs');
     } else { span('attP', 'Attended %'); span('conv', 'Conversion'); }
     const na = units.filter(u => u.s.o[3] > 0).sort((x, y) => y.s.o[3] - x.s.o[3]);
-    if (na.length > 1 && CUR.o[3] >= 5) out.push(`<p><span class="k">Not Available</span><span>most: <b>${esc(na[0].name)}</b>, ${n0(na[0].s.o[3])} of ${n0(CUR.o[3])}</span></p>`);
+    const nSpan = out.length;
+    if (na.length > 1 && CUR.o[3] >= 5) out.push(TM ? `<p><span class="k">Not Available</span><span>most: <b>${esc(na[0].name)}</b>, ${n0(na[0].s.o[3])} of ${n0(CUR.o[3])}</span></p>`
+      : `<span class="k">Not Available</span><span class="mvw">${cell(na[0].name, n0(na[0].s.o[3]), 'most', `of ${n0(CUR.o[3])}`)}</span>`);
     if (!out.length) return '';
-    return `<div class="mv${TM ? ' tmv' : ''}"><h3>Across ${lvlName}${ok.length < units.length ? ` <small>with ${minN}+ appointments given</small>` : ''}</h3>${out.join('')}</div>`;
+    const h3 = `<h3>Across ${lvlName}${ok.length < units.length ? ` <small>with ${minN}+ appointments given</small>` : ''}</h3>`;
+    return TM ? `<div class="mv tmv">${h3}${out.join('')}</div>` : `<div class="mv">${h3}<div class="mvg">${nSpan ? '<span></span><span class="mvh">Lowest</span><span class="mvh">Highest</span>' : ''}${out.join('')}</div></div>`;
   }
   // the band's small trend: attended % and conversion over the last 4 weeks (each usual day) or 12 weeks (each week),
   // ending on the last day shown, for the team shown; the dates shown are dotted
@@ -870,13 +907,18 @@
       pts.push({ b, d0, d1, a: A[b] / G[b] * 100, c: (CB() ? D[b] / G[b] : A[b] ? D[b] / A[b] : 0) * 100, sel: d1 >= V.from && d0 <= V.to });
     }
     if (pts.length < 3) return '';
-    const W = 300, H = 46, x = b => 4 + b / Math.max(1, nb - 1) * (W - 8), y = v => H - 4 - Math.max(0, Math.min(100, v)) / 100 * (H - 8);
+    const W = 300, H = 52, x = b => 4 + b / Math.max(1, nb - 1) * (W - 8), y = v => H - 4 - Math.max(0, Math.min(100, v)) / 100 * (H - 8);
     const path = k => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.b).toFixed(1)},${y(p[k]).toFixed(1)}`).join('');
     const dots = pts.filter(p => p.sel).map(p => `<path class="da" d="M${x(p.b).toFixed(1)},${y(p.a).toFixed(1)}h0"/><path class="dc" d="M${x(p.b).toFixed(1)},${y(p.c).toFixed(1)}h0"/>`).join('');
     const tips = pts.map(p => `<rect x="${(x(p.b) - W / nb / 2).toFixed(1)}" y="0" width="${(W / nb).toFixed(1)}" height="${H}" fill="transparent"><title>${esc(daily ? dayName(p.d0) : fRange(p.d0, p.d1))}: attended ${Math.round(p.a)}%, conversion ${Math.round(p.c)}%</title></rect>`).join('');
-    return `<div class="trd"><h3>${daily ? 'Last 4 weeks, each usual day' : 'Last 12 weeks, each week'}</h3>` +
-      `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Attended % and conversion, ${daily ? 'each day of the last 4 weeks' : 'each week of the last 12 weeks'}"><path class="g50" d="M0,${y(50).toFixed(1)}H${W}"/><path class="la" d="${path('a')}"/><path class="lc" d="${path('c')}"/>${dots}${tips}</svg>` +
-      `<p class="tkey"><span><i class="a"></i>Attended %</span><span><i class="c"></i>Conversion</span><span title="Point at a ${daily ? 'day' : 'week'} for its numbers">dashed = 50% · dots = the dates shown</span></p></div>`;
+    // the last values beside the line ends (2026-11-02, polish), kept 14 px apart; the dashed line's 50% beside it
+    const lp = pts[pts.length - 1]; let ya = y(lp.a), yc = y(lp.c);
+    if (Math.abs(ya - yc) < 14) { const m = (ya + yc) / 2, up = ya <= yc ? -7 : 7; ya = m + up; yc = m - up; }
+    const y5 = y(50), lab50 = Math.abs(y5 - ya) >= 13 && Math.abs(y5 - yc) >= 13 ? `<span class="t50" style="top:${(y5 - 7).toFixed(1)}px">50%</span>` : '';
+    return `<div class="trd"><h3 title="${esc(`Dashed line = 50% · dots = the dates shown · point at a ${daily ? 'day' : 'week'} for its numbers`)}">${daily ? 'Last 4 weeks, each usual day' : 'Last 12 weeks, each week'}</h3>` +
+      `<div class="trw"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Attended % and conversion, ${daily ? 'each day of the last 4 weeks' : 'each week of the last 12 weeks'}"><path class="g50" d="M0,${y(50).toFixed(1)}H${W}"/><path class="la" d="${path('a')}"/><path class="lc" d="${path('c')}"/>${dots}${tips}</svg>` +
+      `<span class="te" style="top:${(ya - 8).toFixed(1)}px" title="Attended %, ${esc(daily ? dayName(lp.d0) : fRange(lp.d0, lp.d1))}">${Math.round(lp.a)}%</span><span class="te" style="top:${(yc - 8).toFixed(1)}px" title="Conversion, ${esc(daily ? dayName(lp.d0) : fRange(lp.d0, lp.d1))}">${Math.round(lp.c)}%</span>${lab50}</div>` +
+      `<p class="tkey"><span><i class="a"></i>Attended %</span><span><i class="c"></i>Conversion</span></p></div>`;
   }
   $('#hero').addEventListener('click', ev => {
     const s = ev.target.closest('[data-scope]'); if (s) return setScope(+s.dataset.scope);
@@ -1108,7 +1150,7 @@
   const pc0 = v => Math.round(v * 100) + '%';
   let SK = null;   // what the card shows (for the list)
   // the card is hidden while the user works on it (31 Oct 2026): shown only with sk=1 in the page link, kept in the link
-  const SK_ON = new URLSearchParams(location.hash.slice(1)).get('sk') === '1';
+  const SK_ON = new URLSearchParams(location.hash.slice(1)).get('sk') === '1' && !META.mgr;
   function renderSkew() {
     const box = $('#skBody'); if (!box) return;
     if (TM || !SK_ON) { $('#skCard').hidden = true; SK = null; return; }   // about MEs; hidden unless sk=1 (the user, 31 Oct 2026: still working on it)
@@ -1293,14 +1335,17 @@
     const tc = GROUPS.map(() => [0, 0, 0]);
     if (CLN) for (const r of MEROWS) { if (!r.calls && !r.n) continue; const g = groupsOf(R, r.me); let b = -1; g.forEach((x, i) => { if (x[0] && (b < 0 || x[0] > g[b][0])) b = i; }); if (b < 0) continue; tc[b][0] += r.calls; tc[b][1] += r.conn; tc[b][2] += r.n; }
     $('#teams').style.gridTemplateColumns = `repeat(${NG}, minmax(0, 1fr))`;
-    const lv = (w, cls, txt) => `<span class="ml ${cls}"><i style="width:${Math.max(w, 1.5).toFixed(1)}%">${w >= 42 ? txt : ''}</i>${w < 42 ? `<em>${txt}</em>` : ''}</span>`;
+    // 2026-11-02 (the user: polish): the bars' words in the bar when they fit, else beside it (as the TME-mode boxes), so
+    // nothing is cut; attended % and conversion as figures, Mumbai's under them when a team is picked
+    const gap = innerWidth <= 1100 ? 10 : 14, tw = Math.max(120, (($('#teams').clientWidth || (($('#main') || document.body).clientWidth - 94)) - gap * (NG - 1)) / NG - 30);
+    const rt = (v, lab, cv) => `<span class="tr1"><b class="tn">${v}</b><span>${lab}</span>${cv ? `<small>${esc(META.city)} ${cv}</small>` : ''}</span>`;
     $('#teams').innerHTML = GROUPS.map((l, i) => {
       const [g, a, d] = city[i], few = g < MINR;
       return `<button type="button" class="tile tf" data-g="${i}"><span class="tt">${esc(l)}<small>${pct0(g, R.n)} of all</small></span>` +
-        `<span class="mini">${lv(100, 'g', `${plural(g, 'appointment')} given`)}${lv(pc(a, g) || 0, 'a', `${n0(a)} attended`)}${lv(Math.min(100, pc(d, g) || 0), 'd', `${plural(d, 'deal')} closed`)}</span>` +
-        `<span class="tline${few ? ' few' : ''}"${few ? ' title="Few appointments: these rates swing a lot"' : ''}><b>${pct0(a, g)}</b> attended · <b>${pct0(d, CB() ? g : a)}</b> conversion</span>` +
+        `<span class="mini">${apptBars(g, a, d, tw)}</span>` +
+        `<span class="trates${few ? ' few' : ''}"${few ? ' title="Few appointments: these rates swing a lot"' : ''}>${rt(pct0(a, g), 'attended', scoped() ? pct0(cg[i][1], cg[i][0]) : '')}${rt(pct0(d, CB() ? g : a), 'conversion', scoped() ? pct0(cg[i][2], CB() ? cg[i][0] : cg[i][1]) : '')}</span>` +
         (CLN && tc[i][0] ? `<span class="tline tcl" title="${esc(`The calls of the TMEs who fixed most of their appointments for ${l}: ${n0(tc[i][0])} calls, ${n0(tc[i][1])} connected, ${n0(tc[i][2])} appointments given`)}"><b>${tc[i][0] >= 1e5 ? (tc[i][0] / 1e5).toFixed(1) + ' lakh' : n0(tc[i][0])}</b> calls · <b>${pct0(tc[i][1], tc[i][0])}</b> connected · <b>${tc[i][1] >= APC_MIN ? (tc[i][2] / tc[i][1] * APC_PER).toFixed(1) : '—'}</b> appts / 1,000 connected</span>` : CLN && city[i][0] ? `<span class="tline tcl">no dialer calls</span>` : '') +
-        (scoped() ? `<span class="tline tc">${esc(META.city)}: ${pct0(cg[i][1], cg[i][0])} attended · ${pct0(cg[i][2], CB() ? cg[i][0] : cg[i][1])} conversion</span>` : '') + `</button>`;
+        `</button>`;
     }).join('');
   }
   $('#teams').addEventListener('click', ev => { const t = ev.target.closest('[data-t]'); if (t) return openTeamCard(+t.dataset.t); const b = ev.target.closest('.tile[data-g]'); if (b) openGroup(+b.dataset.g); });   // the team's side window (back 29 Oct; the TME view had taken its place on 28 Oct)
@@ -1837,7 +1882,8 @@
       if (r.gt) { if (!s.gt) s.gt = TEAMS.map(() => [0, 0, 0]); r.gt.forEach((x, t) => { s.gt[t][0] += x[0]; s.gt[t][1] += x[1]; s.gt[t][2] += x[2]; }); }
       if (r.g) for (let i = 0; i < NG; i++) for (let j = 0; j < 3; j++) s.g[i][j] += r.g[i][j];
     }
-    return { me: -1, name: '', code: '', tl: '', mgr: '', des: '', city: '', grade: '', k: rows.length, n: s.n, att: s.att, deals: s.deals, o: s.o, nc: s.nc, g: s.g, lf,
+    return { me: -1, name: '', code: '', tl: '', mgr: '', des: '', city: '', grade: '', k: rows.filter(r => !notTme(r.me)).length,   // TME mode: the lines that are not a TME are not counted as TMEs
+      n: s.n, att: s.att, deals: s.deals, o: s.o, nc: s.nc, g: s.g, lf,
       attP: pc(s.att, s.n), conv: rows.length && s.away === rows.length ? null : cvr(s.deals, s.att, s.n), away: rows.length > 0 && s.away === rows.length, pd: s.pdN ? s.pd / s.pdN : null, perDay: s.pd ? s.nPd / s.pd : null, attPd: s.pd ? s.aPd / s.pd : null,
       ...callsOf(s.calls, s.conn, s.n, null), clPd: s.pd && s.cPd ? s.cPd / s.pd : null, rv: s.rv, tim: s.tim, gt: s.gt };
   }
@@ -1847,6 +1893,7 @@
     return m !== undefined && m !== OUTN && NDEP(m) === 1 && !leafTL(m) ? '<span class="rtag" title="Reports to the manager directly (no team leader)">direct</span>' : '';
   };
   function setScope(m, stay) {
+    if (MGRN >= 0 && !inMgr(m)) m = MGRN;
     if (m === V.scope || !(m === ROOT || m === OUTN || DEPTH[m] >= 0)) return;
     V.scope = m; V.xOpen.clear(); V.xShut.clear(); V.ovOpen.clear(); V.ovShut.clear(); OPG = 0;
     closeTl(); render(true);
@@ -1858,6 +1905,7 @@
     const card = $('.tmcard'), on = scoped();
     card.classList.toggle('scoped', on);
     if (!on) { $('#tcH').textContent = 'Your team'; return; }
+    if (V.scope === MGRN) { $('#tcH').innerHTML = `<span class="tct">${esc(NNAME(V.scope))}'s team</span>${ROLE(V.scope) ? `<span class="tctag">${ROLE(V.scope)}</span>` : ''}`; return; }
     const up = UPN(V.scope), upName = up === ROOT ? `All ${META.city}` : NNAME(up), role = ROLE(V.scope);
     $('#tcH').innerHTML = `<button type="button" class="tcback" data-scope="${up}" title="Back to ${esc(up === ROOT ? `all of ${META.city}` : `${upName}'s whole team`)}"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5l-5 5 5 5"/></svg>${esc(upName)}</button>` +
       `<span class="tct">${esc(V.scope === OUTN ? OUT_NAME : `${NNAME(V.scope)}'s team`)}</span>${role ? `<span class="tctag">${role}</span>` : ''}`;
@@ -1946,7 +1994,7 @@
     if (OVMODE === 'me') {   // every ME in the team shown, one line each, against the team's line
       const all = MEROWS.filter(r => !q || hit(r)).map(r => ({ r, s: r })).sort(srt);
       max = Math.max(1, ...all.map(x => x.s.n));
-      $('#tcSub').innerHTML = `${plural(MEROWS.length - (TM && MEROWS.some(r => r.me === NOTME) ? 1 : 0), W.s)} with appointments or deals closed, each against ${vsName}` + (q ? ` · ${n0(all.length)} matching "${esc(q)}"` : '');
+      $('#tcSub').innerHTML = `${plural(MEROWS.filter(r => !notTme(r.me)).length, W.s)} with appointments or deals closed, each against ${vsName}` + (q ? ` · ${n0(all.length)} matching "${esc(q)}"` : '');
       $('#tcSub').insertAdjacentHTML('beforeend', zSay());
       $('#lad').innerHTML = [`<div class="lr hd">${ovTh('name', W.s, 'nmh')}<span></span>${ovHead()}</div>`, refLine,
         ...ovPage(all).rows.map(x => line('l0 me', `<span class="nm"><span class="chev none"></span><button type="button" class="go" data-me="${x.r.me}" title="Open ${esc(x.r.name)}'s page"><b>${esc(x.r.name)}${rtag(x.r, x.r.node)}</b><small>${scoped() && NDEP(V.scope) === 2 ? '' : x.r.tl ? `TL ${esc(x.r.tl)}` : x.r.mgr ? `Mgr ${esc(x.r.mgr)}` : ''}${x.r.away ? `${scoped() && NDEP(V.scope) === 2 ? '' : ' · '}${AWAY_TXT}` : ''}</small></button></span>`, x.s, ref)),
@@ -2259,7 +2307,7 @@
     const d = c.d ? c.d(r) : (v === null || v === undefined ? '—' : n0(v));
     return `<td${ga} class="${cls.join(' ')}${v === 0 ? ' z' : ''}">${d}</td>`;
   }
-  const pplN = rows => rows.length - (TM && rows.some(r => r.me === NOTME) ? 1 : 0);   // TME mode: 'No TME on the deal record' is not a TME
+  const pplN = rows => rows.filter(r => !notTme(r.me)).length;   // TME mode: 'No TME on the deal record' is not a TME
   const totLabel = rows => isTree() ? `${scoped() ? esc(teamName()) : `All ${esc(META.city)}`}, ${plural(pplN(rows), W.s)}` : `Together, ${plural(pplN(rows), W.s)}`;
   function totalRow(rows, VIS) {
     const T = sumRows(rows);
@@ -3149,12 +3197,26 @@
     $('#tlLabel').textContent = t;
     TBTN.title = scoped() ? `${t} (${ROLE(V.scope)}): the whole dashboard shows only this team` : 'Show one manager\'s or team leader\'s team';
     TBTN.setAttribute('aria-label', 'Team: ' + t); TBTN.classList.toggle('on', scoped());
-    $('#tlClear').hidden = !scoped();
+    $('#tlClear').hidden = !scoped() || V.scope === MGRN;   // a manager's page has no way back to all teams
   }
   $('#tlClear').addEventListener('click', () => setScope(ROOT));
   // settings (gear): the conversion switch
   const SP = $('#setPop'), SBTN = $('#setBtn');
-  const closeSet = () => { if (SP.hidden) return; SP.hidden = true; SBTN.setAttribute('aria-expanded', 'false'); };
+  const closeSet = () => { if (SP.hidden) return; SP.hidden = true; untip(); SBTN.setAttribute('aria-expanded', 'false'); };
+  // each setting's explanation in the tooltip of the (i) beside its name: on hover, on focus, or on a click (2026-11-04, the
+  // user: the panel read text-heavy); under the (i), above it when there is no room below
+  const setHelp = b => {
+    const h = $('#' + b.dataset.help); if (!h || !h.textContent) return;
+    TIP.textContent = h.textContent; TIP.hidden = false;
+    const r = b.getBoundingClientRect(), w = TIP.offsetWidth, ht = TIP.offsetHeight;
+    TIP.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left - 12)) + 'px';
+    TIP.style.top = (r.bottom + 6 + ht > innerHeight - 8 ? Math.max(8, r.top - ht - 6) : r.bottom + 6) + 'px';
+  };
+  SP.addEventListener('mouseover', ev => { const b = ev.target.closest('.sinfo'); if (b) setHelp(b); });
+  SP.addEventListener('mouseout', ev => { const b = ev.target.closest('.sinfo'); if (b && !b.contains(ev.relatedTarget)) untip(); });
+  SP.addEventListener('focusin', ev => { const b = ev.target.closest('.sinfo'); if (b) setHelp(b); });
+  SP.addEventListener('focusout', ev => { if (ev.target.closest('.sinfo')) untip(); });
+  SP.addEventListener('click', ev => { const b = ev.target.closest('.sinfo'); if (b) setHelp(b); });
   SBTN.addEventListener('click', () => {
     if (!SP.hidden) return closeSet();
     SP.hidden = false; const r = SBTN.getBoundingClientRect();
@@ -3170,7 +3232,7 @@
     const n = new Float64Array(NMG + 1), mes = new Map();
     for (let i = 0; i < N; i++) {
       const d = AD[i]; if (d < V.from || d > V.to) continue;
-      for (let c = ANODE[i], g = 0; c >= 0 && g < 6; g++) { n[c]++; let s = mes.get(c); if (!s) mes.set(c, s = new Set()); s.add(AME[i]); if (c === ROOT) break; c = UPN(c); }
+      for (let c = ANODE[i], g = 0; c >= 0 && g < 6; g++) { n[c]++; let s = mes.get(c); if (!s) mes.set(c, s = new Set()); if (!notTme(AME[i])) s.add(AME[i]); if (c === ROOT) break; c = UPN(c); }
     }
     return { n, k: m => mes.has(m) ? mes.get(m).size : 0 };
   }
@@ -3178,9 +3240,10 @@
     closePops();
     const C = teamCounts(), show = m => RECENT[m] || C.n[m] || V.scope === m, byName = (a, b) => NNAME(a).localeCompare(NNAME(b));
     const item = (m, cls) => `<button type="button" class="pre ${cls}" data-tl="${m}" data-n="${esc(NNAME(m).toLowerCase())}" aria-pressed="${V.scope === m}"><span>${esc(NNAME(m))}</span><small${C.n[m] ? '' : ' class="none"'}>${ROLE(m)} · ${C.n[m] ? `${plural(C.k(m), W.s)} · ${n0(C.n[m])} appts` : 'no appointments'}</small></button>`;
-    const L = KIDS[ROOT].filter(m => m !== OUTN && show(m)).sort(byName).map(m => item(m, 'p1') + KIDS[m].filter(show).sort(byName).map(t => item(t, 'p2')).join('')).join('');
+    const L = MGRN >= 0 ? KIDS[MGRN].filter(m => m !== OUTN && show(m)).sort(byName).map(t => item(t, 'p2')).join('')
+      : KIDS[ROOT].filter(m => m !== OUTN && show(m)).sort(byName).map(m => item(m, 'p1') + KIDS[m].filter(show).sort(byName).map(t => item(t, 'p2')).join('')).join('');
     TP.innerHTML = `<label class="search tls"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2L17 17"/></svg><input type="search" id="tlFind" placeholder="Find a manager or team leader" autocomplete="off"></label>` +
-      `<div class="tll"><button type="button" class="pre p0" data-tl="${ROOT}" aria-pressed="${!scoped()}"><span>All teams</span><small>${esc(HEADNAME)} · ${plural(C.k(ROOT), W.s)} · ${n0(C.n[ROOT])} appts</small></button>${L}</div>`;
+      `<div class="tll">${MGRN >= 0 ? item(MGRN, 'p0') : `<button type="button" class="pre p0" data-tl="${ROOT}" aria-pressed="${!scoped()}"><span>All teams</span><small>${esc(HEADNAME)} · ${plural(C.k(ROOT), W.s)} · ${n0(C.n[ROOT])} appts</small></button>`}${L}</div>`;
     const r = TBTN.getBoundingClientRect();
     TP.hidden = false;
     TP.style.top = (r.bottom + 8) + 'px'; TP.style.left = Math.max(8, Math.min(innerWidth - TP.offsetWidth - 8, r.right - TP.offsetWidth)) + 'px';
@@ -3198,6 +3261,11 @@
     $('#lnSw').innerHTML = `<button type="button" data-v="line" aria-pressed="${LINE_ONLY}" title="Leave out the MEs whose HR reporting line does not reach ${esc(HEADNAME)}">${esc(lineName)}</button><button type="button" data-v="all" aria-pressed="${!LINE_ONLY}" title="Every ME, as the Sales MIS counts them">All MEs</button>`;
     $('#lnHelp').textContent = `${lineName} leaves out the MEs whose HR reporting line does not reach ${HEADNAME}: since 1 April, ${plural(all.mes, 'ME')} with ${plural(all.n, 'appointment')} given and ${n0(all.dl)} deals closed. They are left out of every figure, and ${META.city} then means ${HEADNAME}'s line. All MEs matches the Sales MIS. The page reloads when this changes.`;
     const tag = $('#lineTag'); if (tag) { tag.hidden = !LINE_ONLY; tag.textContent = lineName; tag.title = `${META.city} figures cover ${HEADNAME}'s line only (settings)`; }
+    if (MGRN >= 0) {
+      const sw = $('#lnSw'); if (sw.previousElementSibling) sw.previousElementSibling.hidden = true; sw.hidden = true; $('#lnHelp').hidden = true;
+      if (tag) { tag.hidden = false; tag.textContent = `${NNAME(MGRN)}'s team`; tag.title = `This page holds ${NNAME(MGRN)}'s team only; ${META.city} figures are ${HEADNAME}'s whole line, for comparison`; }
+      return;
+    }
     $('#lnSw').addEventListener('click', ev => {
       const b = ev.target.closest('[data-v]'); if (!b || (b.dataset.v === 'line') === LINE_ONLY) return;
       try { sessionStorage.setItem(LINE_KEY, b.dataset.v); } catch (e) { return; }
@@ -3247,7 +3315,7 @@
     if (h.get('view') === 'tme' || (TM && V.view === 'checks')) V.view = 'team';   // the TME view of 28 Oct is TME mode's Overview
     if (h.get('cb') === 'given') V.cb = 'given';
     const tc = h.get('team') || h.get('tl');   // tl: links from before the hierarchy (a team leader) open that team
-    if (tc) { const m = MGRS.findIndex(x => String(x[0]) === tc); if (m >= 0 && DEPTH[m] >= 0) V.scope = TEAMOF[m]; }
+    if (tc) { const m = MGRS.findIndex(x => String(x[0]) === tc); if (m >= 0 && DEPTH[m] >= 0 && (MGRN < 0 || inMgr(TEAMOF[m]))) V.scope = TEAMOF[m]; }
     if (h.has('period')) setPreset(h.get('period'));
     else if (h.has('from') && h.has('to')) { const a = offOf(h.get('from')), z = offOf(h.get('to')); if (a >= 0 && z <= LAST && a <= z) setRange(a, z); }
   }
@@ -3257,6 +3325,7 @@
   function renderNotes() {
     const c = META.check, ds = META.dealSrc || {};
     $('#notes').innerHTML = [
+      MGRN >= 0 ? `<p><b>This page.</b> ${esc(NNAME(MGRN))}'s team only: their team leaders, MEs, appointments and deals closed. ${esc(META.city)} figures (the comparison lines) are ${esc(MEHEAD)}'s whole line, every manager's team together; no other team's MEs, team leaders or businesses are in this page.</p>` : '',
       `<p><b>Appointments.</b> ${esc(META.city)}: appointments given to MEs, counted as the Sales MIS counts them (jda_flag 0 and 3; every appointment with a real disposition, including those a BDE set, which the table marks given_count 0; MEs in team Corporate or section Sales (Training) are left out; a Sunday appointment counts on the Saturday before), 1 April to ${esc(fDate(dOf(LAST), true))}; refreshed ${esc(META.refreshed.replace('T', ' at '))}. The date is the appointment's to_date. An appointment counts for the ME it was finally allocated to; the table keeps no earlier allocation.</p>`,
       `<p><b>Attended</b> = disposition Dealclosed, Follow Up or Not Interested. <b>Not attended</b> = Not Available, Pending (no disposition yet) or Not Visited. <b>Conversion</b> = deals closed ÷ ${CB() ? 'appointments given' : 'attended'} (switch at the top: Conversion on Attended / Given). <b>Not Counted/Cancelled</b> = appointments with that disposition (Not Available (Online), TME Cancelled, Fake Appt, Details Incorrect, Appointment Refixed…); they are shown per ME, not added to appointments.</p>`,
       ds.mis !== undefined
@@ -3268,7 +3337,7 @@
       TM ? '' : `<p><b>MEs of another city</b> (their HR city that month is not ${esc(META.city)}; most sit in "${esc(OUT_NAME)}") take ${esc(META.city)} appointments, which count here, but the Sales MIS counts their deals closed in their own city, so they show "—" for deals closed and conversion.</p>`,
       `<p><b>Times.</b> Allocated = allocationtime (when the appointment was allocated to the ME); appointment time = actiontime; disposition updated = attended_date; Dealclosed at = dealclosed_date. Deals with no allocation record have no allocationtime and an appointment time equal to the Dealclosed time.</p>`,
       `<p><b>Days present, designation, home city, joining date</b>: HR records${META.hrPulled ? `, read ${esc(META.hrPulled)}` : ''}. Part months count pro rata.</p>`,
-      TM ? `<p><b>TME mode.</b> The same appointments and deals closed, with the TMEs as the people: each appointment is with the TME who fixed it (the appointment's TME) and each deal closed with the TME on the deal record (it matches the appointment's TME on 99.9% of deals; deals with no TME there are one line, "No TME on the deal record"), so the totals match the ME view. Which records count still follows the ME setting (${esc(MEHEAD)}'s line only or all MEs). <b>TME teams</b>: ${esc(HEADNAME)} (TME head) > managers > team leaders > TMEs. The team leader is the one on the appointment that day (TMEs move between team leaders); the people above come from the SSO dump${RAW.tl.src ? ` (${esc(RAW.tl.src)})` : ''}. A TME counts in the team where most of their appointments in the dates sit; a deal closed sits with its TME's team leader that month. "${esc(OUT_NAME)}" = team leaders whose line does not reach ${esc(HEADNAME)} (mostly BDEs). <b>Days present, joining date, designation, home city</b>: HR records (else the SSO dump). <b>Calls</b>: the TMEs' dialer calls${CL && CL.to ? ` (to ${esc(fDate(new Date(CL.to + 'T00:00:00Z'), true))})` : ''}, every call whose agent is a TME (the dialer's agent = the employee code; a TME in HR that month); <b>connected</b> = a call whose line connected (trunk duration above 0) and that the TME closed with one of: client disconnected call, not contactable, call back, follow up, not interested, paid client, call to me, IVR call, discard call, do not disturb, not in business, company closed, wrong number, allocate appointment, appointment allocated to JDA, appointment refixed, invalid data, other city data, other TME data, non sales data, lead/call price high, freezed contract, error, testing, inbound call data not found. A Sunday call counts on the Saturday before. A TME's calls count when the TME has appointments given or deals closed in the dates (the band's calls are those TMEs' calls). Calls are all the TME's calls, while the appointments follow the ME setting (${esc(MEHEAD)}'s line only leaves out appointments to MEs outside it), so appointments per 1,000 connected can read a little low. Connected % depends on the lead pool the TME calls, which is not in this page's data. Some TMEs fix most of their appointments without a dialer call (many Super Cat TMEs; BDEs are not on the dialer), so for them appointments per 1,000 connected reads high; it is shown from ${APC_MIN} connected calls. On the team cards, a TME's calls count in their team in HR (the monthly record), else the team of most of their appointments in the dates; a TME's team elsewhere (the pace, the window) is set the same way. <b>Against the same MEs</b> (under the rates and in the Table): for each appointment, how the ME who took it did on the other TMEs' appointments of the same TME team in the same dates, added up over the TME's appointments; that rate is pulled towards the team's own by ${TK} appointments, and a gap is green / red only past ${TZ} standard errors (each appointment a yes / no at its rate), with no gap under ${TMIN} appointments. A gap says where to look, not why: the leads (lead source, existing paid companies), when the appointments were allocated, or the people. Lead source is not in this page's data. <b>Since 30 Oct 2026</b>: attended % is compared within the same allocation timing (same day / the day before or earlier / no record: next-day appointments are attended far less whoever fixed or took them); the band's counts say how many would land past the usual swing by chance alone (about 2.3% of the TMEs tested, each way); <b>deals vs same MEs</b> = deals closed minus what the same MEs' rate gives (the Table's column, and "Where to look first", most short first, with how many of the last 3 months were below); attended % by allocation timing counts the same-day Not Available (Online), filed as Not Counted, back in as not attended; <b>times the usual share</b> = the share of a team's appointments that went to X, against X's share of everyone else's appointments (not of all, which contains the team itself), bold only past ${TZ} standard errors; the ME managers' cards for all TME teams compare with what each team's own mix of TME teams gives at all the managers' rates; appointments per 1,000 connected counts only TMEs with ${DIAL_MIN}+ dialer calls in the dates, and not on a single day; <b>RV3yr</b> = the deals' RV_3yr, credited as the deal is counted (dc_genio), ₹ (L = lakh, cr = crore), from the deals table (the newest days, before the deals table has them, have none).</p>` : '',
+      TM ? `<p><b>TME mode.</b> The same appointments and deals closed, with the TMEs as the people: each appointment is with the TME who fixed it (the appointment's TME) and each deal closed with the TME on the deal record (it matches the appointment's TME on 99.9% of deals; deals with no TME there are one line, "No TME on the deal record"), so the totals match the ME view. Appointments an ME fixed themselves (the appointment's TME is the ME who took it; TME team BDE) are one line too, "Fixed by the ME", in the group outside the TME head's line, not the MEs as TMEs. Which records count still follows the ME setting (${esc(MEHEAD)}'s line only or all MEs). <b>TME teams</b>: ${esc(HEADNAME)} (TME head) > managers > team leaders > TMEs. The team leader is the one on the appointment that day (TMEs move between team leaders); the people above come from the SSO dump${RAW.tl.src ? ` (${esc(RAW.tl.src)})` : ''}. A TME counts in the team where most of their appointments in the dates sit; a deal closed sits with its TME's team leader that month. "${esc(OUT_NAME)}" = team leaders whose line does not reach ${esc(HEADNAME)} (mostly BDEs). <b>Days present, joining date, designation, home city</b>: HR records (else the SSO dump). <b>Calls</b>: the TMEs' dialer calls${CL && CL.to ? ` (to ${esc(fDate(new Date(CL.to + 'T00:00:00Z'), true))})` : ''}, every call whose agent is a TME (the dialer's agent = the employee code; a TME in HR that month); <b>connected</b> = a call whose line connected (trunk duration above 0) and that the TME closed with one of: client disconnected call, not contactable, call back, follow up, not interested, paid client, call to me, IVR call, discard call, do not disturb, not in business, company closed, wrong number, allocate appointment, appointment allocated to JDA, appointment refixed, invalid data, other city data, other TME data, non sales data, lead/call price high, freezed contract, error, testing, inbound call data not found. A Sunday call counts on the Saturday before. A TME's calls count when the TME has appointments given or deals closed in the dates (the band's calls are those TMEs' calls). Calls are all the TME's calls, while the appointments follow the ME setting (${esc(MEHEAD)}'s line only leaves out appointments to MEs outside it), so appointments per 1,000 connected can read a little low. Connected % depends on the lead pool the TME calls, which is not in this page's data. Some TMEs fix most of their appointments without a dialer call (many Super Cat TMEs; BDEs are not on the dialer), so for them appointments per 1,000 connected reads high; it is shown from ${APC_MIN} connected calls. On the team cards, a TME's calls count in their team in HR (the monthly record), else the team of most of their appointments in the dates; a TME's team elsewhere (the pace, the window) is set the same way. <b>Against the same MEs</b> (under the rates and in the Table): for each appointment, how the ME who took it did on the other TMEs' appointments of the same TME team in the same dates, added up over the TME's appointments; that rate is pulled towards the team's own by ${TK} appointments, and a gap is green / red only past ${TZ} standard errors (each appointment a yes / no at its rate), with no gap under ${TMIN} appointments. A gap says where to look, not why: the leads (lead source, existing paid companies), when the appointments were allocated, or the people. Lead source is not in this page's data. <b>Since 30 Oct 2026</b>: attended % is compared within the same allocation timing (same day / the day before or earlier / no record: next-day appointments are attended far less whoever fixed or took them); the band's counts say how many would land past the usual swing by chance alone (about 2.3% of the TMEs tested, each way); <b>deals vs same MEs</b> = deals closed minus what the same MEs' rate gives (the Table's column, and "Where to look first", most short first, with how many of the last 3 months were below); attended % by allocation timing counts the same-day Not Available (Online), filed as Not Counted, back in as not attended; <b>times the usual share</b> = the share of a team's appointments that went to X, against X's share of everyone else's appointments (not of all, which contains the team itself), bold only past ${TZ} standard errors; the ME managers' cards for all TME teams compare with what each team's own mix of TME teams gives at all the managers' rates; appointments per 1,000 connected counts only TMEs with ${DIAL_MIN}+ dialer calls in the dates, and not on a single day; <b>RV3yr</b> = the deals' RV_3yr, credited as the deal is counted (dc_genio), ₹ (L = lakh, cr = crore), from the deals table (the newest days, before the deals table has them, have none).</p>` : '',
       TM ? '' : `<p><b>Teams.</b> ${esc(HEADNAME)} (ME head) > managers > team leaders > MEs, from HR's reporting lines: each person's usual manager on their appointments since 1 April, until the official list is in. A team leader's or manager's own appointments count in their own team (tagged TL / Manager); "direct" = an ME who reports to a manager with no team leader. Anyone further down a chain counts in their team leader's team. An ME counts in the team where most of their appointments in the dates sit. "${esc(OUT_NAME)}" = MEs whose HR reporting line does not reach ${esc(HEADNAME)} (mostly MEs of other cities taking a Mumbai appointment).</p>`,
       TM ? '' : `<p><b>Expected</b> (TME team mix) applies the rate of ${esc(scopeName())} for each TME team to the ME's appointments, so an ME fed harder or easier leads is judged fairly. Rates need ${MIN}+ appointments. On the Checks view, <b>checked</b> marks are saved in this browser only, for these exact dates.</p>`,
       TM ? '' : `<p><b>TMEs</b> (a team card on the Overview opens its people; TME mode at the top shows every TME): one TME team's appointments by the TME who fixed them (the appointment's TME) and by the ME who took them. Deals closed are the ones above, each with the TME on the deal record (it matches the appointment's TME on 99.9% of deals); deals with no TME there have a line of their own, and so do the TMEs (or MEs) with deals closed but no appointment of the team in the dates (a few deal records carry a TME code with no appointment here, shown by the code), so the lines add up to the team; each line's deals closed are rounded, so half deals can make the lines differ from the total by one or two. <b>Against the same MEs</b> (a TME): how the MEs who took the TME's appointments did on the other TMEs' appointments of the same team in the same dates, each ME weighted by the appointments they took from the TME. <b>Against the same TMEs</b> (an ME): how the TMEs who fixed the ME's appointments did with the other MEs. Each of those rates is pulled towards the team's own by ${TK} appointments, so a few appointments count for little. <b>Usual swing</b> = ${TZ} standard errors, counting each appointment as a yes / no at that rate; green / red only past it, and no gap on fewer than ${TMIN} appointments. A gap says where to look, not why: it can come from the leads (lead source, existing paid companies), when the appointments were allocated, or the people. A deal of a TME and ME with no appointment between them in the same dates counts in the deals closed but not in what the other side's rate gives. Lead source and TME tenure are not in this page's data.</p>`,
@@ -3293,7 +3362,7 @@
     showViews(); closeCol();
     document.body.classList.toggle('nodata', !CUR.n && !CUR.dl);
     renderTl(); renderBand(); renderSkew(); renderLadder(); renderTeams(); renderFlow(); renderMgrs(); renderSummary(); showSec(); renderList(); renderX(); if (!TM) { renderQueue(); renderPairs(); renderHow(); } renderNotes();
-    document.title = `${META.city} · ${W.s} team`;
+    document.title = `${META.city} · ${W.s} team${MGRN >= 0 ? ' · ' + NNAME(MGRN) : ''}`;
     if (push) writeHash();
   }
   /* ---------- a small inside joke (requested 2026-10-12): a subtle, monochrome spa mark after one ME's name ---------- */
@@ -3317,7 +3386,7 @@
   (() => {
     $('#brandWho').textContent = W.s; $('#home').setAttribute('aria-label', `${W.s} team, ${META.city}: back to the dashboard`);
     document.querySelectorAll('#modeSw [data-mode]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.mode === 'tme') === TM)));
-    if (!RAW.tl) $('#modeSw').hidden = true;
+    if (!RAW.tl) { $('#modeSw').hidden = true; $('#modeSw').style.display = 'none'; }   // no TME data (a manager's page): no ME | TME switch
     document.querySelectorAll('#ovLv [data-l="3"], #xLv [data-l="3"]').forEach(b => { b.textContent = W.p; });
     $('#meSearch').placeholder = `Find ${W.aS}, TL or manager`; $('#meSearch').setAttribute('aria-label', `Find ${W.aS}, team leader or manager`);
     $('#xSearch').placeholder = `Search ${W.s}, team leader or manager`; $('#xSearch').setAttribute('aria-label', `Search ${W.s}, team leader or manager`);

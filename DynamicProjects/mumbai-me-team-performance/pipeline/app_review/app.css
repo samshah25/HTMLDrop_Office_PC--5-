@@ -1591,3 +1591,62 @@ body.tmev .chips button[aria-pressed="true"] { background: var(--tm-acc-wash); b
 body:not(.tmev) .cvg th.rh:hover { color: var(--org); } body:not(.tmev) .cvg td:hover { box-shadow: inset 0 0 0 1.5px #F6B48A; }
 body:not(.tmev) .cvg td:focus-visible, body:not(.tmev) .cvg th[tabindex]:focus-visible { outline-color: var(--org); }
 #meList .cvw + .ovpg, #meList .cvw ~ .ovpg { padding-top: 8px; }
+/* ===================== 2026-11-02 polish of the ME Overview band (the user: text-heavy; keep the layout) ===================== */
+/* the note under the heading: one line, an info mark */
+.linenote .ic { width: 13px; height: 13px; margin-right: 6px; vertical-align: -2px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.linenote { cursor: help; } .linenote .lnk { cursor: pointer; }
+/* the funnel: the words right after each bar; the bars keep their widths against the track less --flw */
+.fn { --flw: 310px; }
+.fr { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.fr .ftrack { flex: none; display: block; min-width: 0; }
+.fr .fbar { width: 100%; }
+.fr .fout { flex: none; }
+.fr .flab { flex: 0 1 auto; min-width: 0; }
+.flab .l1 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; }
+.flab .l1 b { display: inline; }
+.flab .fpc { font: 700 24px/1 var(--num); color: #fff; }
+.flab .fsub { font-size: 13px; color: var(--navy-mute); }
+.flab .l2 { margin-top: 4px; }
+/* not attended: the reasons as chips */
+.fx .miss { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.miss .mlab { color: #DCE3F0; font-size: 13px; margin-right: 4px; }
+.miss .mlab b { font: 700 20px/1 var(--num); color: #fff; margin-right: 6px; }
+.mchip { display: inline-flex; align-items: baseline; gap: 6px; background: var(--navy-2); border: 1px solid var(--navy-3); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 500; color: #DCE3F0; }
+button.mchip { cursor: pointer; } button.mchip:hover { border-color: var(--org); color: #fff; }
+.mchip b { font: 700 16px/1 var(--num); color: #fff; }
+.mchip.off { opacity: .6; }
+/* across managers: lowest | highest */
+.mvg { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 7px 16px; align-items: baseline; font-size: 13px; }
+.mvg .k { min-width: 0; color: var(--navy-mute); white-space: nowrap; }
+.mvg .mvh { font-size: 11.5px; color: var(--navy-mute); margin-bottom: -2px; }
+.mvg .mvw { grid-column: span 2; min-width: 0; }
+.mvc { display: flex; align-items: baseline; gap: 6px; min-width: 0; color: #DCE3F0; }
+.mvc .mvn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; font-weight: 600; }
+.mvc .mvf { flex: none; font: 700 18px/1 var(--num); color: #fff; }
+.mvc small, .mvc .mvx { flex: none; font-size: 12px; color: var(--navy-mute); }
+/* the trend: the last values at the line ends */
+.trw { position: relative; padding-right: 40px; }
+.trd svg { height: 52px; }
+.trd .te, .trd .t50 { position: absolute; right: 0; width: 36px; font: 700 15px/16px var(--num); color: #fff; }
+.trd .t50 { font: 500 10.5px/14px var(--ui); color: var(--navy-mute); }
+.trd h3 { cursor: help; }
+body.tmev .trd .te { color: var(--ink); } body.tmev .trd .t50 { color: var(--tb-mute); }
+/* the TME team boxes: the two rates as figures */
+.tile.tf .trates { display: flex; gap: 22px; margin-top: 2px; }
+.tile.tf .tr1 { display: flex; flex-direction: column; min-width: 0; }
+.tile.tf .tr1 b { font: 700 26px/1 var(--num); color: var(--ink); }
+.tile.tf .tr1 span { margin-top: 2px; font-size: 12px; color: var(--mute); }
+.tile.tf .tr1 small { font-size: 11.5px; color: var(--mute); white-space: nowrap; }
+.tile.tf .trates.few b { color: var(--mute); }
+@media (max-width: 860px) { .fn { --flw: 0px; } .fr { flex-wrap: wrap; gap: 4px 12px; } .fr .ftrack { max-width: 100%; } }
+/* round 2: the low-days note on one line; long names wrap (never cut) in 'Across managers' */
+.lownote { cursor: help; } .lownote .ic { width: 13px; height: 13px; margin-right: 6px; vertical-align: -2px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.mvc { display: block; line-height: 1.3; }
+.mvc .mvn { white-space: normal; overflow: visible; }
+.mvc .mvf { white-space: nowrap; margin-left: 6px; }
+.mvc .mvx { margin-right: 5px; } .mvc small { margin-left: 5px; white-space: nowrap; }
+/* settings (2026-11-04): the explanations behind an (i) beside each setting's name, shown in the tooltip */
+.setpop .setl { display: flex; align-items: center; gap: 6px; } .setpop .setl[hidden], .setpop .seg.cbsw[hidden] { display: none; }   /* the manager pages hide MEs counted */
+.setpop .sinfo { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--mute); cursor: help; }
+.setpop .sinfo:hover, .setpop .sinfo:focus-visible { color: var(--ink); background: var(--rule-2); }
+.setpop .sinfo svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; }

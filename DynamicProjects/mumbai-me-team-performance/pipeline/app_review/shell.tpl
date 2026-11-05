@@ -164,17 +164,17 @@
 <div class="pop tlpop" id="tlPop" role="dialog" aria-label="Choose a team leader" hidden></div>
 <div class="pop" id="periodPop" role="dialog" aria-label="Choose dates" hidden></div>
 <div class="pop setpop" id="setPop" role="dialog" aria-label="Settings" hidden>
-  <p class="setl">MEs counted</p>
+  <p class="setl">MEs counted<button type="button" class="sinfo" data-help="lnHelp" aria-label="About MEs counted" aria-describedby="lnHelp"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></p>
       <div class="seg cbsw" id="lnSw" role="group" aria-label="MEs counted"></div>
-  <p class="seth" id="lnHelp"></p>
-  <p class="setl setg">Conversion on</p>
+  <p class="seth" id="lnHelp" hidden></p>
+  <p class="setl setg">Conversion on<button type="button" class="sinfo" data-help="cbHelp" aria-label="About Conversion on" aria-describedby="cbHelp"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></p>
       <div class="seg cbsw" id="cbSw" role="group" aria-label="Conversion on"><button type="button" data-cb="att" title="Deals closed as a share of attended">Attended</button><button type="button" data-cb="given" title="Deals closed as a share of appointments given">Given</button></div>
-  <p class="seth">Deals closed as a share of attended, or of appointments given. Applies to the whole dashboard.</p>
-  <p class="setl setg">Hot Data and Online</p>
+  <p class="seth" id="cbHelp" hidden>Deals closed as a share of attended, or of appointments given. Applies to the whole dashboard.</p>
+  <p class="setl setg">Hot Data and Online<button type="button" class="sinfo" data-help="grHelp" aria-label="About Hot Data and Online" aria-describedby="grHelp"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></p>
       <div class="seg cbsw" id="hoSw" role="group" aria-label="Hot Data and Online"><button type="button" data-v="0" title="Hot Data and Online as two TME team groups">Separate</button><button type="button" data-v="1" title="Hot Data and Online as one group, Hot Data + Online">Together</button></div>
-  <p class="setl setg">Expiry team (Revival)</p>
+  <p class="setl setg">Expiry team (Revival)<button type="button" class="sinfo" data-help="grHelp" aria-label="About Expiry team" aria-describedby="grHelp"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></p>
       <div class="seg cbsw" id="exSw" role="group" aria-label="Expiry team"><button type="button" data-v="1" title="Revival (Expiry) as its own TME team group">Separate</button><button type="button" data-v="0" title="Revival (Expiry) inside Other teams">In other teams</button></div>
-  <p class="seth">The TME team groups everywhere: the team cards, Who converts, the ME page and the Table's team columns.</p>
+  <p class="seth" id="grHelp" hidden>The TME team groups everywhere: the team cards, Who converts, the ME page and the Table's team columns.</p>
 </div>
 <div class="pop colspop" id="colsPop" role="dialog" aria-label="Show or hide columns" hidden></div>
 <div class="pop colpop" id="colPop" role="dialog" aria-label="Sort and filter this column" hidden></div>

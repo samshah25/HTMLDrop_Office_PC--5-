@@ -1,259 +1,105 @@
-[2026-11-02 16:23:26] ===== ME dashboards refresh =====
-[2026-11-02 16:23:26] -- fetch_data.py
-[2026-11-02 16:23:50] ===== ME dashboards refresh =====
-[2026-11-02 16:23:50] Note: the previous run (started 2026-11-02 16:23:26) never finished; it stopped during fetch_data.py without an error. Usually the PC slept or shut down, or Windows stopped the task at its time limit.
-[2026-11-02 16:23:50] -- fetch_data.py
-[2026-11-02 16:24:01]    [16:23:56] mumbai: 49,756 appointments given and 5,823 not counted, 2026-04-01 to 2026-10-31 (25s)
-[2026-11-02 16:24:01]    [16:24:00] Saved cache\raw.pkl
-[2026-11-02 16:24:01]    ok (34s)
-[2026-11-02 16:24:01] -- fetch_api.py
-[2026-11-02 16:24:25]    [16:24:17] mumbai: 49,756 appointments given and 5,823 not counted, 2026-04-01 to 2026-10-31 (25s)
-[2026-11-02 16:24:25]    [16:24:24] Saved cache\raw.pkl
-[2026-11-02 16:24:25]    ok (35s)
-[2026-11-02 16:24:25] -- fetch_api.py
-[2026-11-02 16:24:30]    [16:24:07] Appointment table runs to 2026-10-31; building 2026-11-01 to 2026-11-01 from the allocation API (cut-off 2026-11-02 00:00:00)
-[2026-11-02 16:24:30]    [16:24:09]   mumbai partition: 27,728 records since 2026-10-12 (2s)
-[2026-11-02 16:24:30]    [16:24:28]   remote: 8 appointments by Mumbai TMEs
-[2026-11-02 16:24:30]    [16:24:29] Provisional appointments given: 2026-11-01 16 (25 rows incl. not counted). Saved cache\api_rows.pkl
-[2026-11-02 16:24:30]    ok (29s)
-[2026-11-02 16:24:30] -- fetch_deals.py
-[2026-11-02 16:24:44]    [16:24:29] Appointment table runs to 2026-10-31; building 2026-11-01 to 2026-11-01 from the allocation API (cut-off 2026-11-02 00:00:00)
-[2026-11-02 16:24:44]    [16:24:31]   mumbai partition: 27,728 records since 2026-10-12 (3s)
-[2026-11-02 16:24:44]    [16:24:43]   remote: 8 appointments by Mumbai TMEs
-[2026-11-02 16:24:44]    [16:24:44] Provisional appointments given: 2026-11-01 16 (25 rows incl. not counted). Saved cache\api_rows.pkl
-[2026-11-02 16:24:44]    ok (19s)
-[2026-11-02 16:24:44] -- fetch_deals.py
-[2026-11-02 16:27:00]    [16:26:36] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,256.46 since 2026-04-01 to 2026-11-02, 15,069 deal rows, 163 MEs (7s)
-[2026-11-02 16:27:00]    [16:26:36] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
-[2026-11-02 16:27:00]    [16:26:36] Deals for 49,313 businesses: 12,863 deal rows since 2026-03-30 (123s). Saved cache\deals.pkl
-[2026-11-02 16:27:00]    [16:27:00] HR for 1,335 MEs and 933 more TMEs: 2,128 with days present, 2,266 with joining dates (24s). Saved cache\hr.pkl
-[2026-11-02 16:27:00]    ok (151s)
-[2026-11-02 16:27:00] -- fetch_calls.py
-[2026-11-02 16:27:14]    [16:26:50] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,256.46 since 2026-04-01 to 2026-11-02, 15,069 deal rows, 163 MEs (7s)
-[2026-11-02 16:27:14]    [16:26:50] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
-[2026-11-02 16:27:14]    [16:26:50] Deals for 49,313 businesses: 12,863 deal rows since 2026-03-30 (124s). Saved cache\deals.pkl
-[2026-11-02 16:27:14]    [16:27:14] HR for 1,335 MEs and 933 more TMEs: 2,128 with days present, 2,266 with joining dates (24s). Saved cache\hr.pkl
-[2026-11-02 16:27:14]    ok (150s)
-[2026-11-02 16:27:14] -- fetch_calls.py
-[2026-11-02 16:27:44]    [16:27:13] 202604: 2,037,645 calls with an agent, 1,548,914 connected, 510 agents (10s)
-[2026-11-02 16:27:44]    [16:27:22] 202605: 2,003,346 calls with an agent, 1,539,732 connected, 507 agents (9s)
-[2026-11-02 16:27:44]    [16:27:32] 202606: 2,129,646 calls with an agent, 1,647,329 connected, 516 agents (10s)
-[2026-11-02 16:27:44]    Traceback (most recent call last):
-[2026-11-02 16:27:44]      File "C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\pipeline\fetch_calls.py", line 171, in <module>
-[2026-11-02 16:27:44]        sys.exit(main())
-[2026-11-02 16:27:44]                 ~~~~^^
-[2026-11-02 16:27:44]      File "C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\pipeline\fetch_calls.py", line 127, in main
-[2026-11-02 16:27:44]        pickle.dump(got, open(cp + ".tmp", "wb")); os.replace(cp + ".tmp", cp)
-[2026-11-02 16:27:44]                                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^
-[2026-11-02 16:27:44]    PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\DynamicProjects\\mumbai-me-team-performance\\pipeline\\cache\\calls2_202607.pkl.tmp' -> 'C:\\Users\\10179794\\Documents\\HTMLDrop_Office_PC (5)\\DynamicProjects\\mumbai-me-team-performance\\pipeline\\cache\\calls2_202607.pkl'
-[2026-11-02 16:27:44]    fetch_calls.py did not finish (exit 1); the pages keep the calls they had.
-[2026-11-02 16:27:44] -- build_review.py --full
-[2026-11-02 16:28:04]    [16:27:47] Provisional days from the allocation API: 2026-11-01 (25 rows, pulled 02 Nov 16:24)
-[2026-11-02 16:28:04]    [16:27:48] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,172 Sunday appointments reported on the Saturday before
-[2026-11-02 16:28:04]    [16:27:52] Deals from the deals table: 12,280 appointments converted (the appointment table marks 12,483); 4 marked not deal there, 207 marked deal there but their business's deal went to another appointment
-[2026-11-02 16:28:04]    [16:27:54] Deals closed (Sales MIS rule): 12,249.46 from 12,323 deal rows
-[2026-11-02 16:28:04]    [16:27:54] 'Not available' appointments with the 30 days over: 7,572; customer attended within 30 days: 251
-[2026-11-02 16:28:04]    [16:27:55] Record checks since 1 April: pending 2,010, no_booking 3,477, deal_before_booked 270, na_early 277, same_day 359
-[2026-11-02 16:28:04]    [16:27:56] Not counted as given: 5,831 (Not Available (Online) 4,341, TME Cancelled 399, Fake Appt 255, Call Back 255, Bounced Collection 203, Appointment Refixed 135)
-[2026-11-02 16:28:04]    [16:27:56] HR: 1,338 of 1,338 MEs with a joining date
-[2026-11-02 16:28:04]    [16:27:56] Appointments 49,759 (left out: 0); attended 39,072; deals closed 12,249.46 (12,280 appointments with disposition Dealclosed)
-[2026-11-02 16:28:04]    [16:28:02] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-02 16:28:04]    [16:28:02] calls.pkl is missing from the cache folder (fetch_calls.py): TME mode has no calls.
-[2026-11-02 16:28:04]    [16:28:02] TME HR: 1,009 of 1,074 TMEs with a joining date, 933 with days present
-[2026-11-02 16:28:04]    [16:28:03] Data: 6.1 MB; 1,338 MEs, 1,074 TMEs
-[2026-11-02 16:28:04]    [16:28:03] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (6.8 MB, built from the design files)
-[2026-11-02 16:28:04]    ok (19s)
-[2026-11-02 16:28:04] ===== done in 277s =====
-[2026-11-02 16:28:23]    [16:27:24] 202605: 2,003,346 calls with an agent, 1,539,732 connected, 507 agents (7s)
-[2026-11-02 16:28:23]    [16:27:32] 202606: 2,129,646 calls with an agent, 1,647,329 connected, 516 agents (9s)
-[2026-11-02 16:28:23]    [16:27:44] 202607: 2,511,985 calls with an agent, 2,012,826 connected, 590 agents (12s)
-[2026-11-02 16:28:23]    [16:27:56] 202608: 2,432,108 calls with an agent, 1,990,983 connected, 610 agents (12s)
-[2026-11-02 16:28:23]    [16:28:06] 202609: 2,314,939 calls with an agent, 1,845,291 connected, 558 agents (10s)
-[2026-11-02 16:28:23]    [16:28:18] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (12s)
-[2026-11-02 16:28:23]    [16:28:22] TME check (HR emptype 'TME'): 15,118,884 of 15,910,009 calls with an agent are by TMEs (791,125 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
-[2026-11-02 16:28:23]    [16:28:23] Calls since 2026-04-01: 15,118,884 (12,125,486 connected) by 871 TMEs, to 2026-10-31; pulled 202605, 202606, 202607, 202608, 202609, 202610 (the rest from the cache). Saved cache\calls.pkl
-[2026-11-02 16:28:23]    ok (69s)
-[2026-11-02 16:28:23] -- build_review.py --full
-[2026-11-02 16:28:42]    [16:28:26] Provisional days from the allocation API: 2026-11-01 (25 rows, pulled 02 Nov 16:24)
-[2026-11-02 16:28:42]    [16:28:27] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,172 Sunday appointments reported on the Saturday before
-[2026-11-02 16:28:42]    [16:28:31] Deals from the deals table: 12,280 appointments converted (the appointment table marks 12,483); 4 marked not deal there, 207 marked deal there but their business's deal went to another appointment
-[2026-11-02 16:28:42]    [16:28:32] Deals closed (Sales MIS rule): 12,249.46 from 12,323 deal rows
-[2026-11-02 16:28:42]    [16:28:33] 'Not available' appointments with the 30 days over: 7,572; customer attended within 30 days: 251
-[2026-11-02 16:28:42]    [16:28:34] Record checks since 1 April: pending 2,010, no_booking 3,477, deal_before_booked 270, na_early 277, same_day 359
-[2026-11-02 16:28:42]    [16:28:34] Not counted as given: 5,831 (Not Available (Online) 4,341, TME Cancelled 399, Fake Appt 255, Call Back 255, Bounced Collection 203, Appointment Refixed 135)
-[2026-11-02 16:28:42]    [16:28:34] HR: 1,338 of 1,338 MEs with a joining date
-[2026-11-02 16:28:42]    [16:28:35] Appointments 49,759 (left out: 0); attended 39,072; deals closed 12,249.46 (12,280 appointments with disposition Dealclosed)
-[2026-11-02 16:28:42]    [16:28:40] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-02 16:28:42]    [16:28:41] TME calls: 15,059,544 of 15,118,884 dialer calls are by TMEs on the appointments (12,071,244 connected), to 2026-10-31
-[2026-11-02 16:28:43]    [16:28:41] TME HR: 1,009 of 1,074 TMEs with a joining date, 933 with days present
-[2026-11-02 16:28:43]    [16:28:42] Data: 6.8 MB; 1,338 MEs, 1,074 TMEs
-[2026-11-02 16:28:43]    [16:28:42] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.5 MB, built from the design files)
-[2026-11-02 16:28:43]    ok (20s)
-[2026-11-02 16:28:43] ===== done in 292s =====
-[2026-11-03 08:00:04] ===== ME dashboards refresh =====
-[2026-11-03 08:00:04] -- fetch_data.py
-[2026-11-03 08:00:32]    [08:00:29] mumbai: 49,756 appointments given and 5,823 not counted, 2026-04-01 to 2026-10-31 (15s)
-[2026-11-03 08:00:32]    [08:00:32] Saved cache\raw.pkl
-[2026-11-03 08:00:32]    ok (28s)
-[2026-11-03 08:00:32] -- fetch_api.py
-[2026-11-03 08:00:51]    [08:00:37] Appointment table runs to 2026-10-31; building 2026-11-01 to 2026-11-02 from the allocation API (cut-off 2026-11-03 00:00:00)
-[2026-11-03 08:00:51]    [08:00:39]   mumbai partition: 29,364 records since 2026-10-12 (2s)
-[2026-11-03 08:00:51]    [08:00:50]   remote: 35 appointments by Mumbai TMEs
-[2026-11-03 08:00:51]    [08:00:50]   delhi: 4 appointments by Mumbai TMEs
-[2026-11-03 08:00:51]    [08:00:50]   pune: 4 appointments by Mumbai TMEs
-[2026-11-03 08:00:51]    [08:00:50]   hyderabad: 3 appointments by Mumbai TMEs
-[2026-11-03 08:00:51]    [08:00:51] Provisional appointments given: 2026-11-01 14, 2026-11-02 223 (338 rows incl. not counted). Saved cache\api_rows.pkl
-[2026-11-03 08:00:51]    ok (19s)
-[2026-11-03 08:00:51] -- fetch_deals.py
-[2026-11-03 08:03:22]    [08:02:59] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,256.46 since 2026-04-01 to 2026-11-02, 15,069 deal rows, 163 MEs (15s)
-[2026-11-03 08:03:22]    [08:02:59] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
-[2026-11-03 08:03:22]    [08:02:59] Deals for 49,540 businesses: 12,868 deal rows since 2026-03-30 (126s). Saved cache\deals.pkl
-[2026-11-03 08:03:22]    [08:03:21] HR for 1,335 MEs and 933 more TMEs: 2,128 with days present, 2,266 with joining dates (22s). Saved cache\hr.pkl
-[2026-11-03 08:03:22]    ok (151s)
-[2026-11-03 08:03:22] -- fetch_calls.py
-[2026-11-03 08:03:40]    [08:03:36] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (11s)
-[2026-11-03 08:03:41]    [08:03:39] TME check (HR emptype 'TME'): 15,118,884 of 15,910,009 calls with an agent are by TMEs (791,125 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
-[2026-11-03 08:03:41]    [08:03:40] Calls since 2026-04-01: 15,118,884 (12,125,486 connected) by 871 TMEs, to 2026-10-31; pulled 202610 (the rest from the cache). Saved cache\calls.pkl
-[2026-11-03 08:03:41]    ok (19s)
-[2026-11-03 08:03:41] -- build_review.py --full
-[2026-11-03 08:04:02]    [08:03:45] 0 earlier appointment rows moved to their deal day (deals closed later, as the table does)
-[2026-11-03 08:04:02]    [08:03:45] Provisional days from the allocation API: 2026-11-01, 2026-11-02 (338 rows, pulled 03 Nov 08:00)
-[2026-11-03 08:04:02]    [08:03:45] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,170 Sunday appointments reported on the Saturday before
-[2026-11-03 08:04:02]    [08:03:50] Deals from the deals table: 12,287 appointments converted (the appointment table marks 12,490); 4 marked not deal there, 207 marked deal there but their business's deal went to another appointment
-[2026-11-03 08:04:02]    [08:03:51] Deals closed (Sales MIS rule): 12,256.46 from 12,330 deal rows
-[2026-11-03 08:04:02]    [08:03:51] 'Not available' appointments with the 30 days over: 7,608; customer attended within 30 days: 251
-[2026-11-03 08:04:02]    [08:03:52] Record checks since 1 April: pending 2,020, no_booking 3,484, deal_before_booked 270, na_early 277, same_day 359
-[2026-11-03 08:04:02]    [08:03:53] Not counted as given: 5,923 (Not Available (Online) 4,365, TME Cancelled 456, Fake Appt 258, Call Back 255, Bounced Collection 203, Appointment Refixed 142)
-[2026-11-03 08:04:02]    [08:03:53] HR: 1,338 of 1,338 MEs with a joining date
-[2026-11-03 08:04:02]    [08:03:53] Appointments 49,980 (left out: 0); attended 39,248; deals closed 12,256.46 (12,287 appointments with disposition Dealclosed)
-[2026-11-03 08:04:02]    [08:03:58] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 3 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-03 08:04:02]    [08:03:59] TME calls: 15,059,544 of 15,118,884 dialer calls are by TMEs on the appointments (12,071,244 connected), to 2026-10-31
-[2026-11-03 08:04:02]    [08:03:59] TME HR: 1,009 of 1,075 TMEs with a joining date, 933 with days present
-[2026-11-03 08:04:02]    [08:03:59] Data: 6.8 MB; 1,338 MEs, 1,075 TMEs
-[2026-11-03 08:04:02]    [08:04:02] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.5 MB, built from the design files)
-[2026-11-03 08:04:02]    ok (22s)
-[2026-11-03 08:04:02] ===== done in 238s =====
-[2026-11-03 14:30:02] ===== ME dashboards refresh =====
-[2026-11-03 14:30:02] -- fetch_data.py
-[2026-11-03 14:30:23]    [14:30:20] mumbai: 50,125 appointments given and 5,861 not counted, 2026-04-01 to 2026-11-02 (15s)
-[2026-11-03 14:30:23]    [14:30:23] Saved cache\raw.pkl
-[2026-11-03 14:30:23]    ok (21s)
-[2026-11-03 14:30:23] -- fetch_api.py
-[2026-11-03 14:30:30]    [14:30:29] Check 2026-11-01: provisional (pulled 03 Nov 08:00) vs the appointment table - given 14 vs 25 (-11), attended 5 vs 11, deals 0 vs 9, same appointments 12 of 25 (deals from deals tables)
-[2026-11-03 14:30:30]    [14:30:30] Check 2026-11-02: provisional (pulled 03 Nov 08:00) vs the appointment table - given 223 vs 282 (-59), attended 175 vs 237, deals 7 vs 71, same appointments 210 of 282 (deals from deals tables)
-[2026-11-03 14:30:30]    [14:30:30] The appointment table already runs to 2026-11-02: no provisional days (removed any earlier ones).
-[2026-11-03 14:30:30]    ok (7s)
-[2026-11-03 14:30:30] -- fetch_deals.py
-[2026-11-03 14:32:56]    [14:32:30] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,355.96 since 2026-04-01 to 2026-11-02, 15,170 deal rows, 163 MEs (7s)
-[2026-11-03 14:32:56]    [14:32:30] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
-[2026-11-03 14:32:56]    [14:32:30] Deals for 49,577 businesses: 12,983 deal rows since 2026-03-30 (118s). Saved cache\deals.pkl
-[2026-11-03 14:32:56]    [14:32:56] HR for 1,337 MEs and 933 more TMEs: 2,133 with days present, 2,268 with joining dates (26s). Saved cache\hr.pkl
-[2026-11-03 14:32:56]    ok (146s)
-[2026-11-03 14:32:56] -- fetch_calls.py
-[2026-11-03 14:33:14]    [14:33:09] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (11s)
-[2026-11-03 14:33:14]    [14:33:10] 202611: 107,867 calls with an agent, 88,263 connected, 426 agents (0s)
-[2026-11-03 14:33:14]    [14:33:13] TME check (HR emptype 'TME'): 15,217,392 of 16,017,876 calls with an agent are by TMEs (800,484 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
-[2026-11-03 14:33:14]    [14:33:14] Calls since 2026-04-01: 15,217,392 (12,207,203 connected) by 875 TMEs, to 2026-11-02; pulled 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
-[2026-11-03 14:33:14]    ok (18s)
-[2026-11-03 14:33:14] -- build_review.py --full
-[2026-11-03 14:33:31]    [14:33:17] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,177 Sunday appointments reported on the Saturday before
-[2026-11-03 14:33:31]    [14:33:21] Deals from the deals table: 12,406 appointments converted (the appointment table marks 12,622); 4 marked not deal there, 220 marked deal there but their business's deal went to another appointment
-[2026-11-03 14:33:31]    [14:33:22] Deals closed (Sales MIS rule): 12,355.96 from 12,431 deal rows
-[2026-11-03 14:33:31]    [14:33:22] 'Not available' appointments with the 30 days over: 7,608; customer attended within 30 days: 251
-[2026-11-03 14:33:31]    [14:33:23] Record checks since 1 April: pending 2,037, no_booking 3,542, deal_before_booked 269, na_early 277, same_day 367
-[2026-11-03 14:33:31]    [14:33:24] Not counted as given: 5,860 (Not Available (Online) 4,366, TME Cancelled 397, Fake Appt 256, Call Back 255, Bounced Collection 203, Appointment Refixed 139)
-[2026-11-03 14:33:31]    [14:33:24] HR: 1,340 of 1,340 MEs with a joining date
-[2026-11-03 14:33:31]    [14:33:24] Appointments 50,112 (left out: 0); attended 39,375; deals closed 12,355.96 (12,406 appointments with disposition Dealclosed)
-[2026-11-03 14:33:31]    [14:33:29] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-03 14:33:31]    [14:33:29] TME calls: 15,156,844 of 15,217,392 dialer calls are by TMEs on the appointments (12,151,829 connected), to 2026-11-02
-[2026-11-03 14:33:31]    [14:33:29] TME HR: 1,009 of 1,075 TMEs with a joining date, 936 with days present
-[2026-11-03 14:33:31]    [14:33:30] Data: 6.8 MB; 1,340 MEs, 1,075 TMEs
-[2026-11-03 14:33:31]    [14:33:30] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.5 MB, built from the design files)
-[2026-11-03 14:33:31]    ok (17s)
-[2026-11-03 14:33:31] ===== done in 209s =====
-[2026-11-04 08:00:05] ===== ME dashboards refresh =====
-[2026-11-04 08:00:05] -- fetch_data.py
-[2026-11-04 08:00:30]    [08:00:26] mumbai: 50,125 appointments given and 5,861 not counted, 2026-04-01 to 2026-11-02 (12s)
-[2026-11-04 08:00:30]    [08:00:29] Saved cache\raw.pkl
-[2026-11-04 08:00:30]    ok (25s)
-[2026-11-04 08:00:30] -- fetch_api.py
-[2026-11-04 08:00:52]    [08:00:36] Appointment table runs to 2026-11-02; building 2026-11-03 to 2026-11-03 from the allocation API (cut-off 2026-11-04 00:00:00)
-[2026-11-04 08:00:52]    [08:00:38]   mumbai partition: 31,039 records since 2026-10-12 (2s)
-[2026-11-04 08:00:52]    [08:00:50]   remote: 57 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:50]   delhi: 7 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:50]   bangalore: 1 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:50]   pune: 8 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:50]   chennai: 2 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:50]   hyderabad: 3 appointments by Mumbai TMEs
-[2026-11-04 08:00:52]    [08:00:51]   deals tables run to 2026-11-02: deals for 2026-11-03 from the system's Dealclosed records in the allocation API (103) until they arrive
-[2026-11-04 08:00:52]    [08:00:51]   5 Dealclosed records of Mumbai MEs found in other cities' partitions
-[2026-11-04 08:00:52]    [08:00:52] Provisional appointments given: 2026-11-03 305 (396 rows incl. not counted). Saved cache\api_rows.pkl
-[2026-11-04 08:00:52]    ok (22s)
-[2026-11-04 08:00:52] -- fetch_deals.py
-[2026-11-04 08:03:31]    [08:03:03] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,355.96 since 2026-04-01 to 2026-11-02, 15,170 deal rows, 163 MEs (7s)
-[2026-11-04 08:03:31]    [08:03:03] Deals dump runs to 2026-11-02; the rolling table added 0 deal rows (nothing newer)
-[2026-11-04 08:03:31]    [08:03:03] Deals for 49,862 businesses: 12,984 deal rows since 2026-03-30 (129s). Saved cache\deals.pkl
-[2026-11-04 08:03:31]    [08:03:30] HR for 1,337 MEs and 933 more TMEs: 2,133 with days present, 2,268 with joining dates (27s). Saved cache\hr.pkl
-[2026-11-04 08:03:31]    ok (159s)
-[2026-11-04 08:03:31] -- fetch_calls.py
-[2026-11-04 08:03:53]    [08:03:47] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (14s)
-[2026-11-04 08:03:53]    [08:03:48] 202611: 211,515 calls with an agent, 173,454 connected, 473 agents (1s)
-[2026-11-04 08:03:53]    [08:03:52] TME check (HR emptype 'TME'): 15,217,392 of 16,017,876 calls with an agent are by TMEs (800,484 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
-[2026-11-04 08:03:53]    [08:03:53] Calls since 2026-04-01: 15,217,392 (12,207,203 connected) by 875 TMEs, to 2026-11-02; pulled 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
-[2026-11-04 08:03:53]    ok (23s)
-[2026-11-04 08:03:53] -- build_review.py --full
-[2026-11-04 08:04:14]    [08:03:57] 7 earlier appointment rows moved to their deal day (deals closed later, as the table does)
-[2026-11-04 08:04:14]    [08:03:57] 5 earlier rows of this month replaced by a newer appointment of the same business; 1 new visits left out (the business already has a deal this month)
-[2026-11-04 08:04:14]    [08:03:57] Provisional days from the allocation API: 2026-11-03 (395 rows, pulled 04 Nov 08:00)
-[2026-11-04 08:04:14]    [08:03:58] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,177 Sunday appointments reported on the Saturday before
-[2026-11-04 08:04:14]    [08:04:02] Deals from the deals table: 12,406 appointments converted (the appointment table marks 12,712); 4 marked not deal there, 220 marked deal there but their business's deal went to another appointment
-[2026-11-04 08:04:14]    [08:04:03] Deals closed (Sales MIS rule): 12,442.96 from 12,518 deal rows; after 2026-11-02 from the Dealclosed appointments
-[2026-11-04 08:04:14]    [08:04:04] 'Not available' appointments with the 30 days over: 7,608; customer attended within 30 days: 251
-[2026-11-04 08:04:14]    [08:04:05] Record checks since 1 April: pending 2,037, no_booking 3,563, deal_before_booked 269, na_early 277, same_day 367
-[2026-11-04 08:04:14]    [08:04:05] Not counted as given: 5,948 (Not Available (Online) 4,385, TME Cancelled 466, Fake Appt 256, Call Back 255, Bounced Collection 203, Appointment Refixed 138)
-[2026-11-04 08:04:14]    [08:04:05] HR: 1,340 of 1,342 MEs with a joining date
-[2026-11-04 08:04:14]    [08:04:05] Appointments 50,407 (left out: 0); attended 39,617; deals closed 12,442.96 (12,496 appointments with disposition Dealclosed)
-[2026-11-04 08:04:14]    [08:04:10] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 13 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-04 08:04:14]    [08:04:11] TME calls: 15,156,844 of 15,217,392 dialer calls are by TMEs on the appointments (12,151,829 connected), to 2026-11-02
-[2026-11-04 08:04:14]    [08:04:11] TME HR: 1,009 of 1,076 TMEs with a joining date, 936 with days present
-[2026-11-04 08:04:14]    [08:04:11] Data: 6.8 MB; 1,342 MEs, 1,076 TMEs
-[2026-11-04 08:04:14]    [08:04:14] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.5 MB, built from the design files)
-[2026-11-04 08:04:14]    ok (21s)
-[2026-11-04 08:04:14] ===== done in 250s =====
-[2026-11-04 14:30:02] ===== ME dashboards refresh =====
-[2026-11-04 14:30:02] -- fetch_data.py
-[2026-11-04 14:30:25]    [14:30:21] mumbai: 50,408 appointments given and 5,877 not counted, 2026-04-01 to 2026-11-03 (16s)
-[2026-11-04 14:30:25]    [14:30:24] Saved cache\raw.pkl
-[2026-11-04 14:30:25]    ok (22s)
-[2026-11-04 14:30:25] -- fetch_api.py
-[2026-11-04 14:30:31]    [14:30:30] Check 2026-11-03: provisional (pulled 04 Nov 08:00) vs the appointment table - given 305 vs 293 (+12), attended 248 vs 237, deals 90 vs 84, same appointments 281 of 293 (deals from API deal records)
-[2026-11-04 14:30:31]    [14:30:30] The appointment table already runs to 2026-11-03: no provisional days (removed any earlier ones).
-[2026-11-04 14:30:31]    ok (6s)
-[2026-11-04 14:30:31] -- fetch_deals.py
-[2026-11-04 14:32:55]    [14:32:30] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,440.96 since 2026-04-01 to 2026-11-03, 15,257 deal rows, 163 MEs (7s)
-[2026-11-04 14:32:55]    [14:32:30] Deals dump runs to 2026-11-03; the rolling table added 0 deal rows (nothing newer)
-[2026-11-04 14:32:55]    [14:32:30] Deals for 49,804 businesses: 13,072 deal rows since 2026-03-30 (117s). Saved cache\deals.pkl
-[2026-11-04 14:32:55]    [14:32:54] HR for 1,338 MEs and 932 more TMEs: 2,139 with days present, 2,268 with joining dates (25s). Saved cache\hr.pkl
-[2026-11-04 14:32:55]    ok (144s)
-[2026-11-04 14:32:55] -- fetch_calls.py
-[2026-11-04 14:33:02]    [14:32:58] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (1s)
-[2026-11-04 14:33:02]    [14:32:58] 202611: 211,515 calls with an agent, 173,454 connected, 473 agents (0s)
-[2026-11-04 14:33:02]    [14:33:02] TME check (HR emptype 'TME'): 15,319,596 of 16,121,524 calls with an agent are by TMEs (801,928 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
-[2026-11-04 14:33:02]    [14:33:02] Calls since 2026-04-01: 15,319,596 (12,291,974 connected) by 883 TMEs, to 2026-11-03; pulled 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
-[2026-11-04 14:33:02]    ok (8s)
-[2026-11-04 14:33:02] -- build_review.py --full
-[2026-11-04 14:33:19]    [14:33:05] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,177 Sunday appointments reported on the Saturday before
-[2026-11-04 14:33:19]    [14:33:09] Deals from the deals table: 12,490 appointments converted (the appointment table marks 12,707); 4 marked not deal there, 221 marked deal there but their business's deal went to another appointment
-[2026-11-04 14:33:19]    [14:33:10] Deals closed (Sales MIS rule): 12,440.96 from 12,518 deal rows
-[2026-11-04 14:33:19]    [14:33:11] 'Not available' appointments with the 30 days over: 7,608; customer attended within 30 days: 251
-[2026-11-04 14:33:19]    [14:33:12] Record checks since 1 April: pending 2,037, no_booking 3,570, deal_before_booked 271, na_early 279, same_day 369
-[2026-11-04 14:33:19]    [14:33:12] Not counted as given: 5,876 (Not Available (Online) 4,384, TME Cancelled 399, Fake Appt 256, Call Back 255, Bounced Collection 203, Appointment Refixed 134)
-[2026-11-04 14:33:19]    [14:33:12] HR: 1,341 of 1,341 MEs with a joining date
-[2026-11-04 14:33:19]    [14:33:12] Appointments 50,395 (left out: 0); attended 39,607; deals closed 12,440.96 (12,490 appointments with disposition Dealclosed)
-[2026-11-04 14:33:19]    [14:33:17] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
-[2026-11-04 14:33:19]    [14:33:18] TME calls: 15,256,978 of 15,319,596 dialer calls are by TMEs on the appointments (12,234,841 connected), to 2026-11-03
-[2026-11-04 14:33:19]    [14:33:18] TME HR: 1,010 of 1,076 TMEs with a joining date, 943 with days present
-[2026-11-04 14:33:19]    [14:33:18] Data: 6.8 MB; 1,341 MEs, 1,076 TMEs
-[2026-11-04 14:33:19]    [14:33:19] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.5 MB, built from the design files)
-[2026-11-04 14:33:19]    ok (17s)
-[2026-11-04 14:33:19] ===== done in 197s =====
+[2026-11-05 16:18:33] ===== ME dashboards refresh =====
+[2026-11-05 16:18:33] -- fetch_data.py
+[2026-11-05 16:19:19]    [16:19:08] mumbai: 50,705 appointments given and 5,911 not counted, 2026-04-01 to 2026-11-04 (29s)
+[2026-11-05 16:19:19]    [16:19:16] Saved cache\raw.pkl
+[2026-11-05 16:19:19]    ok (46s)
+[2026-11-05 16:19:20] -- fetch_api.py
+[2026-11-05 16:20:07]    [16:19:55] The appointment table already runs to 2026-11-04: no provisional days (removed any earlier ones).
+[2026-11-05 16:20:09]    ok (49s)
+[2026-11-05 16:20:11] -- fetch_deals.py
+[2026-11-05 16:20:21] ===== ME dashboards refresh =====
+[2026-11-05 16:20:23] Note: the previous run (started 2026-11-05 16:18:33) never finished; it stopped during fetch_deals.py without an error. Usually the PC slept or shut down, or Windows stopped the task at its time limit.
+[2026-11-05 16:20:23] -- fetch_data.py
+[2026-11-05 16:21:47]    [16:21:27] mumbai: 50,705 appointments given and 5,911 not counted, 2026-04-01 to 2026-11-04 (30s)
+[2026-11-05 16:21:48]    [16:21:37] Saved cache\raw.pkl
+[2026-11-05 16:21:48]    ok (84s)
+[2026-11-05 16:21:48] -- fetch_api.py
+[2026-11-05 16:22:31]    [16:22:30] The appointment table already runs to 2026-11-04: no provisional days (removed any earlier ones).
+[2026-11-05 16:22:33]    ok (45s)
+[2026-11-05 16:22:33] -- fetch_deals.py
+[2026-11-05 16:22:47] ===== ME dashboards refresh =====
+[2026-11-05 16:22:47] Note: the previous run (started 2026-11-05 16:20:21) never finished; it stopped during fetch_deals.py without an error. Usually the PC slept or shut down, or Windows stopped the task at its time limit.
+[2026-11-05 16:22:47] -- fetch_data.py
+[2026-11-05 16:24:14]    [16:24:02] mumbai: 50,705 appointments given and 5,911 not counted, 2026-04-01 to 2026-11-04 (52s)
+[2026-11-05 16:24:17]    [16:24:14] Saved cache\raw.pkl
+[2026-11-05 16:24:17]    ok (90s)
+[2026-11-05 16:24:17] -- fetch_api.py
+[2026-11-05 16:25:15]    [16:24:43] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,526.96 since 2026-04-01 to 2026-11-04, 15,344 deal rows, 165 MEs (8s)
+[2026-11-05 16:25:15]    [16:24:43] Deals dump runs to 2026-11-04; the rolling table added 0 deal rows (nothing newer)
+[2026-11-05 16:25:15]    [16:24:44] Deals for 50,052 businesses: 13,168 deal rows since 2026-03-30 (123s). Saved cache\deals.pkl
+[2026-11-05 16:25:15]    [16:25:12] HR for 1,343 MEs and 934 more TMEs: 2,145 with days present, 2,275 with joining dates (28s). Saved cache\hr.pkl
+[2026-11-05 16:25:15]    ok (162s)
+[2026-11-05 16:25:15] -- fetch_calls.py
+[2026-11-05 16:27:00]    [16:26:11] 202604: 2,037,645 calls with an agent, 1,548,914 connected, 510 agents (11s)
+[2026-11-05 16:27:00]    [16:26:16] 202605: 2,003,346 calls with an agent, 1,539,732 connected, 507 agents (5s)
+[2026-11-05 16:27:00]    [16:26:17] 202606: 2,129,646 calls with an agent, 1,647,329 connected, 516 agents (2s)
+[2026-11-05 16:27:00]    [16:26:20] 202607: 2,511,985 calls with an agent, 2,012,826 connected, 590 agents (3s)
+[2026-11-05 16:27:00]    [16:26:23] 202608: 2,432,108 calls with an agent, 1,990,983 connected, 610 agents (2s)
+[2026-11-05 16:27:00]    [16:26:26] 202609: 2,314,939 calls with an agent, 1,845,291 connected, 558 agents (3s)
+[2026-11-05 16:27:00]    [16:26:28] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (3s)
+[2026-11-05 16:27:00]    [16:26:29] 202611: 316,140 calls with an agent, 256,769 connected, 478 agents (0s)
+[2026-11-05 16:27:00]    [16:26:39] TME check (HR emptype 'TME'): 15,415,877 of 16,226,149 calls with an agent are by TMEs (810,272 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
+[2026-11-05 16:27:00]    [16:26:56] Calls since 2026-04-01: 15,415,877 (12,369,237 connected) by 883 TMEs, to 2026-11-04; pulled 202604, 202605, 202606, 202607, 202608, 202609, 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
+[2026-11-05 16:27:00]    ok (105s)
+[2026-11-05 16:27:01] -- build_review.py --full
+[2026-11-05 16:29:52]    [16:27:40] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,177 Sunday appointments reported on the Saturday before
+[2026-11-05 16:29:52]    [16:27:53] Deals from the deals table: 12,577 appointments converted (the appointment table marks 12,796); 4 marked not deal there, 223 marked deal there but their business's deal went to another appointment
+[2026-11-05 16:29:52]    [16:27:55] Deals closed (Sales MIS rule): 12,526.96 from 12,604 deal rows
+[2026-11-05 16:29:52]    [16:27:56] 'Not available' appointments with the 30 days over: 7,644; customer attended within 30 days: 251
+[2026-11-05 16:29:52]    [16:27:59] Record checks since 1 April: pending 2,041, no_booking 3,593, deal_before_booked 274, na_early 280, same_day 372
+[2026-11-05 16:29:52]    [16:27:59] Not counted as given: 5,910 (Not Available (Online) 4,405, TME Cancelled 400, Fake Appt 259, Call Back 256, Bounced Collection 203, Appointment Refixed 141)
+[2026-11-05 16:29:52]    [16:28:00] HR: 1,347 of 1,347 MEs with a joining date
+[2026-11-05 16:29:52]    [16:28:01] Appointments 50,692 (left out: 0); attended 39,843; deals closed 12,526.96 (12,577 appointments with disposition Dealclosed)
+[2026-11-05 16:29:52]    [16:28:09] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
+[2026-11-05 16:29:52]    [16:28:13] TME calls: 15,355,528 of 15,415,877 dialer calls are by TMEs on the appointments (12,313,954 connected), to 2026-11-04
+[2026-11-05 16:29:52]    [16:28:13] TME HR: 1,010 of 1,076 TMEs with a joining date, 943 with days present
+[2026-11-05 16:29:52]    [16:28:14] Data: 6.9 MB; 1,347 MEs, 1,076 TMEs
+[2026-11-05 16:29:52]    [16:28:18] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.6 MB, built from the design files)
+[2026-11-05 16:29:52]    [16:28:29] Manager page Vijay Yadav: 3,584 appointments, 888.0 deals closed, 14 MEs (+ 44,422 anonymous appointments of the rest of the line; 3.4 MB)
+[2026-11-05 16:29:52]    [16:28:43] Manager page Ketan Rameshchandra Joshi: 5,288 appointments, 1,394.0 deals closed, 23 MEs (+ 42,718 anonymous appointments of the rest of the line; 3.5 MB)
+[2026-11-05 16:29:52]    [16:28:49] Manager page Hemang Narendra Shah: 6,648 appointments, 1,887.99 deals closed, 19 MEs (+ 41,358 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:29:52]    [16:29:03] Manager page Yash Pandey: 4,162 appointments, 1,166.99 deals closed, 14 MEs (+ 43,844 anonymous appointments of the rest of the line; 3.5 MB)
+[2026-11-05 16:29:52]    [16:29:25] Manager page Vikas Mishra: 8,279 appointments, 1,556.0 deals closed, 24 MEs (+ 39,727 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:29:52]    [16:29:33] Manager page Deepak Tiwari: 6,416 appointments, 2,101.99 deals closed, 20 MEs (+ 41,590 anonymous appointments of the rest of the line; 3.6 MB)
+[2026-11-05 16:29:52]    [16:29:42] Manager page Jitendra Dubey: 6,514 appointments, 1,879.99 deals closed, 15 MEs (+ 41,492 anonymous appointments of the rest of the line; 3.6 MB)
+[2026-11-05 16:29:52]    [16:29:49] Manager page Zubin Shah: 7,115 appointments, 1,633.0 deals closed, 27 MEs (+ 40,891 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:29:52]    ok (171s)
+[2026-11-05 16:29:52] ===== done in 571s =====
+[2026-11-05 16:33:55]    [16:33:54] The appointment table already runs to 2026-11-04: no provisional days (removed any earlier ones).
+[2026-11-05 16:33:55]    ok (578s)
+[2026-11-05 16:33:55] -- fetch_deals.py
+[2026-11-05 16:38:26]    [16:37:42] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,526.96 since 2026-04-01 to 2026-11-04, 15,344 deal rows, 165 MEs (21s)
+[2026-11-05 16:38:26]    [16:37:43] Deals dump runs to 2026-11-04; the rolling table added 0 deal rows (nothing newer)
+[2026-11-05 16:38:26]    [16:37:46] Deals for 50,052 businesses: 13,168 deal rows since 2026-03-30 (203s). Saved cache\deals.pkl
+[2026-11-05 16:38:26]    [16:38:25] HR for 1,343 MEs and 934 more TMEs: 2,145 with days present, 2,275 with joining dates (39s). Saved cache\hr.pkl
+[2026-11-05 16:38:26]    ok (271s)
+[2026-11-05 16:38:26] -- fetch_calls.py
+[2026-11-05 16:39:26]    [16:38:50] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (18s)
+[2026-11-05 16:39:26]    [16:38:50] 202611: 316,140 calls with an agent, 256,769 connected, 478 agents (1s)
+[2026-11-05 16:39:26]    [16:39:01] TME check (HR emptype 'TME'): 15,415,877 of 16,226,149 calls with an agent are by TMEs (810,272 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
+[2026-11-05 16:39:26]    [16:39:07] Calls since 2026-04-01: 15,415,877 (12,369,237 connected) by 883 TMEs, to 2026-11-04; pulled 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
+[2026-11-05 16:39:26]    ok (60s)
+[2026-11-05 16:39:54] -- build_review.py --full
+[2026-11-05 16:43:47]    [16:42:50] Sales MIS rules: 14 rows of Corporate / Sales (Training) MEs left out; 1,177 Sunday appointments reported on the Saturday before
+[2026-11-05 16:43:47]    [16:43:01] Deals from the deals table: 12,577 appointments converted (the appointment table marks 12,796); 4 marked not deal there, 223 marked deal there but their business's deal went to another appointment
+[2026-11-05 16:43:47]    [16:43:04] Deals closed (Sales MIS rule): 12,526.96 from 12,604 deal rows
+[2026-11-05 16:43:47]    [16:43:04] 'Not available' appointments with the 30 days over: 7,644; customer attended within 30 days: 251
+[2026-11-05 16:43:47]    [16:43:06] Record checks since 1 April: pending 2,041, no_booking 3,593, deal_before_booked 274, na_early 280, same_day 372
+[2026-11-05 16:43:47]    [16:43:07] Not counted as given: 5,910 (Not Available (Online) 4,405, TME Cancelled 400, Fake Appt 259, Call Back 256, Bounced Collection 203, Appointment Refixed 141)
+[2026-11-05 16:43:47]    [16:43:07] HR: 1,347 of 1,347 MEs with a joining date
+[2026-11-05 16:43:47]    [16:43:08] Appointments 50,692 (left out: 0); attended 39,843; deals closed 12,526.96 (12,577 appointments with disposition Dealclosed)
+[2026-11-05 16:43:47]    [16:43:18] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
+[2026-11-05 16:43:47]    [16:43:21] TME calls: 15,355,528 of 15,415,877 dialer calls are by TMEs on the appointments (12,313,954 connected), to 2026-11-04
+[2026-11-05 16:43:47]    [16:43:21] TME HR: 1,010 of 1,076 TMEs with a joining date, 943 with days present
+[2026-11-05 16:43:47]    [16:43:22] Data: 6.9 MB; 1,347 MEs, 1,076 TMEs
+[2026-11-05 16:43:47]    [16:43:23] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (7.6 MB, built from the design files)
+[2026-11-05 16:43:47]    [16:43:28] Manager page Vijay Yadav: 3,584 appointments, 888.0 deals closed, 14 MEs (+ 44,422 anonymous appointments of the rest of the line; 3.4 MB)
+[2026-11-05 16:43:47]    [16:43:30] Manager page Ketan Rameshchandra Joshi: 5,288 appointments, 1,394.0 deals closed, 23 MEs (+ 42,718 anonymous appointments of the rest of the line; 3.5 MB)
+[2026-11-05 16:43:47]    [16:43:32] Manager page Hemang Narendra Shah: 6,648 appointments, 1,887.99 deals closed, 19 MEs (+ 41,358 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:43:47]    [16:43:35] Manager page Yash Pandey: 4,162 appointments, 1,166.99 deals closed, 14 MEs (+ 43,844 anonymous appointments of the rest of the line; 3.5 MB)
+[2026-11-05 16:43:47]    [16:43:38] Manager page Vikas Mishra: 8,279 appointments, 1,556.0 deals closed, 24 MEs (+ 39,727 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:43:47]    [16:43:40] Manager page Deepak Tiwari: 6,416 appointments, 2,101.99 deals closed, 20 MEs (+ 41,590 anonymous appointments of the rest of the line; 3.6 MB)
+[2026-11-05 16:43:47]    [16:43:42] Manager page Jitendra Dubey: 6,514 appointments, 1,879.99 deals closed, 15 MEs (+ 41,492 anonymous appointments of the rest of the line; 3.6 MB)
+[2026-11-05 16:43:47]    [16:43:45] Manager page Zubin Shah: 7,115 appointments, 1,633.0 deals closed, 27 MEs (+ 40,891 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-05 16:43:47]    ok (233s)
+[2026-11-05 16:43:47] ===== done in 1260s =====

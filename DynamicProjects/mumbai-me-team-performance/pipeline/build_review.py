@@ -217,24 +217,34 @@ def main():
         page = page[:start] + blob + page[page.index("</script>", start):]
         how = "data updated; design kept"
     else:
-        shell = open(os.path.join(APP, "shell.tpl"), encoding="utf-8").read()
-        css = open(os.path.join(APP, "app.css"), encoding="utf-8").read()
-        js = open(os.path.join(APP, "app.js"), encoding="utf-8").read()
-        fonts = ""
-        for f in sorted(os.listdir(FONTS)):
-            mm = re.match(r"(.+)-(\d{3}|var)\.woff2$", f)
-            if mm:
-                weight = "100 900" if mm.group(2) == "var" else mm.group(2)
-                fonts += (f"@font-face{{font-family:'{mm.group(1)}';font-style:normal;font-weight:{weight};font-display:swap;"
-                          f"src:url(data:font/woff2;base64,{base64.b64encode(open(os.path.join(FONTS, f), 'rb').read()).decode()}) format('woff2');}}")
-        logo = "data:image/png;base64," + base64.b64encode(open(LOGO, "rb").read()).decode()
-        page = shell.replace("/*FONTS*/", fonts).replace("/*CSS*/", css).replace("/*LOGO*/", logo).replace("/*DATA*/", blob).replace("/*JS*/", js)
-        page = page.replace("<head>", f'<head>\n<meta name="jd-data-format" content="{DATA_FORMAT}">', 1)
+        page = assemble(blob)
         how = "built from the design files"
     tmp = PAGE + ".tmp"
     open(tmp, "w", encoding="utf-8").write(page)
     os.replace(tmp, PAGE)
     log(f"Wrote {PAGE} ({len(page) / 1e6:.1f} MB, {how})")
+    # one page per manager under the ME head, each with only that manager's line (2 Nov 2026; served behind a login by
+    # serve_dashboard.py), always built from the design files
+    if "--no-managers" not in sys.argv:
+        import manager_pages
+        manager_pages.build(data, assemble, os.path.join(os.path.dirname(PAGE), "manager_pages"), log)
+
+
+def assemble(blob):
+    """the page from the design files (shell, css, js, fonts, logo) and a data blob"""
+    shell = open(os.path.join(APP, "shell.tpl"), encoding="utf-8").read()
+    css = open(os.path.join(APP, "app.css"), encoding="utf-8").read()
+    js = open(os.path.join(APP, "app.js"), encoding="utf-8").read()
+    fonts = ""
+    for f in sorted(os.listdir(FONTS)):
+        mm = re.match(r"(.+)-(\d{3}|var)\.woff2$", f)
+        if mm:
+            weight = "100 900" if mm.group(2) == "var" else mm.group(2)
+            fonts += (f"@font-face{{font-family:'{mm.group(1)}';font-style:normal;font-weight:{weight};font-display:swap;"
+                      f"src:url(data:font/woff2;base64,{base64.b64encode(open(os.path.join(FONTS, f), 'rb').read()).decode()}) format('woff2');}}")
+    logo = "data:image/png;base64," + base64.b64encode(open(LOGO, "rb").read()).decode()
+    page = shell.replace("/*FONTS*/", fonts).replace("/*CSS*/", css).replace("/*LOGO*/", logo).replace("/*DATA*/", blob).replace("/*JS*/", js)
+    return page.replace("<head>", f'<head>\n<meta name="jd-data-format" content="{DATA_FORMAT}">', 1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,109 @@
+{
+ "head": "Kushal Sharma",
+ "managers": [
+  {
+   "code": "013100",
+   "name": "Vijay Yadav",
+   "file": "013100.html",
+   "mine": 3584,
+   "rest": 44422,
+   "out": 2686,
+   "mes": 14,
+   "tmes": 661,
+   "nodes": 4,
+   "deals_mine": 888.0,
+   "deals_rest": 11619.96
+  },
+  {
+   "code": "10094709",
+   "name": "Ketan Rameshchandra Joshi",
+   "file": "10094709.html",
+   "mine": 5288,
+   "rest": 42718,
+   "out": 2686,
+   "mes": 23,
+   "tmes": 716,
+   "nodes": 6,
+   "deals_mine": 1394.0,
+   "deals_rest": 11113.96
+  },
+  {
+   "code": "000304",
+   "name": "Hemang Narendra Shah",
+   "file": "000304.html",
+   "mine": 6648,
+   "rest": 41358,
+   "out": 2686,
+   "mes": 19,
+   "tmes": 747,
+   "nodes": 5,
+   "deals_mine": 1887.99,
+   "deals_rest": 10619.97
+  },
+  {
+   "code": "10000319",
+   "name": "Yash Pandey",
+   "file": "10000319.html",
+   "mine": 4162,
+   "rest": 43844,
+   "out": 2686,
+   "mes": 14,
+   "tmes": 687,
+   "nodes": 5,
+   "deals_mine": 1166.99,
+   "deals_rest": 11340.97
+  },
+  {
+   "code": "10010829",
+   "name": "Vikas Mishra",
+   "file": "10010829.html",
+   "mine": 8279,
+   "rest": 39727,
+   "out": 2686,
+   "mes": 24,
+   "tmes": 816,
+   "nodes": 5,
+   "deals_mine": 1556.0,
+   "deals_rest": 10951.96
+  },
+  {
+   "code": "10038067",
+   "name": "Deepak Tiwari",
+   "file": "10038067.html",
+   "mine": 6416,
+   "rest": 41590,
+   "out": 2686,
+   "mes": 20,
+   "tmes": 731,
+   "nodes": 5,
+   "deals_mine": 2101.99,
+   "deals_rest": 10405.97
+  },
+  {
+   "code": "10000367",
+   "name": "Jitendra Dubey",
+   "file": "10000367.html",
+   "mine": 6514,
+   "rest": 41492,
+   "out": 2686,
+   "mes": 15,
+   "tmes": 753,
+   "nodes": 5,
+   "deals_mine": 1879.99,
+   "deals_rest": 10627.97
+  },
+  {
+   "code": "010427",
+   "name": "Zubin Shah",
+   "file": "010427.html",
+   "mine": 7115,
+   "rest": 40891,
+   "out": 2686,
+   "mes": 27,
+   "tmes": 791,
+   "nodes": 6,
+   "deals_mine": 1633.0,
+   "deals_rest": 10874.96
+  }
+ ]
+}
