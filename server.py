@@ -464,16 +464,20 @@ def set_hub(slug, data):
         return hub
 
 
-def move_with_retry(src, dst):
-    # Windows refuses to rename a folder while a file inside is being read.
-    for attempt in range(20):
+def move_with_retry(src, dst, attempts=25, delay=0.25):
+    # Windows refuses to rename a folder while a file inside is being read or scanned by antivirus.
+    src_str, dst_str = str(src), str(dst)
+    for attempt in range(attempts):
         try:
-            shutil.move(str(src), str(dst))
+            if not os.path.exists(dst_str):
+                os.rename(src_str, dst_str)
+            else:
+                shutil.move(src_str, dst_str)
             return
-        except PermissionError:
-            if attempt == 19:
+        except (PermissionError, OSError):
+            if attempt == attempts - 1:
                 raise
-            time.sleep(0.25)
+            time.sleep(delay)
 
 
 def extract_zip(data, dest):
@@ -1215,7 +1219,7 @@ def safe_extract_dynamic(zip_bytes, slug):
             raise UserError("Could not identify a launch entry. Include index.html (or one unambiguous HTML page), or a supported Python entry point: app.py, main.py, run.py, or server.py.")
         if target.exists():
             raise UserError("A project with that link name already exists. Choose another name.", 409)
-        staging.rename(target)
+        move_with_retry(staging, target)
         return target
     except Exception:
         shutil.rmtree(staging, ignore_errors=True)
