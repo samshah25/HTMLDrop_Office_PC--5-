@@ -2437,6 +2437,7 @@ class Handler(BaseHTTPRequestHandler):
                 if slug.startswith("dynamic-"):
                     slug = slug[8:]
                 cat = str(data.get("category") or data.get("section") or "").strip()[:40]
+                url = str(data.get("url") or "").strip()
                 if not slug or not cat:
                     raise UserError("Missing slug or category.", 400)
                 
@@ -2450,7 +2451,11 @@ class Handler(BaseHTTPRequestHandler):
                         rec_key = raw_slug
                     else:
                         for k, r in meta.items():
-                            if r.get("hub", {}).get("legacy_id") in (raw_slug, slug) or k.lower() == slug.lower():
+                            if (
+                                r.get("hub", {}).get("legacy_id") in (raw_slug, slug)
+                                or k.lower() == slug.lower()
+                                or (url and r.get("link") and r.get("link").rstrip("/") == url.rstrip("/"))
+                            ):
                                 rec_key = k
                                 break
                     if rec_key:
@@ -2465,8 +2470,11 @@ class Handler(BaseHTTPRequestHandler):
                     elif raw_slug in dyn_meta:
                         dyn_key = raw_slug
                     else:
-                        for k in dyn_meta:
-                            if k.lower() == slug.lower():
+                        for k, dr in dyn_meta.items():
+                            if (
+                                k.lower() == slug.lower()
+                                or (url and dr.get("external_url") and dr.get("external_url").rstrip("/") == url.rstrip("/"))
+                            ):
                                 dyn_key = k
                                 break
                     if dyn_key:

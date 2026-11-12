@@ -1725,8 +1725,13 @@ async function disableRefreshModal() {
 $("search").addEventListener("input", () => { render(); renderDynamicProjects(); });
 
 async function load() {
-  try { sites = await (await fetch("/api/sites")).json(); } catch { sites = []; }
-  await loadDynamicProjects();
+  await Promise.all([
+    (async () => {
+      try { sites = await (await fetch("/api/sites", { cache: "no-store" })).json(); } catch { sites = []; }
+    })(),
+    loadDynamicProjects(),
+    loadPortalCategories()
+  ]);
   render(); updateHint();
 }
 
@@ -1741,6 +1746,7 @@ async function load() {
   await load();
 })();
 setInterval(load, 30000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
 
 const SECTION_NAMES = {
   perf: "Sales Performance",
@@ -1755,9 +1761,9 @@ const SECTION_NAMES = {
 
 let currentCategory = "perf";
 
-function openSectionModal() {
+async function openSectionModal() {
   if (sectionModalTarget !== "settings") sectionModalTarget = "upload";
-  try { loadPortalCategories(); } catch(e) {}
+  try { await loadPortalCategories(); } catch(e) {}
   const modal = $("sectionModal");
   if (!modal) return;
   const rad = document.querySelector(`input[name="modalCategory"][value="${currentCategory}"]`);
@@ -1823,7 +1829,7 @@ function getCategoryDashboardCount(catKey) {
 
 async function loadPortalCategories() {
   try {
-    const r = await fetch('/api/categories');
+    const r = await fetch('/api/categories', { cache: 'no-store' });
     if (!r.ok) return;
     const cats = await r.json();
     for (const [k, v] of Object.entries(cats)) {
@@ -1893,6 +1899,7 @@ function switchPortalSecTab(tab) {
     setTimeout(() => { if ($("inlineNewSecInput")) $("inlineNewSecInput").focus(); }, 30);
   } else {
     renderPortalSecDelList();
+    load().then(() => { renderPortalSecDelList(); }).catch(() => {});
   }
 }
 
@@ -1950,6 +1957,8 @@ async function promptDeleteCategory(key, label) {
       const err = await r.json().catch(()=>({}));
       if (err.error) {
         alert("Cannot delete section: " + err.error);
+        await load();
+        renderPortalSecDelList();
         return;
       }
     }

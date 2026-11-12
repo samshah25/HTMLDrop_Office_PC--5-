@@ -3178,11 +3178,17 @@ async function saveChangedSection() {
   userSections[d.id] = newCat;
   store.set("user_sections", userSections);
 
+  const cachedHub = store.get("hub", null);
+  if (Array.isArray(cachedHub)) {
+    const item = cachedHub.find(it => it && (it.id === d.id || keyOf(it) === keyOf(d) || (it.url && d.url && it.url === d.url)));
+    if (item) { item.category = newCat; item.category_pinned = true; store.set("hub", cachedHub); }
+  }
+
   try {
     await fetch(DROP + "/api/dashboard/section", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-HD": "1" },
-      body: JSON.stringify({ slug: keyOf(d), id: d.id, category: newCat })
+      body: JSON.stringify({ slug: keyOf(d), id: d.id, url: d.url, category: newCat })
     });
   } catch (e) {
     console.warn("Could not sync section to server:", e.message);
@@ -3191,6 +3197,7 @@ async function saveChangedSection() {
   closeChangeSectionModal();
   render();
   paintWorkspace();
+  loadHub().catch(() => {});
 
   const newLabel = (CATEGORIES[newCat] || {}).label || newCat;
   showToast(`Moved "${d.title.replace(/_/g, ' ')}" to ${newLabel}`);
@@ -3294,6 +3301,7 @@ function switchSecTab(tab) {
     setTimeout(() => { if ($("masterNewSecInput")) $("masterNewSecInput").focus(); }, 40);
   } else {
     renderSecDelList();
+    loadHub().then(() => { renderSecDelList(); }).catch(() => {});
   }
 }
 
