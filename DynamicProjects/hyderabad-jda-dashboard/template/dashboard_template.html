@@ -642,12 +642,12 @@ function roster(d) {   // [{r, c}] reps on the roster on day d within the curren
 }
 function daySummary(d) {
   const ro = roster(d);
-  let active = 0, pres = 0, onT = 0, sales = 0;
+  let active = 0, pres = 0, onT = 0, sales = 0, fresh = 0;
   for (const { r, c } of ro) {
-    if (c.rec) { active++; pres += c.rec.n; if (c.rec.n >= TARGET) onT++; }
+    if (c.rec) { active++; pres += c.rec.n; fresh += c.rec.nw; if (c.rec.n >= TARGET) onT++; }
     sales += salesMap[r].get(d) || 0;
   }
-  return { roster: ro.length, active, pres, onT, sales, att: ro.length ? active / ro.length : null, avg: active ? pres / active : null, onTp: active ? onT / active : null };
+  return { roster: ro.length, active, pres, onT, sales, fresh, freshP: pres ? fresh / pres : null, att: ro.length ? active / ro.length : null, avg: active ? pres / active : null, onTp: active ? onT / active : null };
 }
 function avgOf(days, f) { const v = days.map(f).filter(x => x != null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
 
@@ -914,7 +914,9 @@ function helpMap() {
     'Area': ['Area', 'District where the JDA did most of their presentations that day (absent JDAs: their last area).', 'From the pincode of each presentation.'],
     'Today': ['Today', 'Presentations on the chosen day. Green bar = on target, amber = under target.', PRES],
     'Own 7-day avg': ['Own 7-day average', 'This JDA\'s usual output: their average on the days they worked in the 7 working days before.', ''],
-    'New businesses': ['New businesses', 'Presentations to new businesses (not existing JD contracts).', 'Presentations where the contract type is New.'],
+    'Fresh presentations': ['Fresh presentations', 'Presentations to new businesses, not existing JD contracts. The % is out of all presentations.', 'Presentations where the contract type is New.'],
+    'Fresh': ['Fresh', 'Presentations to new businesses, not existing JD contracts.', 'Presentations where the contract type is New.'],
+    'Fresh %': ['Fresh %', 'Share of presentations that were fresh (new businesses).', 'Fresh presentations ÷ presentations.'],
     'Deals': ['Deals', 'Deals closed on this day.', SALES],
     'Team deals': ['Team deals', 'Deals closed by the whole team on this day.', SALES],
     'JDAs': ['JDAs', 'Active JDAs in this list.', ROSTER],
@@ -1000,7 +1002,7 @@ const dPct = (cur, base) => base == null || cur == null ? null : { v: cur - base
 // ================= PAGE 1: TODAY =================
 function pageToday() {
   const d = S.day, s = daySummary(d), prev = prevWork(d, 7);
-  const b = { roster: avgOf(prev, x => daySummary(x).roster), att: avgOf(prev, x => daySummary(x).att), pres: avgOf(prev, x => daySummary(x).pres), active: avgOf(prev, x => daySummary(x).active), onT: avgOf(prev, x => daySummary(x).onT), avg: avgOf(prev, x => daySummary(x).avg), sales: avgOf(prev, x => daySummary(x).sales) };
+  const b = { roster: avgOf(prev, x => daySummary(x).roster), att: avgOf(prev, x => daySummary(x).att), pres: avgOf(prev, x => daySummary(x).pres), active: avgOf(prev, x => daySummary(x).active), onT: avgOf(prev, x => daySummary(x).onT), avg: avgOf(prev, x => daySummary(x).avg), sales: avgOf(prev, x => daySummary(x).sales), fresh: avgOf(prev, x => daySummary(x).fresh) };
   const w14 = lastWork(d, 14).reverse().map(w => daySummary(w));
   const d14 = lastWork(d, 14).reverse();
   const FMT = { active: v => nf(v), att: pct, pres: v => nf(v), avg: v => nf(v, 1), onT: v => nf(v), sales: nsales };
@@ -1017,6 +1019,7 @@ function pageToday() {
   ]);
   h += tiles([
     tile({ drill: 'pres', lbl: 'Presentations', val: nf(s.pres), delta: dNum(s.pres, b.pres), ic: 'board', hue: '#0ea5e9' }),
+    tile({ drill: 'fresh', lbl: 'Fresh presentations', val: nf(s.fresh), unit: s.pres ? pct(s.freshP) + ' of presentations' : '', delta: dNum(s.fresh, b.fresh), ic: 'board', hue: '#14b8a6' }),
     tile({ drill: 'avg', lbl: 'Avg per present JDA', val: nf(s.avg, 1), delta: dNum(s.avg, b.avg, 1), ic: 'gauge', hue: '#8b5cf6' }),
     tile({ drill: 'onT', lbl: `On target (${TARGET}+)`, val: nf(s.onT), unit: s.active ? pct(s.onTp) + ' of present' : '', delta: dNum(s.onT, b.onT), ic: 'target', hue: '#f97316' }),
     HAS_SALES ? tile({ drill: 'sales', lbl: 'JDA deals', val: nsales(s.sales), delta: s.sales != null && b.sales != null ? { v: s.sales - b.sales, base: b.sales, txt: nsales(Math.abs(s.sales - b.sales)) } : null, ic: 'trophy', hue: '#ec4899' }) : '',
@@ -1032,7 +1035,7 @@ function pageToday() {
   </div>`;
   const ro = roster(d), buckets = [['Absent', 0, '#f43f5e'], ['1–2', 0, '#fbbf24'], ['3–4', 0, '#a5b4fc'], ['5–7', 0, '#6366f1'], ['8+', 0, '#4338ca']];
   for (const { c } of ro) { const n = c.rec ? c.rec.n : 0; buckets[n === 0 ? 0 : n <= 2 ? 1 : n <= 4 ? 2 : n <= 7 ? 3 : 4][1]++; }
-  const top = ro.filter(x => x.c.rec).map(({ r, c }) => ({ r, name: REPS[r].name, id: REPS[r].id, n: c.rec.n, area: areaName(c.home), mgr: mgrName(c.mgr), nw: c.rec.nw, sales: salesMap[r].get(d) || 0, avg7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null) }));
+  const top = ro.filter(x => x.c.rec).map(({ r, c }) => ({ r, name: REPS[r].name, id: REPS[r].id, n: c.rec.n, area: areaName(c.home), mgr: mgrName(c.mgr), nw: c.rec.nw, nwP: c.rec.n ? c.rec.nw / c.rec.n : null, sales: salesMap[r].get(d) || 0, avg7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null) }));
   const leaders = [...top].sort((a, b) => b.n - a.n || (b.avg7 || 0) - (a.avg7 || 0)).slice(0, 6);
   h += `<div class="grid3">
     ${card('JDAs by presentations today', `${nf(ro.length)} active JDAs`, barChart(buckets.map(([l, v, c]) => ({ label: l, v, sel: true, color: c, tip: `<b>${l}</b>: ${nf(v)} JDAs` })), { h: 300, W: 420 }), '#f43f5e')}
@@ -1046,7 +1049,8 @@ function pageToday() {
     { k: 'area', label: 'Area', search: x => x.area, wrap: true },
     { k: 'n', label: 'Presentations', num: true, html: x => presCell(x.n), csv: x => x.n },
     { k: 'avg7', label: 'Own 7-day avg', num: true, fmt: v => nf(v, 1), title: 'Average on the days they worked in the 7 working days before' },
-    { k: 'nw', label: 'New businesses', num: true, title: 'Presentations to New (not existing) contracts' },
+    { k: 'nw', label: 'Fresh', num: true, help: 'Fresh' },
+    { k: 'nwP', label: 'Fresh %', num: true, fmt: v => v == null ? '—' : pct(v), help: 'Fresh %' },
     ...(HAS_SALES ? [{ k: 'sales', label: 'Deals', num: true, fmt: nsales, csv: x => x.sales }] : []),
   ], top, { sort: 'n', noun: 'present JDAs', title: 'Present JDAs' });
   return h;
@@ -1055,20 +1059,20 @@ function pageToday() {
 // ================= PAGE 2: TERRITORIES =================
 function areaStats(d, okArea) {   // per area: JDAs, presentations, on target, under target, sales
   const per = new Map();
-  const get = a => per.get(a) || per.set(a, { a, roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0 }).get(a);
+  const get = a => per.get(a) || per.set(a, { a, roster: 0, active: 0, pres: 0, fresh: 0, onT: 0, under: 0, sales: 0, aSales: 0 }).get(a);
   for (let r = 0; r < REPS.length; r++) {
     if (!onRoster(r, d)) continue;
     const c = ctx(r, d);
     if (c.home < 0 || !okArea(c.home) || !mgrOk(c.mgr, d)) continue;
     const x = get(c.home); x.roster++;
-    if (c.rec) { x.active++; x.pres += c.rec.n; c.rec.n >= TARGET ? x.onT++ : x.under++; }
+    if (c.rec) { x.active++; x.pres += c.rec.n; x.fresh += c.rec.nw; c.rec.n >= TARGET ? x.onT++ : x.under++; }
     x.sales += salesMap[r].get(d) || 0;
   }
   for (const [a, v] of areaSales[d]) if (okArea(a)) get(a).aSales += v;
   return per;
 }
-function finishRow(x) { x.att = x.roster ? x.active / x.roster : null; x.avg = x.active ? x.pres / x.active : null; x.absent = x.roster - x.active; return x; }
-function sumRows(rows, extra) { const t = { roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0, ...extra }; for (const x of rows) for (const k of ['roster', 'active', 'pres', 'onT', 'under', 'sales', 'aSales']) t[k] += x[k] || 0; return finishRow(t); }
+function finishRow(x) { x.freshP = x.pres ? x.fresh / x.pres : null; x.att = x.roster ? x.active / x.roster : null; x.avg = x.active ? x.pres / x.active : null; x.absent = x.roster - x.active; return x; }
+function sumRows(rows, extra) { const t = { roster: 0, active: 0, pres: 0, fresh: 0, onT: 0, under: 0, sales: 0, aSales: 0, ...extra }; for (const x of rows) for (const k of ['roster', 'active', 'pres', 'fresh', 'onT', 'under', 'sales', 'aSales']) t[k] += x[k] || 0; return finishRow(t); }
 function pageTerritory() {
   const d = S.day, prev = prevWork(d, 7);
   const groups = [
@@ -1082,7 +1086,7 @@ function pageTerritory() {
   h += `<div class="terr">` + groups.map(g => { const t = g.t; return `<div class="tcard" style="--h:${g.hue}">
       <div class="tc-head"><div class="tc-name"><span class="tc-ic">${icon(g.ic)}</span><div><h3><span class="hl"${tipAttr(g.name)}>${esc(g.name)}</span></h3><div class="cap">${g.sub ? esc(g.sub) + ' · ' : ''}${nf(t.active)} of ${nf(t.roster)} JDAs present</div></div></div>${donut(t.att, g.hue)}</div>
       <div class="stats">
-        <div class="st"${tipAttr('Presentations')}><span>Presentations</span><b>${nf(t.pres)}</b></div>
+        <div class="st"${tipAttr('Fresh presentations')}><span>Presentations</span><b>${nf(t.pres)}<small>fresh ${pct(t.freshP)}</small></b></div>
         <div class="st"${tipAttr('Avg per JDA')}><span>Avg per JDA</span><b>${nf(t.avg, 1)}<small>7d ${nf(g.p7, 1)}</small></b></div>
         <div class="st"${tipAttr('On target')}><span>On target</span><b>${nf(t.onT)}</b></div>
         <div class="st"${tipAttr('Under target')}><span>Under target</span><b style="color:var(--warn-ink)">${nf(t.under)}</b></div>
@@ -1099,7 +1103,7 @@ function pageTerritory() {
   const stats = areaStats(d, okSt);
   const p7 = new Map();
   for (const w of prev) for (const [a, x] of areaStats(w, okSt)) { const v = p7.get(a) || { pres: 0, active: 0 }; v.pres += x.pres; v.active += x.active; p7.set(a, v); }
-  let rows = AREAS.map((A, a) => okSt(a) ? finishRow({ a, area: A.name, type: A.main ? 'Main' : 'Remote', ...(stats.get(a) || { roster: 0, active: 0, pres: 0, onT: 0, under: 0, sales: 0, aSales: 0 }) }) : null).filter(Boolean);
+  let rows = AREAS.map((A, a) => okSt(a) ? finishRow({ a, area: A.name, type: A.main ? 'Main' : 'Remote', ...(stats.get(a) || { roster: 0, active: 0, pres: 0, fresh: 0, onT: 0, under: 0, sales: 0, aSales: 0 }) }) : null).filter(Boolean);
   if (st !== 'TS') rows = rows.filter(x => x.roster || x.pres || x.aSales);
   rows.forEach(x => { const v = p7.get(x.a); x.avg7 = v && v.active ? v.pres / v.active : null; x.perPres = x.pres ? x.aSales / x.pres * 100 : null; });
   const tot = sumRows(rows, { area: 'Total', type: '' });
@@ -1112,6 +1116,8 @@ function pageTerritory() {
     { k: 'active', label: 'Present JDAs', num: true, help: 'Present JDAs' },
     { k: 'att', label: 'Attendance', num: true, html: x => attCell(x.att), csv: x => pct(x.att), totalHtml: t => attCell(t.att) },
     { k: 'pres', label: 'Presentations', num: true, html: x => barCell(x.pres, maxP, nf(x.pres)), csv: x => x.pres, totalHtml: t => `<b>${nf(t.pres)}</b>` },
+    { k: 'fresh', label: 'Fresh', num: true, help: 'Fresh' },
+    { k: 'freshP', label: 'Fresh %', num: true, fmt: v => v == null ? '—' : pct(v), help: 'Fresh %' },
     { k: 'avg', label: 'Avg', num: true, fmt: v => nf(v, 1), title: 'Presentations per present JDA' },
     { k: 'avg7', label: '7-day avg', num: true, fmt: v => nf(v, 1), title: 'Average per present JDA over the 7 working days before' },
     { k: 'onT', label: `${TARGET}+`, num: true, title: `JDAs with ${TARGET} or more presentations` },
@@ -1165,16 +1171,16 @@ function subtree(m, d) {   // m and every manager below them, at any level
   return out;
 }
 const mgrOk = (m, d) => S.mgr < 0 || subtree(S.mgr, d).has(m);
-const newStat = () => ({ team: 0, active: 0, pres: 0, onT: 0, abs3: 0, sales: 0, ten: [0, 0, 0], ro7: 0, act7: 0, pres7: 0, nMgr: 0 });
-function addStat(a, b) { for (const k of ['team', 'active', 'pres', 'onT', 'abs3', 'sales', 'ro7', 'act7', 'pres7', 'nMgr']) a[k] += b[k]; b.ten.forEach((v, i) => a.ten[i] += v); }
-function finishStat(x) { x.att = x.team ? x.active / x.team : null; x.avg = x.active ? x.pres / x.active : null; x.att7 = x.ro7 ? x.act7 / x.ro7 : null; x.avg7 = x.act7 ? x.pres7 / x.act7 : null; return x; }
+const newStat = () => ({ team: 0, active: 0, pres: 0, fresh: 0, onT: 0, abs3: 0, sales: 0, ten: [0, 0, 0], ro7: 0, act7: 0, pres7: 0, nMgr: 0 });
+function addStat(a, b) { for (const k of ['team', 'active', 'pres', 'fresh', 'onT', 'abs3', 'sales', 'ro7', 'act7', 'pres7', 'nMgr']) a[k] += b[k]; b.ten.forEach((v, i) => a.ten[i] += v); }
+function finishStat(x) { x.freshP = x.pres ? x.fresh / x.pres : null; x.att = x.team ? x.active / x.team : null; x.avg = x.active ? x.pres / x.active : null; x.att7 = x.ro7 ? x.act7 / x.ro7 : null; x.avg7 = x.act7 ? x.pres7 / x.act7 : null; return x; }
 function buildTree(d) {   // {nodes: manager -> {kids, reps, own, stat}, roots}; stat adds up everyone below
   const P = mgrParents(d), nodes = new Map();
   const node = m => nodes.get(m) || nodes.set(m, { m, kids: [], reps: [], own: newStat() }).get(m);
   for (const { r, c } of roster(d)) {
     const n = node(c.mgr), x = n.own;
     n.reps.push({ r, c }); x.team++;
-    if (c.rec) { x.active++; x.pres += c.rec.n; if (c.rec.n >= TARGET) x.onT++; } else if (absentStreak(r, d) >= 3) x.abs3++;
+    if (c.rec) { x.active++; x.pres += c.rec.n; x.fresh += c.rec.nw; if (c.rec.n >= TARGET) x.onT++; } else if (absentStreak(r, d) >= 3) x.abs3++;
     x.sales += salesMap[r].get(d) || 0;
     const b = tenureBucket(r, d); if (b >= 0) x.ten[b]++;
   }
@@ -1287,11 +1293,11 @@ function pageManagers() {
   const jdaRow = ({ r, c }, tl) => {
     const first = startDay[r], worked = w10.filter(w => w >= first), here = worked.filter(w => repDays[r].has(w)).length;
     return { r, name: REPS[r].name, id: REPS[r].id, mgr: mgrName(c.mgr), up: upName(c.mgr), area: areaName(c.home), present: c.rec ? 1 : 0,
-      att10: worked.length ? here / worked.length : null, pres: c.rec ? c.rec.n : 0, own7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null),
+      att10: worked.length ? here / worked.length : null, pres: c.rec ? c.rec.n : 0, fresh: c.rec ? c.rec.nw : 0, freshP: c.rec && c.rec.n ? c.rec.nw / c.rec.n : null, own7: avgOf(prevWork(d, 7), w => repDays[r].get(w)?.n ?? null),
       onT: c.rec && c.rec.n >= TARGET ? 1 : 0, abs: c.rec ? 0 : absentStreak(r, d), ten: tenureText(r, d), tenM: tenureMonths(r, d), sales: salesMap[r].get(d) || 0, tl };
   };
   const mgrRows = tls.map(n => { const x = n.own; return { m: n.m, name: n.m < 0 ? 'Manager not recorded' : mgrName(n.m), code: n.m >= 0 ? MGRS[n.m][0] : '', up: upName(n.m), area: mainArea(n.reps),
-    team: x.team, active: x.active, att: x.att, att7: x.att7, pres: x.pres, avg: x.avg, avg7: x.avg7, onT: x.onT, abs3: x.abs3, ten: x.ten, sales: x.sales,
+    team: x.team, active: x.active, att: x.att, att7: x.att7, pres: x.pres, freshP: x.freshP, avg: x.avg, avg7: x.avg7, onT: x.onT, abs3: x.abs3, ten: x.ten, sales: x.sales,
     reps: n.reps, names: n.reps.map(({ r }) => REPS[r].name + ' ' + REPS[r].id).join(' ') }; });
 
   const view = S.mgrView || 'manager';
@@ -1306,13 +1312,13 @@ function pageManagers() {
     ${view === 'manager' ? `<button type="button" class="btn-ghost" data-treeall="${allOpen ? 'close' : 'open'}">${allOpen ? 'Collapse all' : 'Expand all'}</button>` : ''}</div>`;
 
   if (view === 'manager') {
-    const NC = 13 + (HAS_SALES ? 1 : 0);
+    const NC = 14 + (HAS_SALES ? 1 : 0);
     const subRows = x => openSet.has(x.m) ? [...x.reps].map(rc => jdaRow(rc, x.name))
       .filter(j => !q || (x.name + ' ' + x.code).toLowerCase().includes(q) || (j.name + ' ' + j.id).toLowerCase().includes(q))
       .sort((a, b) => b.pres - a.pres || a.abs - b.abs)
       .map(j => `<tr class="perf-sub"><td></td><td class="sub-name"><button type="button" class="rep" data-rep="${j.r}">${esc(j.name)}</button></td><td class="muted">${esc(j.id)}</td><td class="muted">—</td><td>${esc(j.area)}</td>
         <td class="num muted">—</td><td class="num">${j.present ? '<span class="ok-t">✓</span>' : '<span class="lo-t">✗</span>'}</td><td class="num">${attTxt(j.att10)}</td><td class="num muted">—</td>
-        <td class="num">${nf(j.pres)}</td><td class="num">${nf(j.own7, 1)}</td><td class="num">${j.onT ? '✓' : ''}</td><td class="num">${absTxt(j.abs)}</td><td class="muted">${esc(j.ten)}</td>${HAS_SALES ? `<td class="num">${nsales(j.sales)}</td>` : ''}</tr>`).join('') : '';
+        <td class="num">${nf(j.pres)}</td><td class="num">${j.freshP == null ? '—' : pct(j.freshP)}</td><td class="num">${nf(j.own7, 1)}</td><td class="num">${j.onT ? '✓' : ''}</td><td class="num">${absTxt(j.abs)}</td><td class="muted">${esc(j.ten)}</td>${HAS_SALES ? `<td class="num">${nsales(j.sales)}</td>` : ''}</tr>`).join('') : '';
     h += table('mgr-manager', [
       { k: 'tog', label: '', csv: false, html: x => `<button type="button" class="team-toggle${openSet.has(x.m) ? ' open' : ''}" data-tree="${x.m}" aria-expanded="${openSet.has(x.m)}">${openSet.has(x.m) ? '▾' : '▸'} ${x.team} JDA${x.team === 1 ? '' : 's'}</button>` },
       { k: 'name', label: 'Manager / TL', wrap: true, search: x => x.name + ' ' + x.code + ' ' + x.names, html: x => `<b>${esc(x.name)}</b>` },
@@ -1324,6 +1330,7 @@ function pageManagers() {
       { k: 'att', label: 'Attendance', num: true, html: x => attTxt(x.att), csv: x => pct(x.att) },
       { k: 'att7', label: '7-day att.', num: true, fmt: pct },
       { k: 'pres', label: 'Pres.', help: 'Pres.', num: true },
+      { k: 'freshP', label: 'Fresh %', num: true, fmt: v => v == null ? '—' : pct(v), help: 'Fresh %' },
       { k: 'avg', label: 'Avg', num: true, fmt: v => nf(v, 1) },
       { k: 'onT', label: `${TARGET}+`, num: true },
       { k: 'abs3', label: 'Absent 3+', num: true, html: x => x.abs3 ? `<span class="lo-t">${x.abs3}</span>` : '<span class="muted">0</span>', csv: x => x.abs3 },
@@ -1341,6 +1348,7 @@ function pageManagers() {
       { k: 'present', label: 'Present', num: true, html: x => x.present ? '<span class="ok-t">✓</span>' : '<span class="lo-t">✗</span>', csv: x => x.present ? 'yes' : 'no' },
       { k: 'att10', label: 'Attendance (10 days)', num: true, html: x => attTxt(x.att10), csv: x => pct(x.att10) },
       { k: 'pres', label: 'Presentations', num: true },
+      { k: 'fresh', label: 'Fresh', num: true, help: 'Fresh' },
       { k: 'own7', label: 'Own 7-day avg', num: true, fmt: v => nf(v, 1) },
       { k: 'abs', label: 'Days absent', num: true, html: x => absTxt(x.abs), csv: x => x.abs },
       { k: 'ten', label: 'Tenure', sortv: x => x.tenM },
@@ -1490,6 +1498,7 @@ const DRILL = {
   att: { t: 'Attendance %', sub: 'Present JDAs ÷ active JDAs · the JDAs present', pick: x => !!x.c.rec, day: s => s.att, fmt: pct, color: '#10b981' },
   abs: { t: 'Absent %', sub: 'Absent JDAs ÷ active JDAs · the JDAs absent, longest first', pick: x => !x.c.rec, day: s => s.att == null ? null : 1 - s.att, fmt: pct, color: '#f43f5e', absent: true },
   pres: { t: 'Presentations', sub: 'Presentations by each present JDA', pick: x => !!x.c.rec, day: s => s.pres, fmt: v => nf(v), color: '#0ea5e9' },
+  fresh: { t: 'Fresh presentations', sub: 'Presentations to new businesses · JDAs with at least 1, most first', pick: x => x.c.rec && x.c.rec.nw > 0, day: s => s.fresh, fmt: v => nf(v), color: '#14b8a6', fresh: true },
   avg: { t: 'Average per present JDA', sub: `Each present JDA against the target of ${TARGET}`, pick: x => !!x.c.rec, day: s => s.avg, fmt: v => nf(v, 1), color: '#8b5cf6' },
   onT: { t: `On target (${TARGET}+)`, sub: `JDAs who did ${TARGET} or more presentations`, pick: x => x.c.rec && x.c.rec.n >= TARGET, day: s => s.onT, fmt: v => nf(v), color: '#f97316' },
   sales: { t: 'JDA deals', sub: 'JDAs who closed a deal', pick: x => (salesMap[x.r].get(S.day) || 0) > 0, day: s => s.sales, fmt: nsales, color: '#ec4899', sales: true },
@@ -1507,11 +1516,12 @@ function openDrill(kind) {
   const vals = ws.map(dayVal), now = vals[vals.length - 1];
   const fmt = K.fmt || (v => nf(v)), pctAxis = kind === 'att' || kind === 'abs';
   // order: absences longest first, field flags by time, everything else by presentations
-  const val = x => K.all ? (x.c.rec ? x.c.rec.n : -absentStreak(x.r, d)) : K.absent ? absentStreak(x.r, d) : K.sales ? (salesMap[x.r].get(d) || 0) : K.field ? (kind === 'late' ? -fieldOf(x.c).first : kind === 'early' ? -fieldOf(x.c).last : kind === 'gap' ? fieldOf(x.c).gap : x.c.rec.n) : x.c.rec.n;
+  const val = x => K.all ? (x.c.rec ? x.c.rec.n : -absentStreak(x.r, d)) : K.absent ? absentStreak(x.r, d) : K.sales ? (salesMap[x.r].get(d) || 0) : K.fresh ? x.c.rec.nw : K.field ? (kind === 'late' ? -fieldOf(x.c).first : kind === 'early' ? -fieldOf(x.c).last : kind === 'gap' ? fieldOf(x.c).gap : x.c.rec.n) : x.c.rec.n;
   rows.sort((a, b) => val(b) - val(a));
   const right = x => {
     if (K.all && !x.c.rec || K.absent) { const st = absentStreak(x.r, d); return `<span class="pill ${st >= 3 ? 'crit' : 'warn'}">absent ${st} day${st > 1 ? 's' : ''}</span><small>last ${x.c.last ? dlabel(D.days[x.c.last.d]) : '—'}</small>`; }
     if (K.sales) return `<b>${nsales(salesMap[x.r].get(d) || 0)}</b><small>${x.c.rec ? x.c.rec.n + ' presentations' : ''}</small>`;
+    if (K.fresh) return `<b>${x.c.rec.nw} fresh</b><small>of ${x.c.rec.n} presentations · ${pct(x.c.rec.nw / x.c.rec.n)}</small>`;
     if (K.field) { const f = fieldOf(x.c); return `<b>${hm(f.first)} – ${hm(f.last)}</b><small>${x.c.rec.n} pres. · longest gap ${f.gap ? hm(f.gap) : '—'}</small>`; }
     return presCell(x.c.rec.n);
   };

@@ -175,3 +175,44 @@
 [2026-11-02 16:28:04]    ok (19s)
 [2026-11-02 16:28:04] ===== done in 277s =====
 [2026-11-02T16:28:04] Data generation completed successfully.
+
+[2026-11-05T16:18:32] Running data generation (main.py)...
+[2026-11-05 16:18:33] ===== ME dashboards refresh =====
+[2026-11-05 16:18:33] -- fetch_data.py
+[2026-11-05 16:19:19]    [16:19:08] mumbai: 50,705 appointments given and 5,911 not counted, 2026-04-01 to 2026-11-04 (29s)
+[2026-11-05 16:19:19]    [16:19:16] Saved cache\raw.pkl
+[2026-11-05 16:19:19]    ok (46s)
+[2026-11-05 16:19:20] -- fetch_api.py
+[2026-11-05 16:20:07]    [16:19:55] The appointment table already runs to 2026-11-04: no provisional days (removed any earlier ones).
+[2026-11-05 16:20:09]    ok (49s)
+[2026-11-05 16:20:11] -- fetch_deals.py
+
+[2026-11-06T13:06:40] Running data generation (main.py)...
+[2026-11-06 13:06:43] ===== ME dashboards refresh =====
+[2026-11-06 13:06:43] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: vault_keys.json
+[2026-11-06 13:06:43] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\ProgramData\ME_dashboard_private\environment.py.
+[2026-11-06T13:06:43] Data generation returned code 2.
+
+[2026-11-06T13:48:05] Running data generation (main.py)...
+[2026-11-06 13:48:08] ===== ME dashboards refresh =====
+[2026-11-06 13:48:08] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: vault_keys.json
+[2026-11-06 13:48:08] FAILED: no login for server 240 (DB_240), server 216 (DB_216). Fill DB_240 / DB_216 in C:\ProgramData\ME_dashboard_private\environment.py.
+[2026-11-06T13:48:08] Data generation returned code 2.
+
+[2026-11-11T11:46:36] Running data generation (main.py)...
+[2026-11-11 11:46:39] ===== ME dashboards refresh =====
+[2026-11-11 11:46:39] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-11 11:46:39] -- fetch_data.py
+[2026-11-11 11:47:16]    [11:47:12] mumbai: 51,223 appointments given and 5,974 not counted, 2026-04-01 to 2026-11-10 (30s)
+[2026-11-11 11:47:16]    [11:47:16] Saved cache\raw.pkl
+[2026-11-11 11:47:16]    ok (37s)
+[2026-11-11 11:47:16] -- fetch_api.py
+[2026-11-11 11:47:21]    [11:47:20] The appointment table already runs to 2026-11-10: no provisional days (removed any earlier ones).
+[2026-11-11 11:47:21]    ok (4s)
+[2026-11-11 11:47:21] -- fetch_deals.py
+[2026-11-11 11:50:03]    [11:49:32] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 12,670.96 since 2026-04-01 to 2026-11-07, 15,518 deal rows, 165 MEs (9s)
+[2026-11-11 11:50:03]    [11:49:32] Deals dump runs to 2026-11-10; the rolling table added 0 deal rows (nothing newer)
+[2026-11-11 11:50:03]    [11:49:33] Deals for 50,509 businesses: 13,310 deal rows since 2026-03-30 (128s). Saved cache\deals.pkl
+[2026-11-11 11:50:03]    [11:50:02] HR for 1,350 MEs and 940 more TMEs: 2,154 with days present, 2,288 with joining dates (29s). Saved cache\hr.pkl
+[2026-11-11 11:50:03]    ok (162s)
+[2026-11-11 11:50:03] -- fetch_calls.py

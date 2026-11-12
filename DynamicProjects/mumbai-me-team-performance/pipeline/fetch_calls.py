@@ -27,7 +27,8 @@ import time
 import pymysql
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(PIPE, "cache")
+import kitpaths   # private files: outside the kit folder in the shared kit (6 Nov 2026)
+CACHE = kitpaths.CACHE
 CONNECTED = ("Testing", "Client Disconnected Call", "IVR call", "Discard Call", "Company Closed", "Paid Client", "Call To Me",
              "Not Interested", "Call Back", "Follow Up", "Allocate Appointment", "Appointment Allocated to JDA",
              "Other City Data", "Other TME Data", "Inbound Call Data Not Found", "Invalid Data", "Not Contactable",

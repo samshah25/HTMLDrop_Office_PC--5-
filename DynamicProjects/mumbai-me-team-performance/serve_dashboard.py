@@ -15,12 +15,6 @@ Run the server (Ctrl+C stops it):
 
 Only four addresses answer: / (sign-in), /login, /dashboard (the signed-in person's page) and /logout. No file in this
 folder can be fetched by its name, so logins.json, the pages and environment.py are never served directly.
-
-Behind HTML Drop (5 Nov 2026: the dashboard keeps its old link http://<PC>:8150/s/mumbai-me-team-performance/):
-    python serve_dashboard.py --behind-htmldrop     (listens on this PC only; start_server.bat does this)
-HTML Drop hands every request under /s/mumbai-me-team-performance to this server (htmldrop_login_proxy.py, added to
-HTML Drop), with the headers X-Forwarded-Prefix (the link's path) and X-Forwarded-For (the viewer's address). Those two
-headers are believed only from this PC itself.
 Five wrong passwords for a login (or twenty from one PC) lock it for 15 minutes. A sign-in lasts 12 hours (logins.json:
 session_hours) or until the server restarts. Every sign-in, failure and page view is written to serve_log.txt.
 Needs Python 3.8+ and nothing else.
@@ -114,14 +108,14 @@ h1{font-size:19px;margin:0 0 4px}p.s{margin:0 0 18px;color:var(--mu);font-size:1
 input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font:inherit}input:focus{outline:2px solid #2a78d6;outline-offset:1px;border-color:#2a78d6}
 button{margin-top:18px;width:100%;padding:10px;border:0;border-radius:6px;background:var(--navy);color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .err{margin:12px 0 0;color:var(--red);font-size:13px}.ft{margin:16px 0 0;color:var(--mu);font-size:12px}
-</style></head><body><form class="card" method="post" action="%BASE%/login" autocomplete="on"><h1>ME team, Mumbai</h1><p class="s">Sign in with the login ID and password you were given.</p>
+</style></head><body><form class="card" method="post" action="/login" autocomplete="on"><h1>ME team, Mumbai</h1><p class="s">Sign in with the login ID and password you were given.</p>
 <label for="u">Login ID</label><input id="u" name="u" autocomplete="username" autofocus required>
 <label for="p">Password</label><input id="p" name="p" type="password" autocomplete="current-password" required>
 %ERR%<button type="submit">Sign in</button><p class="ft">For a forgotten password, ask Kushal Sharma.</p></form></body></html>"""
 
 BAR = ('<div style="position:fixed;right:12px;bottom:12px;z-index:2147483000;background:#fff;color:#14213D;border:1px solid #D9DEE7;'
        'border-radius:999px;padding:5px 12px;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 1px 4px rgba(20,33,61,.12)" '
-       'class="jd-signbar">Signed in: <b>%NAME%</b> · <a href="%BASE%/logout" style="color:#1F5FAD">Sign out</a></div>'
+       'class="jd-signbar">Signed in: <b>%NAME%</b> · <a href="/logout" style="color:#1F5FAD">Sign out</a></div>'
        '<style>@media print{.jd-signbar{display:none}}</style>')
 
 
@@ -132,21 +126,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):   # the standard request lines are left out; sign-ins and page views are logged below
         return
 
-    def from_this_pc(self):
-        return self.client_address[0] in ("127.0.0.1", "::1")
-
     def ip(self):
-        """the viewer's address; behind HTML Drop (a request from this PC carrying X-Forwarded-For) the address HTML Drop saw"""
-        fwd = self.headers.get("X-Forwarded-For", "") if self.from_this_pc() else ""
-        return fwd.split(",")[0].strip()[:64] or self.client_address[0]
-
-    def base(self):
-        """the link's path in front of /, /login, /dashboard, /logout: '' when opened directly, '/s/<link name>' behind HTML Drop"""
-        p = self.headers.get("X-Forwarded-Prefix", "").rstrip("/") if self.from_this_pc() else ""
-        return p if p and len(p) <= 100 and all(c.isalnum() or c in "/-_" for c in p) and p.startswith("/") else ""
-
-    def cookie(self, value, age):
-        return f"{COOKIE}={value}; Path={self.base() or '/'}; Max-Age={age}; HttpOnly; SameSite=Strict"
+        return self.client_address[0]
 
     def headers_common(self, ctype="text/html; charset=utf-8"):
         self.send_header("Content-Type", ctype)
@@ -188,25 +169,24 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def signin(self, err=""):
         e = f'<p class="err" role="alert">{html.escape(err)}</p>' if err else ""
-        self.send_html(200 if not err else 401, SIGNIN.replace("%ERR%", e).replace("%BASE%", self.base()))
+        self.send_html(200 if not err else 401, SIGNIN.replace("%ERR%", e))
 
     def do_GET(self):
-        path = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)
-        b = self.base()
-        if path in ("/", "/login", "/Mumbai ME Team Performance.html"):   # the last one: old bookmarks of the open page
+        path = urllib.parse.urlsplit(self.path).path
+        if path in ("/", "/login"):
             _, user = self.session()
-            return self.redirect(b + "/dashboard") if user else self.signin()
+            return self.redirect("/dashboard") if user else self.signin()
         if path == "/logout":
             tok, user = self.session()
             if tok:
                 with LOCK:
                     SESS.pop(tok, None)
                 log(f"sign out  {user} from {self.ip()}")
-            return self.redirect(b + "/", self.cookie("", 0))
+            return self.redirect("/", f"{COOKIE}=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict")
         if path == "/dashboard":
             _, user = self.session()
             if not user:
-                return self.redirect(b + "/")
+                return self.redirect("/")
             return self.dashboard(user)
         if path == "/favicon.ico":
             self.send_response(204)
@@ -223,15 +203,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not p or not os.path.exists(p):
             log(f"no page   {user} ({entry.get('page') if entry else 'login removed'})")
             return self.send_html(503, "<!doctype html><meta charset='utf-8'><title>Not ready</title><p style='font:15px system-ui;margin:40px'>"
-                                       f"Your page is not ready yet. Please try again later, or tell Kushal Sharma. <a href='{self.base()}/logout'>Sign out</a></p>")
+                                       "Your page is not ready yet. Please try again later, or tell Kushal Sharma. <a href='/logout'>Sign out</a></p>")
         gz = "gzip" in self.headers.get("Accept-Encoding", "")
         mt = os.path.getmtime(p)
-        key = (p, mt, entry.get("name", user), gz, self.base())
+        key = (p, mt, entry.get("name", user), gz)
         body = CACHE.get(key)
         if body is None:
             with open(p, "rb") as f:
                 raw = f.read()
-            bar = BAR.replace("%NAME%", html.escape(entry.get("name", user))).replace("%BASE%", self.base()).encode("utf-8")
+            bar = BAR.replace("%NAME%", html.escape(entry.get("name", user))).encode("utf-8")
             i = raw.rfind(b"</body>")
             raw = raw[:i] + bar + raw[i:] if i >= 0 else raw + bar
             body = gzip.compress(raw, 6) if gz else raw
@@ -287,7 +267,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             SESS[tok] = (user, now + hours * 3600)
             FAILS.pop(f"u:{user}", None)
         log(f"signed in {user} from {self.ip()}")
-        self.redirect(self.base() + "/dashboard", self.cookie(tok, int(hours * 3600)))
+        self.redirect("/dashboard", f"{COOKIE}={tok}; Path=/; Max-Age={int(hours * 3600)}; HttpOnly; SameSite=Strict")
 
 
 def main():
@@ -296,8 +276,8 @@ def main():
         if len(args) != 3:
             sys.exit("Use: python serve_dashboard.py --set-password <login id> <new password>")
         user, pw = args[1].strip().lower(), args[2]
-        if len(pw) < 6:   # the agreed format (5 Nov 2026): first name in small letters + 3 digits, e.g. yash472
-            sys.exit("Use a password of at least 6 characters.")
+        if len(pw) < 8:
+            sys.exit("Use a password of at least 8 characters.")
         c = load_conf()
         if user not in c["logins"]:
             sys.exit(f"No login {user!r} in logins.json. Logins: {', '.join(c['logins'])}")
@@ -319,13 +299,10 @@ def main():
         p = page_path(e.get("page"))
         if not p or not os.path.exists(p):
             log(f"warning: the page of {u} ({e.get('page')}) is not there yet")
-    behind = "--behind-htmldrop" in args
-    # --local: this PC only (a test), http://localhost:<port>/ ; --behind-htmldrop: this PC only, HTML Drop passes the requests on
-    host = "127.0.0.1" if "--local" in args or behind else "0.0.0.0"
+    host = "127.0.0.1" if "--local" in args else "0.0.0.0"   # --local: this PC only (a test), http://localhost:<port>/
     srv = http.server.ThreadingHTTPServer((host, port), Handler)
     srv.daemon_threads = True
-    where = " behind HTML Drop (open the dashboard by its HTML Drop link)" if behind else ", this PC only" if host == "127.0.0.1" else ""
-    log(f"Serving on port {port} ({len(conf['logins'])} logins{where}). Ctrl+C stops it.")
+    log(f"Serving on port {port} ({len(conf['logins'])} logins{', this PC only' if host == '127.0.0.1' else ''}). Ctrl+C stops it.")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

@@ -98,9 +98,9 @@
     "editors": [],
     "link": "http://172.29.65.188:8095/Renewal_funnel_Apr_Aug_fy27.html",
     "file": "C:\\Users\\10179794\\OneDrive - Just Dial Ltd\\Documents\\dashboards\\renewal-funnel_apr_aug_fy27\\Renewal_funnel_Apr_Aug_fy27.html",
-    "version": 4,
+    "version": 5,
     "created": "2026-10-08T18:39:31",
-    "updated": "2026-10-14T12:58:36",
+    "updated": "2026-11-11T11:27:34",
     "entry": "",
     "disabled": false,
     "hub": {
@@ -291,9 +291,9 @@
   "jd-india-sales-overview": {
     "title": "JD India sales overview",
     "user": "sarvesh",
-    "version": 3,
+    "version": 4,
     "created": "2026-10-08T18:41:45",
-    "updated": "2026-11-02T15:11:06",
+    "updated": "2026-11-11T18:25:48",
     "entry": "index.html",
     "hub": {
       "show": true,
@@ -363,9 +363,9 @@
   "apparel-gym-cohorts": {
     "title": "Apparel & Gym Cohorts",
     "user": "priyal",
-    "version": 13,
+    "version": 21,
     "created": "2026-10-16T16:03:38",
-    "updated": "2026-11-04T11:15:17",
+    "updated": "2026-11-06T15:23:26",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -399,9 +399,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 36,
+    "version": 44,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-11-04T18:29:28",
+    "updated": "2026-11-12T14:59:31",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -561,9 +561,9 @@
   "apparel-gsc-analysis": {
     "title": "Apparel Search Analysis",
     "user": "priyal",
-    "version": 28,
+    "version": 41,
     "created": "2026-10-26T14:59:01",
-    "updated": "2026-11-04T18:58:10",
+    "updated": "2026-11-06T15:22:40",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -705,15 +705,105 @@
   "apparel-market-trend": {
     "title": "Apparel Market Trend",
     "user": "priyal",
-    "version": 4,
+    "version": 10,
     "created": "2026-11-04T11:07:44",
-    "updated": "2026-11-04T11:15:17",
+    "updated": "2026-11-06T15:21:41",
     "entry": "index.html",
     "hub": {
       "show": false,
       "scope": "general",
       "reviewed": false,
       "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "apparel-city-search-calls": {
+    "title": "Apparel City Search & Calls",
+    "user": "priyal",
+    "version": 11,
+    "created": "2026-11-06T11:22:22",
+    "updated": "2026-11-06T15:22:02",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "apparel-gym-hub": {
+    "title": "Apparel & Gym Dashboards",
+    "user": "priyal",
+    "version": 3,
+    "created": "2026-11-06T14:34:21",
+    "updated": "2026-11-06T15:21:41",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "jaipur-jda-team": {
+    "title": "Jaipur JDA team",
+    "user": "sarvesh",
+    "version": 1,
+    "created": "2026-11-06T18:29:37",
+    "updated": "2026-11-06T18:29:37",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "perf",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "branch-matrix-sep-oct-2026": {
+    "title": "Branch Matrix Sep Oct 2026",
+    "user": "shubhanan",
+    "version": 3,
+    "created": "2026-11-11T18:02:24",
+    "updated": "2026-11-11T19:07:27",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "hot-data-marketing",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "hot-data-review": {
+    "title": "Hot Data Review",
+    "user": "shubhanan",
+    "version": 1,
+    "created": "2026-11-12T14:45:01",
+    "updated": "2026-11-12T14:45:01",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "hot-data-marketing",
       "branch": "",
       "tags": [],
       "title": "",

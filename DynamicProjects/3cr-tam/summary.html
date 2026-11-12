@@ -16,26 +16,26 @@
 </div>
 
 <div class="wrap">
-  <h1>Paid Base Growth: 5.4L to 20L</h1>
+  <h1>Paid Base Growth: 5.2L to 20L</h1>
   <div class="grid cols-4">
     <div class="card kpi" title="Monetizable TAM: tbl_b2b_panindia_data WHERE (callable_flag = 1 OR paid <> 0) AND mask = 0 AND freeze = 0 AND closedown_flag NOT IN (1,9,10), VFL removed">
       <div class="label">Total TAM</div>
-      <div class="value">3,07,59,852</div>
+      <div class="value">3,05,70,996</div>
       <div class="delta">Monetizable TAM, VFL removed</div>
     </div>
     <div class="card kpi" title="TAM businesses with paid = 1, VFL removed">
       <div class="label">Current Paid Base</div>
-      <div class="value">5,39,158</div>
+      <div class="value">5,24,090</div>
       <div class="delta">Paying businesses, VFL removed &middot; target 20,00,000</div>
     </div>
-    <div class="card kpi" title="Paid / TAM across the whole platform. Every Gap number on the dashboard uses 1.75%">
+    <div class="card kpi" title="Paid / TAM across the whole platform. Every Gap number on the dashboard uses 1.71%">
       <div class="label">Platform Penetration</div>
-      <div class="value">1.753%</div>
+      <div class="value">1.714%</div>
       <div class="delta">Paid &divide; TAM &middot; used for every Gap number</div>
     </div>
     <div class="card kpi" title="20,00,000 target minus the current paid base">
       <div class="label">Gap to 20L Target</div>
-      <div class="value">14,60,842</div>
+      <div class="value">14,75,910</div>
       <div class="delta">More paid accounts needed</div>
     </div>
   </div>
@@ -43,8 +43,8 @@
   <div class="insight-card">
     <h3>Headline read</h3>
     <div class="insight-list">
-      <div class="insight-row"><span>Biggest single-category opportunity</span><span class="v">Apparels & Clothing - Retailer - +31,652 accounts</span></div>
-      <div class="insight-row"><span>Biggest state by TAM</span><span class="v">Maharashtra - 54,91,198 TAM</span></div>
+      <div class="insight-row"><span>Biggest single-category opportunity</span><span class="v">Apparels & Clothing - Retailer - +31,019 accounts</span></div>
+      <div class="insight-row"><span>Biggest state by TAM</span><span class="v">Maharashtra - 54,61,529 TAM</span></div>
     </div>
   </div>
 
@@ -52,19 +52,19 @@
     <div class="card">
       <h3>Storefront vs Not-Storefront (TAM)</h3>
       <div id="sf-nsf-bars"></div>
-      <div class="pill-note">Storefront holds 86% of the TAM but converts at 1.55%. Not-Storefront is smaller but converts at 3.03%.</div>
+      <div class="pill-note">Storefront holds 86% of the TAM but converts at 1.52%. Not-Storefront is smaller but converts at 2.94%.</div>
     </div>
     <div class="card">
       <h3 class="tip" title="Low Budget Categories: categories flagged in datagrowth.tbl_lpd_tagged_data_v1">Low Budget Categories (LBC) Summary</h3>
       <div id="lbc-summary" class="grid cols-2" style="gap:12px;"></div>
-      <div class="pill-note">LBC accounts for a small slice of both TAM and paid base. <button class="source-cta" type="button" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">Source</button><span class="source-detail" hidden>LBC = docid present in <code>datagrowth.tbl_lpd_tagged_data_v1</code> (server 192.168.24.240); non-LBC = absent from that table. TAM and Paid are both VFL-excluded; LBC paid is counted on the same 5,39,158 paid base as Target Builder. LBC list pulled 24 Sep 2026.</span></div>
+      <div class="pill-note">LBC accounts for a small slice of both TAM and paid base. <button class="source-cta" type="button" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">Source</button><span class="source-detail" hidden>LBC = docid present in <code>datagrowth.tbl_lpd_tagged_data_v1</code> (server 192.168.24.240); non-LBC = absent from that table. TAM and Paid are both VFL-excluded; LBC paid is counted on the same 5,24,090 paid base as Target Builder. LBC list pulled 24 Sep 2026.</span></div>
     </div>
   </div>
 
   <div class="section grid cols-2">
     <div class="card">
       <h3>Top 10 Opportunity Categories (incremental accounts at platform-avg penetration)</h3>
-      <div class="pill-note" style="margin:-4px 0 10px;">Groups that would gain the most paid accounts by reaching 1.75% penetration. Click a name to open it in Target Builder.</div>
+      <div class="pill-note" style="margin:-4px 0 10px;">Groups that would gain the most paid accounts by reaching 1.71% penetration. Click a name to open it in Target Builder.</div>
       <div id="top-opp-table"></div>
     </div>
     <div class="card">
@@ -90,21 +90,21 @@
   <details class="card" style="margin-top:24px;">
     <summary>Data sources & methodology</summary>
     <div style="margin-top:12px; display:grid; gap:10px;">
-      <div class="pill-note"><b>Sources:</b> <b>Monetizable TAM</b> = distinct docids in <code>db_paidcontracts.tbl_b2b_panindia_data</code> (server 216) WHERE <code>(callable_flag = 1 OR paid &lt;&gt; 0) AND mask = 0 AND freeze = 0 AND closedown_flag NOT IN (1,9,10)</code>, minus VFL docids: 3,08,79,215 &minus; 1,19,363 = 3,07,59,852. <b>Paid</b> = those docids with <code>paid = 1</code> (5,39,158); Penetration = Paid &divide; TAM. Every number is a distinct business (docid). <b>Sales group</b> = one per docid, the same for every dashboard (shared b2b master): the 25 Sep 2026 tie-break of <code>vertical_owner.tbl_sales_group_tagged</code> (server 216; most categories wins, a tie goes to the more common group, then alphabetical) for docids that existed then; newer docids get the same rule on the live table, then their hot_category &rarr; <code>Sales_Manual_Group_mapping</code>. No group, or a group outside this dashboard's list = Unmapped (1,74,834).<br><b>Data as of:</b> TAM, Paid and sales groups - pulled 2 Nov 2026; VFL - 2 Nov 2026; LBC - 24 Sep 2026; Revenue - FY26 file. Revenue = official <code>NCT &amp; Sales Group wise Revenue FY26.xlsx</code>, matched by sales_group name - ARPU in Target Builder = revenue &divide; paid.</div>
-      <div class="pill-note"><b>VFL (Verified Forever Listing) docids excluded:</b> every docid in <code>db_paidcontracts.tbl_daily_paid_contracts_dump</code> WHERE <code>vfl_flag = 1</code> (1,23,197 docids, pulled 2 Nov 2026). 1,19,363 of them were in the TAM query, all with paid = 1, so they are removed from both TAM and Paid - a VFL business never counts as unconverted opportunity.</div>
-      <div class="pill-note"><b>Dominant sales_group tie-break</b> (when a docid has 2+ sales_group tags at the same category-count): resolve non-tied docids first, then for ties pick whichever tag is already more common among the non-tied resolutions, alphabetical as last resort. The dashboard lists 2,788 sales groups; 255 of them have 0 TAM because they never win this resolution for any docid - real tags that always lose to a more common competitor, not a data error.</div>
+      <div class="pill-note"><b>Sources:</b> <b>Monetizable TAM</b> = distinct docids in <code>db_paidcontracts.tbl_b2b_panindia_data</code> (server 216) WHERE <code>(callable_flag = 1 OR paid &lt;&gt; 0) AND mask = 0 AND freeze = 0 AND closedown_flag NOT IN (1,9,10)</code>, minus VFL docids: 3,06,90,243 &minus; 1,19,247 = 3,05,70,996. <b>Paid</b> = those docids with <code>paid = 1</code> (5,24,090); Penetration = Paid &divide; TAM. Every number is a distinct business (docid). <b>Sales group</b> = one per docid, the same for every dashboard (shared b2b master): the 25 Sep 2026 tie-break of <code>vertical_owner.tbl_sales_group_tagged</code> (server 216; most categories wins, a tie goes to the more common group, then alphabetical) for docids that existed then; newer docids get the same rule on the live table, then their hot_category &rarr; <code>Sales_Manual_Group_mapping</code>. No group, or a group outside this dashboard's list = Unmapped (1,79,400).<br><b>Data as of:</b> TAM, Paid and sales groups - pulled 12 Nov 2026; VFL - 12 Nov 2026; LBC - 24 Sep 2026; Revenue - FY26 file. Revenue = official <code>NCT &amp; Sales Group wise Revenue FY26.xlsx</code>, matched by sales_group name - ARPU in Target Builder = revenue &divide; paid.</div>
+      <div class="pill-note"><b>VFL (Verified Forever Listing) docids excluded:</b> every docid in <code>db_paidcontracts.tbl_daily_paid_contracts_dump</code> WHERE <code>vfl_flag = 1</code> (1,23,081 docids, pulled 12 Nov 2026). 1,19,247 of them were in the TAM query, all with paid = 1, so they are removed from both TAM and Paid - a VFL business never counts as unconverted opportunity.</div>
+      <div class="pill-note"><b>Dominant sales_group tie-break</b> (when a docid has 2+ sales_group tags at the same category-count): resolve non-tied docids first, then for ties pick whichever tag is already more common among the non-tied resolutions, alphabetical as last resort. The dashboard lists 2,788 sales groups; 258 of them have 0 TAM because they never win this resolution for any docid - real tags that always lose to a more common competitor, not a data error.</div>
     </div>
   </details>
 </div>
 
 <script>
-const LBC_SUMMARY = {"lbc_callable": 6495725, "nonlbc_callable": 24264127, "total_callable": 30759852, "lbc_callable_pct": 0.2112, "lbc_paid": 2898, "nonlbc_paid": 536260, "total_paid": 539158, "lbc_paid_pct": 0.0054};
-const SF_NSF_PAID = {"sf": 410793, "nsf": 125540, "unknown": 2825};
-const SF_NSF = {"sf": 26436235, "nsf": 4148783, "unknown": 174834};
-const TOP_OPPORTUNITY = [{"sales_group": "Apparels & Clothing - Retailer", "sf": "SF", "callable": 2033127, "gap_accounts": 31652}, {"sales_group": "Restaurants", "sf": "SF", "callable": 1774886, "gap_accounts": 25972}, {"sales_group": "Grocery Retailers", "sf": "SF", "callable": 840323, "gap_accounts": 13482}, {"sales_group": "Grocery Stores", "sf": "SF", "callable": 633528, "gap_accounts": 10622}, {"sales_group": "Chemists", "sf": "SF", "callable": 545829, "gap_accounts": 9085}, {"sales_group": "Mobile Phone Dealers", "sf": "SF", "callable": 506550, "gap_accounts": 7205}, {"sales_group": "Tools & Hardware Products & Services", "sf": "SF", "callable": 624613, "gap_accounts": 7172}, {"sales_group": "Mobile Phone Repair & Services", "sf": "SF", "callable": 439697, "gap_accounts": 5991}, {"sales_group": "Beauty Parlours", "sf": "SF", "callable": 1018926, "gap_accounts": 5612}, {"sales_group": "Electronic Goods Showrooms", "sf": "SF", "callable": 282528, "gap_accounts": 4819}];
-const TOP_STATES = [{"state": "Maharashtra", "callable": 5491198, "paid": 95067, "incremental": 40752}, {"state": "Uttar Pradesh", "callable": 2992751, "paid": 44668, "incremental": 27804}, {"state": "Delhi NCR", "callable": 3115910, "paid": 47951, "incremental": 22194}, {"state": "West Bengal", "callable": 1649381, "paid": 18835, "incremental": 17470}, {"state": "Gujarat", "callable": 1907911, "paid": 32307, "incremental": 15710}, {"state": "Rajasthan", "callable": 1491576, "paid": 22761, "incremental": 13461}, {"state": "Karnataka", "callable": 1884239, "paid": 38997, "incremental": 13118}, {"state": "Madhya Pradesh", "callable": 1389510, "paid": 22367, "incremental": 13034}, {"state": "Tamil Nadu", "callable": 2310175, "paid": 58141, "incremental": 12498}, {"state": "Telangana", "callable": 1522726, "paid": 29465, "incremental": 11183}];
-const TOP_CITIES = [{"city": "delhi", "callable": 3115909, "paid": 47951, "state": "Delhi NCR", "in_builder": true}, {"city": "mumbai", "callable": 1851420, "paid": 34778, "state": "Maharashtra", "in_builder": true}, {"city": "pune", "callable": 1124256, "paid": 20044, "state": "Maharashtra", "in_builder": true}, {"city": "hyderabad", "callable": 1039990, "paid": 22082, "state": "Telangana", "in_builder": true}, {"city": "bangalore", "callable": 1032610, "paid": 20242, "state": "Karnataka", "in_builder": true}, {"city": "chennai", "callable": 804114, "paid": 18872, "state": "Tamil Nadu", "in_builder": true}, {"city": "kolkata", "callable": 567778, "paid": 8871, "state": "West Bengal", "in_builder": true}, {"city": "ahmedabad", "callable": 557281, "paid": 11139, "state": "Gujarat", "in_builder": true}, {"city": "jaipur", "callable": 461877, "paid": 9050, "state": "Rajasthan", "in_builder": true}, {"city": "lucknow", "callable": 405235, "paid": 8419, "state": "Uttar Pradesh", "in_builder": true}];
-const TOP_SG_BY_PAID = [{"sales_group": "Car Hire", "callable": 351317, "paid": 15876}, {"sales_group": "Civil & Construction Contractors", "callable": 419329, "paid": 13899}, {"sales_group": "Hotels", "callable": 361595, "paid": 13591}, {"sales_group": "Beauty Parlours", "callable": 1018926, "paid": 12248}, {"sales_group": "Estate Agents", "callable": 467878, "paid": 10629}, {"sales_group": "Furniture & Fixtures Products & Services", "callable": 476886, "paid": 10427}, {"sales_group": "Pathology Labs", "callable": 172092, "paid": 9377}, {"sales_group": "Interior Designers", "callable": 224933, "paid": 9347}, {"sales_group": "Security System/CCTV", "callable": 127153, "paid": 8462}, {"sales_group": "Tutorials", "callable": 315381, "paid": 7764}];
+const LBC_SUMMARY = {"lbc_callable": 6442691, "nonlbc_callable": 24128305, "total_callable": 30570996, "lbc_callable_pct": 0.2107, "lbc_paid": 2338, "nonlbc_paid": 521752, "total_paid": 524090, "lbc_paid_pct": 0.0045};
+const SF_NSF_PAID = {"sf": 400258, "nsf": 121279, "unknown": 2553};
+const SF_NSF = {"sf": 26269510, "nsf": 4122086, "unknown": 179400};
+const TOP_OPPORTUNITY = [{"sales_group": "Apparels & Clothing - Retailer", "sf": "SF", "callable": 2028248, "gap_accounts": 31019}, {"sales_group": "Restaurants", "sf": "SF", "callable": 1766256, "gap_accounts": 25219}, {"sales_group": "Grocery Retailers", "sf": "SF", "callable": 842176, "gap_accounts": 13234}, {"sales_group": "Grocery Stores", "sf": "SF", "callable": 616181, "gap_accounts": 10105}, {"sales_group": "Chemists", "sf": "SF", "callable": 544047, "gap_accounts": 8867}, {"sales_group": "Tools & Hardware Products & Services", "sf": "SF", "callable": 619080, "gap_accounts": 7025}, {"sales_group": "Mobile Phone Dealers", "sf": "SF", "callable": 504761, "gap_accounts": 6970}, {"sales_group": "Mobile Phone Repair & Services", "sf": "SF", "callable": 437997, "gap_accounts": 5849}, {"sales_group": "Beauty Parlours", "sf": "SF", "callable": 1011940, "gap_accounts": 5401}, {"sales_group": "Electronic Goods Showrooms", "sf": "SF", "callable": 281285, "gap_accounts": 4712}];
+const TOP_STATES = [{"state": "Maharashtra", "callable": 5461529, "paid": 91911, "incremental": 39932}, {"state": "Uttar Pradesh", "callable": 2970413, "paid": 43132, "incremental": 27116}, {"state": "Delhi NCR", "callable": 3104146, "paid": 44740, "incremental": 22901}, {"state": "West Bengal", "callable": 1632433, "paid": 18688, "incremental": 16847}, {"state": "Gujarat", "callable": 1902235, "paid": 31704, "incremental": 15297}, {"state": "Rajasthan", "callable": 1481527, "paid": 22201, "incremental": 13072}, {"state": "Madhya Pradesh", "callable": 1386554, "paid": 22385, "incremental": 12629}, {"state": "Karnataka", "callable": 1879141, "paid": 39113, "incremental": 12567}, {"state": "Tamil Nadu", "callable": 2294904, "paid": 55377, "incremental": 12466}, {"state": "Telangana", "callable": 1510007, "paid": 28086, "incremental": 11033}];
+const TOP_CITIES = [{"city": "delhi", "callable": 3104145, "paid": 44740, "state": "Delhi NCR", "in_builder": true}, {"city": "mumbai", "callable": 1845301, "paid": 33248, "state": "Maharashtra", "in_builder": true}, {"city": "pune", "callable": 1115846, "paid": 18918, "state": "Maharashtra", "in_builder": true}, {"city": "hyderabad", "callable": 1035621, "paid": 20705, "state": "Telangana", "in_builder": true}, {"city": "bangalore", "callable": 1030586, "paid": 20325, "state": "Karnataka", "in_builder": true}, {"city": "chennai", "callable": 801504, "paid": 17656, "state": "Tamil Nadu", "in_builder": true}, {"city": "kolkata", "callable": 566166, "paid": 8669, "state": "West Bengal", "in_builder": true}, {"city": "ahmedabad", "callable": 556659, "paid": 11124, "state": "Gujarat", "in_builder": true}, {"city": "jaipur", "callable": 460671, "paid": 8516, "state": "Rajasthan", "in_builder": true}, {"city": "lucknow", "callable": 403855, "paid": 7706, "state": "Uttar Pradesh", "in_builder": true}];
+const TOP_SG_BY_PAID = [{"sales_group": "Car Hire", "callable": 349287, "paid": 15643}, {"sales_group": "Hotels", "callable": 358853, "paid": 13328}, {"sales_group": "Civil & Construction Contractors", "callable": 416629, "paid": 13200}, {"sales_group": "Beauty Parlours", "callable": 1011940, "paid": 11947}, {"sales_group": "Furniture & Fixtures Products & Services", "callable": 473313, "paid": 10171}, {"sales_group": "Estate Agents", "callable": 466360, "paid": 10162}, {"sales_group": "Interior Designers", "callable": 223656, "paid": 9224}, {"sales_group": "Pathology Labs", "callable": 171305, "paid": 9167}, {"sales_group": "Security System/CCTV", "callable": 126390, "paid": 8396}, {"sales_group": "Tutorials", "callable": 313844, "paid": 7714}];
 </script>
 <script>
 const fmt = n => n.toLocaleString('en-IN');
@@ -137,14 +137,14 @@ document.getElementById('lbc-summary').innerHTML =
   kpiTile('Non-LBC Paid', fmt(LBC_SUMMARY.nonlbc_paid), `${(100-LBC_SUMMARY.lbc_paid_pct*100).toFixed(2)}% of total paid (VFL-excluded)`);
 
 document.getElementById('top-opp-table').innerHTML = `
-  <table><thead><tr><th>Category</th><th title="SF = Storefront, NSF = Not-Storefront">Type</th><th title="Monetizable TAM, VFL removed">TAM</th><th title="TAM x 1.75% - Paid: extra paid accounts to reach the platform average">Gap Accounts</th></tr></thead>
+  <table><thead><tr><th>Category</th><th title="SF = Storefront, NSF = Not-Storefront">Type</th><th title="Monetizable TAM, VFL removed">TAM</th><th title="TAM x 1.71% - Paid: extra paid accounts to reach the platform average">Gap Accounts</th></tr></thead>
   <tbody>${TOP_OPPORTUNITY.map(c => `<tr><td>${sgLink(c.sales_group)}</td><td>${c.sf?`<span class="badge ${c.sf.toLowerCase()}">${c.sf}</span>`:'-'}</td><td>${fmt(c.callable)}</td><td>${fmt(c.gap_accounts)}</td></tr>`).join('')}</tbody></table>`;
 
 
 const cityName = c => c.split('-')[0].replace(/\b\w/g, ch => ch.toUpperCase());
 const pen = (p, c) => c ? (p/c*100).toFixed(2) + '%' : '-';
 document.getElementById('top-states-table').innerHTML = `
-  <table><thead><tr><th>State</th><th title="Monetizable TAM, VFL removed">TAM</th><th title="TAM businesses with paid = 1">Paid</th><th title="Penetration = Paid / TAM">Pen.</th><th title="Extra paid accounts if every below-average group in the state reached 1.75%">Incremental Accounts</th></tr></thead>
+  <table><thead><tr><th>State</th><th title="Monetizable TAM, VFL removed">TAM</th><th title="TAM businesses with paid = 1">Paid</th><th title="Penetration = Paid / TAM">Pen.</th><th title="Extra paid accounts if every below-average group in the state reached 1.71%">Incremental Accounts</th></tr></thead>
   <tbody>${TOP_STATES.map(s => `<tr><td><a href="target-builder.html?state=${encodeURIComponent(s.state)}" style="color:var(--navy);">${s.state}</a></td><td>${fmt(s.callable)}</td><td>${fmt(s.paid)}</td><td>${pen(s.paid, s.callable)}</td><td>+${fmt(s.incremental)}</td></tr>`).join('')}</tbody></table>`;
 document.getElementById('top-cities-table').innerHTML = `
   <table><thead><tr><th>City</th><th>State</th><th title="Monetizable TAM, VFL removed">TAM</th><th title="TAM businesses with paid = 1">Paid</th><th title="Penetration = Paid / TAM">Pen.</th></tr></thead>

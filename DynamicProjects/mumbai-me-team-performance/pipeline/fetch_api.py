@@ -33,7 +33,8 @@ import urllib.request
 import pymysql
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(PIPE, "cache")
+import kitpaths   # private files: outside the kit folder in the shared kit (6 Nov 2026)
+CACHE = kitpaths.CACHE
 OUT = os.environ.get("ME_API_OUT") or os.path.join(CACHE, "api_rows.pkl")   # ME_API_OUT: back-tests write elsewhere
 API = "http://192.168.8.121:8082/jdboxNode/bformsubmit/fetchAllocContract"
 PARTITIONS = ["mumbai", "remote", "delhi", "bangalore", "pune", "ahmedabad", "chennai", "hyderabad", "kolkata"]

@@ -23,7 +23,8 @@ import time
 import pymysql
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(PIPE, "cache")
+import kitpaths   # private files: outside the kit folder in the shared kit (6 Nov 2026)
+CACHE = kitpaths.CACHE
 TABLE = "`db_paidcontracts`.`daily_deals_closed_dump`"
 ROLLING = "`db_paidcontracts`.`tbl_30_day_rolling_dealdump_data`"   # refreshed earlier each morning; used for days after TABLE's last
 CITY_CODE = {"mumbai": "022", "delhi": "011", "kolkata": "033", "chennai": "044", "bangalore": "080", "hyderabad": "040",

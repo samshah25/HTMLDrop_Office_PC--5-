@@ -1,0 +1,2 @@
+day,provisional_pulled,table_pulled,given_api,given_table,given_diff,attended_api,attended_table,deals_api,deals_table,same_appointments,deals_from
+2026-11-11,2026-11-12 08:01,2026-11-12 14:31,189,196,-7,178,178,55,58,178,API deal records

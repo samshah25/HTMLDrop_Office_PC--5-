@@ -321,9 +321,82 @@ details.about ul{margin:6px 0 0;padding-left:18px} details.about li{margin:4px 0
 </style>
 </head>
 <body>
+<!--JDNAV--><div class="jdnav" role="navigation" aria-label="Apparel and Gym dashboards">
+<a class="jdnav-home" data-go="hub" href="#">&larr; All pages</a><b class="jdnav-title" hidden>Apparel &amp; Gym dashboards</b>
+<span class="jdnav-cur" aria-live="polite"></span>
+<label class="jdnav-go"><span>Go to</span><select aria-label="Go to page"></select></label>
+</div>
+<style>
+/* shared top menu of the Apparel & Gym pages (site_nav.html, added by site_nav.py - 6 Nov 2026) */
+.jdnav{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:8px clamp(16px,3vw,32px);background:#fff;border-bottom:1px solid #e4e7ee;
+  font:13px/1.4 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1b2130;position:relative;z-index:30}
+.jdnav-home{font-weight:700;color:#c2255c;text-decoration:none;white-space:nowrap}
+.jdnav-home:hover{text-decoration:underline} .jdnav-title{font-weight:700;color:#c2255c} .jdnav-home[hidden],.jdnav-title[hidden]{display:none} .jdnav-home:focus-visible,.jdnav-go select:focus-visible{outline:2px solid #c2255c;outline-offset:2px}
+.jdnav-cur{color:#4f5869;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jdnav-cur:not(:empty)::before{content:'/ ';color:#b4bac6}
+.jdnav-go{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#c2255c;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.jdnav-go select{font:inherit;font-size:13px;text-transform:none;letter-spacing:0;font-weight:500;color:#1b2130;padding:5px 8px;border:1px solid color-mix(in oklab,#c2255c 30%,#fff);
+  border-radius:8px;background:#fff;max-width:min(330px,70vw);cursor:pointer}
+@media (max-width:640px){.jdnav-cur{display:none}.jdnav-go{margin-left:0}}
+@media print{.jdnav{display:none}}
+</style>
+<script>
+(() => {
+  // every page of the set; file = page key, hash = tab inside that page
+  const PAGES = [
+    ['hub', '', 'Home', 'Home: choose Gym or Apparel'],
+    ['cohorts', 'gym', 'Gym', 'Gym cohorts'],
+    ['cohorts', 'apparel', 'Apparel', 'Main: Apparel cohorts'],
+    ['gsc', 'query', 'Apparel · GSC search analysis', 'Query classification'],
+    ['gsc', 'yoy', 'Apparel · GSC search analysis', 'YoY search, leads & revenue'],
+    ['gsc', 'split', 'Apparel · GSC search analysis', 'Company / category split'],
+    ['gsc', 'calls', 'Apparel · GSC search analysis', 'AI calls'],
+    ['city', 'search', 'Apparel · City search & calls', 'Search by city'],
+    ['city', 'calls', 'Apparel · City search & calls', 'Calls by city'],
+    ['market', '', 'Apparel · Market trend', 'Market trend'],
+  ];
+  // office host (HTML Drop) links, and the same files on the laptop
+  const HD = { hub: '/s/apparel-gym-hub/', cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/' };
+  const L = 'file:///D:/claude/01%20Dashboards/apparel_gym_dashboard/';
+  const LOCAL = { hub: L + 'Apparel_Gym_Hub.html', cohorts: L + 'Apparel_Gym_Cohorts.html', gsc: L + 'Apparel_GSC_Analysis.html', city: L + 'Apparel_City_Search_Calls.html',
+    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html' };
+  const FILE_OF = { 'apparel_gym_hub.html': 'hub', 'apparel_gym_cohorts.html': 'cohorts', 'apparel_gsc_analysis.html': 'gsc', 'apparel_city_search_calls.html': 'city', 'apparel_market_trend.html': 'market' };
+  const onHD = location.pathname.startsWith('/s/');
+  const here = () => {
+    if (onHD) { const slug = location.pathname.split('/')[2]; return Object.keys(HD).find(k => HD[k] === '/s/' + slug + '/') || ''; }
+    return FILE_OF[decodeURIComponent(location.pathname.split('/').pop()).toLowerCase()] || '';
+  };
+  const url = p => (onHD ? HD[p[0]] : LOCAL[p[0]]) + (p[1] ? '#' + p[1] : '');
+  const cur = () => {                       // the page + tab open now
+    const f = here(), h = location.hash.slice(1);
+    const own = PAGES.filter(p => p[0] === f);
+    if (f === 'cohorts') return own[h === 'apparel' ? 1 : 0];
+    return own.find(p => p[1] === h) || own[0];
+  };
+  const nav = document.currentScript.parentElement.querySelector('.jdnav') || document.querySelector('.jdnav');
+  const sel = nav.querySelector('select'), lab = nav.querySelector('.jdnav-cur');
+  const groups = [...new Set(PAGES.map(p => p[2]))];
+  sel.innerHTML = groups.map(g => g === 'Home' ? `<option value="0">${PAGES[0][3]}</option>`
+    : `<optgroup label="${g}">` + PAGES.map((p, i) => p[2] === g ? `<option value="${i}">${p[3]}</option>` : '').join('') + '</optgroup>').join('');
+  const home = nav.querySelector('.jdnav-home'), title = nav.querySelector('.jdnav-title');
+  let last = '';
+  const sync = () => {
+    const c = cur(), key = c ? c[0] + '#' + c[1] : '';
+    if (key === last) return; last = key;
+    // the one back option: '<- All pages' = the first page, opened on Gym or Apparel (hidden on the first page itself)
+    const onHub = !c || c[0] === 'hub'; home.hidden = onHub; title.hidden = !onHub;
+    home.href = url(PAGES[0]) + '#' + (c && c[1] === 'gym' ? 'gym' : 'apparel');
+    if (c) { sel.value = String(PAGES.indexOf(c)); lab.textContent = c[0] === 'hub' ? '' : c[2].endsWith(c[3]) ? c[2] : c[2] + ' · ' + c[3]; }
+  };
+  sel.addEventListener('change', () => {
+    const p = PAGES[+sel.value];
+    if (p[0] === here() && p[1]) { location.hash = p[1]; sync(); }      // same page: just switch the tab
+    else location.href = url(p);
+  });
+  sync(); addEventListener('hashchange', sync); setInterval(sync, 800);   // tabs inside a page may change without a hashchange
+})();
+</script><!--/JDNAV-->
 <header class="topbar">
-  <a class="backbtn" id="backbtn" href="../../01%20Dashboards/apparel_gym_dashboard/Apparel_Gym_Cohorts.html#apparel">&larr; Apparel cohorts</a>
-  <script>if (location.pathname.startsWith('/s/')) document.getElementById('backbtn').href = '/s/apparel-gym-cohorts/#apparel';</script>
   <div class="brand"><div><b>Apparel Market Trend · India</b><small>Is India's clothing market growing? Businesses, earnings and investor money</small></div></div>
   <nav class="tabs" id="tabs">
     <button data-p="ov" aria-pressed="true">Overview: is it blooming?</button>
@@ -890,8 +963,6 @@ function dl(name, rows){
   const s = "﻿" + rows.map(r => r.map(v => { v = String(v ?? ""); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(",")).join("\n");
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([s], {type: "text/csv"})); a.download = name; a.click();
 }
-/* back button: relative link on the laptop; the cohorts page's own address when served from HTML Drop (/s/<slug>/) */
-if (location.pathname.startsWith("/s/")) document.getElementById("backbtn").href = "/s/apparel-gym-cohorts/#apparel";
 const start = (location.hash || "#ov").slice(1);
 (document.querySelector(`#tabs button[data-p="${start}"]`) || document.querySelector("#tabs button")).click();
 </script>

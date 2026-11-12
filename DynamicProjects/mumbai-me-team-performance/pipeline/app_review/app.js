@@ -2,6 +2,8 @@
 (function () {
   'use strict';
   const $ = s => document.querySelector(s);
+  // the sign-in page (lock_page.py, 6 Nov 2026) keeps the unlocked page in memory: redraw from it instead of loading the file again
+  const reloadPage = () => (window.jdmeReload ? window.jdmeReload() : location.reload());
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const IN0 = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   const MINUS = '−';
@@ -374,6 +376,23 @@
     return R;
   }
   const att = o => o[0] + o[1] + o[2];
+  // Mumbai on a lead mix (2026-11-06, the managers' pages): what Mumbai would score with a team's own mix of TME teams,
+  // each TME team at its Mumbai rate -- a fairer line than Mumbai as a whole for a team that gets more of the harder leads
+  // (Hot Data converts least everywhere). Shown next to 'Mumbai' in the band and as a line under the Table's total.
+  const BENCH = MGRN >= 0 && !TM;
+  const MIXTIP = () => `What ${META.city} would score with this team's own mix of TME teams, each TME team at its ${META.city} rate: a fair line for a team that gets more of the leads that convert less (such as Hot Data).`;
+  const mixW = () => V.scope === MGRN ? 'on your lead mix' : "on this team's lead mix";
+  const tgAgg = R => TEAMS.map((_, t) => { const k = t * 6; return [R.tO[k] + R.tO[k + 1] + R.tO[k + 2] + R.tO[k + 3] + R.tO[k + 4] + R.tO[k + 5], R.tO[k] + R.tO[k + 1] + R.tO[k + 2], R.tDl[t]]; });
+  const tgRows = rows => { const s = TEAMS.map(() => [0, 0, 0]); for (const r of rows) { if (r.me < 0) continue; for (let t = 0; t < NT; t++) { const k = (r.me * NT + t) * 3; s[t][0] += CUR.meT[k]; s[t][1] += CUR.meT[k + 1]; s[t][2] += CUR.meT[k + 2]; } } return s; };
+  function mixOf(tg) {   // tg: [given, attended, deals closed] per TME team
+    const C = tgAgg(CITY); let g = 0, ea = 0, b = 0, ed = 0;
+    for (let t = 0; t < NT; t++) {
+      const [cg, ca, cd] = C[t], cb = CB() ? cg : ca, xb = CB() ? tg[t][0] : tg[t][1];
+      if (tg[t][0] && cg) { g += tg[t][0]; ea += tg[t][0] * ca / cg; }
+      if (xb && cb) { b += xb; ed += xb * cd / cb; }
+    }
+    return { att: g ? ea / g * 100 : null, conv: b ? ed / b * 100 : null };
+  }
   // an ME's team leader and manager from their team in the dates; outside the ME head's line, the recorded manager
   const tlOf = m => m >= 0 && m !== OUTN && (DEPTH[m] === 2 || leafTL(m)) ? m : -1;
   const mgOf = m => m < 0 || m === OUTN ? -1 : DEPTH[m] === 2 ? MGUP[m] : DEPTH[m] === 1 && !leafTL(m) ? m : -1;
@@ -673,6 +692,8 @@
     const chA = ch(dA, `${dA > 0 ? 'up' : dA < 0 ? 'down' : 'same,'} ${Math.abs(dA).toFixed(1)} pts (was ${fP(pAttP)})`);
     const chC = ch(dC, `${dC > 0 ? 'up' : dC < 0 ? 'down' : 'same,'} ${Math.abs(dC).toFixed(1)} pts (was ${fP(pConv)})`);
     const cityR = x => scoped() ? ` <span class="chg flat">${hasP ? '· ' : ''}${esc(META.city)} ${fP(x)}</span>` : '';   // no leading dot when there is no change before it (2026-11-02)
+    const MX = BENCH && scoped() ? mixOf(tgAgg(R)) : null;   // Mumbai on the team's own lead mix (2026-11-06)
+    const mixR = x => MX && x !== null ? `<span class="chg flat mixr" title="${esc(MIXTIP())}">${esc(META.city)} ${mixW()} ${fP(x)}</span>` : '';
     // MEs with appointments; MEs who only closed a deal (no appointment in the dates) are named apart, so the count
     // matches the Table's 'N MEs' (both together)
     // TME mode: 'No TME on the deal record' is not a TME
@@ -687,8 +708,8 @@
       const whyK = k => TM && R.o[k] ? `<button type="button" class="lnk on-navy" data-o="${k}" title="See these appointments">${n0(R.o[k])} ${OUT[k]}</button>` : `${n0(R.o[k])} ${OUT[k]}`;
       $('#hero').innerHTML = head + `<div class="kps${TM && CLN ? ' kps5' : ''}">` + (TM ? callKp(R, P, hasP, kp) : '') +
         kp(n0(R.n), 'appointments given', `${W.toS} ${plural(R.gMes.size, W.s)}`, chN + dOnly) +
-        kp(n0(a), 'attended', fP(attP), chA + cityR(cA)) +
-        kp(n0(R.dl), 'deals closed', `${fP(conv)} ${CVOF()}${TM && R.rv ? ` · ${fRv(R.rv)} RV3yr` : ''}`, chC + cityR(cC)) +
+        kp(n0(a), 'attended', fP(attP), chA + cityR(cA) + mixR(MX && MX.att)) +
+        kp(n0(R.dl), 'deals closed', `${fP(conv)} ${CVOF()}${TM && R.rv ? ` · ${fRv(R.rv)} RV3yr` : ''}`, chC + cityR(cC) + mixR(MX && MX.conv)) +
         kp(n0(R.n - a), 'not attended', fP(pc(R.n - a, R.n)), `<span class="chg flat">${whyK(3)} · ${whyK(4)} · ${whyK(5)}</span>`) +
         `</div>`;
       return;
@@ -701,8 +722,8 @@
     const fpc = (v, tip, word) => `<span class="fpc tn" title="${esc(tip)}">${v}</span>${word ? `<span class="fsub">${word}</span>` : ''}`;
     $('#hero').innerHTML = `<div class="fx"><div class="fmain">${head}${callStrip(R, P, hasP)}<div class="fn">` +
       frow(100, 'g', n0(R.n), 'appointments given', `<span class="fsub">${W.toS} ${plural(R.gMes.size, W.s)}</span>`, chN + dOnly) +
-      frow(attP || 0, 'a', n0(a), 'attended', fpc(fP(attP), `${fP(attP)} of appointments given`), chA + cityR(cA)) +
-      frow(Math.min(100, pc(R.dl, R.n) || 0), 'd', n0(R.dl), 'deals closed', fpc(fP(conv), `${fP(conv)} ${CVOF()} (conversion)`, 'conversion') + (TM && R.rv ? `<span class="fsub">${fRv(R.rv)} RV3yr</span>` : ''), chC + cityR(cC), 'deals') +
+      frow(attP || 0, 'a', n0(a), 'attended', fpc(fP(attP), `${fP(attP)} of appointments given`), chA + cityR(cA) + mixR(MX && MX.att)) +
+      frow(Math.min(100, pc(R.dl, R.n) || 0), 'd', n0(R.dl), 'deals closed', fpc(fP(conv), `${fP(conv)} ${CVOF()} (conversion)`, 'conversion') + (TM && R.rv ? `<span class="fsub">${fRv(R.rv)} RV3yr</span>` : ''), chC + cityR(cC) + mixR(MX && MX.conv), 'deals') +
       `</div><p class="miss"><span class="mlab"><b class="tn">${n0(R.n - a)}</b>not attended (${fP(pc(R.n - a, R.n))})</span>${why(3)}${why(4)}${why(5)}</p></div>` +
       `<div class="fside">${TM ? tmeSide() : ''}${movers()}${trend()}</div></div>`;
   }
@@ -954,7 +975,7 @@
     if (V.preset) h.set('period', V.preset); else { h.set('from', iso(dOf(V.from))); h.set('to', iso(dOf(V.to))); }
     const s = h.toString(); history.replaceState(null, '', s ? '#' + s : location.pathname);
     document.body.classList.add('switching');
-    location.reload();
+    reloadPage();
   }
   document.body.classList.toggle('tmev', TM);   // TME mode's amber
   $('#modeSw').addEventListener('click', ev => { const b = ev.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode === 'tme'); });
@@ -1643,7 +1664,7 @@
   function goMe(code) {
     try { localStorage.setItem(MODE_KEY, 'me'); } catch (e) { /* the link carries it */ }
     const h = new URLSearchParams(location.hash.slice(1)); h.delete('mode'); h.set('team', code); h.set('view', 'team');
-    history.replaceState(null, '', '#' + h.toString()); document.body.classList.add('switching'); location.reload();
+    history.replaceState(null, '', '#' + h.toString()); document.body.classList.add('switching'); reloadPage();
   }
 
   /* ---------- 'Your team' paging (2026-10-16): the Table's pager - previous / next, 'Page 1 of 8', rows per page 25 / 50
@@ -2321,6 +2342,29 @@
       const v = c.v(T); return `<td class="${c.first ? 'gs' : ''}${c.team !== undefined ? ' tc' + c.team : ''}">${v === null ? '—' : c.kind === 'pct' ? Math.round(v) + '%' : n0(v)}</td>`;
     }).join('') + `</tr>`;
   }
+  // the managers' pages (2026-11-06): two Mumbai lines under the total -- Mumbai as a whole (the ME head's line), and Mumbai
+  // on the lead mix of what the total adds up (attended % and conversion only). Mumbai's MEs and their HR days are not on
+  // a manager's page, so the per-ME and per-day columns show a dash there.
+  function benchRows(rows, VIS) {
+    const C = CITY, ca = att(C.o), g = z3();
+    tgAgg(C).forEach((x, t) => { const gi = GROUP_OF[t]; g[gi][0] += x[0]; g[gi][1] += x[1]; g[gi][2] += x[2]; });
+    const M = { me: -1, name: '', code: '', k: null, n: C.n, att: ca, deals: C.dl, o: Array.from(C.o), nc: C.nc, g, rv: C.rv, gt: null,
+      attP: pc(ca, C.n), conv: cvr(C.dl, ca, C.n), pd: null, perDay: null, attPd: null, tim: [0, 0], away: false };
+    const mx = mixOf(tgRows(rows)), tip = esc(MIXTIP());
+    const val = (c, T) => { try { const v = c.v(T); return v === null || v === undefined || Number.isNaN(v) ? null : v; } catch (e) { return null; } };
+    const cls = c => `${c.first ? 'gs' : ''}${c.team !== undefined ? ' tc' + c.team : ''}`;
+    const one = VIS.slice(1).map(c => {
+      if (c.kind === 'text' || c.kind === 'list') return '<td></td>';
+      const v = val(c, M);
+      return `<td class="${cls(c)}">${v === null ? '<span class="mu" title="Not on this page">—</span>' : c.kind === 'pct' ? Math.round(v) + '%' : n0(v)}</td>`;
+    }).join('');
+    const two = VIS.slice(1).map(c => {
+      const v = c.k === 'attP' ? mx.att : c.k === 'conv' ? mx.conv : undefined;
+      return `<td class="${cls(c)}">${v === undefined ? '' : v === null ? '—' : Math.round(v) + '%'}</td>`;
+    }).join('');
+    return `<tr class="bench b1"><td class="nm"><span class="bnm">${esc(META.city)}, all teams</span></td>${one}</tr>` +
+      `<tr class="bench b2"><td class="nm" title="${tip}"><span class="bnm">${esc(META.city)} ${mixW()}</span></td>${two}</tr>`;
+  }
   // the team views: one line per team with the WHOLE team's numbers (all its MEs in the dates) and, when it is open,
   // its teams and MEs below it. A search or filter only picks what is listed (teams with a matching ME, the matching
   // MEs); what it leaves out of an open team becomes one 'other MEs, not matching' line, so every team still adds up
@@ -2423,7 +2467,7 @@
         : `<tr class="tg l${Math.min(2, x.d + 1)}${x.k === OUTN ? ' out' : ''}" data-node="${x.k}">${VIS.map(c2 => groupCell(x, c2)).join('')}</tr>`).join('')
       : shown.map(r => `<tr data-me="${r.me}">${VIS.map(x => cellOf(r, x)).join('')}</tr>`).join('');
     // the team views' top line is the whole scope (as each team line is the whole team); the MEs view adds up what is listed
-    box.innerHTML = `<table style="width:${tw}px">${cg}<thead>${grpRow}${head}${rows.length ? totalRow(tree ? all : rows, VIS) : ''}</thead><tbody>${body}</tbody></table>`;
+    box.innerHTML = `<table style="width:${tw}px">${cg}<thead>${grpRow}${head}${rows.length ? totalRow(tree ? all : rows, VIS) + (BENCH && scoped() ? benchRows(tree ? all : rows, VIS) : '') : ''}</thead><tbody>${body}</tbody></table>`;
     // each sticky header row sits right under the one above it
     let top = 0;
     for (const tr of box.querySelectorAll('thead tr')) { for (const c of tr.children) c.style.top = top + 'px'; top += tr.offsetHeight; }
@@ -3269,7 +3313,7 @@
     $('#lnSw').addEventListener('click', ev => {
       const b = ev.target.closest('[data-v]'); if (!b || (b.dataset.v === 'line') === LINE_ONLY) return;
       try { sessionStorage.setItem(LINE_KEY, b.dataset.v); } catch (e) { return; }
-      location.reload();
+      reloadPage();
     });
     document.addEventListener('click', ev => { if (ev.target.closest('[data-open-set]')) { ev.preventDefault(); if (SP.hidden) SBTN.click(); } });
   })();

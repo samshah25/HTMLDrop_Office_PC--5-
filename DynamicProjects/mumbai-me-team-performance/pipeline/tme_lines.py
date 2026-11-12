@@ -20,6 +20,7 @@ import sys
 import openpyxl
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
+import kitpaths
 OUT = os.path.join(PIPE, "tme_lines.json")
 FIELDS = ["Emp Code", "Emp Name", "Branch", "Status", "Designation", "DOJ"] + [f"Reporting-{k}" for k in range(1, 9)]
 
@@ -52,7 +53,7 @@ def main():
     if not src or not os.path.exists(src):
         sys.exit("No SSO dump found (put \"SSO dump ... .xlsx\" in exports\\ or name the file). tme_lines.json was not changed.")
     city = "Mumbai"
-    rp = os.path.join(PIPE, "cache", "raw.pkl")
+    rp = os.path.join(kitpaths.CACHE, "raw.pkl")
     if os.path.exists(rp):
         city = str(pickle.load(open(rp, "rb"))["city"]).strip() or city
     t0 = datetime.datetime.now()

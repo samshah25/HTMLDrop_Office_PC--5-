@@ -2,5 +2,9 @@
   "client-experience": {
     "label": "Client Experience",
     "color": "#2dd4bf"
+  },
+  "hot-data-marketing": {
+    "label": "Hot Data Marketing",
+    "color": "#34d399"
   }
 }

@@ -10,6 +10,7 @@ Deals closed (15 Oct 2026) are separate deal records counted as the Sales MIS co
 the Dealclosed appointments: prepare() returns them as 'deals'.
 """
 from collections import Counter, defaultdict
+import kitpaths
 import datetime
 import os
 import pickle
@@ -26,13 +27,13 @@ def prepare(pipe, log=print):
     """Returns a dict: fy, end, raw, rows (given, as dicts), not_counted (given_count 0, as dicts), MES / MGRS / TMES /
     TEAMS lookups, recs [(day, me, mgr, tme, team, outcome, company, parentid, row)], bad, deal_src, later, mg_up,
     me_ix (code -> index; adds an ME), tme_ix."""
-    raw = pickle.load(open(os.path.join(pipe, "cache", "raw.pkl"), "rb"))
+    raw = pickle.load(open(os.path.join(kitpaths.CACHE, "raw.pkl"), "rb"))
     cols = raw["cols"]
     ALL = [dict(zip(cols, r)) for r in raw["rows"]]
     # Days the appointment table does not have yet (it loads around 2 pm), rebuilt from the live allocation API by
     # fetch_api.py: added only after the table's last day, and marked provisional on the pages.
     provisional = []
-    ap = os.path.join(pipe, "cache", "api_rows.pkl")
+    ap = os.path.join(kitpaths.CACHE, "api_rows.pkl")
     if os.path.exists(ap):
         api = pickle.load(open(ap, "rb"))
         if api["cols"] == cols:
@@ -160,7 +161,7 @@ def prepare(pipe, log=print):
     # (Dealclosed / Follow Up / Not Interested) can take a deal, so attended stays the Sales MIS's count exactly; a deal
     # whose business had only not-attended appointments that day is left out (counted in deal_src.notAttended).
     deal_src = {"table": sum(1 for x in recs if x[5] == 0)}
-    dpath = os.path.join(pipe, "cache", "deals.pkl")
+    dpath = os.path.join(kitpaths.CACHE, "deals.pkl")
     if os.path.exists(dpath):
         dl = pickle.load(open(dpath, "rb"))
         deals_on = defaultdict(lambda: defaultdict(set))
@@ -248,7 +249,7 @@ def prepare(pipe, log=print):
             deals.append(((d - fy).days, me_ix(code), gi, tt, dc, pid, ti, rv * dc))
     # days after the deals tables (or every day, when they could not be read): the Dealclosed appointments stand in, with
     # the MIS's city rule - an ME of another city that month (HR month row, else the HR master) closes deals elsewhere
-    hp = os.path.join(pipe, "cache", "hr.pkl")
+    hp = os.path.join(kitpaths.CACHE, "hr.pkl")
     hr = pickle.load(open(hp, "rb")) if os.path.exists(hp) else None
     city_l = str(raw["city"]).strip().lower()
     def here(code, d):

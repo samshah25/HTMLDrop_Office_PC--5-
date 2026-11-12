@@ -33,7 +33,8 @@ KIT = os.path.dirname(PIPE)
 APP = os.path.join(PIPE, "app_review")
 FONTS = os.path.join(PIPE, "app", "fonts")
 LOGO = os.path.join(PIPE, "app", "jd_logo.png")
-PAGE = os.environ.get("ME_REVIEW_OUT") or os.path.join(KIT, "Mumbai ME Team Performance.html")
+import kitpaths   # the unlocked page: outside the kit folder in the shared kit (6 Nov 2026)
+PAGE = kitpaths.FULL
 DATA_FORMAT = 2   # 2: deals closed as their own records (dl), Sales MIS rule (15 Oct 2026)
 F_NA_EARLY, F_DEAL_BEFORE_BOOKED, F_NO_BOOKING, F_PENDING, F_SAME_DAY = 1, 2, 4, 8, 16
 NA_EARLY_MIN = 60          # minutes before the slot
@@ -94,7 +95,7 @@ def main():
     log(f"Not counted as given: {len(NC):,} ({', '.join(f'{k} {v:,}' for k, v in kinds.most_common(6))})")
 
     # HR: days present per ME and month, joining date, designation, home city
-    hp = os.path.join(PIPE, "cache", "hr.pkl")
+    hp = os.path.join(kitpaths.CACHE, "hr.pkl")
     city_l = str(raw["city"]).strip().lower()
     months, hr_days, hr_j, hr_des, hr_city, hr_mis = [], [], [], [], [], []
     if os.path.exists(hp):
@@ -163,7 +164,7 @@ def main():
               "team": {"names": team_names, "ix": pack("B", t_team)}}   # the TME's team in HR (team_type_name), per month
         # the TMEs' dialer calls per day (fetch_calls.py, 30 Oct 2026; TME mode's funnel): calls and connected, for the TMEs
         # on the appointments (matched by employee code); the page counts a TME's calls when the TME is on a line
-        cp = os.path.join(PIPE, "cache", "calls.pkl")
+        cp = os.path.join(kitpaths.CACHE, "calls.pkl")
         if os.path.exists(cp):
             cl = pickle.load(open(cp, "rb"))
             tix = {str(c).strip().lstrip("0"): k for k, (c, _name) in enumerate(TMES)}
@@ -228,6 +229,9 @@ def main():
     if "--no-managers" not in sys.argv:
         import manager_pages
         manager_pages.build(data, assemble, os.path.join(os.path.dirname(PAGE), "manager_pages"), log)
+        # the sign-in page for HTML Drop: every page encrypted in one file, upload\Mumbai ME Team Performance.html (5 Nov 2026)
+        import lock_page
+        lock_page.build(log)
 
 
 def assemble(blob):

@@ -1650,3 +1650,10 @@ body.tmev .trd .te { color: var(--ink); } body.tmev .trd .t50 { color: var(--tb-
 .setpop .sinfo { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--mute); cursor: help; }
 .setpop .sinfo:hover, .setpop .sinfo:focus-visible { color: var(--ink); background: var(--rule-2); }
 .setpop .sinfo svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+/* the managers' pages: Mumbai lines under the Table's total (2026-11-06) */
+.xtbl tr.bench td, .xtbl tr.bench td.tc0, .xtbl tr.bench td.tc1, .xtbl tr.bench td.tc2, .xtbl tr.bench td.tc3, .xtbl tr.bench td.tc4, .xtbl tr.bench td.tc5, .xtbl tr.bench td.tc6 { background: var(--org-soft); color: var(--ink-2); font-weight: 600; }
+.xtbl tr.bench.b2 td { border-bottom: 1px solid var(--rule); }
+.xtbl tr.bench .bnm { font-weight: 600; color: var(--ink-2); }
+.xtbl thead tr.bench td:first-child { left: 0; z-index: 5; }
+.chg.mixr { display: block; white-space: nowrap; margin-top: 1px; }

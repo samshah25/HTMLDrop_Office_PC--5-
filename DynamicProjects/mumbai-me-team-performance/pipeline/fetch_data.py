@@ -14,7 +14,8 @@ import time
 import pymysql
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
-CACHE = os.path.join(PIPE, "cache")
+import kitpaths   # private files: outside the kit folder in the shared kit (6 Nov 2026)
+CACHE = kitpaths.CACHE
 CITY = os.environ.get("ME_CITY", "")
 if not CITY:
     try:

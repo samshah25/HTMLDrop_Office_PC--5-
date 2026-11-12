@@ -25,6 +25,11 @@ A step that fails stops the run, so the pages keep their last good data. Every r
 Database logins are read from pipeline\\db_240.env and pipeline\\db_216.env; if those are not here, from the files named
 by ME_DB_ENV / ME_DEALS_DB_ENV, then from DB_240 / DB_216 in pipeline\\environment.py, or else from the package's shared
 pipeline folder (..\\..\\Kolkata\\pipeline\\). Logins are never copied into the pages.
+
+Shared kit (6 Nov 2026): HTML Drop may show this kit's folder to everyone, so every run first moves the private files out of
+it - environment.py, db_*.env, vault_keys.json, logins.json, pipeline\\cache, manager_pages, an unlocked page, the logs - into
+C:\\ProgramData\\ME_dashboard_private (or the folder named by ME_PRIVATE_DIR; see pipeline\\kitpaths.py) and works there.
+The kit's own "Mumbai ME Team Performance.html" is the sign-in page (every page inside it encrypted).
 """
 import datetime
 import os
@@ -37,7 +42,59 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 PIPE = os.path.join(HERE, "pipeline") if os.path.isfile(os.path.join(HERE, "pipeline", "fetch_data.py")) else HERE
 SHARED = os.path.normpath(os.path.join(PIPE, "..", "..", "Kolkata", "pipeline"))   # kolkata_lite_package\Kolkata\pipeline
-LOG = os.path.join(PIPE, "refresh_log.txt")
+sys.path.insert(0, PIPE)
+import kitpaths   # where the private files live (shared kit: outside this folder)
+LOG = os.path.join(kitpaths.LOGDIR, "refresh_log.txt")
+SIGNIN_MARK = b"<title>Sign in \xc2\xb7 ME team, Mumbai</title>"
+PLACEHOLDER = ("<!doctype html><html lang='en'><head><meta charset='utf-8'><title>ME team, Mumbai</title></head><body style="
+               "'font:15px/1.5 system-ui,Segoe UI,sans-serif;margin:40px;color:#14213D'><h1 style='font-size:18px'>ME team, Mumbai</h1>"
+               "<p>The dashboard is being updated. Please try again in a few minutes.</p></body></html>")
+
+
+def move_private():
+    """shared kit: move private files out of the kit folder into kitpaths.PRIVATE; returns what moved (6 Nov 2026)"""
+    import shutil
+    P = kitpaths.PRIVATE
+    if not P:
+        return []
+    os.makedirs(P, exist_ok=True)
+    moved = []
+
+    def mv(src, dst):
+        if not os.path.exists(src):
+            return
+        if os.path.isdir(src):
+            os.makedirs(dst, exist_ok=True)
+            for f in os.listdir(src):
+                mv(os.path.join(src, f), os.path.join(dst, f))
+            shutil.rmtree(src, ignore_errors=True)
+            return
+        if os.path.exists(dst):
+            if os.path.getmtime(src) < os.path.getmtime(dst):   # the private copy is newer: keep it, park the old one
+                old = os.path.join(P, "replaced")
+                os.makedirs(old, exist_ok=True)
+                shutil.move(src, os.path.join(old, f"{os.path.basename(src)}.{int(time.time())}"))
+                moved.append(os.path.relpath(src, HERE))
+                return
+            os.remove(dst)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.move(src, dst)
+        moved.append(os.path.relpath(src, HERE))
+    for name in ("environment.py", "vault_keys.json", "logins.json", "serve_log.txt", "db_240.env", "db_216.env", "db_120.env"):
+        mv(os.path.join(HERE, name), os.path.join(P, name))
+    for name in ("environment.py", "db_240.env", "db_216.env", "db_120.env", "refresh_log.txt"):
+        mv(os.path.join(PIPE, name), os.path.join(P, name))
+    mv(os.path.join(PIPE, "cache"), kitpaths.CACHE)
+    mv(os.path.join(HERE, "manager_pages"), kitpaths.MGR)
+    top = os.path.join(HERE, kitpaths.PAGE_NAME)
+    if os.path.exists(top):
+        with open(top, "rb") as f:
+            head = f.read(4096)
+        if SIGNIN_MARK not in head and b"The dashboard is being updated" not in head:   # an unlocked page here: move it, leave a placeholder
+            mv(top, kitpaths.FULL)
+            with open(top, "w", encoding="utf-8") as f:
+                f.write(PLACEHOLDER)
+    return moved
 
 
 def log(msg):
@@ -62,8 +119,9 @@ def unfinished_run():
 
 
 def env_file(var, name):
-    """the login file for a server: here, else the env var, else the shared pipeline folder"""
-    for path in (os.path.join(PIPE, name), os.environ.get(var, ""), os.path.join(SHARED, name)):
+    """the login file for a server: the private folder (shared kit), here, else the env var, else the shared pipeline folder"""
+    for path in ((os.path.join(kitpaths.PRIVATE, name) if kitpaths.PRIVATE else ""), os.path.join(PIPE, name), os.environ.get(var, ""),
+                 os.path.join(SHARED, name)):
         if path and os.path.exists(path):
             return path
     return ""
@@ -72,7 +130,7 @@ def env_file(var, name):
 def in_settings(name):
     """True when pipeline\\environment.py has that login filled in"""
     try:
-        sys.path[:0] = [PIPE, HERE]
+        sys.path[:0] = [x for x in (kitpaths.PRIVATE, PIPE, HERE) if x]
         import environment
     except ImportError:
         return False
@@ -103,7 +161,7 @@ def run_optional(step_name, *args):
     for line in (p.stdout + p.stderr).strip().splitlines():
         log("   " + line)
     if p.returncode != 0:
-        stale = os.path.join(PIPE, "cache", "api_rows.pkl")
+        stale = os.path.join(kitpaths.CACHE, "api_rows.pkl")
         if os.path.exists(stale):
             os.remove(stale)
         log(f"   {step_} failed (exit {p.returncode}); carrying on without provisional days.")
@@ -151,13 +209,19 @@ def run_soft(step_name, *args):
 
 
 # the steps find environment.py next to main.py as well as in pipeline
-ENV =dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONPATH=os.pathsep.join(x for x in (HERE, PIPE, os.environ.get("PYTHONPATH", "")) if x))
+ENV = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONPATH=os.pathsep.join(x for x in (kitpaths.PRIVATE, HERE, PIPE, os.environ.get("PYTHONPATH", "")) if x))
+if kitpaths.PRIVATE:
+    ENV["ME_PRIVATE_DIR"] = kitpaths.PRIVATE
 
 if __name__ == "__main__":
     build_only = "--build-only" in sys.argv
     t0 = time.time()
+    moved = move_private()
     prev = unfinished_run()
     log("===== ME dashboards refresh" + (" (build only)" if build_only else "") + " =====")
+    if kitpaths.PRIVATE:
+        log(f"Private files (logins, data, unlocked pages, keys) in {kitpaths.PRIVATE}"
+            + (f"; moved there from the kit folder: {', '.join(moved)}" if moved else ""))
     if prev:
         log(f"Note: the previous run (started {prev[0]}) never finished; it stopped during {prev[1]} without an error. "
             "Usually the PC slept or shut down, or Windows stopped the task at its time limit.")
@@ -165,7 +229,7 @@ if __name__ == "__main__":
         e240, e216 = env_file("ME_DB_ENV", "db_240.env"), env_file("ME_DEALS_DB_ENV", "db_216.env")
         missing = [n for n, p, k in (("server 240 (DB_240)", e240, "DB_240"), ("server 216 (DB_216)", e216, "DB_216")) if not p and not in_settings(k)]
         if missing:
-            log("FAILED: no login for " + ", ".join(missing) + ". Fill DB_240 / DB_216 in " + os.path.join(HERE, "environment.py") + ".")
+            log("FAILED: no login for " + ", ".join(missing) + ". Fill DB_240 / DB_216 in " + os.path.join(kitpaths.PRIVATE or HERE, "environment.py") + ".")
             sys.exit(2)
         if e240: ENV["ME_DB_ENV"] = e240
         if e216: ENV["ME_DEALS_DB_ENV"] = e216
@@ -177,4 +241,6 @@ if __name__ == "__main__":
         run_soft("fetch_calls.py")
     sso_lines()
     run("build_review.py", "--full")
+    if kitpaths.PRIVATE and not os.path.exists(kitpaths.KEYS):
+        log(f"Note: no vault_keys.json in {kitpaths.PRIVATE}: the sign-in page was not made, the link shows 'being updated'.")
     log(f"===== done in {time.time() - t0:.0f}s =====")
