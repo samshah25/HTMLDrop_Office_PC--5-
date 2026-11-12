@@ -217,6 +217,17 @@ svg.chart .hit:hover { fill: color-mix(in srgb, var(--brand) 7%, transparent); }
 .donut .dn { font-weight: 800; font-size: 15px; fill: var(--ink); font-family: var(--font); }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; position: relative; }
 .st { background: var(--surface-2); border-radius: 12px; padding: 9px 11px; }
+.pmix { margin-top: 14px; background: var(--surface-2); border-radius: 12px; padding: 11px 12px 10px; }
+.pm-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pm-row > div + div { border-left: 1px solid var(--line); padding-left: 10px; }
+.pm-row span { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; line-height: 1.3; }
+.pm-row b { display: block; font-size: 20px; font-weight: 800; margin-top: 2px; }
+.pm-row i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: #14b8a6; }
+.pm-bar { height: 6px; border-radius: 99px; background: color-mix(in srgb, #14b8a6 18%, var(--surface)); margin-top: 10px; overflow: hidden; }
+.pm-bar i { display: block; height: 100%; background: #14b8a6; border-radius: 99px; }
+.pm-leg { display: flex; justify-content: space-between; margin-top: 5px; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+.pmix + .stats { margin-top: 10px; }
+.pm-t { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 6px; }
 .st span { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; }
 .st b { font-size: 18px; font-weight: 800; }
 .st b small { font-size: 11px; color: var(--ink-3); font-weight: 600; margin-left: 3px; }
@@ -616,11 +627,24 @@ if (!STATE_OPTS.some(o => o[0] === S.st)) S.st = 'all';
 if (S.city !== 'all' && S.st !== 'all') { S.city = 'all'; S.st = 'all'; }   // one area at a time
 
 // the context of a rep on day d: today's record, else the last one before it (for absent reps)
+// a JDA's area = their usual area: where they did most presentations over the last 30 working days up to d,
+// so one trip to another district does not move them (HR locations often just say the branch, so they are a last resort)
+const usualCache = new Map();
+function usualArea(r, d) {
+  const key = r * 4096 + d;
+  if (usualCache.has(key)) return usualCache.get(key);
+  const cnt = new Map();
+  for (const w of lastWork(d, 30)) { const x = repDays[r].get(w); if (x) for (const [a, n] of x.areas) cnt.set(a, (cnt.get(a) || 0) + n); }
+  let best = -1, bn = 0;
+  for (const [a, n] of cnt) if (n > bn) { best = a; bn = n; }
+  usualCache.set(key, best);
+  return best;
+}
 function ctx(r, d) {
   const rec = repDays[r].get(d) || null;
   const last = rec || lastRec(r, d);
-  const ha = REPS[r].harea;
-  return { rec, home: last ? last.home : ha != null ? ha : -1, mgr: last ? last.m : -1, last };
+  const ha = REPS[r].harea, ua = usualArea(r, d);
+  return { rec, home: ua >= 0 ? ua : last ? last.home : ha != null ? ha : -1, mgr: last ? last.m : -1, last };
 }
 function inView(r, d, c) {
   c = c || ctx(r, d);
@@ -911,7 +935,7 @@ function helpMap() {
     'Area deals': ['Area deals', 'JDA deals whose pincode is in this area, whoever closed them.', SALES],
     // table columns
     'Manager': ['Manager', 'Reporting manager.', 'The manager on most of their presentations that day (absent JDAs: their last known manager).'],
-    'Area': ['Area', 'District where the JDA did most of their presentations that day (absent JDAs: their last area).', 'From the pincode of each presentation.'],
+    'Area': ['Area', "The JDA's usual district: where they did most of their presentations over the last 30 working days. One trip elsewhere does not move them.", 'From the pincode of each presentation.'],
     'Today': ['Today', 'Presentations on the chosen day. Green bar = on target, amber = under target.', PRES],
     'Own 7-day avg': ['Own 7-day average', 'This JDA\'s usual output: their average on the days they worked in the 7 working days before.', ''],
     'Fresh presentations': ['Fresh presentations', 'Presentations to new businesses, not existing JD contracts. The % is out of all presentations.', 'Presentations where the contract type is New.'],
@@ -1085,15 +1109,25 @@ function pageTerritory() {
     groups.map(g => [g.chip + ' attendance', pct(g.t.att)]));
   h += `<div class="terr">` + groups.map(g => { const t = g.t; return `<div class="tcard" style="--h:${g.hue}">
       <div class="tc-head"><div class="tc-name"><span class="tc-ic">${icon(g.ic)}</span><div><h3><span class="hl"${tipAttr(g.name)}>${esc(g.name)}</span></h3><div class="cap">${g.sub ? esc(g.sub) + ' · ' : ''}${nf(t.active)} of ${nf(t.roster)} JDAs present</div></div></div>${donut(t.att, g.hue)}</div>
+      <div class="pmix">
+        <div class="pm-t">Presentations</div>
+        <div class="pm-row">
+          <div class="hl"${tipAttr('Presentations')}><span>Total</span><b>${nf(t.pres)}</b></div>
+          <div class="hl"${tipAttr('Fresh presentations')}><span><i></i>Fresh</span><b>${nf(t.fresh)}</b></div>
+          <div class="hl"${tipAttr('Fresh %')}><span>Fresh %</span><b>${pct(t.freshP)}</b></div>
+        </div>
+        <div class="pm-bar" role="img" aria-label="${pct(t.freshP)} of presentations were fresh"><i style="width:${Math.round((t.freshP || 0) * 100)}%"></i></div>
+        <div class="pm-leg"><span>Fresh ${nf(t.fresh)}</span><span>Existing ${nf(t.pres - t.fresh)}</span></div>
+      </div>
       <div class="stats">
-        <div class="st"${tipAttr('Fresh presentations')}><span>Presentations</span><b>${nf(t.pres)}<small>fresh ${pct(t.freshP)}</small></b></div>
         <div class="st"${tipAttr('Avg per JDA')}><span>Avg per JDA</span><b>${nf(t.avg, 1)}<small>7d ${nf(g.p7, 1)}</small></b></div>
         <div class="st"${tipAttr('On target')}><span>On target</span><b>${nf(t.onT)}</b></div>
         <div class="st"${tipAttr('Under target')}><span>Under target</span><b style="color:var(--warn-ink)">${nf(t.under)}</b></div>
+        <div class="st"${tipAttr('Present JDAs')}><span>Present JDAs</span><b>${nf(t.active)}<small>of ${nf(t.roster)}</small></b></div>
         <div class="st"${tipAttr('Absent')}><span>Absent</span><b style="color:var(--crit-ink)">${nf(t.roster - t.active)}</b></div>
         <div class="st"${tipAttr(HAS_SALES ? 'Area deals' : 'Active JDAs here')}><span>${HAS_SALES ? 'Area deals' : 'Active JDAs'}</span><b>${HAS_SALES ? nsales(t.aSales) : nf(t.roster)}</b></div>
       </div></div>`; }).join('') + `</div>`;
-  h += note('Each JDA is counted in the area where they did most of their presentations that day (absent JDAs: their last area). Main city = Hyderabad data city; remote = every other district in the Hyderabad branch.');
+  h += note('Each JDA is counted in their usual area: where they did most of their presentations over the last 30 working days, so a one-off trip to another district does not move them. Main city = Hyderabad data city; remote = every other district in the Hyderabad branch.');
 
   const st = S.terrState;
   h += secTitle(st === 'TS' ? 'Telangana state daily report' : st === 'AP' ? 'Andhra Pradesh districts' : 'Every area in the branch',
@@ -1496,17 +1530,17 @@ const DRILL = {
   roster: { t: 'Active JDAs', sub: 'Every active JDA: present ones first, then absent', pick: () => true, day: s => s.roster, fmt: v => nf(v), color: '#6366f1', all: true },
   active: { t: 'Present JDAs', sub: 'Every JDA who did at least 1 presentation', pick: x => !!x.c.rec, day: s => s.active, fmt: v => nf(v), color: '#6366f1' },
   att: { t: 'Attendance %', sub: 'Present JDAs ÷ active JDAs · the JDAs present', pick: x => !!x.c.rec, day: s => s.att, fmt: pct, color: '#10b981' },
-  abs: { t: 'Absent %', sub: 'Absent JDAs ÷ active JDAs · the JDAs absent, longest first', pick: x => !x.c.rec, day: s => s.att == null ? null : 1 - s.att, fmt: pct, color: '#f43f5e', absent: true },
+  abs: { low: true, t: 'Absent %', sub: 'Absent JDAs ÷ active JDAs · the JDAs absent, longest first', pick: x => !x.c.rec, day: s => s.att == null ? null : 1 - s.att, fmt: pct, color: '#f43f5e', absent: true },
   pres: { t: 'Presentations', sub: 'Presentations by each present JDA', pick: x => !!x.c.rec, day: s => s.pres, fmt: v => nf(v), color: '#0ea5e9' },
   fresh: { t: 'Fresh presentations', sub: 'Presentations to new businesses · JDAs with at least 1, most first', pick: x => x.c.rec && x.c.rec.nw > 0, day: s => s.fresh, fmt: v => nf(v), color: '#14b8a6', fresh: true },
   avg: { t: 'Average per present JDA', sub: `Each present JDA against the target of ${TARGET}`, pick: x => !!x.c.rec, day: s => s.avg, fmt: v => nf(v, 1), color: '#8b5cf6' },
   onT: { t: `On target (${TARGET}+)`, sub: `JDAs who did ${TARGET} or more presentations`, pick: x => x.c.rec && x.c.rec.n >= TARGET, day: s => s.onT, fmt: v => nf(v), color: '#f97316' },
   sales: { t: 'JDA deals', sub: 'JDAs who closed a deal', pick: x => (salesMap[x.r].get(S.day) || 0) > 0, day: s => s.sales, fmt: nsales, color: '#ec4899', sales: true },
-  abs3: { t: 'Absent 3+ days', sub: 'Not seen for 3 or more working days in a row', pick: (x, d) => !x.c.rec && absentStreak(x.r, d) >= 3, count: true, color: '#f43f5e', absent: true },
+  abs3: { low: true, t: 'Absent 3+ days', sub: 'Not seen for 3 or more working days in a row', pick: (x, d) => !x.c.rec && absentStreak(x.r, d) >= 3, count: true, color: '#f43f5e', absent: true },
   clean: { t: 'Clean day', sub: 'No late start, no early finish, no long gap', pick: x => fieldOf(x.c)?.clean, count: true, color: '#10b981', field: true },
-  late: { t: 'Late start', sub: () => 'First presentation after ' + hm(S.fieldThr.start), pick: x => fieldOf(x.c)?.late, count: true, color: '#f59e0b', field: true },
-  early: { t: 'Early finish', sub: () => 'Last presentation before ' + hm(S.fieldThr.end), pick: x => fieldOf(x.c)?.early, count: true, color: '#f97316', field: true },
-  gap: { t: 'Long gap', sub: () => `A break of more than ${S.fieldThr.gap} min between presentations`, pick: x => fieldOf(x.c)?.lg, count: true, color: '#ef4444', field: true },
+  late: { low: true, t: 'Late start', sub: () => 'First presentation after ' + hm(S.fieldThr.start), pick: x => fieldOf(x.c)?.late, count: true, color: '#f59e0b', field: true },
+  early: { low: true, t: 'Early finish', sub: () => 'Last presentation before ' + hm(S.fieldThr.end), pick: x => fieldOf(x.c)?.early, count: true, color: '#f97316', field: true },
+  gap: { low: true, t: 'Long gap', sub: () => `A break of more than ${S.fieldThr.gap} min between presentations`, pick: x => fieldOf(x.c)?.lg, count: true, color: '#ef4444', field: true },
 };
 function openDrill(kind) {
   const K = DRILL[kind]; if (!K) return;
@@ -1534,10 +1568,11 @@ function openDrill(kind) {
         const ok = ws.map((w, i) => [w, vals[i]]).filter(([, v]) => v != null && isFinite(v));
         const mean = ok.length ? ok.reduce((a, [, v]) => a + v, 0) / ok.length : null;
         const hi = ok.reduce((a, b) => (b[1] > a[1] ? b : a), ok[0] || [d, null]), lo = ok.reduce((a, b) => (b[1] < a[1] ? b : a), ok[0] || [d, null]);
+        const best = K.low ? lo : hi, worst = K.low ? hi : lo;   // lower is better for absence and field flags
         const what = K.count ? `the number of JDAs in this list` : K.t;
         const chart = lineChart(ws.map((w, i) => ({ label: dlabel(D.days[w]), v: vals[i] == null ? 0 : vals[i], day: w, tip: `<b>${dlabel(D.days[w], true)}</b><br>${esc(K.t)}: <b>${fmt(vals[i])}</b>${mean != null ? '<br>30-day average: ' + fmt(mean) : ''}<br><i>Click to open this day</i>` })), { color: K.color, fmt: pctAxis ? pct : (v => fmt(v)), avg: mean, selIdx: ws.indexOf(d) });
         return card(`${esc(K.t)} on each working day`, `Each point is one working day (last ${ws.length}): ${esc(what)} that day. <b>Orange dot</b> = ${dlabel(D.days[d])} (${fmt(now)}). <b>Dashed line</b> = 30-day average. Click a point to open that day.`, chart
-          + `<div class="trend-stats"><div><span>30-day average</span><b>${fmt(mean)}</b></div><div><span>Best day</span><b>${fmt(hi[1])}</b><small>${dlabel(D.days[hi[0]], true)}</small></div><div><span>Lowest day</span><b>${fmt(lo[1])}</b><small>${dlabel(D.days[lo[0]], true)}</small></div></div>`, K.color);
+          + `<div class="trend-stats"><div><span>30-day average</span><b>${fmt(mean)}</b></div><div><span>Best day</span><b>${fmt(best[1])}</b><small>${dlabel(D.days[best[0]], true)}</small></div><div><span>Worst day</span><b>${fmt(worst[1])}</b><small>${dlabel(D.days[worst[0]], true)}</small></div></div>`, K.color);
       })()}
       <div class="card"><div class="c-head"><div><h3><i class="dot" style="background:${K.color}"></i>${nf(rows.length)} JDA${rows.length === 1 ? '' : 's'}</h3><div class="cap">Click a name for their profile</div></div></div>
         <div class="dlist">${rows.map(x => `<div class="dl-row">${who(x.r)}<span class="dl-meta">${esc(mgrName(x.c.mgr))}<small>${esc(areaName(x.c.home))}</small></span><span class="dl-val">${right(x)}</span></div>`).join('') || '<div class="empty">Nobody in this list for this day and filter.</div>'}</div></div>

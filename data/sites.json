@@ -399,9 +399,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 44,
+    "version": 45,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-11-12T14:59:31",
+    "updated": "2026-11-12T18:29:39",
     "entry": "index.html",
     "hub": {
       "show": false,
