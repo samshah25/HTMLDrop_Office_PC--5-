@@ -821,10 +821,12 @@ def update_page(slug, user, data):
                 hub_up = placement_to_hub(data["placement"])
                 if "category" in data and data["category"]:
                     hub_up["category"] = str(data["category"]).strip()[:40]
+                    hub_up["category_pinned"] = True
                 record["hub"] = {**hub_of(record), **hub_up}
             if "category" in data and data["category"]:
                 hub = hub_of(record)
                 hub["category"] = str(data["category"]).strip()[:40]
+                hub["category_pinned"] = True
                 record["hub"] = hub
             if "link" in data and data["link"]:
                 record["link"] = str(data["link"]).strip()
@@ -849,6 +851,7 @@ def update_page(slug, user, data):
                 drec["master_scope"] = data["placement"] if data["placement"] in ("general", "all") else "all"
             if "category" in data and data["category"]:
                 drec["category"] = str(data["category"]).strip()[:40]
+                drec["category_pinned"] = True
             if "link" in data and data["link"]:
                 drec["link"] = str(data["link"]).strip()
                 drec["external_url"] = str(data["link"]).strip()
@@ -1016,18 +1019,28 @@ def save_dynamic_meta(meta):
 def count_category_dashboards(key):
     cnt = 0
     key = str(key or '').strip().lower()
+    seen = set()
     try:
         with lock:
             if META_FILE.is_file():
                 meta = load_meta()
-                for r in meta.values():
+                for slug, r in meta.items():
+                    if r.get('deleted') or r.get('disabled'):
+                        continue
                     hub = hub_of(r)
+                    if not hub.get('show'):
+                        continue
                     cat = str(hub.get('category') or r.get('category') or '').strip().lower()
                     if cat == key:
                         cnt += 1
+                        seen.add(slug.lower())
             if DYNAMIC_META_FILE.is_file():
                 dyn = load_dynamic_meta()
-                for dr in dyn.values():
+                for slug, dr in dyn.items():
+                    if slug.lower() in seen:
+                        continue
+                    if dr.get('deleted') or dr.get('disabled') or not dr.get('show_on_master') or not dynamic_running(dr):
+                        continue
                     cat = str(dr.get('category') or '').strip().lower()
                     if cat == key:
                         cnt += 1
@@ -1047,19 +1060,42 @@ def delete_category(key):
     if cnt > 0:
         raise UserError(f"Cannot delete section '{key}' because it contains {cnt} dashboard(s). Move them to another section first.", 400)
     
-    custom = {}
-    if CATEGORIES_FILE.is_file():
-        try:
-            custom = json.loads(CATEGORIES_FILE.read_text(encoding='utf-8'))
-        except Exception:
-            pass
-    if key in custom:
-        del custom[key]
-        CATEGORIES_FILE.parent.mkdir(parents=True, exist_ok=True)
-        CATEGORIES_FILE.write_text(json.dumps(custom, indent=2), encoding='utf-8')
+    with lock:
+        custom = {}
+        if CATEGORIES_FILE.is_file():
+            try:
+                custom = json.loads(CATEGORIES_FILE.read_text(encoding='utf-8'))
+            except Exception:
+                pass
+        if key in custom:
+            del custom[key]
+            CATEGORIES_FILE.parent.mkdir(parents=True, exist_ok=True)
+            CATEGORIES_FILE.write_text(json.dumps(custom, indent=2), encoding='utf-8')
+        # Clear any stale references on deleted/hidden records
+        if META_FILE.is_file():
+            meta = load_meta()
+            changed = False
+            for r in meta.values():
+                hub = hub_of(r)
+                if str(hub.get('category') or '').strip().lower() == key:
+                    hub['category'] = 'other'
+                    r['hub'] = hub
+                    changed = True
+                if str(r.get('category') or '').strip().lower() == key:
+                    r['category'] = 'other'
+                    changed = True
+            if changed:
+                save_meta(meta)
+        if DYNAMIC_META_FILE.is_file():
+            dyn = load_dynamic_meta()
+            changed = False
+            for dr in dyn.values():
+                if str(dr.get('category') or '').strip().lower() == key:
+                    dr['category'] = 'other'
+                    changed = True
+            if changed:
+                save_dynamic_meta(dyn)
     return custom
-
-    save_json(DYNAMIC_META_FILE, meta)
 
 
 def get_dynamic_record(slug, meta=None):
@@ -2155,6 +2191,7 @@ class Handler(BaseHTTPRequestHandler):
                                 **extracted
                             }
                     ext_entry_html = Path(rec.get("file") or "").name if rec.get("file") else unquote(urlparse(url).path).rsplit("/", 1)[-1]
+                    ext_hub = hub_of(rec)
                     items.append({
                         "slug": slug, "title": rec.get("title") or slug, "owner": ", ".join(
                             display_name(users, x) for x in owners_of(rec)
@@ -2165,7 +2202,8 @@ class Handler(BaseHTTPRequestHandler):
                         "disabled": bool(rec.get("disabled")),
                         "entry_html": ext_entry_html,
                         "refresh": ext_refresh, "refresh_available": has_script or bool(_found_task_name),
-                        "show_on_master": False, "master_scope": "off"
+                        "category": ext_hub.get("category") or "",
+                        "show_on_master": bool(ext_hub.get("show")), "master_scope": placement_of(ext_hub)
                     })
                 items.sort(key=lambda r: r.get("updated", ""), reverse=True)
                 return self.send_json({"projects": items, "is_admin": user.get("role") == "admin"})
@@ -2259,13 +2297,26 @@ class Handler(BaseHTTPRequestHandler):
                 if r.get("link"):
                     items.append({"id": slug, "hidden": True})  # an old dashboard to hide there
                 continue
+            cat_val = hub.get("category") or ""
+            cat_pinned = bool(hub.get("category_pinned") or (cat_val and cat_val != "other"))
             if hub["show"] and not r.get("link"):  # linked ones are already on the master dashboard
                 owner = " ".join(display_name(users, u) for u in owners_of(r)) or r.get("owner", "")
                 items.append({
                     # A page imported from the master dashboard's fixed list keeps that entry's id,
                     # so the master dashboard swaps its old link for this one (and pins still work).
                     "id": hub["legacy_id"] or f"drop-{slug}", "url": f"{base}/s/{slug}/",
-                    "title": hub["title"] or r["title"], "category": hub["category"] or "other",
+                    "title": hub["title"] or r["title"], "category": cat_val or "other",
+                    "category_pinned": cat_pinned,
+                    "branch": hub["branch"], "scope": hub["scope"],
+                    "tags": hub["tags"] + [slug, owner.lower()],
+                    "updated": r["updated"],
+                })
+            elif hub["show"] and r.get("link") and cat_val:
+                owner = " ".join(display_name(users, u) for u in owners_of(r)) or r.get("owner", "")
+                items.append({
+                    "id": hub["legacy_id"] or slug, "url": r["link"],
+                    "title": hub["title"] or r["title"], "category": cat_val,
+                    "category_pinned": True,
                     "branch": hub["branch"], "scope": hub["scope"],
                     "tags": hub["tags"] + [slug, owner.lower()],
                     "updated": r["updated"],
@@ -2274,13 +2325,16 @@ class Handler(BaseHTTPRequestHandler):
         host = (self.headers.get("Host") or "localhost").split(":")[0]
         main_port = int(CONFIG.get("port", 8150))
         for rec in load_dynamic_meta().values():
-            if rec.get("show_on_master") and dynamic_running(rec):
+            if not rec.get("deleted") and not rec.get("disabled") and rec.get("show_on_master") and dynamic_running(rec):
                 u_str = rec.get("url") or f"/s/{rec['slug']}/"
                 if u_str.startswith("/"):
                     u_str = f"http://{host}:{main_port}{u_str}"
+                cat_val = rec.get("category") or "other"
+                cat_pinned = bool(rec.get("category_pinned") or (cat_val and cat_val != "other"))
                 items.append({
                     "id": f"dynamic-{rec['slug']}", "url": u_str,
-                    "title": rec.get("title") or rec["slug"], "category": rec.get("category") or "other",
+                    "title": rec.get("title") or rec["slug"], "category": cat_val,
+                    "category_pinned": cat_pinned,
                     "branch": "", "scope": rec.get("master_scope") if rec.get("master_scope") in ("general", "all") else "all", "tags": [rec["slug"], "dynamic", rec.get("owner", "").lower()],
                     "updated": rec.get("updated", ""),
                 })
@@ -2400,7 +2454,7 @@ class Handler(BaseHTTPRequestHandler):
                                 rec_key = k
                                 break
                     if rec_key:
-                        meta[rec_key]["hub"] = {**hub_of(meta[rec_key]), "category": cat, "show": True}
+                        meta[rec_key]["hub"] = {**hub_of(meta[rec_key]), "category": cat, "category_pinned": True, "show": True}
                         save_meta(meta)
                         updated = True
                         
@@ -2410,8 +2464,14 @@ class Handler(BaseHTTPRequestHandler):
                         dyn_key = slug
                     elif raw_slug in dyn_meta:
                         dyn_key = raw_slug
+                    else:
+                        for k in dyn_meta:
+                            if k.lower() == slug.lower():
+                                dyn_key = k
+                                break
                     if dyn_key:
                         dyn_meta[dyn_key]["category"] = cat
+                        dyn_meta[dyn_key]["category_pinned"] = True
                         dyn_meta[dyn_key]["show_on_master"] = True
                         save_dynamic_meta(dyn_meta)
                         updated = True

@@ -2349,6 +2349,11 @@ function keyOf(d) {
   return m ? decodeURIComponent(m[1]) : String(d.id || "").replace(/^(drop|dynamic)-/, "");
 }
 function place(d) {
+  if (d._serverCat) {
+    d.category = OLD_SECTIONS[d._serverCat] || d._serverCat;
+    if (!CATEGORIES[d.category]) d.category = "other";
+    return;
+  }
   const userSections = store.get("user_sections", {});
   const userCat = userSections[keyOf(d)] || userSections[d.id];
   if (userCat) {
@@ -2881,21 +2886,29 @@ let hubSig = hubSigOf(STATIC);
 function applyHub(items) {
   if (!Array.isArray(items)) return;
   const hidden = new Set();
-  STATIC.forEach(d => Object.assign(d, STATIC_ORIG.get(d.id)));
+  STATIC.forEach(d => { Object.assign(d, STATIC_ORIG.get(d.id)); delete d._serverCat; });
+  const userSections = store.get("user_sections", {});
+  let usChanged = false;
   const dynamicItems = [];
   items.forEach(it => {
     if (!it || !it.id) return;
     if (it.hidden) { hidden.add(it.id); return; }
     if (keyOf(it) === "master-dashboard") return;   // this page itself, if uploaded to HTML Drop
     if (!it.url) return;
+    const hasServerCat = Boolean(it.category_pinned || (it.category && it.category !== "other"));
     const own = STATIC.find(d => d.id === it.id || keyOf(d) === keyOf(it));
     if (own) {
       if (it.title) own.title = it.title;
       if (it.url) own.url = it.url;
       if (it.category) own.category = it.category;
+      if (hasServerCat) {
+        own._serverCat = it.category;
+        if (userSections[keyOf(own)] && userSections[keyOf(own)] !== it.category) { delete userSections[keyOf(own)]; usChanged = true; }
+        if (userSections[own.id] && userSections[own.id] !== it.category) { delete userSections[own.id]; usChanged = true; }
+      }
       if (it.updated) own.updated = it.updated;
     } else if (!dynamicItems.some(x => keyOf(x) === keyOf(it))) {
-      dynamicItems.push({
+      const itemObj = {
         id: it.id,
         url: it.url,
         title: it.title || it.id,
@@ -2903,9 +2916,17 @@ function applyHub(items) {
         author: it.author || it.owner || "Team",
         branch: it.branch || "",
         tags: it.tags || []
-      });
+      };
+      if (hasServerCat) {
+        itemObj._serverCat = it.category;
+        const k = keyOf(itemObj);
+        if (userSections[k] && userSections[k] !== it.category) { delete userSections[k]; usChanged = true; }
+        if (userSections[itemObj.id] && userSections[itemObj.id] !== it.category) { delete userSections[itemObj.id]; usChanged = true; }
+      }
+      dynamicItems.push(itemObj);
     }
   });
+  if (usChanged) store.set("user_sections", userSections);
   const next = STATIC.filter(d => !hidden.has(d.id)).concat(dynamicItems);
   next.forEach(place);
   const sig = hubSigOf(next);
@@ -2919,6 +2940,7 @@ function applyHub(items) {
   applyTitles(store.get("titles", null));                            // keep renamed names on top
 }
 async function loadHub() {
+  await loadCategories();
   const tryUrls = [
     DROP + "/api/hub",
     "http://localhost:8150/api/hub",
@@ -3149,6 +3171,7 @@ async function saveChangedSection() {
   const oldCat = d.category;
   const newCat = modalSelectedCat;
   d.category = newCat;
+  d._serverCat = newCat;
 
   const userSections = store.get("user_sections", {});
   userSections[keyOf(d)] = newCat;
@@ -3217,9 +3240,12 @@ async function loadCategories() {
         changed = true;
       }
     }
+    try { localStorage.setItem("hd_custom_cats", JSON.stringify(data)); } catch (e) {}
     if (changed) {
       const keys = Object.keys(CATEGORIES).filter(k => k !== "other");
       CAT_ORDER = [...keys, "other"];
+      const cachedHub = store.get("hub", null);
+      if (cachedHub) applyHub(cachedHub);
       render();
       paintWorkspace();
       renderSecDelList();
@@ -3227,14 +3253,12 @@ async function loadCategories() {
   } catch (e) {}
 }
 
-setTimeout(loadCategories, 200);
-
 function openMasterSecSettingsModal(tab) {
-  try { loadCategories(); } catch(e) {}
   const bd = $("masterSecSettingsBackdrop");
   if (!bd) return;
   bd.style.display = "flex";
   switchSecTab(tab || "add");
+  loadHub().then(() => { renderSecDelList(); }).catch(() => {});
 }
 
 function closeMasterSecSettingsModal() {
@@ -3333,6 +3357,8 @@ async function confirmDeleteMasterSec(key, label) {
       const err = await r.json().catch(()=>({}));
       if (err.error) {
         alert("Cannot delete section: " + err.error);
+        await loadHub();
+        renderSecDelList();
         return;
       }
     }

@@ -1797,14 +1797,23 @@ const CAT_COLORS = ["#38bdf8", "#818cf8", "#34d399", "#fbbf24", "#fb7185", "#e87
 
 function getCategoryDashboardCount(catKey) {
   let count = 0;
+  const seen = new Set();
   if (Array.isArray(sites)) {
     sites.forEach(s => {
+      if (s.dynamic || s.disabled) return;
+      const isMaster = Boolean(s.show_on_master || (s.placement && s.placement !== "off" && s.placement !== "dynamic") || (s.hub && s.hub.show));
+      if (!isMaster) return;
       const c = (s.hub && s.hub.category) || s.category || "other";
-      if (c === catKey) count++;
+      if (c === catKey) {
+        count++;
+        seen.add(String(s.slug || "").toLowerCase());
+      }
     });
   }
   if (Array.isArray(dynamicProjects)) {
     dynamicProjects.forEach(d => {
+      if (d.disabled || !d.show_on_master) return;
+      if (seen.has(String(d.slug || "").toLowerCase())) return;
       const c = d.category || "other";
       if (c === catKey) count++;
     });
@@ -1860,6 +1869,7 @@ function togglePortalSecSettings() {
   panel.style.display = isHidden ? "flex" : "none";
   if (isHidden) {
     switchPortalSecTab("add");
+    loadPortalCategories().then(() => renderPortalSecDelList()).catch(() => {});
   }
 }
 
@@ -2075,11 +2085,13 @@ function openSectionModalFromSettings() {
 }
 
 function openSettingsModal(slug) {
-  let s = sites.find(x => x.slug === slug);
-  let isDyn = false;
-  if (!s && typeof dynamicProjects !== "undefined" && Array.isArray(dynamicProjects)) {
-    s = dynamicProjects.find(x => x.slug === slug);
-    isDyn = true;
+  let s = (typeof dynamicProjects !== "undefined" && Array.isArray(dynamicProjects))
+    ? dynamicProjects.find(x => x.slug === slug)
+    : null;
+  let isDyn = Boolean(s);
+  if (!s) {
+    s = sites.find(x => x.slug === slug);
+    isDyn = Boolean(s && s.dynamic);
   }
   if (!s) return;
 
@@ -2101,11 +2113,11 @@ function openSettingsModal(slug) {
     linkInput.value = "";
   }
 
-  const isMaster = Boolean(s.show_on_master || (s.placement && s.placement !== "off") || s.hub);
+  const isMaster = Boolean(s.show_on_master || (s.placement && s.placement !== "off" && s.placement !== "dynamic") || (s.hub && s.hub.show));
   $("settingShowMaster").checked = isMaster;
   $("settingSectionField").style.display = isMaster ? "block" : "none";
 
-  const cat = s.category || (s.hub && s.hub.category) || "perf";
+  const cat = s.category || (s.hub && s.hub.category) || "other";
   updateSettingModalSec(cat);
 
   $("settingsModal").showModal();
@@ -2171,13 +2183,9 @@ async function saveSettingsModal() {
       if (typeof render === "function") render();
     }
 
-    try {
-      await fetch('/api/dashboard/section', {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-HD": "1" },
-        body: JSON.stringify({ slug: currentSettingsTargetSlug, category: payload.category })
-      });
-    } catch (e) {}
+    if (typeof load === "function") {
+      try { await load(); } catch (e) {}
+    }
 
     $("settingsModal").close();
     showToastNotification(`Settings updated for "${title}"`);
