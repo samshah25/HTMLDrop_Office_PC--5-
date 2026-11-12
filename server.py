@@ -1693,20 +1693,23 @@ def build_refresh_task_xml(slug, rec, settings):
     return ET.tostring(task, encoding="utf-16", xml_declaration=True)
 
 
+def _slack_script_candidates():
+    """Return candidate paths for the Slack monitoring script (task_1.py)."""
+    return [
+        Path(r"C:\Users\hp\Downloads\task_1.py"),
+        Path.home() / "Downloads" / "task_1.py",
+        ROOT / "task_1.py",
+        ROOT.parent / "task_1.py",
+    ]
+
+
 def sync_task_to_slack_script(task_name):
     """Automatically synchronizes a refresh task name into the Slack monitoring script (task_1.py)."""
     if not task_name:
         return
-    candidate_paths = [
-        r"C:\Users\hp\Downloads\task_1.py",
-        Path.home() / "Downloads" / "task_1.py",
-        BASE_DIR / "task_1.py",
-        BASE_DIR.parent / "task_1.py",
-    ]
     formatted = "\\" + str(task_name).lstrip("\\")
-    for script_path in candidate_paths:
+    for sp in _slack_script_candidates():
         try:
-            sp = Path(script_path)
             if not sp.is_file():
                 continue
             code = sp.read_text(encoding="utf-8")
@@ -1728,16 +1731,9 @@ def remove_task_from_slack_script(task_name):
     """Automatically removes a deleted or disabled refresh task from the Slack monitoring script (task_1.py)."""
     if not task_name:
         return
-    candidate_paths = [
-        r"C:\Users\hp\Downloads\task_1.py",
-        Path.home() / "Downloads" / "task_1.py",
-        BASE_DIR / "task_1.py",
-        BASE_DIR.parent / "task_1.py",
-    ]
     raw_name = str(task_name).strip().lstrip("\\")
-    for script_path in candidate_paths:
+    for sp in _slack_script_candidates():
         try:
-            sp = Path(script_path)
             if not sp.is_file():
                 continue
             lines = sp.read_text(encoding="utf-8").splitlines()
