@@ -597,7 +597,8 @@
       </label>
       <div class="list-msg" id="listMsg" role="status"></div>
       <div id="rows"><div class="empty">Loading…</div></div>
-      <input type="file" id="replaceFile" accept=".html,.htm" hidden>
+      <input type="file" id="replaceFile" accept=".html,.htm,.zip,application/zip" hidden>
+<input type="file" id="convertZipFile" accept=".zip,application/zip" hidden>
       <section class="dynamic-list-section" aria-label="Dynamic projects">
         <div class="ahead dynamic-ahead"><h2>Dynamic projects</h2><span id="dynamicCount"></span></div>
         <div class="list-msg" id="dynamicMsg" role="status"></div>
@@ -1214,7 +1215,7 @@ function prefill(slug) {
 let replacing = null;
 function replace(slug) {
   replacing = sites.find(x => x.slug === slug);
-  $("replaceFile").accept = ".html,.htm";
+  $("replaceFile").accept = ".html,.htm,.zip,application/zip";
   $("replaceFile").value = "";
   $("replaceFile").click();
 }
@@ -1222,8 +1223,36 @@ function listMsg(text, bad) { $("listMsg").textContent = text; $("listMsg").clas
 $("replaceFile").onchange = async e => {
   const f = e.target.files[0], s = replacing;
   if (!f || !s) return;
+  if (/\.zip$/i.test(f.name)) {
+    if (!confirm(`“${f.name}” is a ZIP project.\n\nDo you want to convert “${s.title}” from a static dashboard into a dynamic project using this ZIP?\n\nIt will be moved to Dynamic projects with the same link (${s.slug}) and can run background Python services or scheduled refresh tasks.`)) {
+      e.target.value = "";
+      return;
+    }
+    listMsg(`Converting “${s.title}” to a dynamic project…`);
+    try {
+      const r = await fetch("/api/dynamic/convert?" + new URLSearchParams({ slug: s.slug }), {
+        method: "POST",
+        headers: { "Content-Type": "application/zip", "X-HD": "1" },
+        body: f
+      });
+      const res = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(res.error || `Conversion failed (${r.status})`);
+      listMsg(`“${res.title || s.title}” successfully converted to a dynamic project!`);
+      await Promise.all([loadDynamicProjects(), load()]);
+      if (res.refresh_available) {
+        if (confirm(`“${res.title || s.title}” was converted to a dynamic project with main.py.\n\nWould you like to configure automated refresh schedule now?`)) {
+          configureDynamicRefresh(res.slug);
+        }
+      }
+    } catch (err) {
+      listMsg(err.message, true);
+    } finally {
+      e.target.value = "";
+    }
+    return;
+  }
   if (!/\.(html|htm)$/i.test(f.name)) {
-    alert("Static dashboards only accept .html or .htm files. Upload a .zip for dynamic projects.");
+    alert("Please select an .html/.htm file to replace, or a .zip file to convert to a dynamic project.");
     e.target.value = "";
     return;
   }
@@ -1240,6 +1269,49 @@ $("replaceFile").onchange = async e => {
     load();
   } catch (err) { listMsg(err.message, true); }
 };
+
+function convertStaticToDynamic(slug) {
+  const s = sites.find(x => x.slug === slug);
+  if (!s) return;
+  const input = $("convertZipFile");
+  if (!input) return;
+  input.value = "";
+  input.onchange = async () => {
+    const f = input.files && input.files[0];
+    if (!f) return;
+    if (!/\.zip$/i.test(f.name)) {
+      alert("Please choose a .zip file to convert to a dynamic project.");
+      input.value = "";
+      return;
+    }
+    if (!confirm(`Convert “${s.title}” into a dynamic project using ${f.name}?\n\nThe dashboard will be moved to Dynamic projects and can run background Python services or scheduled refreshes.\n\nIts link (${s.slug}) and section settings will be preserved.`)) {
+      input.value = "";
+      return;
+    }
+    listMsg(`Converting “${s.title}” to a dynamic project…`);
+    try {
+      const r = await fetch("/api/dynamic/convert?" + new URLSearchParams({ slug: s.slug }), {
+        method: "POST",
+        headers: { "Content-Type": "application/zip", "X-HD": "1" },
+        body: f
+      });
+      const res = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(res.error || `Conversion failed (${r.status})`);
+      listMsg(`“${res.title || s.title}” successfully converted to a dynamic project!`);
+      await Promise.all([loadDynamicProjects(), load()]);
+      if (res.refresh_available) {
+        if (confirm(`“${res.title || s.title}” was converted to a dynamic project with main.py.\n\nWould you like to configure automated refresh schedule now?`)) {
+          configureDynamicRefresh(res.slug);
+        }
+      }
+    } catch (err) {
+      listMsg(err.message, true);
+    } finally {
+      input.value = "";
+    }
+  };
+  input.click();
+}
 
 async function del(slug) {
   const s = sites.find(x => x.slug === slug);
@@ -1351,6 +1423,7 @@ function render() {
       <details class="more">
         <summary class="btn icon-btn" aria-label="More actions for ${esc(s.title)}" title="More">${ICON_MORE}</summary>
         <div class="menu">
+          <button type="button" onclick="convertStaticToDynamic('${esc(s.slug)}')" title="Upload a project ZIP to convert this into a dynamic dashboard (supports auto-start, Python services, and scheduled refresh).">Convert to dynamic (Upload ZIP)</button>
           <button type="button" onclick="renamePage('${esc(s.slug)}')" title="Change the name shown here. The link stays the same.">Rename</button>
           <button type="button" onclick="toggleDisable('${esc(s.slug)}')" title="${s.disabled ? TIP_ENABLE : TIP_DISABLE}">${s.disabled ? "Enable" : "Disable temporarily"}</button>
           <button type="button" onclick="openSettingsModal('${esc(s.slug)}')">Change settings</button>

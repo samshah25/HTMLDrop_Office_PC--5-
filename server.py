@@ -687,21 +687,25 @@ def get_existing_dashboard_file(slug, record=None, fallback_name=None):
     return cand.resolve()
 
 
-def replace_page(slug, user, filename, data):
+def replace_page(slug, user, filename, data, host="localhost"):
     """The Replace button: new file, same link. An existing dashboard's file is overwritten in
     its own folder under its own name (backed up first); an HTML Drop page gets a new version."""
+    ext = Path(filename).suffix.lower()
+    if ext == ".zip":
+        rec = convert_static_to_dynamic(slug, user, data, host=host)
+        return {**dynamic_public(rec, include_path=user.get("role") == "admin"), "converted": True}
     with lock:
         meta = load_meta()
         record = meta.get(slug)
         if not record or record.get("deleted"):
             raise UserError("No such page.", 404)
         if not record.get("link"):
-            if Path(filename).suffix.lower() not in (".html", ".htm"):
-                raise UserError("Static dashboards only accept .html or .htm files. Upload a .zip for dynamic projects.")
+            if ext not in (".html", ".htm"):
+                raise UserError("Static dashboards accept .html, .htm, or .zip (to convert to dynamic).")
         else:
             if not can_manage(user, record):
                 raise UserError("Only the page's owners or an admin can replace it.", 403)
-            if Path(filename).suffix.lower() not in (".html", ".htm"):
+            if ext not in (".html", ".htm"):
                 raise UserError("Choose the dashboard's .html file.")
             target = get_existing_dashboard_file(slug, record, fallback_name=filename)
             record["file"] = str(target)
@@ -1155,6 +1159,75 @@ def dynamic_public(rec, include_path=False):
     return out
 
 
+def convert_static_to_dynamic(slug, user, body, title="", host="localhost"):
+    """Convert an existing static dashboard into a dynamic project using an uploaded ZIP."""
+    with lock:
+        meta = load_meta()
+        target_slug, static_rec = get_site_record(slug, meta)
+        if not static_rec or static_rec.get("deleted"):
+            raise UserError("Static dashboard not found.", 404)
+        if not can_manage(user, static_rec):
+            raise UserError("Only the dashboard owner or an admin can convert it.", 403)
+        slug = target_slug
+
+    with DYNAMIC_LOCK:
+        dyn_meta = load_dynamic_meta()
+        if slug in dyn_meta:
+            stop_dynamic_process(slug, dyn_meta[slug])
+
+        project_path = safe_extract_dynamic(body, slug, overwrite=True)
+        detected_entry, launch_type, _web_root = detect_dynamic_entry(project_path)
+        main_port = int(CONFIG.get("port", 8150))
+        port = main_port if launch_type == "static" else allocate_dynamic_port(dyn_meta)
+        url = f"/s/{slug}/" if launch_type == "static" else f"http://{host}:{port}/"
+
+        hub = hub_of(static_rec)
+        category = hub.get("category") or static_rec.get("category") or "other"
+        show_on_master = hub.get("show", True)
+        master_scope = hub.get("scope", "all")
+        proj_title = title.strip()[:120] if title else (static_rec.get("title") or slug.replace("-", " ").title())
+        owner = static_rec.get("user") or static_rec.get("owner") or user["username"]
+        created = static_rec.get("created") or datetime.now().isoformat(timespec="seconds")
+
+        # Back up existing static files to history
+        now = datetime.now()
+        live_static = SITES / slug
+        if live_static.exists():
+            hist = HISTORY / slug / f"{now:%Y%m%d-%H%M%S}_converted_to_dynamic"
+            hist.parent.mkdir(parents=True, exist_ok=True)
+            move_with_retry(live_static, hist)
+
+        # Remove from static metadata
+        with lock:
+            meta = load_meta()
+            if slug in meta:
+                del meta[slug]
+                save_meta(meta)
+
+        rec = {
+            "slug": slug,
+            "title": proj_title,
+            "owner": owner,
+            "created": created,
+            "updated": now.isoformat(timespec="seconds"),
+            "port": port,
+            "status": "preparing",
+            "entry": detected_entry,
+            "launch_type": launch_type,
+            "pid": None,
+            "url": url,
+            "show_on_master": show_on_master,
+            "master_scope": master_scope,
+            "category": category,
+            "category_pinned": True,
+            "message": ("Validated dashboard files. Running on port 8150." if launch_type == "static" else "Validated Python project. Preparing environment and starting automatically.")
+        }
+        dyn_meta[slug] = rec
+        save_dynamic_meta(dyn_meta)
+        threading.Thread(target=start_dynamic_worker, args=(slug,), daemon=True).start()
+        return rec
+
+
 def dynamic_running(rec):
     slug = rec.get("slug", "")
     project_dir = DYNAMIC_ROOT / slug
@@ -1214,7 +1287,7 @@ def detect_dynamic_entry(project: Path):
     return None, None, None
 
 
-def safe_extract_dynamic(zip_bytes, slug):
+def safe_extract_dynamic(zip_bytes, slug, overwrite=False):
     """Extract a project ZIP without allowing traversal, links, or archive bombs."""
     DYNAMIC_ROOT.mkdir(parents=True, exist_ok=True)
     target = DYNAMIC_ROOT / slug
@@ -1260,7 +1333,10 @@ def safe_extract_dynamic(zip_bytes, slug):
         if not entry:
             raise UserError("Could not identify a launch entry. Include index.html (or one unambiguous HTML page), or a supported Python entry point: app.py, main.py, run.py, or server.py.")
         if target.exists():
-            raise UserError("A project with that link name already exists. Choose another name.", 409)
+            if overwrite:
+                shutil.rmtree(target, ignore_errors=True)
+            else:
+                raise UserError("A project with that link name already exists. Choose another name.", 409)
         move_with_retry(staging, target)
         return target
     except Exception:
@@ -2526,6 +2602,17 @@ class Handler(BaseHTTPRequestHandler):
                               q.get("filename", ""), data, hub_choice)
                 self.log_message("%s published %s v%s", user["username"], slug, rec["version"])
                 return self.send_json({**rec, "me": user}, headers=[cookie] if cookie else [])
+            if u.path in ("/api/dynamic/convert", "/api/convert-to-dynamic"):
+                user = self.require_user()
+                slug = q.get("slug", "").strip().lower()
+                if not SLUG_RE.match(slug):
+                    raise UserError("Invalid project link name.")
+                title = q.get("title", "").strip()[:120]
+                body = self.read_body()
+                host = (self.headers.get("Host") or "localhost").split(":")[0]
+                rec = convert_static_to_dynamic(slug, user, body, title=title, host=host)
+                self.log_message("%s converted static dashboard %s to dynamic project", user["username"], slug)
+                return self.send_json(dynamic_public(rec, include_path=user.get("role") == "admin"), 201)
             if u.path == "/api/dynamic/upload":
                 user = self.require_user()
                 slug = q.get("slug", "").strip().lower()
@@ -2534,6 +2621,14 @@ class Handler(BaseHTTPRequestHandler):
                 title = q.get("title", "").strip()[:120] or slug.replace("-", " ").title()
                 body = self.read_body()
                 meta = load_dynamic_meta()
+                static_meta = load_meta()
+                if slug in static_meta and not static_meta[slug].get("deleted"):
+                    if not can_manage(user, static_meta[slug]):
+                        raise UserError(f"The link name '{slug}' is already used by someone else.", 403)
+                    host = (self.headers.get("Host") or "localhost").split(":")[0]
+                    rec = convert_static_to_dynamic(slug, user, body, title=title, host=host)
+                    self.log_message("%s converted static dashboard %s to dynamic project via upload", user["username"], slug)
+                    return self.send_json(dynamic_public(rec, include_path=user.get("role") == "admin"), 201)
                 if slug in meta or (DYNAMIC_ROOT / slug).exists():
                     raise UserError("A dynamic project with that name already exists. Choose a different link name.", 409)
                 project_path = safe_extract_dynamic(body, slug)
@@ -2971,8 +3066,9 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/api/replace":
                 user = self.require_user()
                 data = self.read_body()
-                rec = replace_page(q.get("slug", ""), user, q.get("filename", ""), data)
-                self.log_message("%s replaced %s (v%s)", user["username"], q.get("slug"), rec["version"])
+                host = (self.headers.get("Host") or "localhost").split(":")[0]
+                rec = replace_page(q.get("slug", ""), user, q.get("filename", ""), data, host=host)
+                self.log_message("%s replaced %s (v%s)", user["username"], q.get("slug"), rec.get("version", 1))
                 return self.send_json(rec)
             if u.path in ("/api/page", "/api/page/update"):
                 data = self.read_json()
