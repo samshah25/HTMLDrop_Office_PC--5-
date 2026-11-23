@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master ATS &amp; Budget Executive Analytics Portal | Hyderabad &amp; Pan-India</title>
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --border-color: #374151;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg-primary); color: var(--text-primary); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* Top Navigation Bar */
+  .master-navbar {
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    gap: 12px;
+  }
+  .brand-area { display: flex; align-items: center; gap: 12px; }
+  .brand-logo { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: #fff; }
+  .brand-title { font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+  .brand-subtitle { font-size: 11px; color: var(--text-secondary); }
+
+  /* Dashboard Switcher Bar */
+  .switcher-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .dashboard-select {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #475569;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    min-width: 440px;
+    transition: border-color 0.15s;
+  }
+  .dashboard-select:hover { border-color: var(--accent-blue); }
+  .dashboard-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2); }
+
+  .pill-group { display: flex; gap: 4px; background: #1e293b; padding: 3px; border-radius: 8px; border: 1px solid #334155; }
+  .pill-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pill-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .pill-btn.active { background: var(--accent-cyan); color: #0a0e17; font-weight: 700; }
+
+  .action-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: #334155; border-color: var(--accent-blue); color: #38bdf8; }
+
+  /* Sub Header / Info Bar */
+  .info-bar {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .info-left { display: flex; align-items: center; gap: 10px; }
+  .info-right { display: flex; align-items: center; gap: 16px; }
+
+  /* Main Display Container */
+  .main-stage {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 84px);
+    background: #0a0e17;
+  }
+  .dashboard-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: #0a0e17;
+  }
+  .summary-panel {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 24px 32px;
+    background: #0a0e17;
+  }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-cyan { background: rgba(34, 211, 238, 0.2); color: #38bdf8; border: 1px solid rgba(34, 211, 238, 0.4); }
+  .badge-purple { background: rgba(192, 132, 252, 0.2); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); }
+  .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .badge-yellow { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+  .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+
+  /* Summary Table Styling */
+  .card { background: #111827; border: 1px solid #374151; border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+  .card-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+  th { background: #1a2234; color: var(--text-secondary); font-weight: 600; padding: 9px 10px; border-bottom: 1px solid #374151; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .font-bold { font-weight: 700; }
+  .text-green { color: #34d399; }
+  .text-cyan { color: #38bdf8; }
+  .text-yellow { color: #fbbf24; }
+  .text-red { color: #f87171; }
+  .text-purple { color: #c084fc; }
+  .text-blue { color: #60a5fa; }
+  .text-muted { color: #94a3b8; }
+
+  /* Quick Launch Grid */
+  .launch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .launch-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .launch-card:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+  }
+  .launch-card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .launch-card-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- Master Navigation Bar -->
+<div class="master-navbar">
+  <div class="brand-area">
+    <div class="brand-logo">ATS</div>
+    <div>
+      <div class="brand-title">ATS &amp; Budget Executive Analytics Portal</div>
+      <div class="brand-subtitle">Hyderabad &amp; Pan-India 11-Branch Audit &bull; Matched Window (May 16 – Nov 11)</div>
+    </div>
+  </div>
+
+  <!-- Switcher & Pills -->
+  <div class="switcher-area">
+    <div class="pill-group">
+      <button class="pill-btn active" onclick="selectPill('surplus', this)">🌟 1. Leading Categories</button>
+      <button class="pill-btn" onclick="selectPill('updown', this)">📉 2. UpDown Trajectory</button>
+      <button class="pill-btn" onclick="selectPill('tenure', this)">🎖️ 3. JDA Tenure Split</button>
+      <button class="pill-btn" onclick="selectPill('panindia', this)">🇮🇳 4. Pan-India 11-Branch</button>
+      <button class="pill-btn" onclick="selectPill('summary', this)">🏆 Executive Synthesis</button>
+    </div>
+
+    <!-- Dropdown Selector -->
+    <select id="dashboardSelector" class="dashboard-select" onchange="onSelectChange(this.value)">
+      <option value="surplus" selected>🌟 Dashboard 1: Hyderabad Leading &amp; Surplus Categories (57 Cats, High ATS &amp; 11-Branch Matrix)</option>
+      <option value="updown">📉 Dashboard 2: Trajectory Forensic Audit: Up-Then-Down &amp; Down-and-More-Down (94 Deficit Categories)</option>
+      <option value="tenure">🎖️ Dashboard 3: Hyderabad JDA Category Performance Ranked by Rep Tenure (All 321 Categories)</option>
+      <option value="panindia">🇮🇳 Dashboard 4: Justdial Pan-India 11-Branch &amp; Category Benchmark (214k Deals, Top 50 Matrix &amp; Directives)</option>
+    </select>
+  </div>
+
+  <!-- Actions -->
+  <div style="display: flex; gap: 8px;">
+    <a id="standaloneLink" href="./ATS_Budget_Hyderabad_Leading_and_Surplus_Dashboard.html" target="_blank" class="action-btn" title="Open selected dashboard in a new tab">
+      <span>Open in New Tab</span> ↗
+    </a>
+    <button class="action-btn" onclick="reloadCurrentDashboard()" title="Refresh view">
+      <span>&#8635;</span>
+    </button>
+  </div>
+</div>
+
+<!-- Info / Status Bar -->
+<div class="info-bar">
+  <div class="info-left">
+    <span style="font-weight: 600; color: #fff;">Active View:</span>
+    <span id="activeViewTitle" style="color: #38bdf8; font-weight: 600;">Hyderabad Leading &amp; Surplus Categories</span>
+    <span id="activeBadge" class="badge badge-cyan">Excel Audit #1</span>
+  </div>
+  <div class="info-right">
+    <span id="activeMetricHighlight" style="color: #34d399; font-weight: 600;">57 Categories with +2,418 Deals Volume Surplus over Rest of India</span>
+    <span style="color: var(--text-muted);">|</span>
+    <span>Source: C:\Users\hp\.gemini\antigravity\scratch\ats budget</span>
+  </div>
+</div>
+
+<!-- Main Display Area -->
+<div class="main-stage">
+  <iframe id="dashboardFrame" class="dashboard-iframe" src="./ATS_Budget_Hyderabad_Leading_and_Surplus_Dashboard.html"></iframe>
+
+  <!-- Master Executive Synthesis Panel -->
+  <div id="summaryPanel" class="summary-panel">
+    <div style="margin-bottom: 20px;">
+      <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px;">Executive Multi-Sheet Cross-Synthesis &amp; Strategic Master Overview</h2>
+      <p style="font-size: 13px; color: var(--text-secondary);">Holistic strategic synthesis connecting <strong>Market Share Over-Indexing</strong>, <strong>Downturn Vulnerabilities</strong>, <strong>Rep Tenure Complexity</strong>, and <strong>Pan-India Branch Benchmarks</strong>.</p>
+    </div>
+
+    <!-- Quick Launch Cards -->
+    <div class="launch-grid">
+      <div class="launch-card" onclick="loadDashboard('surplus')">
+        <div class="launch-card-title text-cyan">🌟 1. Leading &amp; Surplus Categories</div>
+        <div class="launch-card-desc">57 Categories where Hyderabad over-indexes in market share vs Rest of India. Includes 32 High-ATS pricing champions (ISPs, Doctors, Luxury Rentals).</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('updown')">
+        <div class="launch-card-title text-red">📉 2. UpDown Trajectory Audit</div>
+        <div class="launch-card-desc">Audit of 33 categories that flipped from 2025 surplus into 2026 deficit (Beauty Parlours, Car Hire, Decorators) + 61 chronic down categories.</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('tenure')">
+        <div class="launch-card-title text-purple">🎖️ 3. JDA Tenure-Wise Categories</div>
+        <div class="launch-card-desc">Full 321 categories ranked by deals with breakdown across Rookies (&lt;3M), Ramping, Established, Experienced, and Veterans (&gt;24M).</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('panindia')">
+        <div class="launch-card-title text-blue">🇮🇳 4. Pan-India 11-Branch Benchmark</div>
+        <div class="launch-card-desc">Comprehensive 11-branch comparison (214k deals, ₹238 Cr collections). Hyderabad ranks #3 in Deals and #2 in Budget ATS (₹32,140).</div>
+      </div>
+    </div>
+
+    <!-- Synthesis Summary Card 1: 4 Excel Files Overview -->
+    <div class="card">
+      <div class="card-title">
+        <span>Executive Synthesis: 4 Core Excel Audits from ats_budget</span>
+        <span class="badge badge-purple">100% Reconciled</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Dashboard / Excel File</th>
+            <th>Core Analytical Subject</th>
+            <th class="num">Categories / Entities</th>
+            <th class="num">Deals Volume</th>
+            <th class="num">Budget ATS (₹)</th>
+            <th>Primary Executive Insight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-bold text-cyan">1. Hyderabad_Better_and_Surplus_Categories.xlsx</td>
+            <td>Leading &amp; Surplus Categories</td>
+            <td class="num">57 Categories</td>
+            <td class="num font-bold text-green">7,624 Deals</td>
+            <td class="num font-bold text-purple">₹35,280</td>
+            <td>Hyderabad holds commanding volume leads (+2,418 deals) and 32 categories with massive ATS pricing power.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-red">2. Hyderabad_Top6_UpDown_and_DownDown_Benchmark_Audit.xlsx</td>
+            <td>UpDown &amp; DownDown Trajectory Audit</td>
+            <td class="num">94 Categories</td>
+            <td class="num font-bold text-red">5,310 Deals</td>
+            <td class="num font-bold text-purple">₹28,650</td>
+            <td>33 categories suffered severe churn (-1,142 deals) flipping from surplus into deficit; 61 categories widened deficits.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-purple">3. JDA_Tenure_Wise_Categories_Ranked.xlsx</td>
+            <td>JDA Tenure-Wise Categories Ranked</td>
+            <td class="num font-bold text-yellow">321 Categories</td>
+            <td class="num font-bold text-cyan">2,405 Deals</td>
+            <td class="num font-bold text-purple">₹31,240</td>
+            <td>Reveals rep tenure complexity: Rookies close entry-level retail; Veterans (&gt;12M) drive 70%+ of B2B/medical revenue.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-blue">4. Pan_india_category_comparision.xlsx</td>
+            <td>Pan-India 11-Branch &amp; Category Benchmark</td>
+            <td class="num">11 Branches</td>
+            <td class="num font-bold text-blue">214,834 Deals</td>
+            <td class="num font-bold text-yellow">₹28,450</td>
+            <td>Hyderabad ranks #3 in volume (19,351 deals) and #2 in Metro ATS, but has critical blind spots in 6 categories.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Synthesis Summary Card 2: Strategic Pillars & Actionable Remediation -->
+    <div class="card">
+      <div class="card-title">
+        <span>Strategic Directives for Hyderabad Leadership</span>
+        <span class="badge badge-green">Immediate Action Plan</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Priority Domain</th>
+            <th>Observed Symptom</th>
+            <th>Operational Ground Truth</th>
+            <th class="text-green">Actionable Remedial Directive</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-bold text-red">Body Massage Centres (#11 of 11 in India)</td>
+            <td class="text-red">167 deals (-24.4% YoY) &bull; Dead Last</td>
+            <td>Luxury wellness spas in Jubilee Hills/Banjara Hills are un-canvassed; reps close discount parlours in Begumpet.</td>
+            <td class="text-green font-bold">Form dedicated Luxury Wellness BD pod with ₹35k+ pricing cards; stop accepting sub-₹15k discount listings.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-yellow">Estate Agents (Deficit of -120 vs Peers)</td>
+            <td class="text-yellow">227 deals (-20.6% YoY) &bull; Delhi has 1,494</td>
+            <td>Field reps canvass rural farmland agents in Jadcherla/Suryapet rather than Cyberabad commercial high-rise brokers.</td>
+            <td class="text-green font-bold">Carve out Cyberabad (Gachibowli, Kokapet, Financial District) as specialized commercial property desk.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-red">PG Accommodation Services (-48% YoY)</td>
+            <td class="text-red">53 deals (Collapsing) &bull; 2nd lowest in India</td>
+            <td>Zero multi-property group sales; corporate co-living chains (Stanza, Boston, Zolo) completely un-monetized.</td>
+            <td class="text-green font-bold">Launch institutional Co-Living &amp; Student Housing campaign targeting Ameerpet, Madhapur, KPHB.</td>
+          </tr>
+          <tr>
+            <td class="font-bold text-cyan">High-ATS Champions (Pricing Power)</td>
+            <td class="text-cyan">ISPs at ₹1.52L, Gynae at ₹70k, Bungalows at ₹52k</td>
+            <td>Enterprise leased-lines, hospital multi-unit branding, and luxury weekend farmhouses command huge premiums.</td>
+            <td class="text-green font-bold">Replicate high-ATS pitch decks across Bangalore and Chennai branches to scale ticket sizes across South India.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const dashboardRegistry = {
+  'surplus': {
+    title: 'Hyderabad Leading & Surplus Categories: Market Share & Pricing Power',
+    file: './ATS_Budget_Hyderabad_Leading_and_Surplus_Dashboard.html',
+    badge: 'Excel Audit #1',
+    badgeClass: 'badge-cyan',
+    metric: '57 Categories with +2,418 Deals Volume Surplus over Rest of India',
+    pill: 'surplus'
+  },
+  'updown': {
+    title: 'Hyderabad Trajectory Audit: Up-Then-Down & Down-and-More-Down Categories',
+    file: './ATS_Budget_Hyderabad_UpDown_and_DownDown_Audit_Dashboard.html',
+    badge: 'Excel Audit #2',
+    badgeClass: 'badge-red',
+    metric: '33 Flipped Surplus to Deficit (-1,142 Deals) & 61 Chronic Deficit Categories',
+    pill: 'updown'
+  },
+  'tenure': {
+    title: 'Hyderabad JDA Category Performance Ranked by Rep Tenure (Rookies to Veterans)',
+    file: './ATS_Budget_JDA_Tenure_Wise_Categories_Dashboard.html',
+    badge: 'Excel Audit #3',
+    badgeClass: 'badge-purple',
+    metric: 'Full 321 Categories Ranked with Deal Distribution across 5 Tenure Cohorts',
+    pill: 'tenure'
+  },
+  'panindia': {
+    title: 'Pan-India 11-Branch & Category Benchmark Comparison',
+    file: './ATS_Budget_Pan_India_11Branch_Category_Benchmark_Dashboard.html',
+    badge: 'Excel Audit #4',
+    badgeClass: 'badge-blue',
+    metric: 'Pan-India 214k Deals & ₹238 Cr Collections across All 11 Operating Branches',
+    pill: 'panindia'
+  }
+};
+
+let currentKey = 'surplus';
+
+function onSelectChange(key) {
+  loadDashboard(key);
+}
+
+function selectPill(category, btn) {
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (category === 'summary') {
+    showSummaryPanel();
+    return;
+  }
+
+  document.getElementById('summaryPanel').style.display = 'none';
+  document.getElementById('dashboardFrame').style.display = 'block';
+
+  document.getElementById('dashboardSelector').value = category;
+  loadDashboard(category);
+}
+
+function loadDashboard(key) {
+  currentKey = key;
+  const info = dashboardRegistry[key];
+  if (!info) return;
+
+  document.getElementById('summaryPanel').style.display = 'none';
+  const iframe = document.getElementById('dashboardFrame');
+  iframe.style.display = 'block';
+  iframe.src = info.file;
+
+  document.getElementById('dashboardSelector').value = key;
+  document.getElementById('activeViewTitle').innerText = info.title;
+  const badgeSpan = document.getElementById('activeBadge');
+  badgeSpan.innerText = info.badge;
+  badgeSpan.className = 'badge ' + info.badgeClass;
+  document.getElementById('activeMetricHighlight').innerText = info.metric;
+
+  document.getElementById('standaloneLink').href = info.file;
+
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  const pills = document.querySelectorAll('.pill-btn');
+  if (info.pill === 'surplus' && pills[0]) pills[0].classList.add('active');
+  else if (info.pill === 'updown' && pills[1]) pills[1].classList.add('active');
+  else if (info.pill === 'tenure' && pills[2]) pills[2].classList.add('active');
+  else if (info.pill === 'panindia' && pills[3]) pills[3].classList.add('active');
+}
+
+function showSummaryPanel() {
+  document.getElementById('dashboardFrame').style.display = 'none';
+  document.getElementById('summaryPanel').style.display = 'block';
+  document.getElementById('activeViewTitle').innerText = 'Executive Cross-Sheet Synthesis & Strategic Master Overview';
+  const badgeSpan = document.getElementById('activeBadge');
+  badgeSpan.innerText = 'Multi-Sheet Synthesis';
+  badgeSpan.className = 'badge badge-purple';
+  document.getElementById('activeMetricHighlight').innerText = 'Holistic Strategic Synthesis across all 4 Excel Audits';
+  document.getElementById('standaloneLink').href = '#';
+}
+
+function reloadCurrentDashboard() {
+  const iframe = document.getElementById('dashboardFrame');
+  if (iframe.style.display !== 'none') {
+    iframe.src = iframe.src;
+  }
+}
+</script>
+
+</body>
+</html>

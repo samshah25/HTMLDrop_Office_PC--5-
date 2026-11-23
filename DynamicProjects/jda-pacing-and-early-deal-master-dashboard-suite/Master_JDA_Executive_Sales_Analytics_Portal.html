@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master JDA Executive Sales Analytics Portal | Hyderabad Frontline</title>
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --border-color: #374151;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg-primary); color: var(--text-primary); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* Top Navigation Bar */
+  .master-navbar {
+    background: #0f172a;
+    border-bottom: 1px solid #334155;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    gap: 12px;
+  }
+  .brand-area { display: flex; align-items: center; gap: 12px; }
+  .brand-logo { width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, #06b6d4, #3b82f6); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #fff; }
+  .brand-title { font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+  .brand-subtitle { font-size: 11px; color: var(--text-secondary); }
+
+  /* Dashboard Switcher Bar */
+  .switcher-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .dashboard-select {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #475569;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    min-width: 360px;
+    transition: border-color 0.15s;
+  }
+  .dashboard-select:hover { border-color: var(--accent-blue); }
+  .dashboard-select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2); }
+
+  .pill-group { display: flex; gap: 4px; background: #1e293b; padding: 3px; border-radius: 8px; border: 1px solid #334155; }
+  .pill-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pill-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .pill-btn.active { background: var(--accent-blue); color: #fff; }
+
+  .action-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: #334155; border-color: var(--accent-blue); color: #38bdf8; }
+
+  /* Sub Header / Info Bar */
+  .info-bar {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .info-left { display: flex; align-items: center; gap: 10px; }
+  .info-right { display: flex; align-items: center; gap: 16px; }
+
+  /* Main Display Container */
+  .main-stage {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 84px);
+    background: #0a0e17;
+  }
+  .dashboard-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: #0a0e17;
+  }
+  .summary-panel {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 24px 32px;
+    background: #0a0e17;
+  }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-cyan { background: rgba(34, 211, 238, 0.2); color: #38bdf8; border: 1px solid rgba(34, 211, 238, 0.4); }
+  .badge-purple { background: rgba(192, 132, 252, 0.2); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.4); }
+  .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .badge-yellow { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+  .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+
+  /* Summary Table Styling */
+  .card { background: #111827; border: 1px solid #374151; border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+  .card-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+  th { background: #1a2234; color: var(--text-secondary); font-weight: 600; padding: 9px 10px; border-bottom: 1px solid #374151; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .font-bold { font-weight: 700; }
+  .text-green { color: #34d399; }
+  .text-cyan { color: #38bdf8; }
+  .text-yellow { color: #fbbf24; }
+  .text-red { color: #f87171; }
+  .text-purple { color: #c084fc; }
+  .text-blue { color: #60a5fa; }
+  .text-muted { color: #94a3b8; }
+
+  /* Quick Launch Grid */
+  .launch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .launch-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .launch-card:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+  }
+  .launch-card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .launch-card-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- Master Navigation Bar -->
+<div class="master-navbar">
+  <div class="brand-area">
+    <div class="brand-logo">JDA</div>
+    <div>
+      <div class="brand-title">Executive Sales Analytics Portal</div>
+      <div class="brand-subtitle">Hyderabad Frontline Master &bull; 158 Working Days &bull; All 3 Pacing Methods</div>
+    </div>
+  </div>
+
+  <!-- Switcher & Pills -->
+  <div class="switcher-area">
+    <!-- Category Pills -->
+    <div class="pill-group">
+      <button class="pill-btn active" onclick="selectPill('early', this)">⚡ Early Deals &amp; Tenure Split</button>
+      <button class="pill-btn" onclick="selectPill('daily', this)">📊 Daily Pacing</button>
+      <button class="pill-btn" onclick="selectPill('monthly', this)">📈 Monthly Avg</button>
+      <button class="pill-btn" onclick="selectPill('overall', this)">🎯 Overall Avg</button>
+      <button class="pill-btn" onclick="selectPill('mom_trends', this)">📈 MoM Trends (3 Methods)</button>
+      <button class="pill-btn" onclick="selectPill('summary', this)">🏆 Master Matrix</button>
+    </div>
+
+    <!-- Dropdown Selector -->
+    <select id="dashboardSelector" class="dashboard-select" onchange="onSelectChange(this.value)">
+      <optgroup label="⚡ Early Deal & Month-on-Month Trends (Clean Timing First)">
+        <option value="early_deals" selected>⚡ Early Deals & Tenure Split Forensics: All Frontline Reps (New Master)</option>
+        <option value="early_only_0_3">⚡ Early Deal Forensics: ONLY 0–3M Rookies (Tenure &lt; 3M)</option>
+        <option value="early_only_0_6">⚡ Early Deal Forensics: ONLY 0–6M Juniors (Tenure &lt; 6M)</option>
+        <option value="early_excl_0_3">⚡ Early Deal Forensics: Excluding 0–3M (Tenure ≥ 3M)</option>
+        <option value="early_excl_0_6">⚡ Early Deal Forensics: Excluding 0–6M (Tenure ≥ 6M)</option>
+      </optgroup>
+
+      <optgroup label="📈 Month-on-Month Trends (All 3 Pacing Methods)">
+        <option value="mom_trends">📈 Month-on-Month Trends: Daily vs. Monthly vs. Overall (All 5 Cohorts)</option>
+      </optgroup>
+
+      <optgroup label="📊 Daily Shift Pacing (< 5 vs >= 5 Shifts)">
+        <option value="daily_all">📊 Daily Shift: All Frontline Reps (Baseline)</option>
+        <option value="daily_only_0_3">📊 Daily Shift: ONLY 0–3M Rookie Reps (Tenure &lt; 3M)</option>
+        <option value="daily_only_0_6">📊 Daily Shift: ONLY 0–6M Junior Reps (Tenure &lt; 6M)</option>
+        <option value="daily_excl_0_3">📊 Daily Shift: Excluding 0–3M New Reps (Tenure ≥ 3M)</option>
+        <option value="daily_excl_0_6">📊 Daily Shift: Excluding 0–6M New Reps (Tenure ≥ 6M)</option>
+      </optgroup>
+
+      <optgroup label="📈 Monthly Average Pacing (< 5.0 vs >= 5.0 Visits/Day)">
+        <option value="monthly_all">📈 Monthly Avg: All Frontline Reps (Baseline)</option>
+        <option value="monthly_only_0_3">📈 Monthly Avg: ONLY 0–3M Rookie Reps (Tenure &lt; 3M)</option>
+        <option value="monthly_only_0_6">📈 Monthly Avg: ONLY 0–6M Junior Reps (Tenure &lt; 6M)</option>
+        <option value="monthly_excl_0_3">📈 Monthly Avg: Excluding 0–3M New Reps (Tenure ≥ 3M)</option>
+        <option value="monthly_excl_0_6">📈 Monthly Avg: Excluding 0–6M New Reps (Tenure ≥ 6M)</option>
+      </optgroup>
+
+      <optgroup label="🎯 Overall Career Average Pacing (< 5.0 vs >= 5.0 Visits/Day)">
+        <option value="overall_all">🎯 Overall Avg: All Frontline Reps (Permanent Career Pace)</option>
+        <option value="overall_only_0_3">🎯 Overall Avg: ONLY 0–3M Rookie Reps (Tenure &lt; 3M)</option>
+        <option value="overall_only_0_6">🎯 Overall Avg: ONLY 0–6M Junior Reps (Tenure &lt; 6M)</option>
+        <option value="overall_excl_0_3">🎯 Overall Avg: Excluding 0–3M New Reps (Tenure ≥ 3M)</option>
+        <option value="overall_excl_0_6">🎯 Overall Avg: Excluding 0–6M New Reps (Tenure ≥ 6M)</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Actions -->
+  <div style="display: flex; gap: 8px;">
+    <a id="standaloneLink" href="./JDA_Early_Deal_Pacing_and_Productivity_Dashboard.html" target="_blank" class="action-btn" title="Open selected dashboard in a new tab">
+      <span>Open in New Tab</span> ↗
+    </a>
+    <button class="action-btn" onclick="reloadCurrentDashboard()" title="Refresh view">
+      <span>&#8635;</span>
+    </button>
+  </div>
+</div>
+
+<!-- Info / Status Bar -->
+<div class="info-bar">
+  <div class="info-left">
+    <span style="font-weight: 600; color: #fff;">Active View:</span>
+    <span id="activeViewTitle" style="color: #38bdf8; font-weight: 600;">JDA Early Deal Pacing &amp; Month-on-Month Trends</span>
+    <span id="activeBadge" class="badge badge-cyan">Early Deal Forensics</span>
+  </div>
+  <div class="info-right">
+    <span id="activeMetricHighlight" style="color: #34d399; font-weight: 600;">Early Closers: 1.82 follow-on deals (3.0x Multiplier) | 32.8% Early Prevalence</span>
+    <span style="color: var(--text-muted);">|</span>
+    <span>Evaluation Period: May 2026 – October 2026 (100% Pure Fresh)</span>
+  </div>
+</div>
+
+<!-- Main Display Area -->
+<div class="main-stage">
+  <!-- Iframe for loaded dashboard -->
+  <iframe id="dashboardFrame" class="dashboard-iframe" src="./JDA_Early_Deal_Pacing_and_Productivity_Dashboard.html"></iframe>
+
+  <!-- Master Comparative Summary Panel -->
+  <div id="summaryPanel" class="summary-panel">
+    <div style="margin-bottom: 20px;">
+      <h2 style="font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px;">Executive Cross-Dashboard Synthesis &amp; Benchmark Center</h2>
+      <p style="font-size: 13px; color: var(--text-secondary);">Empirical cross-comparison of <strong>Daily Shift Pacing</strong>, <strong>Monthly Average Pacing</strong>, <strong>Overall Career Average</strong>, and <strong>Month-on-Month Early Deal Dynamics</strong> across all tenure cohorts.</p>
+    </div>
+
+    <!-- Quick Launch Cards -->
+    <div class="launch-grid">
+      <div class="launch-card" onclick="loadDashboard('early_deals')">
+        <div class="launch-card-title text-cyan">⚡ Early Deal &amp; MoM Trends</div>
+        <div class="launch-card-desc">Month-on-Month presentations &amp; deal curves. Proves zero complacency (-2.3% stability) and 7.4x higher deal closing power.</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('mom_trends')">
+        <div class="launch-card-title text-yellow">📈 MoM Trends (3 Pacing Methods)</div>
+        <div class="launch-card-desc">Dedicated month-by-month comparative analysis tracking yield %, deals, and active/closing reps across all 3 methods.</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('daily_all')">
+        <div class="launch-card-title text-blue">📊 Daily Shift Pacing</div>
+        <div class="launch-card-desc">&lt;5 visits/day yields 3.17% vs 1.30% for &ge;5 (2.44x multiplier | +123 deals surplus with 48k fewer pitches).</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('monthly_all')">
+        <div class="launch-card-title text-purple">📈 Monthly Avg Pacing</div>
+        <div class="launch-card-desc">&lt;5.0 monthly average accounts for 73.3% of all fresh deals (1,764 deals | 2.26% yield | 444 active reps).</div>
+      </div>
+      <div class="launch-card" onclick="loadDashboard('overall_all')">
+        <div class="launch-card-title text-green">🎯 Overall Career Avg Pacing</div>
+        <div class="launch-card-desc">Permanent career pace: 78.4% of total fresh revenue (1,886 deals) closed by 374 permanent &lt;5.0 reps.</div>
+      </div>
+    </div>
+
+    <!-- Master Comparative Table: Pacing Models -->
+    <div class="card">
+      <div class="card-title">
+        <span>Complete Comparative Matrix: All Tenure Cohorts across All 3 Pacing Methodologies</span>
+        <span class="badge badge-purple">100% Mathematically Reconciled (127,788 Pitches | 2,405 Deals)</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Tenure Cohort</th>
+            <th>Pacing Methodology</th>
+            <th class="num">Total Pitches</th>
+            <th class="num">&lt; 5 Pitches (%)</th>
+            <th class="num">&ge; 5 Pitches (%)</th>
+            <th class="num">Total Deals</th>
+            <th class="num">&lt; 5 Deals (%)</th>
+            <th class="num">&ge; 5 Deals (%)</th>
+            <th class="num">&lt; 5 Yield %</th>
+            <th class="num">&ge; 5 Yield %</th>
+            <th class="num">Yield Multiplier</th>
+            <th class="num">&lt; 5 Net Deal Adv.</th>
+            <th class="center">&lt; 5 Act/Cls Reps</th>
+            <th class="center">&ge; 5 Act/Cls Reps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- All Reps Baseline -->
+          <tr style="background: rgba(59, 130, 246, 0.05); border-top: 1px solid #374151;">
+            <td rowspan="3" class="font-bold text-blue" style="vertical-align: middle;">All Reps (Baseline)</td>
+            <td><strong>Method 1: Daily Shift</strong></td>
+            <td class="num">127,788</td>
+            <td class="num">39,894 (31.2%)</td>
+            <td class="num">87,894 (68.8%)</td>
+            <td class="num font-bold">2,405.0</td>
+            <td class="num text-cyan font-bold">1,264.0 (52.6%)</td>
+            <td class="num text-purple">1,141.0 (47.4%)</td>
+            <td class="num font-bold text-green">3.17%</td>
+            <td class="num font-bold text-yellow">1.30%</td>
+            <td class="num font-bold text-green">2.44x</td>
+            <td class="num font-bold text-green">+123.0 deals</td>
+            <td class="center text-cyan">484 act / 213 cls</td>
+            <td class="center text-muted">432 act / 206 cls</td>
+          </tr>
+          <tr style="background: rgba(59, 130, 246, 0.05);">
+            <td><strong>Method 2: Monthly Average</strong></td>
+            <td class="num">127,789</td>
+            <td class="num">78,131 (61.1%)</td>
+            <td class="num">49,658 (38.9%)</td>
+            <td class="num font-bold">2,405.0</td>
+            <td class="num text-cyan font-bold">1,764.0 (73.3%)</td>
+            <td class="num text-purple">641.0 (26.7%)</td>
+            <td class="num font-bold text-green">2.26%</td>
+            <td class="num font-bold text-yellow">1.29%</td>
+            <td class="num font-bold text-green">1.75x</td>
+            <td class="num font-bold text-green">+1,123.0 deals</td>
+            <td class="center text-cyan">444 act / 198 cls</td>
+            <td class="center text-muted">220 act / 120 cls</td>
+          </tr>
+          <tr style="background: rgba(59, 130, 246, 0.05);">
+            <td><strong>Method 3: Overall Career Avg</strong></td>
+            <td class="num">127,788</td>
+            <td class="num">85,197 (66.7%)</td>
+            <td class="num">42,591 (33.3%)</td>
+            <td class="num font-bold">2,405.0</td>
+            <td class="num text-cyan font-bold">1,886.0 (78.4%)</td>
+            <td class="num text-purple">519.0 (21.6%)</td>
+            <td class="num font-bold text-green">2.21%</td>
+            <td class="num font-bold text-yellow">1.22%</td>
+            <td class="num font-bold text-green">1.81x</td>
+            <td class="num font-bold text-green">+1,367.0 deals</td>
+            <td class="center text-cyan font-bold">374 act / 186 cls</td>
+            <td class="center text-muted">117 act / 71 cls</td>
+          </tr>
+
+          <!-- Only 0-3M Rookies -->
+          <tr style="border-top: 2px solid #374151; background: rgba(239, 68, 68, 0.05);">
+            <td rowspan="3" class="font-bold text-red" style="vertical-align: middle;">ONLY 0–3M (Rookies &lt; 3M)</td>
+            <td>Method 1: Daily Shift</td>
+            <td class="num">7,315</td>
+            <td class="num">2,085 (28.5%)</td>
+            <td class="num">5,230 (71.5%)</td>
+            <td class="num font-bold">16.0</td>
+            <td class="num text-cyan font-bold">9.0 (56.3%)</td>
+            <td class="num text-purple">7.0 (43.7%)</td>
+            <td class="num font-bold text-green">0.43%</td>
+            <td class="num font-bold text-yellow">0.13%</td>
+            <td class="num font-bold text-green">3.31x</td>
+            <td class="num font-bold text-green">+2.0 deals</td>
+            <td class="center text-cyan">61 act / 8 cls</td>
+            <td class="center text-muted">61 act / 7 cls</td>
+          </tr>
+          <tr style="background: rgba(239, 68, 68, 0.05);">
+            <td>Method 2: Monthly Average</td>
+            <td class="num">7,315</td>
+            <td class="num">5,603 (76.6%)</td>
+            <td class="num">1,712 (23.4%)</td>
+            <td class="num font-bold">16.0</td>
+            <td class="num text-cyan font-bold">15.0 (93.8%)</td>
+            <td class="num text-purple">1.0 (6.2%)</td>
+            <td class="num font-bold text-green">0.27%</td>
+            <td class="num font-bold text-yellow">0.06%</td>
+            <td class="num font-bold text-green">4.50x</td>
+            <td class="num font-bold text-green">+14.0 deals</td>
+            <td class="center text-cyan">61 act / 10 cls</td>
+            <td class="center text-muted">22 act / 1 cls</td>
+          </tr>
+          <tr style="background: rgba(239, 68, 68, 0.05);">
+            <td>Method 3: Overall Career Avg</td>
+            <td class="num">7,315</td>
+            <td class="num">5,746 (78.6%)</td>
+            <td class="num">1,569 (21.4%)</td>
+            <td class="num font-bold">16.0</td>
+            <td class="num text-cyan font-bold">15.0 (93.8%)</td>
+            <td class="num text-purple">1.0 (6.2%)</td>
+            <td class="num font-bold text-green">0.26%</td>
+            <td class="num font-bold text-yellow">0.06%</td>
+            <td class="num font-bold text-green">4.33x</td>
+            <td class="num font-bold text-green">+14.0 deals</td>
+            <td class="center text-cyan font-bold">54 act / 10 cls</td>
+            <td class="center text-muted">8 act / 1 cls</td>
+          </tr>
+
+          <!-- Only 0-6M Juniors -->
+          <tr style="border-top: 2px solid #374151; background: rgba(245, 158, 11, 0.05);">
+            <td rowspan="3" class="font-bold text-yellow" style="vertical-align: middle;">ONLY 0–6M (Juniors &lt; 6M)</td>
+            <td>Method 1: Daily Shift</td>
+            <td class="num">24,781</td>
+            <td class="num">6,432 (26.0%)</td>
+            <td class="num">18,349 (74.0%)</td>
+            <td class="num font-bold">173.0</td>
+            <td class="num text-cyan font-bold">83.0 (48.0%)</td>
+            <td class="num text-purple">90.0 (52.0%)</td>
+            <td class="num font-bold text-green">1.29%</td>
+            <td class="num font-bold text-yellow">0.49%</td>
+            <td class="num font-bold text-green">2.63x</td>
+            <td class="num font-bold text-red">-7.0 deals</td>
+            <td class="center text-cyan">210 act / 46 cls</td>
+            <td class="center text-muted">204 act / 48 cls</td>
+          </tr>
+          <tr style="background: rgba(245, 158, 11, 0.05);">
+            <td>Method 2: Monthly Average</td>
+            <td class="num">24,781</td>
+            <td class="num">16,634 (67.1%)</td>
+            <td class="num">8,147 (32.9%)</td>
+            <td class="num font-bold">173.0</td>
+            <td class="num text-cyan font-bold">147.0 (85.0%)</td>
+            <td class="num text-purple">26.0 (15.0%)</td>
+            <td class="num font-bold text-green">0.88%</td>
+            <td class="num font-bold text-yellow">0.32%</td>
+            <td class="num font-bold text-green">2.75x</td>
+            <td class="num font-bold text-green">+121.0 deals</td>
+            <td class="center text-cyan">207 act / 60 cls</td>
+            <td class="center text-muted">87 act / 18 cls</td>
+          </tr>
+          <tr style="background: rgba(245, 158, 11, 0.05);">
+            <td>Method 3: Overall Career Avg</td>
+            <td class="num">24,781</td>
+            <td class="num">17,929 (72.3%)</td>
+            <td class="num">6,852 (27.7%)</td>
+            <td class="num font-bold">173.0</td>
+            <td class="num text-cyan font-bold">155.0 (89.6%)</td>
+            <td class="num text-purple">18.0 (10.4%)</td>
+            <td class="num font-bold text-green">0.86%</td>
+            <td class="num font-bold text-yellow">0.26%</td>
+            <td class="num font-bold text-green">3.31x</td>
+            <td class="num font-bold text-green">+137.0 deals</td>
+            <td class="center text-cyan font-bold">186 act / 60 cls</td>
+            <td class="center text-muted">32 act / 11 cls</td>
+          </tr>
+
+          <!-- Excl 0-3M Experienced -->
+          <tr style="border-top: 2px solid #374151;">
+            <td rowspan="3" class="font-bold text-cyan" style="vertical-align: middle;">Excluding 0–3M (≥ 3M Experienced)</td>
+            <td>Method 1: Daily Shift</td>
+            <td class="num">120,473</td>
+            <td class="num">37,809 (31.4%)</td>
+            <td class="num">82,664 (68.6%)</td>
+            <td class="num font-bold">2,389.0</td>
+            <td class="num text-cyan font-bold">1,255.0 (52.5%)</td>
+            <td class="num text-purple">1,134.0 (47.5%)</td>
+            <td class="num font-bold text-green">3.32%</td>
+            <td class="num font-bold text-yellow">1.37%</td>
+            <td class="num font-bold text-green">2.42x</td>
+            <td class="num font-bold text-green">+121.0 deals</td>
+            <td class="center text-cyan">423 act / 205 cls</td>
+            <td class="center text-muted">371 act / 199 cls</td>
+          </tr>
+          <tr>
+            <td>Method 2: Monthly Average</td>
+            <td class="num">120,474</td>
+            <td class="num">72,528 (60.2%)</td>
+            <td class="num">47,946 (39.8%)</td>
+            <td class="num font-bold">2,389.0</td>
+            <td class="num text-cyan font-bold">1,749.0 (73.2%)</td>
+            <td class="num text-purple">640.0 (26.8%)</td>
+            <td class="num font-bold text-green">2.41%</td>
+            <td class="num font-bold text-yellow">1.33%</td>
+            <td class="num font-bold text-green">1.81x</td>
+            <td class="num font-bold text-green">+1,109.0 deals</td>
+            <td class="center text-cyan">383 act / 188 cls</td>
+            <td class="center text-muted">198 act / 119 cls</td>
+          </tr>
+          <tr>
+            <td>Method 3: Overall Career Avg</td>
+            <td class="num">120,473</td>
+            <td class="num">79,451 (66.0%)</td>
+            <td class="num">41,022 (34.0%)</td>
+            <td class="num font-bold">2,389.0</td>
+            <td class="num text-cyan font-bold">1,871.0 (78.3%)</td>
+            <td class="num text-purple">518.0 (21.7%)</td>
+            <td class="num font-bold text-green">2.35%</td>
+            <td class="num font-bold text-yellow">1.26%</td>
+            <td class="num font-bold text-green">1.87x</td>
+            <td class="num font-bold text-green">+1,353.0 deals</td>
+            <td class="center text-cyan font-bold">320 act / 176 cls</td>
+            <td class="center text-muted">109 act / 70 cls</td>
+          </tr>
+
+          <!-- Excl 0-6M Seasoned Core -->
+          <tr style="border-top: 2px solid #374151; background: rgba(192, 132, 252, 0.05);">
+            <td rowspan="3" class="font-bold text-purple" style="vertical-align: middle;">Excluding 0–6M (≥ 6M Seasoned Core)</td>
+            <td>Method 1: Daily Shift</td>
+            <td class="num">103,007</td>
+            <td class="num">33,462 (32.5%)</td>
+            <td class="num">69,545 (67.5%)</td>
+            <td class="num font-bold">2,232.0</td>
+            <td class="num text-cyan font-bold">1,181.0 (52.9%)</td>
+            <td class="num text-purple">1,051.0 (47.1%)</td>
+            <td class="num font-bold text-green">3.53%</td>
+            <td class="num font-bold text-yellow">1.51%</td>
+            <td class="num font-bold text-green">2.34x</td>
+            <td class="num font-bold text-green">+130.0 deals</td>
+            <td class="center text-cyan">274 act / 167 cls</td>
+            <td class="center text-muted">228 act / 158 cls</td>
+          </tr>
+          <tr style="background: rgba(192, 132, 252, 0.05);">
+            <td>Method 2: Monthly Average</td>
+            <td class="num">103,008</td>
+            <td class="num">61,497 (59.7%)</td>
+            <td class="num">41,511 (40.3%)</td>
+            <td class="num font-bold">2,232.0</td>
+            <td class="num text-cyan font-bold">1,617.0 (72.4%)</td>
+            <td class="num text-purple">615.0 (27.6%)</td>
+            <td class="num font-bold text-green">2.63%</td>
+            <td class="num font-bold text-yellow">1.48%</td>
+            <td class="num font-bold text-green">1.78x</td>
+            <td class="num font-bold text-green">+1,002.0 deals</td>
+            <td class="center text-cyan">237 act / 138 cls</td>
+            <td class="center text-muted">133 act / 102 cls</td>
+          </tr>
+          <tr style="background: rgba(192, 132, 252, 0.05);">
+            <td>Method 3: Overall Career Avg</td>
+            <td class="num">103,007</td>
+            <td class="num">67,268 (65.3%)</td>
+            <td class="num">35,739 (34.7%)</td>
+            <td class="num font-bold">2,232.0</td>
+            <td class="num text-cyan font-bold">1,731.0 (77.6%)</td>
+            <td class="num text-purple">501.0 (22.4%)</td>
+            <td class="num font-bold text-green">2.57%</td>
+            <td class="num font-bold text-yellow">1.40%</td>
+            <td class="num font-bold text-green">1.84x</td>
+            <td class="num font-bold text-green">+1,230.0 deals</td>
+            <td class="center text-cyan font-bold">188 act / 126 cls</td>
+            <td class="center text-muted">85 act / 60 cls</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Complete registry of all executive dashboards across all 3 methods + MoM Trends + Early Deals
+const dashboardRegistry = {
+  // --- Early Deal Forensics (Cleaned MoM first) ---
+  'early_deals': {
+    title: 'JDA Early Deal Pacing & MoM Trends: All Frontline Reps',
+    file: './JDA_Early_Deal_Pacing_and_Productivity_Dashboard.html',
+    badge: '⚡ Early Deals & Tenure Graphs (New Master)',
+    badgeClass: 'badge-cyan',
+    metric: 'Early Closers: 4.88 deals/mo vs 0.79 deals/mo (6.2x Multiplier)',
+    pill: 'early'
+  },
+  'early_only_0_3': {
+    title: 'JDA Early Deal Pacing: ONLY 0–3M New Joiners / Rookies (Tenure < 3M)',
+    file: './JDA_Early_Deal_Pacing_Dashboard_Only_0-3M_Reps.html',
+    badge: 'ONLY 0–3M Rookies',
+    badgeClass: 'badge-yellow',
+    metric: '1.6% Early Closer Prevalence | Early Closers Surge +5.2% in Pace',
+    pill: 'early'
+  },
+  'early_only_0_6': {
+    title: 'JDA Early Deal Pacing: ONLY 0–6M Junior Cohort (Tenure < 6M)',
+    file: './JDA_Early_Deal_Pacing_Dashboard_Only_0-6M_Reps.html',
+    badge: 'ONLY 0–6M Juniors',
+    badgeClass: 'badge-green',
+    metric: '15.2% Early Closers deliver 2.51 deals vs 0.32 deals (7.8x Multiplier)',
+    pill: 'early'
+  },
+  'early_excl_0_3': {
+    title: 'JDA Early Deal Pacing: Excluding 0–3M (Tenure ≥ 3M Experienced)',
+    file: './JDA_Early_Deal_Pacing_Dashboard_Excluding_0-3M_Reps.html',
+    badge: 'Excluding 0–3M (≥ 3M)',
+    badgeClass: 'badge-cyan',
+    metric: '40.9% Early Closers deliver 4.84 deals vs 0.73 deals (6.6x Multiplier)',
+    pill: 'early'
+  },
+  'early_excl_0_6': {
+    title: 'JDA Early Deal Pacing: Excluding 0–6M (Tenure ≥ 6M Seasoned Core)',
+    file: './JDA_Early_Deal_Pacing_Dashboard_Excluding_0-6M_Reps.html',
+    badge: 'Excluding 0–6M (≥ 6M)',
+    badgeClass: 'badge-purple',
+    metric: '53.5% Early Closers deliver 5.29 deals vs 1.08 deals (4.9x Multiplier)',
+    pill: 'early'
+  },
+
+  // --- Dedicated Month-on-Month Trends (All 3 Methods) ---
+  'mom_trends': {
+    title: 'JDA Frontline Pacing Methods: Month-on-Month Trends & Method Comparison',
+    file: './JDA_Pacing_Methods_Monthly_Trends_Dashboard.html',
+    badge: 'MoM Trends (All 3 Methods)',
+    badgeClass: 'badge-yellow',
+    metric: 'Triangulated Cross-Method Validation | < 5 Outperforms in 100% of Months',
+    pill: 'mom_trends'
+  },
+
+  // --- Daily Shift Pacing ---
+  'daily_all': {
+    title: 'Category & Sub-Vertical Performance: All Frontline Reps (Daily Shift Pacing)',
+    file: './Fresh_Category_and_Subvertical_Interactive_Dashboard.html',
+    badge: 'Daily Baseline (All Reps)',
+    badgeClass: 'badge-blue',
+    metric: '< 5 Yield: 3.17% vs ≥ 5 Yield: 1.30% (2.44x Multiplier | +123 Deals Surplus)',
+    pill: 'daily'
+  },
+  'daily_only_0_3': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–3M Rookie Reps (Daily Shift Pacing)',
+    file: './Fresh_Category_and_Subvertical_Dashboard_Only_0-3M_Reps.html',
+    badge: 'Tenure < 3M Rookie Cohort',
+    badgeClass: 'badge-yellow',
+    metric: '< 5 Yield: 0.43% vs ≥ 5 Yield: 0.13% (3.31x Multiplier)',
+    pill: 'daily'
+  },
+  'daily_only_0_6': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–6M Junior Reps (Daily Shift Pacing)',
+    file: './Fresh_Category_and_Subvertical_Dashboard_Only_0-6M_Reps.html',
+    badge: 'Tenure < 6M Junior Cohort',
+    badgeClass: 'badge-green',
+    metric: '< 5 Yield: 1.29% vs ≥ 5 Yield: 0.49% (2.63x Multiplier)',
+    pill: 'daily'
+  },
+  'daily_excl_0_3': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–3M Reps (Daily Shift Pacing)',
+    file: './Fresh_Category_and_Subvertical_Dashboard_Excluding_0-3M_New_Reps.html',
+    badge: 'Tenure ≥ 3M Experienced Reps',
+    badgeClass: 'badge-cyan',
+    metric: '< 5 Yield: 3.32% vs ≥ 5 Yield: 1.37% (2.42x Multiplier | +121 Deals Surplus)',
+    pill: 'daily'
+  },
+  'daily_excl_0_6': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–6M Reps (Daily Shift Pacing)',
+    file: './Fresh_Category_and_Subvertical_Dashboard_Excluding_0-6M_New_Reps.html',
+    badge: 'Tenure ≥ 6M Seasoned Core',
+    badgeClass: 'badge-purple',
+    metric: '< 5 Yield: 3.53% vs ≥ 5 Yield: 1.51% (2.34x Multiplier | +130 Deals Surplus)',
+    pill: 'daily'
+  },
+
+  // --- Monthly Average Pacing ---
+  'monthly_all': {
+    title: 'Category & Sub-Vertical Performance: All Frontline Reps (Monthly Average Pacing)',
+    file: './Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_All_Reps_Monthly_Avg.html',
+    badge: 'Monthly Avg Baseline',
+    badgeClass: 'badge-purple',
+    metric: '< 5 Monthly Reps Close 73.3% of All Deals (1,764 Deals | 2.26% Yield)',
+    pill: 'monthly'
+  },
+  'monthly_only_0_3': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–3M Rookie Reps (Monthly Average Pacing)',
+    file: './Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_Only_0-3M_Monthly_Avg.html',
+    badge: 'Monthly Avg < 3M Rookies',
+    badgeClass: 'badge-yellow',
+    metric: '< 5 Monthly Reps Close 93.8% of Deals (15 of 16 Deals | 4.50x Yield Multiplier)',
+    pill: 'monthly'
+  },
+  'monthly_only_0_6': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–6M Junior Reps (Monthly Average Pacing)',
+    file: './Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_Only_0-6M_Monthly_Avg.html',
+    badge: 'Monthly Avg < 6M Juniors',
+    badgeClass: 'badge-green',
+    metric: '< 5 Monthly Reps Close 85.0% of Deals (147 Deals | 0.88% Yield)',
+    pill: 'monthly'
+  },
+  'monthly_excl_0_3': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–3M Reps (Monthly Average Pacing)',
+    file: './Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_Excluding_0-3M_Monthly_Avg.html',
+    badge: 'Monthly Avg ≥ 3M Experienced',
+    badgeClass: 'badge-cyan',
+    metric: '< 5 Monthly Reps Close 73.2% of All Deals (1,749 Deals | 2.41% Yield)',
+    pill: 'monthly'
+  },
+  'monthly_excl_0_6': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–6M Reps (Monthly Average Pacing)',
+    file: './Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_Excluding_0-6M_Monthly_Avg.html',
+    badge: 'Monthly Avg ≥ 6M Seasoned Core',
+    badgeClass: 'badge-purple',
+    metric: '< 5 Monthly Reps Close 72.4% of All Deals (1,617 Deals | 2.63% Yield)',
+    pill: 'monthly'
+  },
+
+  // --- Overall Average Pacing ---
+  'overall_all': {
+    title: 'Category & Sub-Vertical Performance: All Frontline Reps (Overall Career Average)',
+    file: './Overall_Average/Fresh_Category_and_Subvertical_Dashboard_All_Reps_Overall_Avg.html',
+    badge: 'Overall Career Avg (Baseline)',
+    badgeClass: 'badge-green',
+    metric: '< 5 Career Reps Close 78.4% of All Fresh Deals (1,886 Deals | 2.21% Yield | 374 Reps)',
+    pill: 'overall'
+  },
+  'overall_only_0_3': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–3M Rookie Reps (Overall Career Average)',
+    file: './Overall_Average/Fresh_Category_and_Subvertical_Dashboard_Only_0-3M_Overall_Avg.html',
+    badge: 'Overall Career Avg < 3M',
+    badgeClass: 'badge-yellow',
+    metric: '< 5 Career Reps Close 93.8% of Deals (15 of 16 Deals | 4.33x Yield Multiplier)',
+    pill: 'overall'
+  },
+  'overall_only_0_6': {
+    title: 'Category & Sub-Vertical Performance: ONLY 0–6M Junior Reps (Overall Career Average)',
+    file: './Overall_Average/Fresh_Category_and_Subvertical_Dashboard_Only_0-6M_Overall_Avg.html',
+    badge: 'Overall Career Avg < 6M',
+    badgeClass: 'badge-green',
+    metric: '< 5 Career Reps Close 89.6% of Deals (155 of 173 Deals | 3.31x Yield Multiplier)',
+    pill: 'overall'
+  },
+  'overall_excl_0_3': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–3M Reps (Overall Career Average)',
+    file: './Overall_Average/Fresh_Category_and_Subvertical_Dashboard_Excluding_0-3M_Overall_Avg.html',
+    badge: 'Overall Career Avg ≥ 3M',
+    badgeClass: 'badge-cyan',
+    metric: '< 5 Career Reps Close 78.3% of All Deals (1,871 Deals | 2.35% Yield)',
+    pill: 'overall'
+  },
+  'overall_excl_0_6': {
+    title: 'Category & Sub-Vertical Performance: Excluding 0–6M Reps (Overall Career Average)',
+    file: './Overall_Average/Fresh_Category_and_Subvertical_Dashboard_Excluding_0-6M_Overall_Avg.html',
+    badge: 'Overall Career Avg ≥ 6M',
+    badgeClass: 'badge-purple',
+    metric: '< 5 Career Reps Close 77.6% of All Deals (1,731 Deals | 2.57% Yield)',
+    pill: 'overall'
+  }
+};
+
+let currentDashboardKey = 'early_deals';
+
+function onSelectChange(key) {
+  loadDashboard(key);
+}
+
+function selectPill(category, btn) {
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (category === 'summary') {
+    showSummaryPanel();
+    return;
+  }
+
+  // Hide summary panel if visible
+  document.getElementById('summaryPanel').style.display = 'none';
+  document.getElementById('dashboardFrame').style.display = 'block';
+
+  let targetKey = 'early_deals';
+  if (category === 'early') targetKey = 'early_deals';
+  else if (category === 'daily') targetKey = 'daily_all';
+  else if (category === 'monthly') targetKey = 'monthly_all';
+  else if (category === 'overall') targetKey = 'overall_all';
+  else if (category === 'mom_trends') targetKey = 'mom_trends';
+
+  document.getElementById('dashboardSelector').value = targetKey;
+  loadDashboard(targetKey);
+}
+
+function loadDashboard(key) {
+  currentDashboardKey = key;
+  const info = dashboardRegistry[key];
+  if (!info) return;
+
+  // Hide summary panel, show iframe
+  document.getElementById('summaryPanel').style.display = 'none';
+  const iframe = document.getElementById('dashboardFrame');
+  iframe.style.display = 'block';
+  iframe.src = info.file;
+
+  // Update navbar selector
+  document.getElementById('dashboardSelector').value = key;
+
+  // Update info bar
+  document.getElementById('activeViewTitle').innerText = info.title;
+  const badgeSpan = document.getElementById('activeBadge');
+  badgeSpan.innerText = info.badge;
+  badgeSpan.className = 'badge ' + info.badgeClass;
+  document.getElementById('activeMetricHighlight').innerText = info.metric;
+
+  // Update standalone link
+  document.getElementById('standaloneLink').href = info.file;
+
+  // Update pill buttons
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  const pillBtns = document.querySelectorAll('.pill-btn');
+  if (info.pill === 'early' && pillBtns[0]) pillBtns[0].classList.add('active');
+  else if (info.pill === 'daily' && pillBtns[1]) pillBtns[1].classList.add('active');
+  else if (info.pill === 'monthly' && pillBtns[2]) pillBtns[2].classList.add('active');
+  else if (info.pill === 'overall' && pillBtns[3]) pillBtns[3].classList.add('active');
+  else if (info.pill === 'mom_trends' && pillBtns[4]) pillBtns[4].classList.add('active');
+}
+
+function showSummaryPanel() {
+  document.getElementById('dashboardFrame').style.display = 'none';
+  document.getElementById('summaryPanel').style.display = 'block';
+  document.getElementById('activeViewTitle').innerText = 'Executive Cross-Dashboard Synthesis & Benchmark Center';
+  const badgeSpan = document.getElementById('activeBadge');
+  badgeSpan.innerText = '3-Method Cross-Synthesis';
+  badgeSpan.className = 'badge badge-purple';
+  document.getElementById('activeMetricHighlight').innerText = 'Comprehensive Tenure Comparison across Daily, Monthly, and Overall Models';
+  document.getElementById('standaloneLink').href = '#';
+}
+
+function reloadCurrentDashboard() {
+  const iframe = document.getElementById('dashboardFrame');
+  if (iframe.style.display !== 'none') {
+    iframe.src = iframe.src;
+  }
+}
+
+// Sync with iframe cohort switcher
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'cohort_changed') {
+    const cohort = event.data.cohort;
+    const cohortToKey = {
+      'all': 'early_deals',
+      'only_0_3': 'early_only_0_3',
+      'only_0_6': 'early_only_0_6',
+      'excl_0_3': 'early_excl_0_3',
+      'excl_0_6': 'early_excl_0_6'
+    };
+    const key = cohortToKey[cohort];
+    if (key && dashboardRegistry[key]) {
+      const info = dashboardRegistry[key];
+      currentDashboardKey = key;
+      document.getElementById('dashboardSelector').value = key;
+      document.getElementById('activeViewTitle').innerText = info.title;
+      const badgeSpan = document.getElementById('activeBadge');
+      badgeSpan.innerText = info.badge;
+      badgeSpan.className = 'badge ' + info.badgeClass;
+      document.getElementById('activeMetricHighlight').innerText = info.metric;
+      document.getElementById('standaloneLink').href = info.file;
+    }
+  }
+});
+</script>
+
+</body>
+</html>

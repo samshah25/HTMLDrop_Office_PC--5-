@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JDA Frontline Pacing Methods: Month-on-Month Trends &amp; Method Comparison</title>
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-green: #10b981;
+    --accent-yellow: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --border-color: #374151;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; padding: 20px; }
+  
+  .header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; }
+  .header .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-cyan { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4); }
+  .badge-purple { background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4); }
+  .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .badge-yellow { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+  .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+
+  /* Top Navigation & Hub bar */
+  .hub-nav-bar {
+    background: #0d1527;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .hub-nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hub-link {
+    background: #1e293b;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    transition: all 0.2s;
+  }
+  .hub-link:hover { background: #334155; color: #fff; border-color: #64748b; }
+  .hub-link.active { background: #3b82f6; color: #fff; border-color: #60a5fa; }
+
+  /* Control Bars */
+  .control-section {
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .control-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .control-label { font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pills-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill-btn {
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .pill-btn:hover { background: #334155; color: #fff; }
+  .pill-btn.active { background: #3b82f6; border-color: #60a5fa; color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+  .pill-btn.active-cyan { background: #0891b2; border-color: #22d3ee; color: #fff; box-shadow: 0 0 10px rgba(6, 182, 212, 0.4); }
+  .pill-btn.active-purple { background: #7c3aed; border-color: #a78bfa; color: #fff; box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+
+  /* KPI Grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; position: relative; overflow: hidden; }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent-blue); }
+  .kpi-card.purple::before { background: var(--accent-purple); }
+  .kpi-card.green::before { background: var(--accent-green); }
+  .kpi-card.cyan::before { background: var(--accent-cyan); }
+  .kpi-card.yellow::before { background: var(--accent-yellow); }
+  .kpi-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
+  .kpi-value { font-size: 26px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+  .kpi-subtext { font-size: 12px; color: var(--text-muted); }
+
+  /* Charts Grid */
+  .charts-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  @media (max-width: 1024px) { .charts-grid-2 { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px; }
+  .chart-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .chart-card-title { font-size: 15px; font-weight: 600; color: #fff; }
+  .chart-card-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .svg-container { width: 100%; height: 260px; position: relative; }
+
+  /* Tables */
+  .table-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px; margin-bottom: 24px; overflow-x: auto; }
+  .table-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .table-title { font-size: 15px; font-weight: 600; color: #fff; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #1e293b; color: #94a3b8; font-weight: 600; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+  th.num, td.num { text-align: right; }
+  th.center, td.center { text-align: center; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1f2937; color: var(--text-primary); white-space: nowrap; }
+  tr:hover td { background: #1f2937; }
+  .font-bold { font-weight: 700; }
+  .text-cyan { color: #22d3ee; }
+  .text-green { color: #34d399; }
+  .text-yellow { color: #fbbf24; }
+  .text-red { color: #f87171; }
+  .text-purple { color: #c084fc; }
+  .text-blue { color: #60a5fa; }
+  .text-muted { color: #6b7280; }
+
+  /* Method Explainer Card */
+  .explainer-box {
+    background: #0f172a;
+    border-left: 4px solid var(--accent-cyan);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .explainer-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .explainer-desc { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h1>JDA Frontline Pacing Methods: Month-on-Month Trends &amp; Method Comparison</h1>
+      <span class="badge badge-purple">Executive Analytics</span>
+      <span class="badge badge-cyan">April – October 2026</span>
+    </div>
+    <div class="subtitle">
+      Comparing Frontline Performance Across 3 Pacing Methodologies (Daily Shift vs. Monthly Average vs. Overall Career Average) | 158 Active Workdays | Fresh Prospecting &amp; Deals
+    </div>
+  </div>
+  <div style="text-align: right;">
+    <span class="badge badge-blue">Hyderabad Frontline Master</span>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Frontline Only (CIC, Sr. CIC, TL - CIC) &bull; Zero Managers</div>
+  </div>
+</div>
+
+<!-- Quick Navigation Hub -->
+<div class="hub-nav-bar">
+  <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">
+    🚀 Direct Navigation:
+  </div>
+  <div class="hub-nav-links">
+    <a href="Master_JDA_Executive_Sales_Analytics_Portal.html" class="hub-link">&#x1F3E0; Master Portal</a>
+    <a href="JDA_Early_Deal_Pacing_and_Productivity_Dashboard.html" class="hub-link">&#x26A1; Early Deal &amp; Timing</a>
+    <a href="Fresh_Category_and_Subvertical_Interactive_Dashboard.html" class="hub-link">&#x1F4CA; Daily Shift Pacing</a>
+    <a href="Monthly_Average/Fresh_Category_and_Subvertical_Dashboard_All_Reps_Monthly_Avg.html" class="hub-link">&#x1F4C5; Monthly Avg Pacing</a>
+    <a href="Overall_Average/Fresh_Category_and_Subvertical_Dashboard_All_Reps_Overall_Avg.html" class="hub-link">&#x1F3AF; Overall Avg Pacing</a>
+    <a href="#" class="hub-link active">&#x1F4C8; MoM Trends (All 3 Methods)</a>
+  </div>
+</div>
+
+<!-- Controls: Method Switcher & Tenure Selector -->
+<div class="control-section">
+  <!-- Row 1: Pacing Method Switcher -->
+  <div class="control-row">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="control-label">&#x2699;&#xFE0F; Pacing Methodology:</span>
+      <div class="pills-group">
+        <button class="pill-btn active" id="btn-method-daily" onclick="switchMethod('daily', this)">Method 1: Daily Shift Pacing (&lt;5 vs &ge;5 visits/day)</button>
+        <button class="pill-btn" id="btn-method-monthly" onclick="switchMethod('monthly', this)">Method 2: Monthly Average Pacing (&lt;5.0 vs &ge;5.0/day)</button>
+        <button class="pill-btn" id="btn-method-overall" onclick="switchMethod('overall', this)">Method 3: Overall Career Average (&lt;5.0 vs &ge;5.0)</button>
+        <button class="pill-btn active-purple" id="btn-method-matrix" onclick="switchMethod('matrix', this)">&#x2728; Unified 3-Method Matrix</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Tenure Cohort Switcher -->
+  <div class="control-row">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="control-label">&#x1F396;&#xFE0F; Tenure Cohort:</span>
+      <div class="pills-group">
+        <button class="pill-btn active-cyan" id="btn-cohort-all" onclick="switchCohort('all_reps', this)">&#x1F31F; All Frontline Reps</button>
+        <button class="pill-btn" id="btn-cohort-only03" onclick="switchCohort('only_0_3', this)">&#x1F949; ONLY 0–3M (Rookies)</button>
+        <button class="pill-btn" id="btn-cohort-only06" onclick="switchCohort('only_0_6', this)">&#x1F948; ONLY 0–6M (Juniors)</button>
+        <button class="pill-btn" id="btn-cohort-excl03" onclick="switchCohort('excl_0_3', this)">&#x1F947; Excluding 0–3M (&ge;3M)</button>
+        <button class="pill-btn" id="btn-cohort-excl06" onclick="switchCohort('excl_0_6', this)">&#x1F451; Excluding 0–6M (&ge;6M)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Methodology Explainer Box -->
+<div class="explainer-box" id="methodExplainer">
+  <div>
+    <div class="explainer-title" id="explainerTitle">Method 1: Daily Shift Pacing (Day-by-Day Shift Pace)</div>
+    <div class="explainer-desc" id="explainerDesc">
+      Evaluates rep activity on each individual working day (&lt; 5 visits/day vs &ge; 5 visits/day). Reps can shift categories daily depending on their individual day volume. Reveals intra-day rush vs consultative pitch quality.
+    </div>
+  </div>
+  <div>
+    <span class="badge badge-cyan" id="explainerBadge">Daily Shift Resolution</span>
+  </div>
+</div>
+
+<!-- 5 Top Level Dynamic KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card cyan">
+    <div class="kpi-title">Primary Pacing Advantage</div>
+    <div class="kpi-value text-cyan" id="kpiMultiplier">2.44x</div>
+    <div class="kpi-subtext" id="kpiMultiplierSub">&lt;5 Conversion Yield (3.17%) vs &ge;5 (1.30%)</div>
+  </div>
+  <div class="kpi-card green">
+    <div class="kpi-title">Total Fresh Presentations</div>
+    <div class="kpi-value text-green" id="kpiPitches">39,894 <span style="font-size: 14px; color: var(--text-muted);">vs 87,894</span></div>
+    <div class="kpi-subtext" id="kpiPitchesSub">&lt;5 represents 31.2% of presentations</div>
+  </div>
+  <div class="kpi-card purple">
+    <div class="kpi-title">Total Fresh Deals Closed</div>
+    <div class="kpi-value text-purple" id="kpiDeals">1,264.0 <span style="font-size: 14px; color: var(--text-muted);">vs 1,141.0</span></div>
+    <div class="kpi-subtext text-green" id="kpiDealsSub">&lt;5 drives 52.6% of all deals (+123 net deals)</div>
+  </div>
+  <div class="kpi-card yellow">
+    <div class="kpi-title">Active Pitching Reps (Avg/Mo)</div>
+    <div class="kpi-value text-yellow" id="kpiActiveReps">239 <span style="font-size: 14px; color: var(--text-muted);">vs 223 reps</span></div>
+    <div class="kpi-subtext" id="kpiActiveRepsSub">Frontline reps pitching per month</div>
+  </div>
+  <div class="kpi-card blue">
+    <div class="kpi-title">Closing Reps (Avg/Mo)</div>
+    <div class="kpi-value text-blue" id="kpiClosingReps">98 <span style="font-size: 14px; color: var(--text-muted);">vs 87 reps</span></div>
+    <div class="kpi-subtext text-cyan" id="kpiClosingRepsSub">Reps closing fresh revenue each month</div>
+  </div>
+</div>
+
+<!-- Interactive Charts Grid -->
+<div class="charts-grid-2">
+  <!-- Chart 1: Conversion Yield MoM -->
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div>
+        <div class="chart-card-title">Month-on-Month Conversion Yield (%) Comparison</div>
+        <div class="chart-card-desc">&lt; 5 visits/day vs. &ge; 5 visits/day across April to October 2026</div>
+      </div>
+      <span class="badge badge-cyan">Conversion Yield</span>
+    </div>
+    <div class="svg-container" id="chartYield"></div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-around;">
+      <span style="color: #38bdf8;">&#9632; &lt; 5 Yield (%)</span>
+      <span style="color: #f43f5e;">&#9632; &ge; 5 Yield (%)</span>
+      <span style="color: #fbbf24;">&bull; Yield Multiplier (x)</span>
+    </div>
+  </div>
+
+  <!-- Chart 2: Fresh Deals MoM -->
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div>
+        <div class="chart-card-title">Month-on-Month Fresh Deals Closed Volume</div>
+        <div class="chart-card-desc">Total deals won by &lt; 5 vs. &ge; 5 reps each month</div>
+      </div>
+      <span class="badge badge-green">Revenue Impact</span>
+    </div>
+    <div class="svg-container" id="chartDeals"></div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-around;">
+      <span style="color: #34d399;">&#9632; &lt; 5 Deals</span>
+      <span style="color: #f87171;">&#9632; &ge; 5 Deals</span>
+      <span style="color: #a78bfa;">&bull; &lt; 5 Deal Share (%)</span>
+    </div>
+  </div>
+
+  <!-- Chart 3: Presentations MoM -->
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div>
+        <div class="chart-card-title">Month-on-Month Fresh Presentations Volume</div>
+        <div class="chart-card-desc">Presentation activity volume split between &lt; 5 and &ge; 5 pacing</div>
+      </div>
+      <span class="badge badge-blue">Activity Volume</span>
+    </div>
+    <div class="svg-container" id="chartPitches"></div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-around;">
+      <span style="color: #60a5fa;">&#9632; &lt; 5 Pitches</span>
+      <span style="color: #94a3b8;">&#9632; &ge; 5 Pitches</span>
+    </div>
+  </div>
+
+  <!-- Chart 4: Rep Headcount MoM -->
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div>
+        <div class="chart-card-title">Month-on-Month Rep Headcount Dynamics</div>
+        <div class="chart-card-desc">Active Pitching Reps and Closing Reps participating in &lt; 5 vs &ge; 5</div>
+      </div>
+      <span class="badge badge-yellow">Headcount Dynamics</span>
+    </div>
+    <div class="svg-container" id="chartReps"></div>
+    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-around;">
+      <span style="color: #38bdf8;">&#9632; &lt; 5 Active Reps</span>
+      <span style="color: #94a3b8;">&#9632; &ge; 5 Active Reps</span>
+      <span style="color: #34d399;">&bull; &lt; 5 Closing Reps</span>
+      <span style="color: #f87171;">&bull; &ge; 5 Closing Reps</span>
+    </div>
+  </div>
+</div>
+
+<!-- Primary Monthly Performance Table -->
+<div class="table-card">
+  <div class="table-header-bar">
+    <div>
+      <div class="table-title" id="tableTitle">Month-on-Month Performance Breakdown: Daily Shift Pacing</div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+        Detailed monthly breakdown of pitches, deals, conversion yields, active pitching reps, and closing reps
+      </div>
+    </div>
+    <span class="badge badge-green" id="tableBadge">Method 1: Daily Shift</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th class="num">&lt; 5 Pitches</th>
+        <th class="num">&ge; 5 Pitches</th>
+        <th class="num">Total Pitches</th>
+        <th class="num">&lt; 5 Pitch Share</th>
+        <th class="num">&lt; 5 Deals</th>
+        <th class="num">&ge; 5 Deals</th>
+        <th class="num">Total Deals</th>
+        <th class="num">&lt; 5 Deal Share</th>
+        <th class="num text-cyan">&lt; 5 Yield</th>
+        <th class="num text-red">&ge; 5 Yield</th>
+        <th class="num font-bold text-yellow">Multiplier</th>
+        <th class="num">Net Deal Adv.</th>
+        <th class="center text-cyan">&lt; 5 Act Reps</th>
+        <th class="center text-muted">&ge; 5 Act Reps</th>
+        <th class="center text-green">&lt; 5 Cls Reps</th>
+        <th class="center text-red">&ge; 5 Cls Reps</th>
+        <th class="num">&lt; 5 D/Rep</th>
+        <th class="num">&ge; 5 D/Rep</th>
+      </tr>
+    </thead>
+    <tbody id="monthlyTableBody">
+      <!-- Populated dynamically via JS -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Unified 3-Method Comparative Synthesis Table -->
+<div class="table-card" id="unifiedMatrixCard">
+  <div class="table-header-bar">
+    <div>
+      <div class="table-title">Unified 3-Method Comparative Synthesis (Daily Shift vs. Monthly Avg vs. Overall Career Avg)</div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+        Side-by-side comparison of conversion yields, deal capture shares, and rep distributions across all 3 methodologies
+      </div>
+    </div>
+    <span class="badge badge-purple">Triangulated Truth</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">Month</th>
+        <th colspan="3" class="center" style="background: rgba(59, 130, 246, 0.2); border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">Method 1: Daily Shift</th>
+        <th colspan="3" class="center" style="background: rgba(6, 182, 212, 0.2); border-right: 1px solid var(--border-color);">Method 2: Monthly Average</th>
+        <th colspan="3" class="center" style="background: rgba(139, 92, 246, 0.2); border-right: 1px solid var(--border-color);">Method 3: Overall Career Average</th>
+        <th colspan="2" class="center" style="background: rgba(16, 185, 129, 0.2);">Triangulated Core</th>
+      </tr>
+      <tr>
+        <th class="num" style="background: rgba(59, 130, 246, 0.1); border-left: 1px solid var(--border-color);">&lt; 5 Yield</th>
+        <th class="num" style="background: rgba(59, 130, 246, 0.1);">&ge; 5 Yield</th>
+        <th class="num font-bold text-yellow" style="background: rgba(59, 130, 246, 0.1); border-right: 1px solid var(--border-color);">Mult</th>
+        
+        <th class="num" style="background: rgba(6, 182, 212, 0.1);">&lt; 5 Yield</th>
+        <th class="num" style="background: rgba(6, 182, 212, 0.1);">&ge; 5 Yield</th>
+        <th class="num font-bold text-yellow" style="background: rgba(6, 182, 212, 0.1); border-right: 1px solid var(--border-color);">Mult</th>
+        
+        <th class="num" style="background: rgba(139, 92, 246, 0.1);">&lt; 5 Yield</th>
+        <th class="num" style="background: rgba(139, 92, 246, 0.1);">&ge; 5 Yield</th>
+        <th class="num font-bold text-yellow" style="background: rgba(139, 92, 246, 0.1); border-right: 1px solid var(--border-color);">Mult</th>
+        
+        <th class="center" style="background: rgba(16, 185, 129, 0.1);">&lt; 5 Deal %</th>
+        <th class="center" style="background: rgba(16, 185, 129, 0.1);">Pacing Winner</th>
+      </tr>
+    </thead>
+    <tbody id="matrixTableBody">
+      <!-- Populated dynamically via JS -->
+    </tbody>
+  </table>
+</div>
+
+<script id="momDataRaw" type="application/json">
+{"cohorts": {"all_reps": {"daily": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 1571, "p_ge": 4878, "p_sh_lt": 24.4, "p_sh_ge": 75.6, "tot_d": 94.0, "d_lt": 41.0, "d_ge": 53.0, "d_sh_lt": 43.6, "d_sh_ge": 56.4, "y_lt": 2.61, "y_ge": 1.09, "mult": 2.39, "net_d": -12.0, "act_reps_lt": 167, "act_reps_ge": 199, "cls_reps_lt": 35, "cls_reps_ge": 43, "dpr_lt": 0.25, "dpr_ge": 0.27}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 5910, "p_ge": 14801, "p_sh_lt": 28.5, "p_sh_ge": 71.5, "tot_d": 388.0, "d_lt": 182.0, "d_ge": 206.0, "d_sh_lt": 46.9, "d_sh_ge": 53.1, "y_lt": 3.08, "y_ge": 1.39, "mult": 2.22, "net_d": -24.0, "act_reps_lt": 258, "act_reps_ge": 239, "cls_reps_lt": 94, "cls_reps_ge": 97, "dpr_lt": 0.71, "dpr_ge": 0.86}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 7005, "p_ge": 14383, "p_sh_lt": 32.8, "p_sh_ge": 67.2, "tot_d": 449.0, "d_lt": 231.0, "d_ge": 218.0, "d_sh_lt": 51.4, "d_sh_ge": 48.6, "y_lt": 3.3, "y_ge": 1.52, "mult": 2.17, "net_d": 13.0, "act_reps_lt": 262, "act_reps_ge": 230, "cls_reps_lt": 115, "cls_reps_ge": 92, "dpr_lt": 0.88, "dpr_ge": 0.95}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 6987, "p_ge": 14956, "p_sh_lt": 31.8, "p_sh_ge": 68.2, "tot_d": 458.0, "d_lt": 233.0, "d_ge": 225.0, "d_sh_lt": 50.9, "d_sh_ge": 49.1, "y_lt": 3.33, "y_ge": 1.5, "mult": 2.22, "net_d": 8.0, "act_reps_lt": 262, "act_reps_ge": 236, "cls_reps_lt": 114, "cls_reps_ge": 106, "dpr_lt": 0.89, "dpr_ge": 0.95}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 6926, "p_ge": 15024, "p_sh_lt": 31.6, "p_sh_ge": 68.4, "tot_d": 391.0, "d_lt": 213.0, "d_ge": 178.0, "d_sh_lt": 54.5, "d_sh_ge": 45.5, "y_lt": 3.08, "y_ge": 1.18, "mult": 2.61, "net_d": 35.0, "act_reps_lt": 254, "act_reps_ge": 239, "cls_reps_lt": 103, "cls_reps_ge": 101, "dpr_lt": 0.84, "dpr_ge": 0.74}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 6727, "p_ge": 13287, "p_sh_lt": 33.6, "p_sh_ge": 66.4, "tot_d": 339.0, "d_lt": 198.0, "d_ge": 141.0, "d_sh_lt": 58.4, "d_sh_ge": 41.6, "y_lt": 2.94, "y_ge": 1.06, "mult": 2.77, "net_d": 57.0, "act_reps_lt": 243, "act_reps_ge": 233, "cls_reps_lt": 97, "cls_reps_ge": 73, "dpr_lt": 0.81, "dpr_ge": 0.61}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 4768, "p_ge": 10565, "p_sh_lt": 31.1, "p_sh_ge": 68.9, "tot_d": 286.0, "d_lt": 166.0, "d_ge": 120.0, "d_sh_lt": 58.0, "d_sh_ge": 42.0, "y_lt": 3.48, "y_ge": 1.14, "mult": 3.05, "net_d": 46.0, "act_reps_lt": 206, "act_reps_ge": 189, "cls_reps_lt": 81, "cls_reps_ge": 66, "dpr_lt": 0.81, "dpr_ge": 0.63}], "monthly": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 2968, "p_ge": 3481, "p_sh_lt": 46.0, "p_sh_ge": 54.0, "tot_d": 94.0, "d_lt": 50.0, "d_ge": 44.0, "d_sh_lt": 53.2, "d_sh_ge": 46.8, "y_lt": 1.68, "y_ge": 1.26, "mult": 1.33, "net_d": 6.0, "act_reps_lt": 132, "act_reps_ge": 101, "cls_reps_lt": 36, "cls_reps_ge": 31, "dpr_lt": 0.38, "dpr_ge": 0.44}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 10582, "p_ge": 10129, "p_sh_lt": 51.1, "p_sh_ge": 48.9, "tot_d": 388.0, "d_lt": 254.0, "d_ge": 134.0, "d_sh_lt": 65.5, "d_sh_ge": 34.5, "y_lt": 2.4, "y_ge": 1.32, "mult": 1.82, "net_d": 120.0, "act_reps_lt": 183, "act_reps_ge": 95, "cls_reps_lt": 83, "cls_reps_ge": 56, "dpr_lt": 1.39, "dpr_ge": 1.41}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 13068, "p_ge": 8320, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 449.0, "d_lt": 323.0, "d_ge": 126.0, "d_sh_lt": 71.9, "d_sh_ge": 28.1, "y_lt": 2.47, "y_ge": 1.51, "mult": 1.64, "net_d": 197.0, "act_reps_lt": 195, "act_reps_ge": 81, "cls_reps_lt": 103, "cls_reps_ge": 47, "dpr_lt": 1.66, "dpr_ge": 1.56}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14274, "p_ge": 7669, "p_sh_lt": 65.1, "p_sh_ge": 34.9, "tot_d": 458.0, "d_lt": 331.0, "d_ge": 127.0, "d_sh_lt": 72.3, "d_sh_ge": 27.7, "y_lt": 2.32, "y_ge": 1.66, "mult": 1.4, "net_d": 204.0, "act_reps_lt": 206, "act_reps_ge": 67, "cls_reps_lt": 112, "cls_reps_ge": 47, "dpr_lt": 1.61, "dpr_ge": 1.9}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 14288, "p_ge": 7662, "p_sh_lt": 65.1, "p_sh_ge": 34.9, "tot_d": 391.0, "d_lt": 298.0, "d_ge": 93.0, "d_sh_lt": 76.2, "d_sh_ge": 23.8, "y_lt": 2.09, "y_ge": 1.21, "mult": 1.73, "net_d": 205.0, "act_reps_lt": 201, "act_reps_ge": 69, "cls_reps_lt": 112, "cls_reps_ge": 42, "dpr_lt": 1.48, "dpr_ge": 1.35}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 13577, "p_ge": 6437, "p_sh_lt": 67.8, "p_sh_ge": 32.2, "tot_d": 339.0, "d_lt": 277.0, "d_ge": 62.0, "d_sh_lt": 81.7, "d_sh_ge": 18.3, "y_lt": 2.04, "y_ge": 0.96, "mult": 2.12, "net_d": 215.0, "act_reps_lt": 198, "act_reps_ge": 66, "cls_reps_lt": 98, "cls_reps_ge": 34, "dpr_lt": 1.4, "dpr_ge": 0.94}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 9373, "p_ge": 5960, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 286.0, "d_lt": 231.0, "d_ge": 55.0, "d_sh_lt": 80.8, "d_sh_ge": 19.2, "y_lt": 2.46, "y_ge": 0.92, "mult": 2.67, "net_d": 176.0, "act_reps_lt": 155, "act_reps_ge": 63, "cls_reps_lt": 86, "cls_reps_ge": 29, "dpr_lt": 1.49, "dpr_ge": 0.87}], "overall": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 3860, "p_ge": 2589, "p_sh_lt": 59.9, "p_sh_ge": 40.1, "tot_d": 94.0, "d_lt": 74.0, "d_ge": 20.0, "d_sh_lt": 78.7, "d_sh_ge": 21.3, "y_lt": 1.92, "y_ge": 0.77, "mult": 2.49, "net_d": 54.0, "act_reps_lt": 157, "act_reps_ge": 76, "cls_reps_lt": 49, "cls_reps_ge": 18, "dpr_lt": 0.47, "dpr_ge": 0.26}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 13213, "p_ge": 7498, "p_sh_lt": 63.8, "p_sh_ge": 36.2, "tot_d": 388.0, "d_lt": 311.0, "d_ge": 77.0, "d_sh_lt": 80.2, "d_sh_ge": 19.8, "y_lt": 2.35, "y_ge": 1.03, "mult": 2.28, "net_d": 234.0, "act_reps_lt": 196, "act_reps_ge": 82, "cls_reps_lt": 104, "cls_reps_ge": 35, "dpr_lt": 1.59, "dpr_ge": 0.94}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 14303, "p_ge": 7085, "p_sh_lt": 66.9, "p_sh_ge": 33.1, "tot_d": 449.0, "d_lt": 352.0, "d_ge": 97.0, "d_sh_lt": 78.4, "d_sh_ge": 21.6, "y_lt": 2.46, "y_ge": 1.37, "mult": 1.8, "net_d": 255.0, "act_reps_lt": 204, "act_reps_ge": 72, "cls_reps_lt": 111, "cls_reps_ge": 39, "dpr_lt": 1.73, "dpr_ge": 1.35}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14589, "p_ge": 7354, "p_sh_lt": 66.5, "p_sh_ge": 33.5, "tot_d": 458.0, "d_lt": 348.0, "d_ge": 110.0, "d_sh_lt": 76.0, "d_sh_ge": 24.0, "y_lt": 2.39, "y_ge": 1.5, "mult": 1.59, "net_d": 238.0, "act_reps_lt": 204, "act_reps_ge": 69, "cls_reps_lt": 114, "cls_reps_ge": 45, "dpr_lt": 1.71, "dpr_ge": 1.59}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 15009, "p_ge": 6941, "p_sh_lt": 68.4, "p_sh_ge": 31.6, "tot_d": 391.0, "d_lt": 301.0, "d_ge": 90.0, "d_sh_lt": 77.0, "d_sh_ge": 23.0, "y_lt": 2.01, "y_ge": 1.3, "mult": 1.55, "net_d": 211.0, "act_reps_lt": 204, "act_reps_ge": 66, "cls_reps_lt": 112, "cls_reps_ge": 42, "dpr_lt": 1.48, "dpr_ge": 1.36}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 13818, "p_ge": 6196, "p_sh_lt": 69.0, "p_sh_ge": 31.0, "tot_d": 339.0, "d_lt": 273.0, "d_ge": 66.0, "d_sh_lt": 80.5, "d_sh_ge": 19.5, "y_lt": 1.98, "y_ge": 1.07, "mult": 1.85, "net_d": 207.0, "act_reps_lt": 201, "act_reps_ge": 63, "cls_reps_lt": 95, "cls_reps_ge": 37, "dpr_lt": 1.36, "dpr_ge": 1.05}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 10405, "p_ge": 4928, "p_sh_lt": 67.9, "p_sh_ge": 32.1, "tot_d": 286.0, "d_lt": 227.0, "d_ge": 59.0, "d_sh_lt": 79.4, "d_sh_ge": 20.6, "y_lt": 2.18, "y_ge": 1.2, "mult": 1.82, "net_d": 168.0, "act_reps_lt": 163, "act_reps_ge": 55, "cls_reps_lt": 85, "cls_reps_ge": 30, "dpr_lt": 1.39, "dpr_ge": 1.07}]}, "only_0_3": {"daily": [{"month_key": "2026-08", "month": "Aug 2026", "tot_p": 1013, "p_lt": 418, "p_ge": 595, "p_sh_lt": 41.3, "p_sh_ge": 58.7, "tot_d": 3.0, "d_lt": 2.0, "d_ge": 1.0, "d_sh_lt": 66.7, "d_sh_ge": 33.3, "y_lt": 0.48, "y_ge": 0.17, "mult": 2.82, "net_d": 1.0, "act_reps_lt": 28, "act_reps_ge": 23, "cls_reps_lt": 2, "cls_reps_ge": 1, "dpr_lt": 0.07, "dpr_ge": 0.04}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 3296, "p_lt": 1043, "p_ge": 2253, "p_sh_lt": 31.6, "p_sh_ge": 68.4, "tot_d": 3.0, "d_lt": 2.0, "d_ge": 1.0, "d_sh_lt": 66.7, "d_sh_ge": 33.3, "y_lt": 0.19, "y_ge": 0.04, "mult": 4.75, "net_d": 1.0, "act_reps_lt": 53, "act_reps_ge": 47, "cls_reps_lt": 2, "cls_reps_ge": 1, "dpr_lt": 0.04, "dpr_ge": 0.02}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 3006, "p_lt": 624, "p_ge": 2382, "p_sh_lt": 20.8, "p_sh_ge": 79.2, "tot_d": 10.0, "d_lt": 5.0, "d_ge": 5.0, "d_sh_lt": 50.0, "d_sh_ge": 50.0, "y_lt": 0.8, "y_ge": 0.21, "mult": 3.81, "net_d": 0.0, "act_reps_lt": 48, "act_reps_ge": 43, "cls_reps_lt": 4, "cls_reps_ge": 5, "dpr_lt": 0.1, "dpr_ge": 0.12}], "monthly": [{"month_key": "2026-08", "month": "Aug 2026", "tot_p": 1013, "p_lt": 1013, "p_ge": 0, "p_sh_lt": 100.0, "p_sh_ge": 0.0, "tot_d": 3.0, "d_lt": 3.0, "d_ge": 0.0, "d_sh_lt": 100.0, "d_sh_ge": 0.0, "y_lt": 0.3, "y_ge": 0.0, "mult": 0.0, "net_d": 3.0, "act_reps_lt": 28, "act_reps_ge": 0, "cls_reps_lt": 3, "cls_reps_ge": 0, "dpr_lt": 0.11, "dpr_ge": 0.0}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 3296, "p_lt": 2723, "p_ge": 573, "p_sh_lt": 82.6, "p_sh_ge": 17.4, "tot_d": 3.0, "d_lt": 3.0, "d_ge": 0.0, "d_sh_lt": 100.0, "d_sh_ge": 0.0, "y_lt": 0.11, "y_ge": 0.0, "mult": 0.0, "net_d": 3.0, "act_reps_lt": 46, "act_reps_ge": 8, "cls_reps_lt": 3, "cls_reps_ge": 0, "dpr_lt": 0.07, "dpr_ge": 0.0}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 3006, "p_lt": 1867, "p_ge": 1139, "p_sh_lt": 62.1, "p_sh_ge": 37.9, "tot_d": 10.0, "d_lt": 9.0, "d_ge": 1.0, "d_sh_lt": 90.0, "d_sh_ge": 10.0, "y_lt": 0.48, "y_ge": 0.09, "mult": 5.33, "net_d": 8.0, "act_reps_lt": 38, "act_reps_ge": 12, "cls_reps_lt": 7, "cls_reps_ge": 1, "dpr_lt": 0.24, "dpr_ge": 0.08}], "overall": [{"month_key": "2026-08", "month": "Aug 2026", "tot_p": 1013, "p_lt": 947, "p_ge": 66, "p_sh_lt": 93.5, "p_sh_ge": 6.5, "tot_d": 3.0, "d_lt": 3.0, "d_ge": 0.0, "d_sh_lt": 100.0, "d_sh_ge": 0.0, "y_lt": 0.32, "y_ge": 0.0, "mult": 0.0, "net_d": 3.0, "act_reps_lt": 27, "act_reps_ge": 1, "cls_reps_lt": 3, "cls_reps_ge": 0, "dpr_lt": 0.11, "dpr_ge": 0.0}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 3296, "p_lt": 3012, "p_ge": 284, "p_sh_lt": 91.4, "p_sh_ge": 8.6, "tot_d": 3.0, "d_lt": 3.0, "d_ge": 0.0, "d_sh_lt": 100.0, "d_sh_ge": 0.0, "y_lt": 0.1, "y_ge": 0.0, "mult": 0.0, "net_d": 3.0, "act_reps_lt": 50, "act_reps_ge": 4, "cls_reps_lt": 3, "cls_reps_ge": 0, "dpr_lt": 0.06, "dpr_ge": 0.0}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 3006, "p_lt": 2636, "p_ge": 370, "p_sh_lt": 87.7, "p_sh_ge": 12.3, "tot_d": 10.0, "d_lt": 10.0, "d_ge": 0.0, "d_sh_lt": 100.0, "d_sh_ge": 0.0, "y_lt": 0.38, "y_ge": 0.0, "mult": 0.0, "net_d": 10.0, "act_reps_lt": 46, "act_reps_ge": 4, "cls_reps_lt": 8, "cls_reps_ge": 0, "dpr_lt": 0.22, "dpr_ge": 0.0}]}, "only_0_6": {"daily": [{"month_key": "2026-05", "month": "May 2026", "tot_p": 1302, "p_lt": 680, "p_ge": 622, "p_sh_lt": 52.2, "p_sh_ge": 47.8, "tot_d": 5.0, "d_lt": 4.0, "d_ge": 1.0, "d_sh_lt": 80.0, "d_sh_ge": 20.0, "y_lt": 0.59, "y_ge": 0.16, "mult": 3.69, "net_d": 3.0, "act_reps_lt": 40, "act_reps_ge": 28, "cls_reps_lt": 3, "cls_reps_ge": 1, "dpr_lt": 0.1, "dpr_ge": 0.04}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 5177, "p_lt": 1926, "p_ge": 3251, "p_sh_lt": 37.2, "p_sh_ge": 62.8, "tot_d": 36.0, "d_lt": 17.0, "d_ge": 19.0, "d_sh_lt": 47.2, "d_sh_ge": 52.8, "y_lt": 0.88, "y_ge": 0.58, "mult": 1.52, "net_d": -2.0, "act_reps_lt": 92, "act_reps_ge": 70, "cls_reps_lt": 11, "cls_reps_ge": 10, "dpr_lt": 0.18, "dpr_ge": 0.27}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 8063, "p_lt": 2398, "p_ge": 5665, "p_sh_lt": 29.7, "p_sh_ge": 70.3, "tot_d": 76.0, "d_lt": 29.0, "d_ge": 47.0, "d_sh_lt": 38.2, "d_sh_ge": 61.8, "y_lt": 1.21, "y_ge": 0.83, "mult": 1.46, "net_d": -18.0, "act_reps_lt": 118, "act_reps_ge": 96, "cls_reps_lt": 20, "cls_reps_ge": 28, "dpr_lt": 0.25, "dpr_ge": 0.49}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 10657, "p_lt": 2881, "p_ge": 7776, "p_sh_lt": 27.0, "p_sh_ge": 73.0, "tot_d": 88.0, "d_lt": 41.0, "d_ge": 47.0, "d_sh_lt": 46.6, "d_sh_ge": 53.4, "y_lt": 1.42, "y_ge": 0.6, "mult": 2.37, "net_d": -6.0, "act_reps_lt": 132, "act_reps_ge": 124, "cls_reps_lt": 27, "cls_reps_ge": 31, "dpr_lt": 0.31, "dpr_ge": 0.38}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 10832, "p_lt": 2861, "p_ge": 7971, "p_sh_lt": 26.4, "p_sh_ge": 73.6, "tot_d": 70.0, "d_lt": 38.0, "d_ge": 32.0, "d_sh_lt": 54.3, "d_sh_ge": 45.7, "y_lt": 1.33, "y_ge": 0.4, "mult": 3.33, "net_d": 6.0, "act_reps_lt": 133, "act_reps_ge": 132, "cls_reps_lt": 29, "cls_reps_ge": 24, "dpr_lt": 0.29, "dpr_ge": 0.24}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 8130, "p_lt": 1788, "p_ge": 6342, "p_sh_lt": 22.0, "p_sh_ge": 78.0, "tot_d": 60.0, "d_lt": 26.0, "d_ge": 34.0, "d_sh_lt": 43.3, "d_sh_ge": 56.7, "y_lt": 1.45, "y_ge": 0.54, "mult": 2.69, "net_d": -8.0, "act_reps_lt": 108, "act_reps_ge": 105, "cls_reps_lt": 18, "cls_reps_ge": 27, "dpr_lt": 0.24, "dpr_ge": 0.32}], "monthly": [{"month_key": "2026-05", "month": "May 2026", "tot_p": 1302, "p_lt": 1140, "p_ge": 162, "p_sh_lt": 87.6, "p_sh_ge": 12.4, "tot_d": 5.0, "d_lt": 4.0, "d_ge": 1.0, "d_sh_lt": 80.0, "d_sh_ge": 20.0, "y_lt": 0.35, "y_ge": 0.62, "mult": 0.56, "net_d": 3.0, "act_reps_lt": 37, "act_reps_ge": 3, "cls_reps_lt": 3, "cls_reps_ge": 1, "dpr_lt": 0.11, "dpr_ge": 0.33}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 5177, "p_lt": 3166, "p_ge": 2011, "p_sh_lt": 61.2, "p_sh_ge": 38.8, "tot_d": 36.0, "d_lt": 26.0, "d_ge": 10.0, "d_sh_lt": 72.2, "d_sh_ge": 27.8, "y_lt": 0.82, "y_ge": 0.5, "mult": 1.64, "net_d": 16.0, "act_reps_lt": 71, "act_reps_ge": 22, "cls_reps_lt": 11, "cls_reps_ge": 7, "dpr_lt": 0.37, "dpr_ge": 0.45}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 8063, "p_lt": 4756, "p_ge": 3307, "p_sh_lt": 59.0, "p_sh_ge": 41.0, "tot_d": 76.0, "d_lt": 38.0, "d_ge": 38.0, "d_sh_lt": 50.0, "d_sh_ge": 50.0, "y_lt": 0.8, "y_ge": 1.15, "mult": 0.7, "net_d": 0.0, "act_reps_lt": 91, "act_reps_ge": 31, "cls_reps_lt": 24, "cls_reps_ge": 18, "dpr_lt": 0.42, "dpr_ge": 1.23}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 10657, "p_lt": 6587, "p_ge": 4070, "p_sh_lt": 61.8, "p_sh_ge": 38.2, "tot_d": 88.0, "d_lt": 60.0, "d_ge": 28.0, "d_sh_lt": 68.2, "d_sh_ge": 31.8, "y_lt": 0.91, "y_ge": 0.69, "mult": 1.32, "net_d": 32.0, "act_reps_lt": 104, "act_reps_ge": 36, "cls_reps_lt": 36, "cls_reps_ge": 16, "dpr_lt": 0.58, "dpr_ge": 0.78}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 10832, "p_lt": 6357, "p_ge": 4475, "p_sh_lt": 58.7, "p_sh_ge": 41.3, "tot_d": 70.0, "d_lt": 43.0, "d_ge": 27.0, "d_sh_lt": 61.4, "d_sh_ge": 38.6, "y_lt": 0.68, "y_ge": 0.6, "mult": 1.13, "net_d": 16.0, "act_reps_lt": 104, "act_reps_ge": 45, "cls_reps_lt": 28, "cls_reps_ge": 20, "dpr_lt": 0.41, "dpr_ge": 0.6}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 8130, "p_lt": 4072, "p_ge": 4058, "p_sh_lt": 50.1, "p_sh_ge": 49.9, "tot_d": 60.0, "d_lt": 40.0, "d_ge": 20.0, "d_sh_lt": 66.7, "d_sh_ge": 33.3, "y_lt": 0.98, "y_ge": 0.49, "mult": 2.0, "net_d": 20.0, "act_reps_lt": 74, "act_reps_ge": 43, "cls_reps_lt": 21, "cls_reps_ge": 15, "dpr_lt": 0.54, "dpr_ge": 0.47}], "overall": [{"month_key": "2026-05", "month": "May 2026", "tot_p": 1302, "p_lt": 883, "p_ge": 419, "p_sh_lt": 67.8, "p_sh_ge": 32.2, "tot_d": 5.0, "d_lt": 4.0, "d_ge": 1.0, "d_sh_lt": 80.0, "d_sh_ge": 20.0, "y_lt": 0.45, "y_ge": 0.24, "mult": 1.88, "net_d": 3.0, "act_reps_lt": 31, "act_reps_ge": 9, "cls_reps_lt": 3, "cls_reps_ge": 1, "dpr_lt": 0.13, "dpr_ge": 0.11}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 5177, "p_lt": 3451, "p_ge": 1726, "p_sh_lt": 66.7, "p_sh_ge": 33.3, "tot_d": 36.0, "d_lt": 26.0, "d_ge": 10.0, "d_sh_lt": 72.2, "d_sh_ge": 27.8, "y_lt": 0.75, "y_ge": 0.58, "mult": 1.29, "net_d": 16.0, "act_reps_lt": 72, "act_reps_ge": 21, "cls_reps_lt": 12, "cls_reps_ge": 6, "dpr_lt": 0.36, "dpr_ge": 0.48}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 8063, "p_lt": 5210, "p_ge": 2853, "p_sh_lt": 64.6, "p_sh_ge": 35.4, "tot_d": 76.0, "d_lt": 50.0, "d_ge": 26.0, "d_sh_lt": 65.8, "d_sh_ge": 34.2, "y_lt": 0.96, "y_ge": 0.91, "mult": 1.05, "net_d": 24.0, "act_reps_lt": 93, "act_reps_ge": 29, "cls_reps_lt": 27, "cls_reps_ge": 15, "dpr_lt": 0.54, "dpr_ge": 0.9}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 10657, "p_lt": 7129, "p_ge": 3528, "p_sh_lt": 66.9, "p_sh_ge": 33.1, "tot_d": 88.0, "d_lt": 59.0, "d_ge": 29.0, "d_sh_lt": 67.0, "d_sh_ge": 33.0, "y_lt": 0.83, "y_ge": 0.82, "mult": 1.01, "net_d": 30.0, "act_reps_lt": 107, "act_reps_ge": 33, "cls_reps_lt": 35, "cls_reps_ge": 17, "dpr_lt": 0.55, "dpr_ge": 0.88}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 10832, "p_lt": 7291, "p_ge": 3541, "p_sh_lt": 67.3, "p_sh_ge": 32.7, "tot_d": 70.0, "d_lt": 48.0, "d_ge": 22.0, "d_sh_lt": 68.6, "d_sh_ge": 31.4, "y_lt": 0.66, "y_ge": 0.62, "mult": 1.06, "net_d": 26.0, "act_reps_lt": 115, "act_reps_ge": 34, "cls_reps_lt": 31, "cls_reps_ge": 17, "dpr_lt": 0.42, "dpr_ge": 0.65}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 8130, "p_lt": 5271, "p_ge": 2859, "p_sh_lt": 64.8, "p_sh_ge": 35.2, "tot_d": 60.0, "d_lt": 42.0, "d_ge": 18.0, "d_sh_lt": 70.0, "d_sh_ge": 30.0, "y_lt": 0.8, "y_ge": 0.63, "mult": 1.27, "net_d": 24.0, "act_reps_lt": 86, "act_reps_ge": 31, "cls_reps_lt": 23, "cls_reps_ge": 13, "dpr_lt": 0.49, "dpr_ge": 0.58}]}, "excl_0_3": {"daily": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 1571, "p_ge": 4878, "p_sh_lt": 24.4, "p_sh_ge": 75.6, "tot_d": 94.0, "d_lt": 41.0, "d_ge": 53.0, "d_sh_lt": 43.6, "d_sh_ge": 56.4, "y_lt": 2.61, "y_ge": 1.09, "mult": 2.39, "net_d": -12.0, "act_reps_lt": 167, "act_reps_ge": 199, "cls_reps_lt": 35, "cls_reps_ge": 43, "dpr_lt": 0.25, "dpr_ge": 0.27}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 5910, "p_ge": 14801, "p_sh_lt": 28.5, "p_sh_ge": 71.5, "tot_d": 388.0, "d_lt": 182.0, "d_ge": 206.0, "d_sh_lt": 46.9, "d_sh_ge": 53.1, "y_lt": 3.08, "y_ge": 1.39, "mult": 2.22, "net_d": -24.0, "act_reps_lt": 258, "act_reps_ge": 239, "cls_reps_lt": 94, "cls_reps_ge": 97, "dpr_lt": 0.71, "dpr_ge": 0.86}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 7005, "p_ge": 14383, "p_sh_lt": 32.8, "p_sh_ge": 67.2, "tot_d": 449.0, "d_lt": 231.0, "d_ge": 218.0, "d_sh_lt": 51.4, "d_sh_ge": 48.6, "y_lt": 3.3, "y_ge": 1.52, "mult": 2.17, "net_d": 13.0, "act_reps_lt": 262, "act_reps_ge": 230, "cls_reps_lt": 115, "cls_reps_ge": 92, "dpr_lt": 0.88, "dpr_ge": 0.95}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 6987, "p_ge": 14956, "p_sh_lt": 31.8, "p_sh_ge": 68.2, "tot_d": 458.0, "d_lt": 233.0, "d_ge": 225.0, "d_sh_lt": 50.9, "d_sh_ge": 49.1, "y_lt": 3.33, "y_ge": 1.5, "mult": 2.22, "net_d": 8.0, "act_reps_lt": 262, "act_reps_ge": 236, "cls_reps_lt": 114, "cls_reps_ge": 106, "dpr_lt": 0.89, "dpr_ge": 0.95}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 20937, "p_lt": 6508, "p_ge": 14429, "p_sh_lt": 31.1, "p_sh_ge": 68.9, "tot_d": 388.0, "d_lt": 211.0, "d_ge": 177.0, "d_sh_lt": 54.4, "d_sh_ge": 45.6, "y_lt": 3.24, "y_ge": 1.23, "mult": 2.63, "net_d": 34.0, "act_reps_lt": 226, "act_reps_ge": 216, "cls_reps_lt": 101, "cls_reps_ge": 100, "dpr_lt": 0.93, "dpr_ge": 0.82}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 16718, "p_lt": 5684, "p_ge": 11034, "p_sh_lt": 34.0, "p_sh_ge": 66.0, "tot_d": 336.0, "d_lt": 196.0, "d_ge": 140.0, "d_sh_lt": 58.3, "d_sh_ge": 41.7, "y_lt": 3.45, "y_ge": 1.27, "mult": 2.72, "net_d": 56.0, "act_reps_lt": 190, "act_reps_ge": 186, "cls_reps_lt": 95, "cls_reps_ge": 72, "dpr_lt": 1.03, "dpr_ge": 0.75}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 12327, "p_lt": 4144, "p_ge": 8183, "p_sh_lt": 33.6, "p_sh_ge": 66.4, "tot_d": 276.0, "d_lt": 161.0, "d_ge": 115.0, "d_sh_lt": 58.3, "d_sh_ge": 41.7, "y_lt": 3.89, "y_ge": 1.41, "mult": 2.76, "net_d": 46.0, "act_reps_lt": 158, "act_reps_ge": 146, "cls_reps_lt": 77, "cls_reps_ge": 61, "dpr_lt": 1.02, "dpr_ge": 0.79}], "monthly": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 2968, "p_ge": 3481, "p_sh_lt": 46.0, "p_sh_ge": 54.0, "tot_d": 94.0, "d_lt": 50.0, "d_ge": 44.0, "d_sh_lt": 53.2, "d_sh_ge": 46.8, "y_lt": 1.68, "y_ge": 1.26, "mult": 1.33, "net_d": 6.0, "act_reps_lt": 132, "act_reps_ge": 101, "cls_reps_lt": 36, "cls_reps_ge": 31, "dpr_lt": 0.38, "dpr_ge": 0.44}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 10582, "p_ge": 10129, "p_sh_lt": 51.1, "p_sh_ge": 48.9, "tot_d": 388.0, "d_lt": 254.0, "d_ge": 134.0, "d_sh_lt": 65.5, "d_sh_ge": 34.5, "y_lt": 2.4, "y_ge": 1.32, "mult": 1.82, "net_d": 120.0, "act_reps_lt": 183, "act_reps_ge": 95, "cls_reps_lt": 83, "cls_reps_ge": 56, "dpr_lt": 1.39, "dpr_ge": 1.41}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 13068, "p_ge": 8320, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 449.0, "d_lt": 323.0, "d_ge": 126.0, "d_sh_lt": 71.9, "d_sh_ge": 28.1, "y_lt": 2.47, "y_ge": 1.51, "mult": 1.64, "net_d": 197.0, "act_reps_lt": 195, "act_reps_ge": 81, "cls_reps_lt": 103, "cls_reps_ge": 47, "dpr_lt": 1.66, "dpr_ge": 1.56}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14274, "p_ge": 7669, "p_sh_lt": 65.1, "p_sh_ge": 34.9, "tot_d": 458.0, "d_lt": 331.0, "d_ge": 127.0, "d_sh_lt": 72.3, "d_sh_ge": 27.7, "y_lt": 2.32, "y_ge": 1.66, "mult": 1.4, "net_d": 204.0, "act_reps_lt": 206, "act_reps_ge": 67, "cls_reps_lt": 112, "cls_reps_ge": 47, "dpr_lt": 1.61, "dpr_ge": 1.9}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 20937, "p_lt": 13275, "p_ge": 7662, "p_sh_lt": 63.4, "p_sh_ge": 36.6, "tot_d": 388.0, "d_lt": 295.0, "d_ge": 93.0, "d_sh_lt": 76.0, "d_sh_ge": 24.0, "y_lt": 2.22, "y_ge": 1.21, "mult": 1.83, "net_d": 202.0, "act_reps_lt": 173, "act_reps_ge": 69, "cls_reps_lt": 109, "cls_reps_ge": 42, "dpr_lt": 1.71, "dpr_ge": 1.35}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 16718, "p_lt": 10854, "p_ge": 5864, "p_sh_lt": 64.9, "p_sh_ge": 35.1, "tot_d": 336.0, "d_lt": 274.0, "d_ge": 62.0, "d_sh_lt": 81.5, "d_sh_ge": 18.5, "y_lt": 2.52, "y_ge": 1.06, "mult": 2.38, "net_d": 212.0, "act_reps_lt": 152, "act_reps_ge": 58, "cls_reps_lt": 95, "cls_reps_ge": 34, "dpr_lt": 1.8, "dpr_ge": 1.07}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 12327, "p_lt": 7506, "p_ge": 4821, "p_sh_lt": 60.9, "p_sh_ge": 39.1, "tot_d": 276.0, "d_lt": 222.0, "d_ge": 54.0, "d_sh_lt": 80.4, "d_sh_ge": 19.6, "y_lt": 2.96, "y_ge": 1.12, "mult": 2.64, "net_d": 168.0, "act_reps_lt": 117, "act_reps_ge": 51, "cls_reps_lt": 79, "cls_reps_ge": 28, "dpr_lt": 1.9, "dpr_ge": 1.06}], "overall": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 3860, "p_ge": 2589, "p_sh_lt": 59.9, "p_sh_ge": 40.1, "tot_d": 94.0, "d_lt": 74.0, "d_ge": 20.0, "d_sh_lt": 78.7, "d_sh_ge": 21.3, "y_lt": 1.92, "y_ge": 0.77, "mult": 2.49, "net_d": 54.0, "act_reps_lt": 157, "act_reps_ge": 76, "cls_reps_lt": 49, "cls_reps_ge": 18, "dpr_lt": 0.47, "dpr_ge": 0.26}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 13213, "p_ge": 7498, "p_sh_lt": 63.8, "p_sh_ge": 36.2, "tot_d": 388.0, "d_lt": 311.0, "d_ge": 77.0, "d_sh_lt": 80.2, "d_sh_ge": 19.8, "y_lt": 2.35, "y_ge": 1.03, "mult": 2.28, "net_d": 234.0, "act_reps_lt": 196, "act_reps_ge": 82, "cls_reps_lt": 104, "cls_reps_ge": 35, "dpr_lt": 1.59, "dpr_ge": 0.94}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 14303, "p_ge": 7085, "p_sh_lt": 66.9, "p_sh_ge": 33.1, "tot_d": 449.0, "d_lt": 352.0, "d_ge": 97.0, "d_sh_lt": 78.4, "d_sh_ge": 21.6, "y_lt": 2.46, "y_ge": 1.37, "mult": 1.8, "net_d": 255.0, "act_reps_lt": 204, "act_reps_ge": 72, "cls_reps_lt": 111, "cls_reps_ge": 39, "dpr_lt": 1.73, "dpr_ge": 1.35}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14589, "p_ge": 7354, "p_sh_lt": 66.5, "p_sh_ge": 33.5, "tot_d": 458.0, "d_lt": 348.0, "d_ge": 110.0, "d_sh_lt": 76.0, "d_sh_ge": 24.0, "y_lt": 2.39, "y_ge": 1.5, "mult": 1.59, "net_d": 238.0, "act_reps_lt": 204, "act_reps_ge": 69, "cls_reps_lt": 114, "cls_reps_ge": 45, "dpr_lt": 1.71, "dpr_ge": 1.59}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 20937, "p_lt": 14062, "p_ge": 6875, "p_sh_lt": 67.2, "p_sh_ge": 32.8, "tot_d": 388.0, "d_lt": 298.0, "d_ge": 90.0, "d_sh_lt": 76.8, "d_sh_ge": 23.2, "y_lt": 2.12, "y_ge": 1.31, "mult": 1.62, "net_d": 208.0, "act_reps_lt": 177, "act_reps_ge": 65, "cls_reps_lt": 109, "cls_reps_ge": 42, "dpr_lt": 1.68, "dpr_ge": 1.38}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 16718, "p_lt": 10806, "p_ge": 5912, "p_sh_lt": 64.6, "p_sh_ge": 35.4, "tot_d": 336.0, "d_lt": 270.0, "d_ge": 66.0, "d_sh_lt": 80.4, "d_sh_ge": 19.6, "y_lt": 2.5, "y_ge": 1.12, "mult": 2.23, "net_d": 204.0, "act_reps_lt": 151, "act_reps_ge": 59, "cls_reps_lt": 92, "cls_reps_ge": 37, "dpr_lt": 1.79, "dpr_ge": 1.12}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 12327, "p_lt": 7769, "p_ge": 4558, "p_sh_lt": 63.0, "p_sh_ge": 37.0, "tot_d": 276.0, "d_lt": 217.0, "d_ge": 59.0, "d_sh_lt": 78.6, "d_sh_ge": 21.4, "y_lt": 2.79, "y_ge": 1.29, "mult": 2.16, "net_d": 158.0, "act_reps_lt": 117, "act_reps_ge": 51, "cls_reps_lt": 77, "cls_reps_ge": 30, "dpr_lt": 1.85, "dpr_ge": 1.16}]}, "excl_0_6": {"daily": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 1571, "p_ge": 4878, "p_sh_lt": 24.4, "p_sh_ge": 75.6, "tot_d": 94.0, "d_lt": 41.0, "d_ge": 53.0, "d_sh_lt": 43.6, "d_sh_ge": 56.4, "y_lt": 2.61, "y_ge": 1.09, "mult": 2.39, "net_d": -12.0, "act_reps_lt": 167, "act_reps_ge": 199, "cls_reps_lt": 35, "cls_reps_ge": 43, "dpr_lt": 0.25, "dpr_ge": 0.27}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 19409, "p_lt": 5230, "p_ge": 14179, "p_sh_lt": 26.9, "p_sh_ge": 73.1, "tot_d": 383.0, "d_lt": 178.0, "d_ge": 205.0, "d_sh_lt": 46.5, "d_sh_ge": 53.5, "y_lt": 3.4, "y_ge": 1.45, "mult": 2.34, "net_d": -27.0, "act_reps_lt": 218, "act_reps_ge": 211, "cls_reps_lt": 91, "cls_reps_ge": 96, "dpr_lt": 0.82, "dpr_ge": 0.97}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 16211, "p_lt": 5079, "p_ge": 11132, "p_sh_lt": 31.3, "p_sh_ge": 68.7, "tot_d": 413.0, "d_lt": 214.0, "d_ge": 199.0, "d_sh_lt": 51.8, "d_sh_ge": 48.2, "y_lt": 4.21, "y_ge": 1.79, "mult": 2.35, "net_d": 15.0, "act_reps_lt": 170, "act_reps_ge": 160, "cls_reps_lt": 104, "cls_reps_ge": 82, "dpr_lt": 1.26, "dpr_ge": 1.24}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 13880, "p_lt": 4589, "p_ge": 9291, "p_sh_lt": 33.1, "p_sh_ge": 66.9, "tot_d": 382.0, "d_lt": 204.0, "d_ge": 178.0, "d_sh_lt": 53.4, "d_sh_ge": 46.6, "y_lt": 4.45, "y_ge": 1.92, "mult": 2.32, "net_d": 26.0, "act_reps_lt": 144, "act_reps_ge": 140, "cls_reps_lt": 94, "cls_reps_ge": 78, "dpr_lt": 1.42, "dpr_ge": 1.27}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 11293, "p_lt": 4045, "p_ge": 7248, "p_sh_lt": 35.8, "p_sh_ge": 64.2, "tot_d": 303.0, "d_lt": 172.0, "d_ge": 131.0, "d_sh_lt": 56.8, "d_sh_ge": 43.2, "y_lt": 4.25, "y_ge": 1.81, "mult": 2.35, "net_d": 41.0, "act_reps_lt": 122, "act_reps_ge": 115, "cls_reps_lt": 76, "cls_reps_ge": 70, "dpr_lt": 1.41, "dpr_ge": 1.14}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 9182, "p_lt": 3866, "p_ge": 5316, "p_sh_lt": 42.1, "p_sh_ge": 57.9, "tot_d": 269.0, "d_lt": 160.0, "d_ge": 109.0, "d_sh_lt": 59.5, "d_sh_ge": 40.5, "y_lt": 4.14, "y_ge": 2.05, "mult": 2.02, "net_d": 51.0, "act_reps_lt": 110, "act_reps_ge": 101, "cls_reps_lt": 68, "cls_reps_ge": 49, "dpr_lt": 1.45, "dpr_ge": 1.08}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 7203, "p_lt": 2980, "p_ge": 4223, "p_sh_lt": 41.4, "p_sh_ge": 58.6, "tot_d": 226.0, "d_lt": 140.0, "d_ge": 86.0, "d_sh_lt": 61.9, "d_sh_ge": 38.1, "y_lt": 4.7, "y_ge": 2.04, "mult": 2.3, "net_d": 54.0, "act_reps_lt": 98, "act_reps_ge": 84, "cls_reps_lt": 63, "cls_reps_ge": 39, "dpr_lt": 1.43, "dpr_ge": 1.02}], "monthly": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 2968, "p_ge": 3481, "p_sh_lt": 46.0, "p_sh_ge": 54.0, "tot_d": 94.0, "d_lt": 50.0, "d_ge": 44.0, "d_sh_lt": 53.2, "d_sh_ge": 46.8, "y_lt": 1.68, "y_ge": 1.26, "mult": 1.33, "net_d": 6.0, "act_reps_lt": 132, "act_reps_ge": 101, "cls_reps_lt": 36, "cls_reps_ge": 31, "dpr_lt": 0.38, "dpr_ge": 0.44}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 19409, "p_lt": 9442, "p_ge": 9967, "p_sh_lt": 48.6, "p_sh_ge": 51.4, "tot_d": 383.0, "d_lt": 250.0, "d_ge": 133.0, "d_sh_lt": 65.3, "d_sh_ge": 34.7, "y_lt": 2.65, "y_ge": 1.33, "mult": 1.99, "net_d": 117.0, "act_reps_lt": 146, "act_reps_ge": 92, "cls_reps_lt": 80, "cls_reps_ge": 55, "dpr_lt": 1.71, "dpr_ge": 1.45}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 16211, "p_lt": 9902, "p_ge": 6309, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 413.0, "d_lt": 297.0, "d_ge": 116.0, "d_sh_lt": 71.9, "d_sh_ge": 28.1, "y_lt": 3.0, "y_ge": 1.84, "mult": 1.63, "net_d": 181.0, "act_reps_lt": 124, "act_reps_ge": 59, "cls_reps_lt": 92, "cls_reps_ge": 40, "dpr_lt": 2.4, "dpr_ge": 1.97}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 13880, "p_lt": 9518, "p_ge": 4362, "p_sh_lt": 68.6, "p_sh_ge": 31.4, "tot_d": 382.0, "d_lt": 293.0, "d_ge": 89.0, "d_sh_lt": 76.7, "d_sh_ge": 23.3, "y_lt": 3.08, "y_ge": 2.04, "mult": 1.51, "net_d": 204.0, "act_reps_lt": 115, "act_reps_ge": 36, "cls_reps_lt": 88, "cls_reps_ge": 29, "dpr_lt": 2.55, "dpr_ge": 2.47}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 11293, "p_lt": 7701, "p_ge": 3592, "p_sh_lt": 68.2, "p_sh_ge": 31.8, "tot_d": 303.0, "d_lt": 238.0, "d_ge": 65.0, "d_sh_lt": 78.5, "d_sh_ge": 21.5, "y_lt": 3.09, "y_ge": 1.81, "mult": 1.71, "net_d": 173.0, "act_reps_lt": 97, "act_reps_ge": 33, "cls_reps_lt": 76, "cls_reps_ge": 26, "dpr_lt": 2.45, "dpr_ge": 1.97}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 9182, "p_lt": 7220, "p_ge": 1962, "p_sh_lt": 78.6, "p_sh_ge": 21.4, "tot_d": 269.0, "d_lt": 234.0, "d_ge": 35.0, "d_sh_lt": 87.0, "d_sh_ge": 13.0, "y_lt": 3.24, "y_ge": 1.78, "mult": 1.82, "net_d": 199.0, "act_reps_lt": 94, "act_reps_ge": 21, "cls_reps_lt": 70, "cls_reps_ge": 14, "dpr_lt": 2.49, "dpr_ge": 1.67}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 7203, "p_lt": 5301, "p_ge": 1902, "p_sh_lt": 73.6, "p_sh_ge": 26.4, "tot_d": 226.0, "d_lt": 191.0, "d_ge": 35.0, "d_sh_lt": 84.5, "d_sh_ge": 15.5, "y_lt": 3.6, "y_ge": 1.84, "mult": 1.96, "net_d": 156.0, "act_reps_lt": 81, "act_reps_ge": 20, "cls_reps_lt": 65, "cls_reps_ge": 14, "dpr_lt": 2.36, "dpr_ge": 1.75}], "overall": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 3860, "p_ge": 2589, "p_sh_lt": 59.9, "p_sh_ge": 40.1, "tot_d": 94.0, "d_lt": 74.0, "d_ge": 20.0, "d_sh_lt": 78.7, "d_sh_ge": 21.3, "y_lt": 1.92, "y_ge": 0.77, "mult": 2.49, "net_d": 54.0, "act_reps_lt": 157, "act_reps_ge": 76, "cls_reps_lt": 49, "cls_reps_ge": 18, "dpr_lt": 0.47, "dpr_ge": 0.26}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 19409, "p_lt": 12330, "p_ge": 7079, "p_sh_lt": 63.5, "p_sh_ge": 36.5, "tot_d": 383.0, "d_lt": 307.0, "d_ge": 76.0, "d_sh_lt": 80.2, "d_sh_ge": 19.8, "y_lt": 2.49, "y_ge": 1.07, "mult": 2.33, "net_d": 231.0, "act_reps_lt": 165, "act_reps_ge": 73, "cls_reps_lt": 101, "cls_reps_ge": 34, "dpr_lt": 1.86, "dpr_ge": 1.04}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 16211, "p_lt": 10852, "p_ge": 5359, "p_sh_lt": 66.9, "p_sh_ge": 33.1, "tot_d": 413.0, "d_lt": 326.0, "d_ge": 87.0, "d_sh_lt": 78.9, "d_sh_ge": 21.1, "y_lt": 3.0, "y_ge": 1.62, "mult": 1.85, "net_d": 239.0, "act_reps_lt": 132, "act_reps_ge": 51, "cls_reps_lt": 99, "cls_reps_ge": 33, "dpr_lt": 2.47, "dpr_ge": 1.71}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 13880, "p_lt": 9379, "p_ge": 4501, "p_sh_lt": 67.6, "p_sh_ge": 32.4, "tot_d": 382.0, "d_lt": 298.0, "d_ge": 84.0, "d_sh_lt": 78.0, "d_sh_ge": 22.0, "y_lt": 3.18, "y_ge": 1.87, "mult": 1.7, "net_d": 214.0, "act_reps_lt": 111, "act_reps_ge": 40, "cls_reps_lt": 87, "cls_reps_ge": 30, "dpr_lt": 2.68, "dpr_ge": 2.1}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 11293, "p_lt": 7880, "p_ge": 3413, "p_sh_lt": 69.8, "p_sh_ge": 30.2, "tot_d": 303.0, "d_lt": 242.0, "d_ge": 61.0, "d_sh_lt": 79.9, "d_sh_ge": 20.1, "y_lt": 3.07, "y_ge": 1.79, "mult": 1.72, "net_d": 181.0, "act_reps_lt": 97, "act_reps_ge": 33, "cls_reps_lt": 77, "cls_reps_ge": 25, "dpr_lt": 2.49, "dpr_ge": 1.85}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 9182, "p_lt": 6527, "p_ge": 2655, "p_sh_lt": 71.1, "p_sh_ge": 28.9, "tot_d": 269.0, "d_lt": 225.0, "d_ge": 44.0, "d_sh_lt": 83.6, "d_sh_ge": 16.4, "y_lt": 3.45, "y_ge": 1.66, "mult": 2.08, "net_d": 181.0, "act_reps_lt": 86, "act_reps_ge": 29, "cls_reps_lt": 64, "cls_reps_ge": 20, "dpr_lt": 2.62, "dpr_ge": 1.52}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 7203, "p_lt": 5134, "p_ge": 2069, "p_sh_lt": 71.3, "p_sh_ge": 28.7, "tot_d": 226.0, "d_lt": 185.0, "d_ge": 41.0, "d_sh_lt": 81.9, "d_sh_ge": 18.1, "y_lt": 3.6, "y_ge": 1.98, "mult": 1.82, "net_d": 144.0, "act_reps_lt": 77, "act_reps_ge": 24, "cls_reps_lt": 62, "cls_reps_ge": 17, "dpr_lt": 2.4, "dpr_ge": 1.71}]}}, "daily": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 1571, "p_ge": 4878, "p_sh_lt": 24.4, "p_sh_ge": 75.6, "tot_d": 94.0, "d_lt": 41.0, "d_ge": 53.0, "d_sh_lt": 43.6, "d_sh_ge": 56.4, "y_lt": 2.61, "y_ge": 1.09, "mult": 2.39, "net_d": -12.0, "act_reps_lt": 167, "act_reps_ge": 199, "cls_reps_lt": 35, "cls_reps_ge": 43, "dpr_lt": 0.25, "dpr_ge": 0.27}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 5910, "p_ge": 14801, "p_sh_lt": 28.5, "p_sh_ge": 71.5, "tot_d": 388.0, "d_lt": 182.0, "d_ge": 206.0, "d_sh_lt": 46.9, "d_sh_ge": 53.1, "y_lt": 3.08, "y_ge": 1.39, "mult": 2.22, "net_d": -24.0, "act_reps_lt": 258, "act_reps_ge": 239, "cls_reps_lt": 94, "cls_reps_ge": 97, "dpr_lt": 0.71, "dpr_ge": 0.86}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 7005, "p_ge": 14383, "p_sh_lt": 32.8, "p_sh_ge": 67.2, "tot_d": 449.0, "d_lt": 231.0, "d_ge": 218.0, "d_sh_lt": 51.4, "d_sh_ge": 48.6, "y_lt": 3.3, "y_ge": 1.52, "mult": 2.17, "net_d": 13.0, "act_reps_lt": 262, "act_reps_ge": 230, "cls_reps_lt": 115, "cls_reps_ge": 92, "dpr_lt": 0.88, "dpr_ge": 0.95}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 6987, "p_ge": 14956, "p_sh_lt": 31.8, "p_sh_ge": 68.2, "tot_d": 458.0, "d_lt": 233.0, "d_ge": 225.0, "d_sh_lt": 50.9, "d_sh_ge": 49.1, "y_lt": 3.33, "y_ge": 1.5, "mult": 2.22, "net_d": 8.0, "act_reps_lt": 262, "act_reps_ge": 236, "cls_reps_lt": 114, "cls_reps_ge": 106, "dpr_lt": 0.89, "dpr_ge": 0.95}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 6926, "p_ge": 15024, "p_sh_lt": 31.6, "p_sh_ge": 68.4, "tot_d": 391.0, "d_lt": 213.0, "d_ge": 178.0, "d_sh_lt": 54.5, "d_sh_ge": 45.5, "y_lt": 3.08, "y_ge": 1.18, "mult": 2.61, "net_d": 35.0, "act_reps_lt": 254, "act_reps_ge": 239, "cls_reps_lt": 103, "cls_reps_ge": 101, "dpr_lt": 0.84, "dpr_ge": 0.74}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 6727, "p_ge": 13287, "p_sh_lt": 33.6, "p_sh_ge": 66.4, "tot_d": 339.0, "d_lt": 198.0, "d_ge": 141.0, "d_sh_lt": 58.4, "d_sh_ge": 41.6, "y_lt": 2.94, "y_ge": 1.06, "mult": 2.77, "net_d": 57.0, "act_reps_lt": 243, "act_reps_ge": 233, "cls_reps_lt": 97, "cls_reps_ge": 73, "dpr_lt": 0.81, "dpr_ge": 0.61}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 4768, "p_ge": 10565, "p_sh_lt": 31.1, "p_sh_ge": 68.9, "tot_d": 286.0, "d_lt": 166.0, "d_ge": 120.0, "d_sh_lt": 58.0, "d_sh_ge": 42.0, "y_lt": 3.48, "y_ge": 1.14, "mult": 3.05, "net_d": 46.0, "act_reps_lt": 206, "act_reps_ge": 189, "cls_reps_lt": 81, "cls_reps_ge": 66, "dpr_lt": 0.81, "dpr_ge": 0.63}], "monthly": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 2968, "p_ge": 3481, "p_sh_lt": 46.0, "p_sh_ge": 54.0, "tot_d": 94.0, "d_lt": 50.0, "d_ge": 44.0, "d_sh_lt": 53.2, "d_sh_ge": 46.8, "y_lt": 1.68, "y_ge": 1.26, "mult": 1.33, "net_d": 6.0, "act_reps_lt": 132, "act_reps_ge": 101, "cls_reps_lt": 36, "cls_reps_ge": 31, "dpr_lt": 0.38, "dpr_ge": 0.44}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 10582, "p_ge": 10129, "p_sh_lt": 51.1, "p_sh_ge": 48.9, "tot_d": 388.0, "d_lt": 254.0, "d_ge": 134.0, "d_sh_lt": 65.5, "d_sh_ge": 34.5, "y_lt": 2.4, "y_ge": 1.32, "mult": 1.82, "net_d": 120.0, "act_reps_lt": 183, "act_reps_ge": 95, "cls_reps_lt": 83, "cls_reps_ge": 56, "dpr_lt": 1.39, "dpr_ge": 1.41}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 13068, "p_ge": 8320, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 449.0, "d_lt": 323.0, "d_ge": 126.0, "d_sh_lt": 71.9, "d_sh_ge": 28.1, "y_lt": 2.47, "y_ge": 1.51, "mult": 1.64, "net_d": 197.0, "act_reps_lt": 195, "act_reps_ge": 81, "cls_reps_lt": 103, "cls_reps_ge": 47, "dpr_lt": 1.66, "dpr_ge": 1.56}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14274, "p_ge": 7669, "p_sh_lt": 65.1, "p_sh_ge": 34.9, "tot_d": 458.0, "d_lt": 331.0, "d_ge": 127.0, "d_sh_lt": 72.3, "d_sh_ge": 27.7, "y_lt": 2.32, "y_ge": 1.66, "mult": 1.4, "net_d": 204.0, "act_reps_lt": 206, "act_reps_ge": 67, "cls_reps_lt": 112, "cls_reps_ge": 47, "dpr_lt": 1.61, "dpr_ge": 1.9}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 14288, "p_ge": 7662, "p_sh_lt": 65.1, "p_sh_ge": 34.9, "tot_d": 391.0, "d_lt": 298.0, "d_ge": 93.0, "d_sh_lt": 76.2, "d_sh_ge": 23.8, "y_lt": 2.09, "y_ge": 1.21, "mult": 1.73, "net_d": 205.0, "act_reps_lt": 201, "act_reps_ge": 69, "cls_reps_lt": 112, "cls_reps_ge": 42, "dpr_lt": 1.48, "dpr_ge": 1.35}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 13577, "p_ge": 6437, "p_sh_lt": 67.8, "p_sh_ge": 32.2, "tot_d": 339.0, "d_lt": 277.0, "d_ge": 62.0, "d_sh_lt": 81.7, "d_sh_ge": 18.3, "y_lt": 2.04, "y_ge": 0.96, "mult": 2.12, "net_d": 215.0, "act_reps_lt": 198, "act_reps_ge": 66, "cls_reps_lt": 98, "cls_reps_ge": 34, "dpr_lt": 1.4, "dpr_ge": 0.94}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 9373, "p_ge": 5960, "p_sh_lt": 61.1, "p_sh_ge": 38.9, "tot_d": 286.0, "d_lt": 231.0, "d_ge": 55.0, "d_sh_lt": 80.8, "d_sh_ge": 19.2, "y_lt": 2.46, "y_ge": 0.92, "mult": 2.67, "net_d": 176.0, "act_reps_lt": 155, "act_reps_ge": 63, "cls_reps_lt": 86, "cls_reps_ge": 29, "dpr_lt": 1.49, "dpr_ge": 0.87}], "overall": [{"month_key": "2026-04", "month": "Apr 2026", "tot_p": 6449, "p_lt": 3860, "p_ge": 2589, "p_sh_lt": 59.9, "p_sh_ge": 40.1, "tot_d": 94.0, "d_lt": 74.0, "d_ge": 20.0, "d_sh_lt": 78.7, "d_sh_ge": 21.3, "y_lt": 1.92, "y_ge": 0.77, "mult": 2.49, "net_d": 54.0, "act_reps_lt": 157, "act_reps_ge": 76, "cls_reps_lt": 49, "cls_reps_ge": 18, "dpr_lt": 0.47, "dpr_ge": 0.26}, {"month_key": "2026-05", "month": "May 2026", "tot_p": 20711, "p_lt": 13213, "p_ge": 7498, "p_sh_lt": 63.8, "p_sh_ge": 36.2, "tot_d": 388.0, "d_lt": 311.0, "d_ge": 77.0, "d_sh_lt": 80.2, "d_sh_ge": 19.8, "y_lt": 2.35, "y_ge": 1.03, "mult": 2.28, "net_d": 234.0, "act_reps_lt": 196, "act_reps_ge": 82, "cls_reps_lt": 104, "cls_reps_ge": 35, "dpr_lt": 1.59, "dpr_ge": 0.94}, {"month_key": "2026-06", "month": "Jun 2026", "tot_p": 21388, "p_lt": 14303, "p_ge": 7085, "p_sh_lt": 66.9, "p_sh_ge": 33.1, "tot_d": 449.0, "d_lt": 352.0, "d_ge": 97.0, "d_sh_lt": 78.4, "d_sh_ge": 21.6, "y_lt": 2.46, "y_ge": 1.37, "mult": 1.8, "net_d": 255.0, "act_reps_lt": 204, "act_reps_ge": 72, "cls_reps_lt": 111, "cls_reps_ge": 39, "dpr_lt": 1.73, "dpr_ge": 1.35}, {"month_key": "2026-07", "month": "Jul 2026", "tot_p": 21943, "p_lt": 14589, "p_ge": 7354, "p_sh_lt": 66.5, "p_sh_ge": 33.5, "tot_d": 458.0, "d_lt": 348.0, "d_ge": 110.0, "d_sh_lt": 76.0, "d_sh_ge": 24.0, "y_lt": 2.39, "y_ge": 1.5, "mult": 1.59, "net_d": 238.0, "act_reps_lt": 204, "act_reps_ge": 69, "cls_reps_lt": 114, "cls_reps_ge": 45, "dpr_lt": 1.71, "dpr_ge": 1.59}, {"month_key": "2026-08", "month": "Aug 2026", "tot_p": 21950, "p_lt": 15009, "p_ge": 6941, "p_sh_lt": 68.4, "p_sh_ge": 31.6, "tot_d": 391.0, "d_lt": 301.0, "d_ge": 90.0, "d_sh_lt": 77.0, "d_sh_ge": 23.0, "y_lt": 2.01, "y_ge": 1.3, "mult": 1.55, "net_d": 211.0, "act_reps_lt": 204, "act_reps_ge": 66, "cls_reps_lt": 112, "cls_reps_ge": 42, "dpr_lt": 1.48, "dpr_ge": 1.36}, {"month_key": "2026-09", "month": "Sep 2026", "tot_p": 20014, "p_lt": 13818, "p_ge": 6196, "p_sh_lt": 69.0, "p_sh_ge": 31.0, "tot_d": 339.0, "d_lt": 273.0, "d_ge": 66.0, "d_sh_lt": 80.5, "d_sh_ge": 19.5, "y_lt": 1.98, "y_ge": 1.07, "mult": 1.85, "net_d": 207.0, "act_reps_lt": 201, "act_reps_ge": 63, "cls_reps_lt": 95, "cls_reps_ge": 37, "dpr_lt": 1.36, "dpr_ge": 1.05}, {"month_key": "2026-10", "month": "Oct 2026", "tot_p": 15333, "p_lt": 10405, "p_ge": 4928, "p_sh_lt": 67.9, "p_sh_ge": 32.1, "tot_d": 286.0, "d_lt": 227.0, "d_ge": 59.0, "d_sh_lt": 79.4, "d_sh_ge": 20.6, "y_lt": 2.18, "y_ge": 1.2, "mult": 1.82, "net_d": 168.0, "act_reps_lt": 163, "act_reps_ge": 55, "cls_reps_lt": 85, "cls_reps_ge": 30, "dpr_lt": 1.39, "dpr_ge": 1.07}]}
+</script>
+
+<script>
+const rawData = JSON.parse(document.getElementById('momDataRaw').textContent);
+let currentCohort = 'all_reps';
+let currentMethod = 'daily';
+
+const methodDescriptions = {
+  'daily': {
+    title: 'Method 1: Daily Shift Pacing (Day-by-Day Shift Pace)',
+    desc: 'Evaluates rep activity on each individual working day (< 5 visits/day vs &ge; 5 visits/day). Reps shift buckets daily depending on daily meeting density. Directly highlights the intra-day rushing trap vs consultative selling.',
+    badge: 'Shift Resolution (< 5 vs &ge; 5)'
+  },
+  'monthly': {
+    title: 'Method 2: Monthly Average Pacing (Rep Monthly Average)',
+    desc: 'Calculates each rep's monthly average visits per day in each calendar month (< 5.0 vs &ge; 5.0). Reps who average steady pacing close 73.3% of all fresh deals, proving disciplined habit consistently beats end-of-month volume rushing.',
+    badge: 'Monthly Consistency (< 5.0 vs &ge; 5.0)'
+  },
+  'overall': {
+    title: 'Method 3: Overall Career Average Pacing (Permanent 6-Month Career Pace)',
+    desc: 'Classifies each frontline rep into exactly ONE permanent bucket based on their entire 6-month career average (< 5.0 vs &ge; 5.0 visits/day). Proves that 78.4% of total company revenue is generated by reps with permanent disciplined pacing.',
+    badge: 'Permanent Career Pace (< 5.0 vs &ge; 5.0)'
+  },
+  'matrix': {
+    title: 'Unified 3-Method Synthesis Matrix',
+    desc: 'Compares all three methodologies simultaneously. Regardless of whether pacing is measured day-by-day, month-by-month, or across whole careers, pacing < 5 consistently outperforms &ge; 5 by 1.8x to 2.4x in every single month.',
+    badge: '3-Method Cross-Validation'
+  }
+};
+
+function getCohortData() {
+  if (rawData.cohorts && rawData.cohorts[currentCohort]) {
+    return rawData.cohorts[currentCohort];
+  }
+  return {
+    daily: rawData.daily || [],
+    monthly: rawData.monthly || [],
+    overall: rawData.overall || []
+  };
+}
+
+function switchMethod(methodKey, btn) {
+  currentMethod = methodKey;
+  document.querySelectorAll('.pills-group button[id^="btn-method-"]').forEach(b => {
+    b.classList.remove('active', 'active-purple', 'active-cyan');
+    if (b.id === 'btn-method-matrix') b.classList.add('pill-btn');
+  });
+  
+  if (btn) {
+    if (methodKey === 'matrix') btn.classList.add('active-purple');
+    else btn.classList.add('active');
+  }
+  
+  const info = methodDescriptions[methodKey];
+  document.getElementById('explainerTitle').innerText = info.title;
+  document.getElementById('explainerDesc').innerHTML = info.desc;
+  document.getElementById('explainerBadge').innerText = info.badge;
+  
+  renderDashboard();
+}
+
+function switchCohort(cohortKey, btn) {
+  currentCohort = cohortKey;
+  document.querySelectorAll('.pills-group button[id^="btn-cohort-"]').forEach(b => {
+    b.classList.remove('active', 'active-cyan');
+  });
+  if (btn) btn.classList.add('active-cyan');
+  
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const cData = getCohortData();
+  const activeMethodKey = (currentMethod === 'matrix') ? 'daily' : currentMethod;
+  const list = cData[activeMethodKey] || [];
+  
+  // 1. Calculate Totals for KPIs
+  let totP_lt = 0, totP_ge = 0, totP = 0;
+  let totD_lt = 0, totD_ge = 0, totD = 0;
+  let sumAct_lt = 0, sumAct_ge = 0;
+  let sumCls_lt = 0, sumCls_ge = 0;
+  let mCount = list.length || 1;
+  
+  list.forEach(m => {
+    totP_lt += m.p_lt;
+    totP_ge += m.p_ge;
+    totP += m.tot_p;
+    totD_lt += m.d_lt;
+    totD_ge += m.d_ge;
+    totD += m.tot_d;
+    sumAct_lt += m.act_reps_lt;
+    sumAct_ge += m.act_reps_ge;
+    sumCls_lt += m.cls_reps_lt;
+    sumCls_ge += m.cls_reps_ge;
+  });
+  
+  const y_lt = totP_lt > 0 ? (totD_lt / totP_lt * 100) : 0;
+  const y_ge = totP_ge > 0 ? (totD_ge / totP_ge * 100) : 0;
+  const mult = y_ge > 0 ? (y_lt / y_ge) : 0;
+  const pShare_lt = totP > 0 ? (totP_lt / totP * 100) : 0;
+  const dShare_lt = totD > 0 ? (totD_lt / totD * 100) : 0;
+  const avgAct_lt = Math.round(sumAct_lt / mCount);
+  const avgAct_ge = Math.round(sumAct_ge / mCount);
+  const avgCls_lt = Math.round(sumCls_lt / mCount);
+  const avgCls_ge = Math.round(sumCls_ge / mCount);
+  const netD = Math.round(totD_lt - totD_ge);
+  
+  // Update KPI Cards
+  document.getElementById('kpiMultiplier').innerText = mult.toFixed(2) + 'x';
+  document.getElementById('kpiMultiplierSub').innerText = `< 5 Yield (${y_lt.toFixed(2)}%) vs ≥ 5 (${y_ge.toFixed(2)}%)`;
+  
+  document.getElementById('kpiPitches').innerHTML = `${totP_lt.toLocaleString()} <span style="font-size: 14px; color: var(--text-muted);">vs ${totP_ge.toLocaleString()}</span>`;
+  document.getElementById('kpiPitchesSub').innerText = `< 5 delivers ${pShare_lt.toFixed(1)}% of all presentations`;
+  
+  const netStr = (netD > 0 ? '+' : '') + netD.toLocaleString();
+  document.getElementById('kpiDeals').innerHTML = `${totD_lt.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} <span style="font-size: 14px; color: var(--text-muted);">vs ${totD_ge.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}</span>`;
+  document.getElementById('kpiDealsSub').innerHTML = `< 5 captures ${dShare_lt.toFixed(1)}% of deals (${netStr} net deals)`;
+  
+  document.getElementById('kpiActiveReps').innerHTML = `${avgAct_lt} <span style="font-size: 14px; color: var(--text-muted);">vs ${avgAct_ge} reps</span>`;
+  document.getElementById('kpiActiveRepsSub').innerText = 'Avg active pitching reps per month';
+  
+  document.getElementById('kpiClosingReps').innerHTML = `${avgCls_lt} <span style="font-size: 14px; color: var(--text-muted);">vs ${avgCls_ge} reps</span>`;
+  document.getElementById('kpiClosingRepsSub').innerText = 'Avg closing reps winning deals per month';
+  
+  // Table headers
+  const mTitle = (currentMethod === 'daily') ? 'Daily Shift Pacing' : (currentMethod === 'monthly' ? 'Monthly Average Pacing' : (currentMethod === 'overall' ? 'Overall Career Average Pacing' : 'Daily Shift Baseline'));
+  document.getElementById('tableTitle').innerText = `Month-on-Month Performance Breakdown: ${mTitle}`;
+  document.getElementById('tableBadge').innerText = (currentMethod === 'matrix') ? 'Matrix Active' : mTitle;
+  
+  // Render Primary Table
+  renderMonthlyTable(list);
+  
+  // Render Unified Matrix
+  renderMatrixTable(cData);
+  
+  // Draw SVG Charts
+  drawYieldChart(list);
+  drawDealsChart(list);
+  drawPitchesChart(list);
+  drawRepsChart(list);
+}
+
+function renderMonthlyTable(list) {
+  const tbody = document.getElementById('monthlyTableBody');
+  if (!tbody) return;
+  let html = '';
+  
+  let totP_lt = 0, totP_ge = 0, totP = 0;
+  let totD_lt = 0, totD_ge = 0, totD = 0;
+  
+  list.forEach(m => {
+    totP_lt += m.p_lt; totP_ge += m.p_ge; totP += m.tot_p;
+    totD_lt += m.d_lt; totD_ge += m.d_ge; totD += m.tot_d;
+    
+    html += `<tr>
+      <td class="font-bold">${m.month}</td>
+      <td class="num text-cyan">${m.p_lt.toLocaleString()}</td>
+      <td class="num text-muted">${m.p_ge.toLocaleString()}</td>
+      <td class="num">${m.tot_p.toLocaleString()}</td>
+      <td class="num font-bold text-blue">${m.p_sh_lt}%</td>
+      <td class="num text-green font-bold">${m.d_lt.toFixed(1)}</td>
+      <td class="num text-red">${m.d_ge.toFixed(1)}</td>
+      <td class="num">${m.tot_d.toFixed(1)}</td>
+      <td class="num font-bold text-green">${m.d_sh_lt}%</td>
+      <td class="num text-cyan font-bold">${m.y_lt.toFixed(2)}%</td>
+      <td class="num text-red">${m.y_ge.toFixed(2)}%</td>
+      <td class="num text-yellow font-bold">${m.mult.toFixed(2)}x</td>
+      <td class="num font-bold ${m.net_d >= 0 ? 'text-green' : 'text-yellow'}">${m.net_d > 0 ? '+' : ''}${m.net_d.toFixed(1)}</td>
+      <td class="center font-bold text-cyan">${m.act_reps_lt}</td>
+      <td class="center text-muted">${m.act_reps_ge}</td>
+      <td class="center font-bold text-green">${m.cls_reps_lt}</td>
+      <td class="center text-red">${m.cls_reps_ge}</td>
+      <td class="num text-cyan">${m.dpr_lt.toFixed(2)}</td>
+      <td class="num text-muted">${m.dpr_ge.toFixed(2)}</td>
+    </tr>`;
+  });
+  
+  const ov_y_lt = totP_lt > 0 ? (totD_lt / totP_lt * 100) : 0;
+  const ov_y_ge = totP_ge > 0 ? (totD_ge / totP_ge * 100) : 0;
+  const ov_mult = ov_y_ge > 0 ? (ov_y_lt / ov_y_ge) : 0;
+  const ov_p_sh = totP > 0 ? (totP_lt / totP * 100) : 0;
+  const ov_d_sh = totD > 0 ? (totD_lt / totD * 100) : 0;
+  const ov_net_d = totD_lt - totD_ge;
+  
+  html += `<tr style="background: #111827; font-weight: 700; border-top: 2px solid var(--border-color);">
+    <td style="color: #fff;">TOTAL / OVERALL</td>
+    <td class="num text-cyan">${totP_lt.toLocaleString()}</td>
+    <td class="num text-muted">${totP_ge.toLocaleString()}</td>
+    <td class="num">${totP.toLocaleString()}</td>
+    <td class="num text-blue">${ov_p_sh.toFixed(1)}%</td>
+    <td class="num text-green font-bold">${totD_lt.toFixed(1)}</td>
+    <td class="num text-red">${totD_ge.toFixed(1)}</td>
+    <td class="num">${totD.toFixed(1)}</td>
+    <td class="num text-green">${ov_d_sh.toFixed(1)}%</td>
+    <td class="num text-cyan font-bold">${ov_y_lt.toFixed(2)}%</td>
+    <td class="num text-red">${ov_y_ge.toFixed(2)}%</td>
+    <td class="num text-yellow font-bold">${ov_mult.toFixed(2)}x</td>
+    <td class="num text-green">${ov_net_d > 0 ? '+' : ''}${ov_net_d.toFixed(1)}</td>
+    <td class="center text-cyan">-</td>
+    <td class="center text-muted">-</td>
+    <td class="center text-green">-</td>
+    <td class="center text-red">-</td>
+    <td class="num text-cyan">-</td>
+    <td class="num text-muted">-</td>
+  </tr>`;
+  
+  tbody.innerHTML = html;
+}
+
+function renderMatrixTable(cData) {
+  const tbody = document.getElementById('matrixTableBody');
+  if (!tbody) return;
+  const dList = cData.daily || [];
+  const mList = cData.monthly || [];
+  const oList = cData.overall || [];
+  
+  let html = '';
+  for (let i = 0; i < dList.length; i++) {
+    const d = dList[i] || {};
+    const m = mList[i] || {};
+    const o = oList[i] || {};
+    
+    html += `<tr>
+      <td class="font-bold">${d.month || 'Month'}</td>
+      
+      <!-- Daily -->
+      <td class="num text-cyan" style="background: rgba(59, 130, 246, 0.05); border-left: 1px solid var(--border-color);">${(d.y_lt||0).toFixed(2)}%</td>
+      <td class="num text-muted" style="background: rgba(59, 130, 246, 0.05);">${(d.y_ge||0).toFixed(2)}%</td>
+      <td class="num font-bold text-yellow" style="background: rgba(59, 130, 246, 0.05); border-right: 1px solid var(--border-color);">${(d.mult||0).toFixed(2)}x</td>
+      
+      <!-- Monthly -->
+      <td class="num text-cyan" style="background: rgba(6, 182, 212, 0.05);">${(m.y_lt||0).toFixed(2)}%</td>
+      <td class="num text-muted" style="background: rgba(6, 182, 212, 0.05);">${(m.y_ge||0).toFixed(2)}%</td>
+      <td class="num font-bold text-yellow" style="background: rgba(6, 182, 212, 0.05); border-right: 1px solid var(--border-color);">${(m.mult||0).toFixed(2)}x</td>
+      
+      <!-- Overall -->
+      <td class="num text-cyan" style="background: rgba(139, 92, 246, 0.05);">${(o.y_lt||0).toFixed(2)}%</td>
+      <td class="num text-muted" style="background: rgba(139, 92, 246, 0.05);">${(o.y_ge||0).toFixed(2)}%</td>
+      <td class="num font-bold text-yellow" style="background: rgba(139, 92, 246, 0.05); border-right: 1px solid var(--border-color);">${(o.mult||0).toFixed(2)}x</td>
+      
+      <!-- Triangulated -->
+      <td class="center font-bold text-green" style="background: rgba(16, 185, 129, 0.05);">${(m.d_sh_lt||d.d_sh_lt||0).toFixed(1)}%</td>
+      <td class="center" style="background: rgba(16, 185, 129, 0.05);"><span class="badge badge-green">&lt; 5 PACING</span></td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+}
+
+/* SVG Chart Drawing Functions */
+function drawYieldChart(list) {
+  const container = document.getElementById('chartYield');
+  if (!container || !list.length) return;
+  const w = container.clientWidth || 500;
+  const h = 260;
+  const padL = 40, padR = 40, padT = 30, padB = 40;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+  
+  const maxY = 4.5;
+  const maxM = 3.5;
+  const n = list.length;
+  const step = chartW / n;
+  
+  let svg = `<svg width="${w}" height="${h}" style="overflow:visible;">`;
+  
+  for (let y = 0; y <= 4; y += 1) {
+    const yPos = padT + chartH - (y / maxY * chartH);
+    svg += `<line x1="${padL}" y1="${yPos}" x2="${w - padR}" y2="${yPos}" stroke="#334155" stroke-dasharray="3,3" />`;
+    svg += `<text x="${padL - 8}" y="${yPos + 4}" fill="#94a3b8" font-size="10" text-anchor="end">${y}%</text>`;
+  }
+  
+  svg += `<text x="${w - padR + 8}" y="${padT - 10}" fill="#fbbf24" font-size="10" text-anchor="start">Mult (x)</text>`;
+  
+  let linePoints = [];
+  
+  list.forEach((m, i) => {
+    const x = padL + i * step + step / 2;
+    const barW = Math.max(12, step * 0.28);
+    
+    const hLt = (m.y_lt / maxY) * chartH;
+    const yLt = padT + chartH - hLt;
+    svg += `<rect x="${x - barW - 2}" y="${yLt}" width="${barW}" height="${hLt}" fill="#38bdf8" rx="2" />`;
+    svg += `<text x="${x - barW / 2 - 2}" y="${yLt - 4}" fill="#38bdf8" font-size="10" text-anchor="middle" font-weight="700">${m.y_lt}%</text>`;
+    
+    const hGe = (m.y_ge / maxY) * chartH;
+    const yGe = padT + chartH - hGe;
+    svg += `<rect x="${x + 2}" y="${yGe}" width="${barW}" height="${hGe}" fill="#f43f5e" rx="2" />`;
+    svg += `<text x="${x + barW / 2 + 2}" y="${yGe - 4}" fill="#f87171" font-size="10" text-anchor="middle">${m.y_ge}%</text>`;
+    
+    const yMult = padT + chartH - (m.mult / maxM * chartH);
+    linePoints.push({ x, y: yMult, val: m.mult });
+    
+    const mLabel = m.month.split(' ')[0];
+    svg += `<text x="${x}" y="${h - 14}" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="600">${mLabel}</text>`;
+  });
+  
+  if (linePoints.length > 1) {
+    let pathD = `M ${linePoints[0].x} ${linePoints[0].y}`;
+    for (let i = 1; i < linePoints.length; i++) {
+      pathD += ` L ${linePoints[i].x} ${linePoints[i].y}`;
+    }
+    svg += `<path d="${pathD}" fill="none" stroke="#fbbf24" stroke-width="2.5" />`;
+    linePoints.forEach(p => {
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fbbf24" stroke="#0f172a" stroke-width="2" />`;
+      svg += `<text x="${p.x}" y="${p.y - 8}" fill="#fbbf24" font-size="10" text-anchor="middle" font-weight="700">${p.val}x</text>`;
+    });
+  }
+  
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+function drawDealsChart(list) {
+  const container = document.getElementById('chartDeals');
+  if (!container || !list.length) return;
+  const w = container.clientWidth || 500;
+  const h = 260;
+  const padL = 40, padR = 40, padT = 30, padB = 40;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+  
+  const maxD = 400;
+  const n = list.length;
+  const step = chartW / n;
+  
+  let svg = `<svg width="${w}" height="${h}" style="overflow:visible;">`;
+  
+  for (let d = 0; d <= maxD; d += 100) {
+    const yPos = padT + chartH - (d / maxD * chartH);
+    svg += `<line x1="${padL}" y1="${yPos}" x2="${w - padR}" y2="${yPos}" stroke="#334155" stroke-dasharray="3,3" />`;
+    svg += `<text x="${padL - 8}" y="${yPos + 4}" fill="#94a3b8" font-size="10" text-anchor="end">${d}</text>`;
+  }
+  
+  let sharePoints = [];
+  
+  list.forEach((m, i) => {
+    const x = padL + i * step + step / 2;
+    const barW = Math.max(12, step * 0.28);
+    
+    const hLt = (m.d_lt / maxD) * chartH;
+    const yLt = padT + chartH - hLt;
+    svg += `<rect x="${x - barW - 2}" y="${yLt}" width="${barW}" height="${hLt}" fill="#34d399" rx="2" />`;
+    svg += `<text x="${x - barW / 2 - 2}" y="${yLt - 4}" fill="#34d399" font-size="10" text-anchor="middle" font-weight="700">${Math.round(m.d_lt)}</text>`;
+    
+    const hGe = (m.d_ge / maxD) * chartH;
+    const yGe = padT + chartH - hGe;
+    svg += `<rect x="${x + 2}" y="${yGe}" width="${barW}" height="${hGe}" fill="#f87171" rx="2" />`;
+    svg += `<text x="${x + barW / 2 + 2}" y="${yGe - 4}" fill="#f87171" font-size="10" text-anchor="middle">${Math.round(m.d_ge)}</text>`;
+    
+    const yShare = padT + chartH - (m.d_sh_lt / 100 * chartH);
+    sharePoints.push({ x, y: yShare, val: m.d_sh_lt });
+    
+    const mLabel = m.month.split(' ')[0];
+    svg += `<text x="${x}" y="${h - 14}" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="600">${mLabel}</text>`;
+  });
+  
+  if (sharePoints.length > 1) {
+    let pathD = `M ${sharePoints[0].x} ${sharePoints[0].y}`;
+    for (let i = 1; i < sharePoints.length; i++) pathD += ` L ${sharePoints[i].x} ${sharePoints[i].y}`;
+    svg += `<path d="${pathD}" fill="none" stroke="#a78bfa" stroke-width="2.5" />`;
+    sharePoints.forEach(p => {
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#a78bfa" stroke="#0f172a" stroke-width="2" />`;
+      svg += `<text x="${p.x}" y="${p.y - 8}" fill="#c084fc" font-size="10" text-anchor="middle" font-weight="700">${p.val}%</text>`;
+    });
+  }
+  
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+function drawPitchesChart(list) {
+  const container = document.getElementById('chartPitches');
+  if (!container || !list.length) return;
+  const w = container.clientWidth || 500;
+  const h = 260;
+  const padL = 45, padR = 20, padT = 30, padB = 40;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+  
+  const maxP = 25000;
+  const n = list.length;
+  const step = chartW / n;
+  
+  let svg = `<svg width="${w}" height="${h}" style="overflow:visible;">`;
+  
+  for (let p = 0; p <= maxP; p += 5000) {
+    const yPos = padT + chartH - (p / maxP * chartH);
+    svg += `<line x1="${padL}" y1="${yPos}" x2="${w - padR}" y2="${yPos}" stroke="#334155" stroke-dasharray="3,3" />`;
+    svg += `<text x="${padL - 8}" y="${yPos + 4}" fill="#94a3b8" font-size="10" text-anchor="end">${(p/1000)}k</text>`;
+  }
+  
+  list.forEach((m, i) => {
+    const x = padL + i * step + step / 2;
+    const barW = Math.max(12, step * 0.28);
+    
+    const hLt = (m.p_lt / maxP) * chartH;
+    const yLt = padT + chartH - hLt;
+    svg += `<rect x="${x - barW - 2}" y="${yLt}" width="${barW}" height="${hLt}" fill="#60a5fa" rx="2" />`;
+    svg += `<text x="${x - barW / 2 - 2}" y="${yLt - 4}" fill="#60a5fa" font-size="10" text-anchor="middle" font-weight="700">${(m.p_lt/1000).toFixed(1)}k</text>`;
+    
+    const hGe = (m.p_ge / maxP) * chartH;
+    const yGe = padT + chartH - hGe;
+    svg += `<rect x="${x + 2}" y="${yGe}" width="${barW}" height="${hGe}" fill="#94a3b8" rx="2" />`;
+    svg += `<text x="${x + barW / 2 + 2}" y="${yGe - 4}" fill="#94a3b8" font-size="10" text-anchor="middle">${(m.p_ge/1000).toFixed(1)}k</text>`;
+    
+    const mLabel = m.month.split(' ')[0];
+    svg += `<text x="${x}" y="${h - 14}" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="600">${mLabel}</text>`;
+  });
+  
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+function drawRepsChart(list) {
+  const container = document.getElementById('chartReps');
+  if (!container || !list.length) return;
+  const w = container.clientWidth || 500;
+  const h = 260;
+  const padL = 40, padR = 20, padT = 30, padB = 40;
+  const chartW = w - padL - padR;
+  const chartH = h - padT - padB;
+  
+  const maxR = 300;
+  const n = list.length;
+  const step = chartW / n;
+  
+  let svg = `<svg width="${w}" height="${h}" style="overflow:visible;">`;
+  
+  for (let r = 0; r <= maxR; r += 50) {
+    const yPos = padT + chartH - (r / maxR * chartH);
+    svg += `<line x1="${padL}" y1="${yPos}" x2="${w - padR}" y2="${yPos}" stroke="#334155" stroke-dasharray="3,3" />`;
+    svg += `<text x="${padL - 8}" y="${yPos + 4}" fill="#94a3b8" font-size="10" text-anchor="end">${r}</text>`;
+  }
+  
+  let clsLtPoints = [];
+  let clsGePoints = [];
+  
+  list.forEach((m, i) => {
+    const x = padL + i * step + step / 2;
+    const barW = Math.max(12, step * 0.28);
+    
+    const hLt = (m.act_reps_lt / maxR) * chartH;
+    const yLt = padT + chartH - hLt;
+    svg += `<rect x="${x - barW - 2}" y="${yLt}" width="${barW}" height="${hLt}" fill="#38bdf8" rx="2" />`;
+    svg += `<text x="${x - barW / 2 - 2}" y="${yLt - 4}" fill="#38bdf8" font-size="9" text-anchor="middle">${m.act_reps_lt}</text>`;
+    
+    const hGe = (m.act_reps_ge / maxR) * chartH;
+    const yGe = padT + chartH - hGe;
+    svg += `<rect x="${x + 2}" y="${yGe}" width="${barW}" height="${hGe}" fill="#64748b" rx="2" />`;
+    svg += `<text x="${x + barW / 2 + 2}" y="${yGe - 4}" fill="#94a3b8" font-size="9" text-anchor="middle">${m.act_reps_ge}</text>`;
+    
+    const yClsLt = padT + chartH - (m.cls_reps_lt / maxR * chartH);
+    const yClsGe = padT + chartH - (m.cls_reps_ge / maxR * chartH);
+    clsLtPoints.push({ x: x - barW/2 - 2, y: yClsLt, val: m.cls_reps_lt });
+    clsGePoints.push({ x: x + barW/2 + 2, y: yClsGe, val: m.cls_reps_ge });
+    
+    const mLabel = m.month.split(' ')[0];
+    svg += `<text x="${x}" y="${h - 14}" fill="#cbd5e1" font-size="11" text-anchor="middle" font-weight="600">${mLabel}</text>`;
+  });
+  
+  clsLtPoints.forEach(p => {
+    svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#34d399" stroke="#0f172a" stroke-width="2" />`;
+  });
+  clsGePoints.forEach(p => {
+    svg += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#f87171" stroke="#0f172a" stroke-width="2" />`;
+  });
+  
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderDashboard();
+});
+
+window.addEventListener('resize', () => {
+  renderDashboard();
+});
+</script>
+
+</body>
+</html>

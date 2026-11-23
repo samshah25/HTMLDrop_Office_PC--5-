@@ -11714,5 +11714,15 @@
     "lon": 79.2771,
     "x": 417,
     "y": 696
+  },
+  "karwar": {
+    "displayName": "Karwar",
+    "branch": "bangalore",
+    "main_city_flag": 0,
+    "mainRemote": "Remote",
+    "lat": 13.6561,
+    "lon": 77.6725,
+    "x": 354,
+    "y": 791
   }
 }

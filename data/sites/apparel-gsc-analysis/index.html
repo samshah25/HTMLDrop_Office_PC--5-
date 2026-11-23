@@ -207,7 +207,7 @@ td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 td.url{min-width:240px;max-width:320px;font-family:var(--font-mono);font-size:11.5px}
 .clamp{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
-.clamp.l2{-webkit-line-clamp:2;line-clamp:2}.clamp.l3{-webkit-line-clamp:3;line-clamp:3;word-break:normal}
+.clamp.l2{-webkit-line-clamp:2}.clamp.l3{-webkit-line-clamp:3;word-break:normal}
 td.url a{color:var(--ink-2);text-decoration:none} td.url a:hover{color:var(--acc);text-decoration:underline}
 td.q{font-size:12px;color:var(--ink-2);min-width:200px;max-width:300px}
 .mini{display:flex;gap:1px;height:10px;width:120px;border-radius:3px;overflow:hidden}
@@ -375,6 +375,7 @@ tr[hidden]{display:none}
   const PAGES = [
     ['hub', '', 'Home', 'Home: choose Gym or Apparel'],
     ['cohorts', 'gym', 'Gym', 'Gym cohorts'],
+    ['survey', '', 'Gym', 'Gym survey calls'],
     ['cohorts', 'apparel', 'Apparel', 'Main: Apparel cohorts'],
     ['gsc', 'query', 'Apparel · GSC search analysis', 'Query classification'],
     ['gsc', 'yoy', 'Apparel · GSC search analysis', 'YoY search, leads & revenue'],
@@ -385,11 +386,11 @@ tr[hidden]{display:none}
     ['market', '', 'Apparel · Market trend', 'Market trend'],
   ];
   // office host (HTML Drop) links, and the same files on the laptop
-  const HD = { hub: '/s/apparel-gym-hub/', cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/' };
+  const HD = { hub: '/s/apparel-gym-hub/', cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/', survey: '/s/gym-survey-summary/' };
   const L = 'file:///D:/claude/01%20Dashboards/apparel_gym_dashboard/';
   const LOCAL = { hub: L + 'Apparel_Gym_Hub.html', cohorts: L + 'Apparel_Gym_Cohorts.html', gsc: L + 'Apparel_GSC_Analysis.html', city: L + 'Apparel_City_Search_Calls.html',
-    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html' };
-  const FILE_OF = { 'apparel_gym_hub.html': 'hub', 'apparel_gym_cohorts.html': 'cohorts', 'apparel_gsc_analysis.html': 'gsc', 'apparel_city_search_calls.html': 'city', 'apparel_market_trend.html': 'market' };
+    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html', survey: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/gym_survey_analysis/output/Gym_Survey_Summary.html' };
+  const FILE_OF = { 'apparel_gym_hub.html': 'hub', 'apparel_gym_cohorts.html': 'cohorts', 'apparel_gsc_analysis.html': 'gsc', 'apparel_city_search_calls.html': 'city', 'apparel_market_trend.html': 'market', 'gym_survey_summary.html': 'survey' };
   const onHD = location.pathname.startsWith('/s/');
   const here = () => {
     if (onHD) { const slug = location.pathname.split('/')[2]; return Object.keys(HD).find(k => HD[k] === '/s/' + slug + '/') || ''; }
@@ -414,7 +415,7 @@ tr[hidden]{display:none}
     if (key === last) return; last = key;
     // the one back option: '<- All pages' = the first page, opened on Gym or Apparel (hidden on the first page itself)
     const onHub = !c || c[0] === 'hub'; home.hidden = onHub; title.hidden = !onHub;
-    home.href = url(PAGES[0]) + '#' + (c && c[1] === 'gym' ? 'gym' : 'apparel');
+    home.href = url(PAGES[0]) + '#' + (c && (c[1] === 'gym' || c[2] === 'Gym') ? 'gym' : 'apparel');
     if (c) { sel.value = String(PAGES.indexOf(c)); lab.textContent = c[0] === 'hub' ? '' : c[2].endsWith(c[3]) ? c[2] : c[2] + ' · ' + c[3]; }
   };
   sel.addEventListener('change', () => {

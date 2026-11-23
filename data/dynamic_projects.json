@@ -91,7 +91,7 @@
     "title": "Rating & Review Explorer",
     "owner": "priyal",
     "created": "2026-10-16T16:22:20",
-    "updated": "2026-11-12T12:53:53",
+    "updated": "2026-11-16T14:32:04",
     "port": 8150,
     "status": "running",
     "entry": "index.html",
@@ -172,6 +172,56 @@
       "enabled": true,
       "task_name": "HTMLDrop_Refresh_hyderabad-jda-dashboard",
       "updated": "2026-10-29T13:32:01",
+      "last_status": "scheduled"
+    }
+  },
+  "jda-pacing-and-early-deal-master-dashboard-suite": {
+    "slug": "jda-pacing-and-early-deal-master-dashboard-suite",
+    "title": "JDA Pacing and Early Deal Master Dashboard Suite",
+    "owner": "samaksha",
+    "created": "2026-11-19T15:07:33",
+    "updated": "2026-11-19T15:13:58",
+    "port": 8150,
+    "status": "running",
+    "entry": "Complete_Executive_Summary_Sales_Audit_and_Pacing.html",
+    "launch_type": "static",
+    "pid": null,
+    "url": "/s/jda-pacing-and-early-deal-master-dashboard-suite/",
+    "show_on_master": false,
+    "master_scope": "all",
+    "category": "funnel",
+    "message": "Dashboard is live on port 8150."
+  },
+  "jd-india-sales-overview": {
+    "slug": "jd-india-sales-overview",
+    "title": "JD India sales overview",
+    "owner": "sarvesh",
+    "created": "2026-10-08T18:41:45",
+    "updated": "2026-11-23T12:29:14",
+    "port": 8150,
+    "status": "running",
+    "entry": "jd-india-sales-overview.html",
+    "launch_type": "static",
+    "pid": null,
+    "url": "/s/jd-india-sales-overview/",
+    "show_on_master": true,
+    "master_scope": "general",
+    "category": "other",
+    "category_pinned": true,
+    "message": "Dashboard is live on port 8150.",
+    "refresh": {
+      "frequency": "weekly",
+      "time": "08:00",
+      "hours": 1,
+      "days_interval": 1,
+      "days": [
+        "Sun"
+      ],
+      "catch_up": true,
+      "wake_to_run": true,
+      "enabled": true,
+      "task_name": "HTMLDrop_Refresh_jd-india-sales-overview",
+      "updated": "2026-11-23T12:29:14",
       "last_status": "scheduled"
     }
   }

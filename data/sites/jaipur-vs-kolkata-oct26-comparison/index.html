@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaipur and Kolkata levers</title>
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5b6675; --line:#dfe4ea; --soft:#f5f7fa; --page:#ffffff;
+    --jai:#b45309; --kol:#1d4ed8; --co:#6b7280;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef1f5;color:var(--ink);font:14px/1.5 "Segoe UI",Arial,sans-serif}
+  .page{max-width:1180px;margin:0 auto;background:var(--page);padding:28px 40px 36px}
+  h1{font-size:25px;margin:0 0 4px;letter-spacing:-.2px}
+  .sub{color:var(--muted);margin:0 0 12px}
+  h2{font-size:18px;margin:28px 0 8px;padding-top:10px;border-top:2px solid var(--ink)}
+  h2 .step{color:var(--muted);font-weight:600;margin-right:8px}
+  h3{font-size:15.5px;margin:0 0 6px}
+  p{margin:0 0 6px}
+  .note{color:var(--muted);font-size:12.5px}
+  ul{margin:4px 0 0;padding-left:18px} li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}
+  thead th{background:var(--soft);font-weight:600;font-size:12.5px;border-bottom:1px solid #c9d0d9}
+  th.j{color:var(--jai)} th.k{color:var(--kol)}
+  td.j{background:#fffaf2} td.k{background:#f5f8ff}
+  .levers td.ln{font-weight:700;color:var(--muted);width:24px}
+  .levers td.lv-name{font-weight:600;width:27%}
+  .levers td.worth{width:27%}
+  table.avpc th, table.avpc td{text-align:right;font-size:12.5px;padding:4px 7px}
+  table.avpc th:first-child, table.avpc td:first-child{text-align:left}
+  table.avpc tr.tot td{font-weight:600;border-bottom:1px solid #c9d0d9}
+  table.avpc tr.sec td{background:var(--soft);font-weight:600;color:var(--muted);text-align:left;font-size:12px;padding-top:6px}
+  table.avpc .gs{border-left:1px solid #c9d0d9}
+  .summary h3{font-size:15px;margin:0 0 6px} .summary ol{margin:6px 0 4px;padding-left:20px} .summary li{margin:5px 0}
+  table.avpc.gap{margin-top:2px} table.avpc.gap td:first-child{white-space:nowrap}
+  .ctl{margin:0 0 10px;font-size:13px;color:var(--muted)}
+  .basis{display:inline-flex;border:1px solid #c9d0d9;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 4px}
+  .basis button{font:inherit;font-size:12.5px;padding:3px 10px;border:0;background:#fff;color:var(--muted);cursor:pointer}
+  .basis button.on{background:var(--ink);color:#fff}
+  body:not(.basis-b) .only-b{display:none} body.basis-b .only-o{display:none}
+  table.avpc.side td.gs{color:var(--muted);white-space:nowrap}
+  .find{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:8px 0}
+  .full{grid-column:1 / -1}
+  .card{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:22px;border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:10px 0}
+  .tag{font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+  dl.lev{display:grid;grid-template-columns:78px 1fr;gap:4px 10px;margin:10px 0 0;padding:9px 12px;background:var(--soft);border-radius:6px;font-size:13px}
+  dl.lev dt{font-weight:700;color:var(--muted)} dl.lev dd{margin:0}
+  .figt{font-size:12.5px;color:var(--muted);margin:0 0 4px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+  .dot.j{background:var(--jai)} .dot.k{background:var(--kol)}
+  .who-key{font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .who-key .dot{margin-left:10px}
+  .hb-h{font-size:12.5px;color:var(--muted);margin:8px 0 2px}
+  .hb{display:grid;grid-template-columns:96px 1fr 118px;gap:8px;align-items:center;font-size:13px;margin:3px 0}
+  .hb .track{height:12px}
+  .hb .bar{height:12px;border-radius:0 4px 4px 0}
+  .hb .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .gb-axis{display:grid;grid-template-columns:118px 1fr 1fr 52px;font-size:12px;color:var(--muted);margin:6px 0 2px}
+  .gb-axis span:nth-child(2){text-align:right;padding-right:8px} .gb-axis span:nth-child(3){padding-left:8px}
+  .gb{display:grid;grid-template-columns:118px 1fr 1fr 52px;align-items:center;font-size:13px;margin:5px 0}
+  .gb .half{display:flex;height:14px}
+  .gb .half.l{justify-content:flex-end;border-right:1px solid #8b95a3}
+  .gb .half.l .bar{height:14px;border-radius:4px 0 0 4px}
+  .gb .half.r .bar{height:14px;border-radius:0 4px 4px 0}
+  .gb .num{text-align:right;font-variant-numeric:tabular-nums}
+  .gb.tot{border-top:1px solid var(--line);padding-top:5px;font-weight:600}
+  .tm-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin:2px 0 4px}
+  .tm-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-2px}
+  .lv{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .lv-h{font-size:13px;font-weight:600;margin:8px 0 2px}
+  .sb{display:grid;grid-template-columns:150px 1fr 40px;gap:8px;align-items:center;font-size:12.5px;margin:3px 0}
+  .sb .sbt{height:18px}
+  .sb .sbar{display:flex;gap:2px;height:18px;border-radius:4px;overflow:hidden}
+  .sb .seg{display:flex;align-items:center;justify-content:center;font-size:11px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+  .sb .tot{text-align:right;color:var(--muted);font-size:12px}
+  details{margin:8px 0 0}
+  summary{cursor:pointer;color:var(--muted);font-size:13px;text-decoration:underline}
+  ul.names{columns:3;column-gap:18px;list-style:none;padding:6px 0 0;margin:0;font-size:12.5px}
+  ul.names li{margin:2px 0;break-inside:avoid} ul.names span{color:var(--muted)}
+  .foot{margin-top:16px;color:var(--muted);font-size:12.5px}
+  .foot a{color:var(--ink)}
+  @media (max-width:900px){.find,.card,.lv{grid-template-columns:1fr}}
+  @page{size:A4;margin:9mm 9mm 10mm}
+  @media print{
+    body{background:#fff;font-size:10.3px;line-height:1.32}
+    .page{padding:0;max-width:none}
+    h1{font-size:17px} .sub{font-size:10px;margin-bottom:6px}
+    h2{font-size:13px;margin:10px 0 5px;padding-top:5px;break-after:avoid}
+    h3{font-size:12px;margin-bottom:3px}
+    li{margin:2px 0}
+    .note,.figt,.hb-h,.tm-legend,.sb .tot{font-size:9.2px}
+    th,td{font-size:9.6px;padding:3px 5px}
+    .find,.card{gap:12px;padding:8px 11px;margin:6px 0;break-inside:avoid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr)}
+    .lv{grid-template-columns:1fr 1fr}
+    .summary h3{font-size:11.5px} .summary ol{padding-left:15px} .summary li{margin:2px 0}
+    .find,.card,.card.breakable{break-inside:auto} table,dl.lev,.pair,.sb,.lv > div,.summary li{break-inside:avoid} h3{break-after:avoid}
+    .find,.card{display:flow-root} .find > div:nth-child(1),.card > div:nth-child(1){float:left;width:54%}
+    .find > div:nth-child(2),.card > div:nth-child(2){float:right;width:43%} .find > div.full,.card > div.full{clear:both;float:none;width:auto;padding-top:6px}
+    .figt{break-after:avoid}
+    dl.lev{font-size:9.8px;padding:6px 9px;margin-top:6px;grid-template-columns:52px 1fr}
+    .hb{grid-template-columns:62px 1fr 78px;font-size:9.6px;margin:1px 0}
+    .hb .track,.hb .bar{height:9px}
+    .hb-h{margin:4px 0 1px}
+    .gb,.gb-axis{grid-template-columns:96px 1fr 1fr 40px;font-size:9.6px;margin:2px 0}
+    .gb .half,.gb .half .bar{height:10px}
+    .sb{grid-template-columns:118px 1fr 0;font-size:9.4px;margin:1px 0}
+    .sb .sbt,.sb .sbar{height:13px} .sb .seg{font-size:8.6px}
+    .lv-h{font-size:10px;margin:4px 0 1px}
+    .lv{gap:16px}
+    .tag{font-size:9px}
+    table.avpc th, table.avpc td{font-size:9px;padding:1px 5px;line-height:1.3}
+    table.avpc tr.sec td{font-size:9px;padding:2px 5px}
+    details{display:none}
+    .basis{border:0;margin:0} .basis button:not(.on){display:none} .basis button.on{background:none;color:var(--ink);padding:0;font-weight:600}
+    .ctl{font-size:9.4px;margin-bottom:4px}
+    .foot{font-size:9.4px;margin-top:8px}
+    a{color:inherit;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Jaipur against Kolkata, October'26: the gap and five levers</h1>
+<p class="sub">October'26, against October'25 where marked · from the October'26 branch reviews and the deal, appointment, HR, call and presentation records · <span class="who-key"><span class="dot j"></span>Jaipur <span class="dot k"></span>Kolkata</span></p>
+<p class="ctl">Contract value shown on <span class="basis"><button type="button" data-b="o" class="on">original budget</button><button type="button" data-b="b">budget</button></span> · switches every contract-value figure; on some deals the original budget runs far above the budget.</p>
+
+<h2><span class="step">1</span>Why Jaipur is behind, and what to act on</h2>
+<div class="find summary">
+  <div>
+    <h3>Why Jaipur is behind</h3>
+    <p>Jaipur is not behind everywhere: its Main City grew +22% against Kolkata's −3%. The gap is Remote City, plus two gaps across the whole branch: new JDAs and ECS months.</p>
+    <ol>
+      <li><b>Remote City:</b> 24 points to Kolkata, while Jaipur is 12 points ahead in Main City. Remote grew +2% against +39%. Per manday in Remote, Jaipur's Super Cat brings 72% of Kolkata's RV 3-yr, its JDAs 57% and its MEs 40%; Super Cat and Hot Data contracts are <span class="only-o">76%</span><span class="only-b">74%</span> and <span class="only-o">75%</span><span class="only-b">74%</span> of Kolkata's size.</li>
+      <li><b>Super Cat is small for its load and works only paid contracts:</b> 47 TMEs against 150, 7.4 renewals due per TME against 2.0. Per TME it keeps the same pace and conversion, but spends 6% of its trunk duration on non-paid contracts against 47%.</li>
+      <li><b>MEs are under-fed, not under-performing:</b> 41 appointments per ME against 54, closed at the same 33%; Super Cat sets 15 a month per ME against 32. In Main City, Jaipur's MEs close as many deals per ME (14.3 against 14.5).</li>
+      <li><b>New JDAs do not reach a first deal:</b> 69% of those who joined after 15 July have none (Kolkata 24%), in Main City and Remote alike; 65% of JDA leavers go within three months.</li>
+      <li><b>ECS customers pay for fewer months:</b> 8.5 against 11.4 (company 9.2), in every team and on both sides; more come back through Bounce or Retention as a new deal (9.3% against 0.6%).</li>
+      <li><b>Too few people:</b> TME + JDA mandays rose 6.1% against 35.5%.</li>
+    </ol>
+    <p class="note"><b>Not the problem:</b> ME conversion, Super Cat output per TME, the Hot Data team (ahead) and Main City.</p>
+  </div>
+  <div>
+    <h3>What to act on</h3>
+    <ol>
+      <li><b>Build Remote Super Cat capacity:</b> more Super Cat TMEs on Remote paid contracts, and a share of Remote non-paid leads as in Kolkata; from hiring, or some of the 28 experienced Hot Data TMEs (watching Hot Data, a strength today). About ₹27 lakh a month.</li>
+      <li><b>Raise appointments per ME</b> from 41 towards 54, mostly through action 1; MEs have room (Kolkata's busiest close 38%). About ₹71 lakh (overlaps with 1).</li>
+      <li><b>Fix a new JDA's first 90 days:</b> pair each with an experienced JDA, a first-deal target within 30–60 days, a weekly look at presentations against deals, and an exit review for early leavers; start with the 56 who joined after 15 July and have no deal yet. About ₹15 lakh.</li>
+      <li><b>Remote pricing and Remote JDA output:</b> Remote contract size, and Remote JDAs towards the company's Remote rate. About ₹23 lakh of RV 3-yr, and <span class="only-o">₹41 lakh</span><span class="only-b">₹44 lakh</span> of contract value.</li>
+      <li><b>Keep ECS contracts running:</b> after a bounce, recover on the running contract rather than re-sign; start with JDA ECS deals (7.5 months). About ₹27 lakh for each extra month; ₹20 lakh at the company's 9.2.</li>
+      <li><b>Hire where it works:</b> Jaipur's new Hot Data TMEs already set more appointments than Kolkata's (0.37 against 0.22 a manday); scale JDA hiring after action 3.</li>
+    </ol>
+    <p class="note">Amounts are a month, at Jaipur's own October rates, and overlap. Before setting targets: the original budget runs far above the budget on about 4% of Jaipur's deals, and attended % reads higher in Jaipur because its MEs record more non-meetings as Not Interested and fewer as Not Available.</p>
+  </div>
+</div>
+
+<h2><span class="step">2</span>The gap</h2>
+<div class="find">
+  <div>
+    <ul>
+      <li><b>Growth:</b> Jaipur's RV 3-yr grew 11.1% on October'25 and Kolkata's 25.6% (company 28.3%), a gap of 14.5 points.</li>
+      <li><b>Same deals, less value:</b> both branches sell 0.18 deals per TME + JDA manday, but a Kolkata manday brings ₹5,454 of RV 3-yr and a Jaipur manday ₹4,202.</li>
+      <li><b>By team:</b> Super Cat and JDA make up the gap (about 12 and 10 points); Kolkata's Hot Data team gives 9 back.</li>
+      <li><b>By lead type:</b> Kolkata's Super Cat team spends 47% of its trunk duration on non-paid contracts; Jaipur's spends 6%. In Jaipur that work sits with the Hot Data team (98% of its trunk duration). So part of Kolkata's Super Cat figure is work that Hot Data does in Jaipur.</li>
+    </ul>
+  </div>
+  <div>
+    <p class="figt">Kolkata's growth minus Jaipur's, by team, in points of each branch's October'25 RV 3-yr</p>
+    <div class="gb-axis"><span></span><span>Jaipur ahead</span><span>Kolkata ahead</span><span></span></div><div class="gb"><span>Super Cat</span><div class="half l"></div><div class="half r"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Super Cat: +11.9 points"></div></div><span class="num">+11.9</span></div><div class="gb"><span>JDA</span><div class="half l"></div><div class="half r"><div class="bar" style="width:84.9%;background:#1d4ed8" title="JDA: +10.1 points"></div></div><span class="num">+10.1</span></div><div class="gb"><span>Online</span><div class="half l"></div><div class="half r"><div class="bar" style="width:19.3%;background:#1d4ed8" title="Online: +2.3 points"></div></div><span class="num">+2.3</span></div><div class="gb"><span>B2B team</span><div class="half l"></div><div class="half r"></div><span class="num">+0.0</span></div><div class="gb"><span>Remaining teams</span><div class="half l"><div class="bar" style="width:5.9%;background:#b45309" title="Remaining teams: -0.7 points"></div></div><div class="half r"></div><span class="num">-0.7</span></div><div class="gb"><span>Hot Data</span><div class="half l"><div class="bar" style="width:76.5%;background:#b45309" title="Hot Data: -9.1 points"></div></div><div class="half r"></div><span class="num">-9.1</span></div><div class="gb tot"><span>All teams</span><div></div><div></div><span class="num">+14.5</span></div>
+    <p class="figt" style="margin-top:12px">The same gap by team and Main City / Remote, deal records (minus = Jaipur ahead)</p>
+    <table class="avpc gap"><thead><tr><th>Points, Kolkata minus Jaipur</th><th>Main City</th><th>Remote</th><th>Both</th></tr></thead><tbody><tr><td>Super Cat team</td><td>−2.1</td><td>+13.1</td><td>+11.1</td></tr><tr><td>Hot Data team</td><td>−6.6</td><td>−3.0</td><td>−9.6</td></tr><tr><td>Rest of the JDS teams</td><td>−3.3</td><td>+4.7</td><td>+1.4</td></tr><tr><td>JDA</td><td>+2.3</td><td>+7.9</td><td>+10.2</td></tr><tr><td>B2B team</td><td>−0.7</td><td>+0.3</td><td>−0.5</td></tr><tr><td>Anonymous</td><td>−0.6</td><td>+0.5</td><td>−0.1</td></tr><tr><td>ME's own deal</td><td>−1.1</td><td>+0.5</td><td>−0.6</td></tr><tr><td>JD partner</td><td>−0.0</td><td>−0.2</td><td>−0.2</td></tr><tr class="tot"><td>All deals</td><td>−12.2</td><td>+23.9</td><td>+11.6</td></tr></tbody></table>
+    <p class="note">Deal records, with the ₹10.9 lakh Kolkata deal left out: 11.6 points in all, against the reviews' 14.5.</p>
+  </div>
+  <div class="full">
+    <p class="figt">The same two teams by lead type, October'26: share of trunk duration (all calls of the team's TMEs) and of the appointments they set for MEs</p>
+    <div class="tm-legend"><span><i style="background:#cbd5e1"></i>paid contract</span><span><i style="background:#7c8ea6"></i>paid expired</span><span><i style="background:#334155"></i>non-paid contract</span></div><div class="lv"><div><div class="lv-h">Super Cat team</div><div class="sb"><span><span class="dot j"></span>Jaipur · trunk duration</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:62.80%;background:#cbd5e1;color:#1c2430" title="paid contract: 63%">63%</div><div class="seg" style="width:30.89%;background:#7c8ea6;color:#1c2430" title="paid expired: 31%">31%</div><div class="seg" style="width:6.32%;background:#334155;color:#ffffff" title="non-paid contract: 6%"></div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot k"></span>Kolkata · trunk duration</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:25.84%;background:#cbd5e1;color:#1c2430" title="paid contract: 26%">26%</div><div class="seg" style="width:27.15%;background:#7c8ea6;color:#1c2430" title="paid expired: 27%">27%</div><div class="seg" style="width:47.01%;background:#334155;color:#ffffff" title="non-paid contract: 47%">47%</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot j"></span>Jaipur · appointments</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:68.77%;background:#cbd5e1;color:#1c2430" title="paid contract: 69%">69%</div><div class="seg" style="width:16.43%;background:#7c8ea6;color:#1c2430" title="paid expired: 16%">16%</div><div class="seg" style="width:14.80%;background:#334155;color:#ffffff" title="non-paid contract: 15%">15%</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot k"></span>Kolkata · appointments</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:48.05%;background:#cbd5e1;color:#1c2430" title="paid contract: 48%">48%</div><div class="seg" style="width:14.23%;background:#7c8ea6;color:#1c2430" title="paid expired: 14%">14%</div><div class="seg" style="width:37.72%;background:#334155;color:#ffffff" title="non-paid contract: 38%">38%</div></div></div><span class="tot"></span></div></div><div><div class="lv-h">Hot Data team</div><div class="sb"><span><span class="dot j"></span>Jaipur · trunk duration</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:0.72%;background:#cbd5e1;color:#1c2430" title="paid contract: 1%"></div><div class="seg" style="width:1.24%;background:#7c8ea6;color:#1c2430" title="paid expired: 1%"></div><div class="seg" style="width:98.05%;background:#334155;color:#ffffff" title="non-paid contract: 98%">98%</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot k"></span>Kolkata · trunk duration</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:0.88%;background:#cbd5e1;color:#1c2430" title="paid contract: 1%"></div><div class="seg" style="width:2.85%;background:#7c8ea6;color:#1c2430" title="paid expired: 3%"></div><div class="seg" style="width:96.27%;background:#334155;color:#ffffff" title="non-paid contract: 96%">96%</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot j"></span>Jaipur · appointments</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:5.74%;background:#cbd5e1;color:#1c2430" title="paid contract: 6%"></div><div class="seg" style="width:2.65%;background:#7c8ea6;color:#1c2430" title="paid expired: 3%"></div><div class="seg" style="width:91.62%;background:#334155;color:#ffffff" title="non-paid contract: 92%">92%</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot k"></span>Kolkata · appointments</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:5.42%;background:#cbd5e1;color:#1c2430" title="paid contract: 5%"></div><div class="seg" style="width:3.06%;background:#7c8ea6;color:#1c2430" title="paid expired: 3%"></div><div class="seg" style="width:91.52%;background:#334155;color:#ffffff" title="non-paid contract: 92%">92%</div></div></div><span class="tot"></span></div></div></div>
+    <p class="note">Lead type is the contract's status: paid contract, paid expired or non-paid contract. Trunk duration uses the status on each call. Appointments use the status at the TME's first call to the contract before the visit (78%–91% of them); without a call, today's status for appointments that did not close, and the deal's own flag with the contract's deal history for those that closed.</p>
+  </div>
+</div>
+
+<h2><span class="step">3</span>Five levers, largest first</h2>
+<table class="levers"><thead><tr><th></th><th>Lever</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th>Worth a month, at Jaipur's October rates</th></tr></thead><tbody><tr><td class="ln">1</td><td class="lv-name">Super Cat team: its size against its renewal load, and its Remote output</td><td class="j">47 TMEs · 7.4 contracts due per TME · Remote ₹9,787 RV 3-yr per manday</td><td class="k">150 TMEs · 2.0 due per TME · ₹13,643</td><td class="worth">₹27 lakh if Jaipur's Remote Super Cat mandays brought Kolkata's Remote rate</td></tr><tr><td class="ln">2</td><td class="lv-name">Appointments given to MEs</td><td class="j">41 per ME, 33% closed · Remote MEs 0.55 deals per manday</td><td class="k">54 per ME, 33% closed · 0.87</td><td class="worth">₹71 lakh for 13.5 more per ME (overlaps with 1)</td></tr><tr><td class="ln">3</td><td class="lv-name">New JDAs' first months</td><td class="j">69% of JDAs who joined after 15 July have no deal</td><td class="k">24%</td><td class="worth">₹15 lakh if JDAs under six months converted at Kolkata's rate</td></tr><tr><td class="ln">4</td><td class="lv-name">Remote City: JDA output and contract size</td><td class="j">JDA ₹2,069 RV 3-yr per manday (61% of the company's Remote City) · <span class="only-o">₹22,991</span><span class="only-b">₹22,070</span> contract value per deal</td><td class="k">₹3,849 (113%) · <span class="only-o">₹27,644</span><span class="only-b">₹27,082</span></td><td class="worth">₹23 lakh at the company's Remote JDA rate (overlaps with 3); <span class="only-o">₹41 lakh</span><span class="only-b">₹44 lakh</span> of contract value at Kolkata's Remote contract size</td></tr><tr><td class="ln">5</td><td class="lv-name">ECS months counted per deal</td><td class="j">8.5 (9th of 11)</td><td class="k">11.4 (2nd) · company 9.2</td><td class="worth">₹20 lakh at the company's 9.2 months</td></tr></tbody></table>
+<p class="note">Each "worth" is a separate what-if at Jaipur's own October rates. They overlap (levers 1 and 2 share the same appointments; 3 and 4 share the Remote City JDAs), so they do not add up.</p>
+
+<h2><span class="step">4</span>The levers</h2>
+
+<div class="card">
+  <div>
+    <p class="tag">1 · TMEs · Super Cat team</p>
+    <h3>Super Cat: a small team with a heavy renewal load</h3>
+    <ul>
+      <li><b>Size:</b> 47 TMEs against 150 (11% of Jaipur's people, 19% of Kolkata's).</li>
+      <li><b>Same pace and conversion:</b> 0.94 appointments set per manday against 0.91, and 0.47 deals per appointment against 0.46. The gap in RV 3-yr per manday is all in value per deal: ₹24,889 against ₹31,977 (lever 5).</li>
+      <li><b>Renewal load:</b> 346 one-year contracts fell due in October, 7.4 per Super Cat TME; Kolkata 312, 2.0 per TME. About half were renewed in both (50% and 54%).</li>
+      <li><b>Experience:</b> of the TMEs with 12+ months in the company, Jaipur has 39 in Super Cat and 28 in Hot Data; Kolkata has 134 and 3.</li>
+      <li><b>Lead type:</b> Kolkata's Super Cat team spends 47% of its trunk duration on non-paid contracts (Jaipur 6%); 38% of its appointments are on non-paid contracts (Jaipur 15%).</li>
+      <li><b>Main City and Remote:</b> in Main City, Jaipur's Super Cat brings more RV 3-yr per manday than Kolkata's (₹12,693 against ₹11,423). The gap is Remote: ₹9,787 against ₹13,643 (72%), with contracts of <span class="only-o">₹21,377</span><span class="only-b">₹20,125</span> against <span class="only-o">₹28,076</span><span class="only-b">₹27,252</span>. Gap points: Main City −2.1, Remote +13.1.</li>
+    </ul>
+    <dl class="lev">
+      <dt>Kolkata</dt><dd>A Super Cat team three times larger, mostly experienced TMEs, working paid contracts and spending about half its trunk duration on non-paid contracts.</dd>
+      <dt>Lever</dt><dd>The Super Cat team's size against its renewal load; Remote Super Cat output and contract size; where the 28 experienced Hot Data TMEs sit; which leads the Super Cat team is given.</dd>
+      <dt>Worth</dt><dd>In Jaipur a Super Cat manday brings ₹10,944 of RV 3-yr and a Hot Data manday ₹2,387. Remote Super Cat mandays at Kolkata's Remote rate: about ₹27 lakh a month.</dd>
+      <dt>Track</dt><dd>Super Cat TMEs (47) · contracts due per Super Cat TME (7.4) · Super Cat trunk duration on non-paid contracts (6%) · Remote Super Cat RV 3-yr per manday (₹9,787).</dd>
+    </dl>
+  </div>
+  <div>
+    <p class="figt">Super Cat team, October'26</p>
+    <div class="pair"><div class="hb-h">Appointments set per Super Cat manday</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · Appointments set per Super Cat manday · 0.94"></div></div><span class="num">0.94</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:96.6%;background:#1d4ed8" title="Kolkata · Appointments set per Super Cat manday · 0.91"></div></div><span class="num">0.91</span></div></div><div class="pair"><div class="hb-h">Deals per appointment set</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · Deals per appointment set · 0.47"></div></div><span class="num">0.47</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:97.7%;background:#1d4ed8" title="Kolkata · Deals per appointment set · 0.46"></div></div><span class="num">0.46</span></div></div><div class="pair"><div class="hb-h">One-year contracts falling due in October, per Super Cat TME</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · One-year contracts falling due in October, per Super Cat TME · 7.4"></div></div><span class="num">7.4</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:27.5%;background:#1d4ed8" title="Kolkata · One-year contracts falling due in October, per Super Cat TME · 2.0"></div></div><span class="num">2.0</span></div></div><div class="pair"><div class="hb-h">RV 3-yr per Super Cat manday, Main City</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · RV 3-yr per Super Cat manday, Main City · ₹12,693"></div></div><span class="num">₹12,693</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:90.0%;background:#1d4ed8" title="Kolkata · RV 3-yr per Super Cat manday, Main City · ₹11,423"></div></div><span class="num">₹11,423</span></div></div><div class="pair"><div class="hb-h">RV 3-yr per Super Cat manday, Remote</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:71.7%;background:#b45309" title="Jaipur · RV 3-yr per Super Cat manday, Remote · ₹9,787"></div></div><span class="num">₹9,787</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · RV 3-yr per Super Cat manday, Remote · ₹13,643"></div></div><span class="num">₹13,643</span></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div>
+    <p class="tag">2 · MEs</p>
+    <h3>MEs close the same share; they are given fewer appointments</h3>
+    <ul>
+      <li><b>Load:</b> each Jaipur ME was given 41 appointments in October and each Kolkata ME 54; both closed 33%.</li>
+      <li><b>Funnel:</b> per ME, Jaipur's 41 appointments became 38 attended and 13.6 Dealclosed; Kolkata's 54 became 44 and 17.8. Dealclosed is 33% and 33% of given, so the gap in deals per ME is the gap in appointments.</li>
+      <li><b>By the team that set them:</b> Super Cat 15 against 32 per ME, Hot Data 16 against 11, the rest of the teams 10 against 11.</li>
+      <li><b>By lead type:</b> non-paid contracts 22 against 30 per ME, paid contracts 14 against 18, paid expired 4 against 6. Most of the gap (8 of the 13.5 a month) is appointments on non-paid contracts.</li>
+      <li><b>Deal size:</b> a Jaipur ME deal carries <span class="only-o">₹26,626</span><span class="only-b">₹25,864</span> of contract value against <span class="only-o">₹28,961</span><span class="only-b">₹28,371</span> (<span class="only-o">92%</span><span class="only-b">91%</span>): <span class="only-o">99%</span><span class="only-b">97%</span> on paid contracts, 85% on non-paid contracts and <span class="only-o">81%</span><span class="only-b">82%</span> on paid expired.</li>
+      <li><b>Main City and Remote:</b> Main City MEs close as many deals as Kolkata's (14.3 against 14.5 a month, from 41 appointments against 47). Remote MEs close 13.1 against 19.5 because they are given 41 appointments against 58; per manday, 0.55 deals against 0.87.</li>
+      <li><b>Room:</b> Kolkata's 16 MEs given 70 or more appointments closed 38% of them; no Jaipur ME was given more than 68. Experience is the same: 81% and 82% of ME mandays come from MEs with 12+ months.</li>
+    </ul>
+    <dl class="lev">
+      <dt>Kolkata</dt><dd>Gives each ME 13.5 more appointments a month, mostly appointments on non-paid contracts set by its Super Cat team.</dd>
+      <dt>Lever</dt><dd>The appointments TMEs set for MEs (lever 1), not ME conversion; then contract size on non-paid and paid expired leads, and Remote MEs.</dd>
+      <dt>Worth</dt><dd>13.5 more appointments per ME at Jaipur's 33% close and ₹23,742 per ME deal: about ₹71 lakh of RV 3-yr a month across 67 MEs (overlaps with lever 1).</dd>
+      <dt>Track</dt><dd>Appointments given per ME (41) · Super Cat team appointments per ME (15) · ME close rate (33%).</dd>
+    </dl>
+  </div>
+  <div>
+    <p class="figt">Appointments given per ME in October'26, by the team that set them and by lead type</p>
+    <div class="tm-legend"><span><i style="background:#1baf7a"></i>Super Cat team</span><span><i style="background:#6250d6"></i>Hot Data team</span><span><i style="background:#9aa3ae"></i>rest of the teams</span></div><div class="tm-legend"><span><i style="background:#cbd5e1"></i>paid contract</span><span><i style="background:#7c8ea6"></i>paid expired</span><span><i style="background:#334155"></i>non-paid contract</span></div><div class="lv-h">Jaipur: 40.7 a month</div><div class="sb"><span><span class="dot j"></span>Jaipur · by team</span><div class="sbt"><div class="sbar" style="width:75.2%"><div class="seg" style="width:36.09%;background:#1baf7a;color:#ffffff" title="Super Cat team: 14.7">14.7</div><div class="seg" style="width:40.38%;background:#6250d6;color:#ffffff" title="Hot Data team: 16.4">16.4</div><div class="seg" style="width:23.53%;background:#9aa3ae;color:#0b0b0b" title="rest of the teams: 9.6">9.6</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot j"></span>Jaipur · by lead type</span><div class="sbt"><div class="sbar" style="width:75.2%"><div class="seg" style="width:35.18%;background:#cbd5e1;color:#1c2430" title="paid contract: 14.3">14.3</div><div class="seg" style="width:10.70%;background:#7c8ea6;color:#1c2430" title="paid expired: 4.4">4.4</div><div class="seg" style="width:54.12%;background:#334155;color:#ffffff" title="non-paid contract: 22.0">22.0</div></div></div><span class="tot"></span></div><div class="lv-h">Kolkata: 54.2 a month</div><div class="sb"><span><span class="dot k"></span>Kolkata · by team</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:59.30%;background:#1baf7a;color:#ffffff" title="Super Cat team: 32.1">32.1</div><div class="seg" style="width:19.56%;background:#6250d6;color:#ffffff" title="Hot Data team: 10.6">10.6</div><div class="seg" style="width:21.13%;background:#9aa3ae;color:#0b0b0b" title="rest of the teams: 11.5">11.5</div></div></div><span class="tot"></span></div><div class="sb"><span><span class="dot k"></span>Kolkata · by lead type</span><div class="sbt"><div class="sbar" style="width:100.0%"><div class="seg" style="width:33.43%;background:#cbd5e1;color:#1c2430" title="paid contract: 18.1">18.1</div><div class="seg" style="width:10.84%;background:#7c8ea6;color:#1c2430" title="paid expired: 5.9">5.9</div><div class="seg" style="width:55.73%;background:#334155;color:#ffffff" title="non-paid contract: 30.2">30.2</div></div></div><span class="tot"></span></div>
+  </div>
+  <div class="full">
+    <p class="figt">The ME funnel per ME, October'26: given, attended and Dealclosed</p>
+    <table class="avpc funnel"><thead><tr><th rowspan="2">Per ME, October'26</th><th colspan="2" style="text-align:center">Given</th><th colspan="2" style="text-align:center">Attended · % of given</th><th colspan="2" style="text-align:center">Dealclosed · % of attended</th><th colspan="2" style="text-align:center">Dealclosed % of given</th></tr><tr><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th></tr></thead><tbody><tr class="tot"><td>All appointments</td><td class="j">40.7</td><td class="k">54.2</td><td class="j">38.2 · 94%</td><td class="k">43.7 · 81%</td><td class="j">13.6 · 36%</td><td class="k">17.8 · 41%</td><td class="j">33%</td><td class="k">33%</td></tr><tr class="sec"><td colspan="9">By the team that set them: the rows add up to all appointments</td></tr><tr><td>Super Cat team</td><td class="j">14.7</td><td class="k">32.1</td><td class="j">13.9 · 94%</td><td class="k">27.4 · 85%</td><td class="j">6.0 · 44%</td><td class="k">13.3 · 48%</td><td class="j">41%</td><td class="k">41%</td></tr><tr><td>Hot Data team</td><td class="j">16.4</td><td class="k">10.6</td><td class="j">15.4 · 93%</td><td class="k">7.6 · 72%</td><td class="j">3.8 · 24%</td><td class="k">1.9 · 26%</td><td class="j">23%</td><td class="k">18%</td></tr><tr><td>rest of the teams</td><td class="j">9.6</td><td class="k">11.5</td><td class="j">9.0 · 94%</td><td class="k">8.7 · 76%</td><td class="j">3.8 · 42%</td><td class="k">2.6 · 30%</td><td class="j">40%</td><td class="k">23%</td></tr><tr class="sec"><td colspan="9">By lead type: the rows add up to all appointments</td></tr><tr><td>Paid contract</td><td class="j">14.3</td><td class="k">18.1</td><td class="j">13.6 · 95%</td><td class="k">16.0 · 88%</td><td class="j">7.1 · 52%</td><td class="k">10.3 · 64%</td><td class="j">50%</td><td class="k">57%</td></tr><tr><td>Paid expired</td><td class="j">4.4</td><td class="k">5.9</td><td class="j">3.9 · 90%</td><td class="k">4.7 · 79%</td><td class="j">1.2 · 30%</td><td class="k">1.5 · 32%</td><td class="j">27%</td><td class="k">26%</td></tr><tr><td>Non-paid contract</td><td class="j">22.0</td><td class="k">30.2</td><td class="j">20.7 · 94%</td><td class="k">23.0 · 76%</td><td class="j">5.3 · 26%</td><td class="k">6.0 · 26%</td><td class="j">24%</td><td class="k">20%</td></tr><tr class="sec"><td colspan="9">By the ME's side: per ME working on that side</td></tr><tr><td>Main City</td><td class="j">41.0</td><td class="k">47.3</td><td class="j">39.0 · 95%</td><td class="k">39.4 · 83%</td><td class="j">14.3 · 37%</td><td class="k">14.5 · 37%</td><td class="j">35%</td><td class="k">31%</td></tr><tr><td>Remote</td><td class="j">40.6</td><td class="k">57.9</td><td class="j">37.6 · 93%</td><td class="k">46.0 · 80%</td><td class="j">13.1 · 35%</td><td class="k">19.5 · 42%</td><td class="j">32%</td><td class="k">34%</td></tr></tbody></table>
+    <p class="note">Attended = Dealclosed, Follow Up or Not Interested. Some October outcomes are missing from the appointment records for Jaipur and Kolkata's Remote City; here they are taken from the allocation system as the MEs marked them (Dealclosed is not affected). Jaipur's MEs record more non-meetings as Not Interested and fewer as Not Available (18% and 3% of given, against 9% and 10%), so Jaipur's attended % reads higher; Dealclosed % of given compares cleanly.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div>
+    <p class="tag">3 · JDAs</p>
+    <h3>New JDAs: most have no deal after three months, and many leave</h3>
+    <ul>
+      <li><b>A new team:</b> 58% of Jaipur's JDA mandays came from JDAs in their first six months.</li>
+      <li><b>No deal yet:</b> of the JDAs who joined after 15 July and worked in October, 56 of 81 (69%) had no deal by 31 October; in Kolkata 22 of 91 (24%).</li>
+      <li><b>Main City and Remote:</b> the new-JDA gap is on both sides: 26% of Main City and 35% of Remote JDAs who joined after 15 July have a deal (Kolkata 75% and 76%). Main City JDAs earn 98% of Kolkata's RV 3-yr per manday, Remote JDAs 57%.</li>
+      <li><b>Conversion:</b> 0.99 deals per 100 presentations in the first six months against 1.92; with 12+ months 7.8 against 7.2 (1–28 Oct).</li>
+      <li><b>Leavers:</b> 65% of October's JDA leavers left within three months (Kolkata 37%). Experienced JDAs earn 96% of Kolkata's RV 3-yr per manday.</li>
+    </ul>
+    <dl class="lev">
+      <dt>Kolkata</dt><dd>Three in four of the JDAs who joined after mid-July already have a deal.</dd>
+      <dt>Lever</dt><dd>A new JDA's first 90 days (presentations turning into deals), and the early leavers.</dd>
+      <dt>Worth</dt><dd>JDAs in their first six months at Kolkata's 1.92 deals per 100 presentations: about 67 more deals, ₹15 lakh of RV 3-yr a month.</dd>
+      <dt>Track</dt><dd>New JDAs with a deal (31% of those who joined after 15 July) · deals per 100 presentations in the first six months (0.99) · leavers within three months (65%).</dd>
+    </dl>
+  </div>
+  <div>
+    <p class="figt">JDA conversion by months in the company, October'26</p>
+    <div class="pair"><div class="hb-h">Deals per 100 presentations, first six months (1–28 Oct)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:51.7%;background:#b45309" title="Jaipur · Deals per 100 presentations, first six months (1–28 Oct) · 0.99"></div></div><span class="num">0.99</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · Deals per 100 presentations, first six months (1–28 Oct) · 1.92"></div></div><span class="num">1.92</span></div></div><div class="pair"><div class="hb-h">Deals per 100 presentations, 6–12 months (1–28 Oct)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:86.5%;background:#b45309" title="Jaipur · Deals per 100 presentations, 6–12 months (1–28 Oct) · 2.99"></div></div><span class="num">2.99</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · Deals per 100 presentations, 6–12 months (1–28 Oct) · 3.46"></div></div><span class="num">3.46</span></div></div><div class="pair"><div class="hb-h">Deals per 100 presentations, 12 months or more (1–28 Oct)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · Deals per 100 presentations, 12 months or more (1–28 Oct) · 7.78"></div></div><span class="num">7.78</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:92.1%;background:#1d4ed8" title="Kolkata · Deals per 100 presentations, 12 months or more (1–28 Oct) · 7.16"></div></div><span class="num">7.16</span></div></div><div class="pair"><div class="hb-h">Joined after 15 July: share with no deal by 31 October</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:100.0%;background:#b45309" title="Jaipur · Joined after 15 July: share with no deal by 31 October · 69%"></div></div><span class="num">69%</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:35.0%;background:#1d4ed8" title="Kolkata · Joined after 15 July: share with no deal by 31 October · 24%"></div></div><span class="num">24%</span></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div>
+    <p class="tag">4 · Remote City</p>
+    <h3>Remote City is flat while the company's Remote City units grew 32%</h3>
+    <ul>
+      <li><b>Growth:</b> Remote City RV 3-yr +1.2% on October'25; the company's Remote City units +31.7%, Kolkata's +40.2%. Main City grew 21.5% (company Main City 25.7%).</li>
+      <li><b>Output:</b> ₹3,676 of RV 3-yr per manday, 10th of the 10 Remote City units (Kolkata ₹5,335, 2nd).</li>
+      <li><b>By team, against the company's Remote City:</b> JDA 61%, Hot Data 92%, Super Cat 96%, Online 172%.</li>
+      <li><b>Contract size:</b> a Remote deal's contract value is <span class="only-o">₹22,991</span><span class="only-b">₹22,070</span> against Kolkata's <span class="only-o">₹27,644</span><span class="only-b">₹27,082</span> (<span class="only-o">83%</span><span class="only-b">81%</span>): Super Cat <span class="only-o">76%</span><span class="only-b">74%</span>, Hot Data <span class="only-o">75%</span><span class="only-b">74%</span>, JDA <span class="only-o">91%</span><span class="only-b">87%</span>. RV 3-yr per Remote deal is 68% of Kolkata's.</li>
+      <li><b>People and towns:</b> headcount +5.6% (company Remote City +18.8%); sales in 61 towns against 69 a year earlier. Kolkata's Remote City is a far larger territory, so it is compared on rates.</li>
+    </ul>
+    <dl class="lev">
+      <dt>Company</dt><dd>Remote City JDAs across the company bring ₹3,401 of RV 3-yr per manday; Jaipur's ₹2,069.</dd>
+      <dt>Lever</dt><dd>Remote City JDA output per manday, Remote contract size (Super Cat and Hot Data), and Remote City headcount.</dd>
+      <dt>Worth</dt><dd>Jaipur's Remote City JDAs (1,736 mandays in October) at the company's Remote City rate: about ₹23 lakh of RV 3-yr a month (overlaps with lever 3). Remote deals at Kolkata's Remote contract value: about <span class="only-o">₹41 lakh</span><span class="only-b">₹44 lakh</span> of contract value a month.</dd>
+      <dt>Track</dt><dd>Remote City RV 3-yr growth (+1.2%) · Remote City JDA RV 3-yr per manday (₹2,069) · towns with a sale (61) · Remote contract value per deal (<span class="only-o">₹22,991</span><span class="only-b">₹22,070</span>).</dd>
+    </dl>
+  </div>
+  <div>
+    <p class="figt">Remote City RV 3-yr per manday by team, October'26, as % of the company's Remote City units (line = company)</p>
+    <div class="hb-h">Super Cat (company Remote City: ₹10,195 per manday)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track" style="position:relative"><div class="bar" style="width:53.1%;background:#b45309" title="Jaipur · Remote City Super Cat · 96% · ₹9,773 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">96% · ₹9,773</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track" style="position:relative"><div class="bar" style="width:79.8%;background:#1d4ed8" title="Kolkata · Remote City Super Cat · 144% · ₹14,676 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">144% · ₹14,676</span></div><div class="hb-h">JDA (company Remote City: ₹3,401 per manday)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track" style="position:relative"><div class="bar" style="width:33.7%;background:#b45309" title="Jaipur · Remote City JDA · 61% · ₹2,069 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">61% · ₹2,069</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track" style="position:relative"><div class="bar" style="width:62.7%;background:#1d4ed8" title="Kolkata · Remote City JDA · 113% · ₹3,849 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">113% · ₹3,849</span></div><div class="hb-h">Hot Data (company Remote City: ₹2,383 per manday)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track" style="position:relative"><div class="bar" style="width:51.2%;background:#b45309" title="Jaipur · Remote City Hot Data · 92% · ₹2,200 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">92% · ₹2,200</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track" style="position:relative"><div class="bar" style="width:40.1%;background:#1d4ed8" title="Kolkata · Remote City Hot Data · 72% · ₹1,725 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">72% · ₹1,725</span></div><div class="hb-h">Online (company Remote City: ₹3,586 per manday)</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track" style="position:relative"><div class="bar" style="width:95.6%;background:#b45309" title="Jaipur · Remote City Online · 172% · ₹6,184 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">172% · ₹6,184</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track" style="position:relative"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · Remote City Online · 180% · ₹6,471 of company Remote City"></div><div style="position:absolute;left:55.4%;top:-3px;bottom:-3px;width:2px;background:#1c2430"></div></div><span class="num">180% · ₹6,471</span></div>
+  </div>
+</div>
+
+<div class="card breakable">
+  <div>
+    <p class="tag">5 · Value per deal</p>
+    <h3>ECS customers pay for fewer months</h3>
+    <ul>
+      <li><b>Value per deal:</b> RV 3-yr per deal ₹23,027, lowest of 11 (Kolkata ₹30,850, company ₹30,512).</li>
+      <li><b>Contract value per deal:</b> <span class="only-o">₹27,819</span><span class="only-b">₹26,196</span> against <span class="only-o">₹28,214</span><span class="only-b">₹27,696</span> in the deal records, but each rupee of it brings <span class="only-o">0.83</span><span class="only-b">0.88</span> of RV 3-yr against <span class="only-o">1.06</span><span class="only-b">1.08</span>. <span class="only-o">About 74% of the gap is ECS deals counting fewer months and 14% non-ECS deals, where RV 3-yr counts the budget, which is below the original budget more often in Jaipur.</span><span class="only-b">About 75% of the gap is ECS deals counting fewer months; the rest (25%) is contract value per deal and the mix of deals.</span></li>
+      <li><b>Main City and Remote:</b> Jaipur's contract value per deal is higher in Main City (<span class="only-o">₹33,452</span><span class="only-b">₹31,012</span> against <span class="only-o">₹29,772</span><span class="only-b">₹29,375</span>) and lower in Remote (<span class="only-o">₹22,991</span><span class="only-b">₹22,070</span> against <span class="only-o">₹27,644</span><span class="only-b">₹27,082</span>). Remote holds 54% of Jaipur's deals and 73% of Kolkata's.</li>
+      <li><b>ECS months</b> counted in RV 3-yr: 8.5 (9th of 11) against 11.4 (2nd), company 9.2; lower in every team. Jaipur's JDA deals have the larger contract value (<span class="only-o">₹31,282</span><span class="only-b">₹27,468</span> against <span class="only-o">₹25,936</span><span class="only-b">₹25,608</span>) but 7.5 ECS months against 11.0. The months are the same on both sides: Jaipur 8.3 in Main City and 8.7 in Remote, Kolkata 11.4 and 11.5.</li>
+      <li><b>Re-signs:</b> of the ECS deals sold in October'25, 30% had a new deal by October'26 (Kolkata 19%), 9.3% through Bounce and Retention (Kolkata 0.6%). After a bounce Kolkata collected ₹1,466 per contract on the running contract, Jaipur ₹1,247.</li>
+    </ul>
+    <dl class="lev">
+      <dt>Kolkata</dt><dd>Its ECS contracts run longer, and few of its ECS customers come back through Bounce or Retention.</dd>
+      <dt>Lever</dt><dd>What happens after an ECS bounce (the running contract against a new deal), and JDA ECS deals (7.5 months).</dd>
+      <dt>Worth</dt><dd>Each extra month on October's ECS deals adds ₹27 lakh of RV 3-yr; the company's 9.2 months would add about ₹20 lakh a month.</dd>
+      <dt>Track</dt><dd>ECS months (8.5) · ECS deals re-signed through Bounce and Retention within a year (9.3%).</dd>
+    </dl>
+  </div>
+  <div>
+    <p class="figt">ECS instalment months counted in RV 3-yr, ECS deals sold in October'26</p>
+    <div class="pair"><div class="hb-h">Super Cat</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:88.4%;background:#b45309" title="Jaipur · Super Cat · 11.2 months"></div></div><span class="num">11.2 months</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · Super Cat · 12.7 months"></div></div><span class="num">12.7 months</span></div></div><div class="pair"><div class="hb-h">Hot Data</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:88.4%;background:#b45309" title="Jaipur · Hot Data · 8.7 months"></div></div><span class="num">8.7 months</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · Hot Data · 9.8 months"></div></div><span class="num">9.8 months</span></div></div><div class="pair"><div class="hb-h">JDA</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:68.1%;background:#b45309" title="Jaipur · JDA · 7.5 months"></div></div><span class="num">7.5 months</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · JDA · 11.0 months"></div></div><span class="num">11.0 months</span></div></div><div class="pair"><div class="hb-h">All ECS deals</div><div class="hb"><span><span class="dot j"></span>Jaipur</span><div class="track"><div class="bar" style="width:74.1%;background:#b45309" title="Jaipur · All ECS deals · 8.5 months"></div></div><span class="num">8.5 months</span></div><div class="hb"><span><span class="dot k"></span>Kolkata</span><div class="track"><div class="bar" style="width:100.0%;background:#1d4ed8" title="Kolkata · All ECS deals · 11.4 months"></div></div><span class="num">11.4 months</span></div></div>
+    <p class="note">ECS months = (RV 3-yr − down payment taken at the deal) ÷ budget × 12. "All ECS deals" also covers the teams not shown (B2B team, Bounce, Online, Retention and the rest).</p>
+  </div>
+  <div class="full">
+    <p class="figt">Deals, RV 3-yr per deal and contract value per deal, October'26 (contract value on the basis chosen at the top)</p>
+    <table class="avpc"><thead><tr><th rowspan="2">October'26</th><th colspan="2" style="text-align:center">Deals</th><th colspan="2" style="text-align:center">RV 3-yr per deal</th><th colspan="2" style="text-align:center">Contract value per deal</th></tr><tr><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th></tr></thead><tbody><tr class="sec"><td colspan="7">By team: the rows add up to all deals</td></tr><tr><td>Super Cat team</td><td class="j">511</td><td class="k">1,417</td><td class="j">₹24,794</td><td class="k">₹32,020</td><td class="j"><span class="only-o">₹24,978</span><span class="only-b">₹23,831</span></td><td class="k"><span class="only-o">₹28,893</span><span class="only-b">₹28,136</span></td></tr><tr><td>Hot Data team</td><td class="j">275</td><td class="k">251</td><td class="j">₹22,233</td><td class="k">₹28,814</td><td class="j"><span class="only-o">₹25,262</span><span class="only-b">₹25,108</span></td><td class="k"><span class="only-o">₹29,424</span><span class="only-b">₹29,409</span></td></tr><tr><td>Rest of the JDS teams</td><td class="j">202</td><td class="k">154</td><td class="j">₹21,926</td><td class="k">₹31,020</td><td class="j"><span class="only-o">₹27,899</span><span class="only-b">₹26,638</span></td><td class="k"><span class="only-o">₹29,799</span><span class="only-b">₹29,428</span></td></tr><tr><td>JDA</td><td class="j">453</td><td class="k">838</td><td class="j">₹22,303</td><td class="k">₹27,324</td><td class="j"><span class="only-o">₹31,282</span><span class="only-b">₹27,468</span></td><td class="k"><span class="only-o">₹25,936</span><span class="only-b">₹25,608</span></td></tr><tr><td>B2B team</td><td class="j">150</td><td class="k">157</td><td class="j">₹20,333</td><td class="k">₹27,758</td><td class="j"><span class="only-o">₹29,076</span><span class="only-b">₹28,806</span></td><td class="k"><span class="only-o">₹31,364</span><span class="only-b">₹31,266</span></td></tr><tr><td>Anonymous</td><td class="j">29</td><td class="k">46</td><td class="j">₹22,471</td><td class="k">₹25,269</td><td class="j"><span class="only-o">₹24,837</span><span class="only-b">₹24,754</span></td><td class="k"><span class="only-o">₹25,776</span><span class="only-b">₹24,294</span></td></tr><tr><td>ME's own deal</td><td class="j">13</td><td class="k">11</td><td class="j">₹46,332</td><td class="k">₹33,988</td><td class="j">₹62,497</td><td class="k">₹35,948</td></tr><tr><td>JD partner</td><td class="j">3</td><td class="k">5</td><td class="j">₹28,613</td><td class="k">₹13,832</td><td class="j">₹33,336</td><td class="k">₹14,568</td></tr><tr class="tot"><td>All deals</td><td class="j">1,636</td><td class="k">2,879</td><td class="j">₹23,048</td><td class="k">₹29,955</td><td class="j"><span class="only-o">₹27,819</span><span class="only-b">₹26,196</span></td><td class="k"><span class="only-o">₹28,214</span><span class="only-b">₹27,696</span></td></tr><tr class="sec"><td colspan="7">JDS deals by lead type: the rows add up to the three JDS teams above</td></tr><tr><td>Paid contract</td><td class="j">542</td><td class="k">1,047</td><td class="j">₹23,772</td><td class="k">₹29,068</td><td class="j"><span class="only-o">₹26,357</span><span class="only-b">₹24,811</span></td><td class="k"><span class="only-o">₹27,548</span><span class="only-b">₹26,538</span></td></tr><tr><td>Paid expired</td><td class="j">93</td><td class="k">169</td><td class="j">₹20,424</td><td class="k">₹31,052</td><td class="j"><span class="only-o">₹20,872</span><span class="only-b">₹20,728</span></td><td class="k"><span class="only-o">₹27,762</span><span class="only-b">₹27,455</span></td></tr><tr><td>Non-paid contract</td><td class="j">353</td><td class="k">606</td><td class="j">₹23,878</td><td class="k">₹35,807</td><td class="j"><span class="only-o">₹25,836</span><span class="only-b">₹25,745</span></td><td class="k"><span class="only-o">₹31,982</span><span class="only-b">₹31,941</span></td></tr><tr class="tot"><td>All JDS deals</td><td class="j">988</td><td class="k">1,822</td><td class="j">₹23,495</td><td class="k">₹31,493</td><td class="j"><span class="only-o">₹25,654</span><span class="only-b">₹24,760</span></td><td class="k"><span class="only-o">₹29,043</span><span class="only-b">₹28,420</span></td></tr></tbody></table>
+    <p class="figt" style="margin-top:12px">The same table split by Main City and Remote</p>
+    <table class="avpc side"><thead><tr><th rowspan="3">October'26</th><th colspan="5" class="gs" style="text-align:center">Main City</th><th colspan="5" class="gs" style="text-align:center">Remote</th></tr><tr><th rowspan="2" class="gs">Deals<br>Jaipur / Kolkata</th><th colspan="2" style="text-align:center">RV 3-yr per deal</th><th colspan="2" style="text-align:center">Contract value per deal</th><th rowspan="2" class="gs">Deals<br>Jaipur / Kolkata</th><th colspan="2" style="text-align:center">RV 3-yr per deal</th><th colspan="2" style="text-align:center">Contract value per deal</th></tr><tr><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th><th class="j">Jaipur</th><th class="k">Kolkata</th></tr></thead><tbody><tr class="sec"><td colspan="11">By team: on each side the rows add up to all deals</td></tr><tr><td>Super Cat team</td><td class="gs">188 / 421</td><td class="j">₹31,398</td><td class="k">₹34,557</td><td class="j"><span class="only-o">₹31,167</span><span class="only-b">₹30,199</span></td><td class="k"><span class="only-o">₹30,825</span><span class="only-b">₹30,225</span></td><td class="gs">323 / 996</td><td class="j">₹20,950</td><td class="k">₹30,947</td><td class="j"><span class="only-o">₹21,377</span><span class="only-b">₹20,125</span></td><td class="k"><span class="only-o">₹28,076</span><span class="only-b">₹27,252</span></td></tr><tr><td>Hot Data team</td><td class="gs">90 / 51</td><td class="j">₹28,003</td><td class="k">₹29,736</td><td class="j">₹32,006</td><td class="k">₹29,986</td><td class="gs">185 / 200</td><td class="j">₹19,427</td><td class="k">₹28,579</td><td class="j"><span class="only-o">₹21,981</span><span class="only-b">₹21,752</span></td><td class="k"><span class="only-o">₹29,281</span><span class="only-b">₹29,261</span></td></tr><tr><td>Rest of the JDS teams</td><td class="gs">113 / 25</td><td class="j">₹22,791</td><td class="k">₹36,556</td><td class="j"><span class="only-o">₹29,995</span><span class="only-b">₹28,277</span></td><td class="k"><span class="only-o">₹40,236</span><span class="only-b">₹38,083</span></td><td class="gs">89 / 129</td><td class="j">₹20,829</td><td class="k">₹29,947</td><td class="j"><span class="only-o">₹25,237</span><span class="only-b">₹24,557</span></td><td class="k"><span class="only-o">₹27,776</span><span class="only-b">₹27,750</span></td></tr><tr><td>JDA</td><td class="gs">251 / 198</td><td class="j">₹25,389</td><td class="k">₹26,538</td><td class="j"><span class="only-o">₹37,085</span><span class="only-b">₹31,255</span></td><td class="k">₹24,211</td><td class="gs">202 / 640</td><td class="j">₹18,468</td><td class="k">₹27,567</td><td class="j"><span class="only-o">₹24,071</span><span class="only-b">₹22,762</span></td><td class="k"><span class="only-o">₹26,469</span><span class="only-b">₹26,040</span></td></tr><tr><td>B2B team</td><td class="gs">92 / 64</td><td class="j">₹20,849</td><td class="k">₹31,703</td><td class="j">₹29,826</td><td class="k">₹35,816</td><td class="gs">58 / 93</td><td class="j">₹19,515</td><td class="k">₹25,043</td><td class="j"><span class="only-o">₹27,887</span><span class="only-b">₹27,188</span></td><td class="k"><span class="only-o">₹28,301</span><span class="only-b">₹28,136</span></td></tr><tr><td>Anonymous</td><td class="gs">9 / 2</td><td class="j">₹31,263</td><td class="k">₹48,004</td><td class="j"><span class="only-o">₹34,774</span><span class="only-b">₹34,506</span></td><td class="k">₹45,900</td><td class="gs">20 / 44</td><td class="j">₹18,515</td><td class="k">₹24,236</td><td class="j">₹20,366</td><td class="k"><span class="only-o">₹24,861</span><span class="only-b">₹23,312</span></td></tr><tr><td>ME's own deal</td><td class="gs">12 / 7</td><td class="j">₹47,120</td><td class="k">₹34,763</td><td class="j">₹63,456</td><td class="k">₹36,432</td><td class="gs">1 / 4</td><td class="j">₹36,876</td><td class="k">₹32,631</td><td class="j">₹51,000</td><td class="k">₹35,100</td></tr><tr><td>JD partner</td><td class="gs">0 / 3</td><td class="j">–</td><td class="k">₹2,999</td><td class="j">–</td><td class="k">₹2,999</td><td class="gs">3 / 2</td><td class="j">₹28,613</td><td class="k">₹30,080</td><td class="j">₹33,336</td><td class="k"><span class="only-o">₹31,921</span><span class="only-b">₹31,920</span></td></tr><tr class="tot"><td>All deals</td><td class="gs">755 / 771</td><td class="j">₹26,670</td><td class="k">₹31,920</td><td class="j"><span class="only-o">₹33,452</span><span class="only-b">₹31,012</span></td><td class="k"><span class="only-o">₹29,772</span><span class="only-b">₹29,375</span></td><td class="gs">881 / 2,108</td><td class="j">₹19,943</td><td class="k">₹29,237</td><td class="j"><span class="only-o">₹22,991</span><span class="only-b">₹22,070</span></td><td class="k"><span class="only-o">₹27,644</span><span class="only-b">₹27,082</span></td></tr><tr class="sec"><td colspan="11">JDS deals by lead type: on each side the rows add up to the three JDS teams above</td></tr><tr><td>Paid contract</td><td class="gs">211 / 292</td><td class="j">₹29,014</td><td class="k">₹30,504</td><td class="j"><span class="only-o">₹33,180</span><span class="only-b">₹31,460</span></td><td class="k"><span class="only-o">₹28,499</span><span class="only-b">₹27,628</span></td><td class="gs">331 / 755</td><td class="j">₹20,430</td><td class="k">₹28,512</td><td class="j"><span class="only-o">₹22,008</span><span class="only-b">₹20,572</span></td><td class="k"><span class="only-o">₹27,180</span><span class="only-b">₹26,117</span></td></tr><tr><td>Paid expired</td><td class="gs">54 / 48</td><td class="j">₹22,470</td><td class="k">₹41,379</td><td class="j"><span class="only-o">₹23,058</span><span class="only-b">₹22,809</span></td><td class="k"><span class="only-o">₹38,298</span><span class="only-b">₹37,216</span></td><td class="gs">39 / 121</td><td class="j">₹17,591</td><td class="k">₹26,956</td><td class="j">₹17,846</td><td class="k">₹23,583</td></tr><tr><td>Non-paid contract</td><td class="gs">126 / 157</td><td class="j">₹29,072</td><td class="k">₹38,761</td><td class="j">₹30,821</td><td class="k">₹34,092</td><td class="gs">227 / 449</td><td class="j">₹20,995</td><td class="k">₹34,774</td><td class="j"><span class="only-o">₹23,069</span><span class="only-b">₹22,928</span></td><td class="k"><span class="only-o">₹31,244</span><span class="only-b">₹31,188</span></td></tr><tr class="tot"><td>All JDS deals</td><td class="gs">391 / 497</td><td class="j">₹28,129</td><td class="k">₹34,163</td><td class="j"><span class="only-o">₹31,022</span><span class="only-b">₹30,059</span></td><td class="k"><span class="only-o">₹31,212</span><span class="only-b">₹30,596</span></td><td class="gs">597 / 1,325</td><td class="j">₹20,460</td><td class="k">₹30,492</td><td class="j"><span class="only-o">₹22,139</span><span class="only-b">₹21,290</span></td><td class="k"><span class="only-o">₹28,229</span><span class="only-b">₹27,604</span></td></tr></tbody></table>
+    <p class="note">Rest of the JDS teams: Bounce, Online, Retention, Revival (Expiry), Super and Multiple team. JDA includes joint JDA + JDS deals. Anonymous: no salesperson on the deal (dummy code). ME's own deal: an ME closed it with no TME. JD partner: the code on the deal is a partner, not a JD employee. Lead type is the contract's status before the sale, read as in section 2. Main City / Remote: the deal's Main/Remote flag, as on the sales dashboard. One Kolkata deal (Multiple team, contract value ₹10.9 lakh) is left out of every figure from the deal records.</p>
+  </div>
+</div>
+
+
+</div>
+<script>
+(function () {
+  var bs = document.querySelectorAll('.basis button');
+  bs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var v = b.getAttribute('data-b');
+      document.body.classList.toggle('basis-b', v === 'b');
+      bs.forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-b') === v); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -70,6 +70,7 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
   const PAGES = [
     ['hub', '', 'Home', 'Home: choose Gym or Apparel'],
     ['cohorts', 'gym', 'Gym', 'Gym cohorts'],
+    ['survey', '', 'Gym', 'Gym survey calls'],
     ['cohorts', 'apparel', 'Apparel', 'Main: Apparel cohorts'],
     ['gsc', 'query', 'Apparel · GSC search analysis', 'Query classification'],
     ['gsc', 'yoy', 'Apparel · GSC search analysis', 'YoY search, leads & revenue'],
@@ -80,11 +81,11 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
     ['market', '', 'Apparel · Market trend', 'Market trend'],
   ];
   // office host (HTML Drop) links, and the same files on the laptop
-  const HD = { hub: '/s/apparel-gym-hub/', cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/' };
+  const HD = { hub: '/s/apparel-gym-hub/', cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/', survey: '/s/gym-survey-summary/' };
   const L = 'file:///D:/claude/01%20Dashboards/apparel_gym_dashboard/';
   const LOCAL = { hub: L + 'Apparel_Gym_Hub.html', cohorts: L + 'Apparel_Gym_Cohorts.html', gsc: L + 'Apparel_GSC_Analysis.html', city: L + 'Apparel_City_Search_Calls.html',
-    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html' };
-  const FILE_OF = { 'apparel_gym_hub.html': 'hub', 'apparel_gym_cohorts.html': 'cohorts', 'apparel_gsc_analysis.html': 'gsc', 'apparel_city_search_calls.html': 'city', 'apparel_market_trend.html': 'market' };
+    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html', survey: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/gym_survey_analysis/output/Gym_Survey_Summary.html' };
+  const FILE_OF = { 'apparel_gym_hub.html': 'hub', 'apparel_gym_cohorts.html': 'cohorts', 'apparel_gsc_analysis.html': 'gsc', 'apparel_city_search_calls.html': 'city', 'apparel_market_trend.html': 'market', 'gym_survey_summary.html': 'survey' };
   const onHD = location.pathname.startsWith('/s/');
   const here = () => {
     if (onHD) { const slug = location.pathname.split('/')[2]; return Object.keys(HD).find(k => HD[k] === '/s/' + slug + '/') || ''; }
@@ -109,7 +110,7 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
     if (key === last) return; last = key;
     // the one back option: '<- All pages' = the first page, opened on Gym or Apparel (hidden on the first page itself)
     const onHub = !c || c[0] === 'hub'; home.hidden = onHub; title.hidden = !onHub;
-    home.href = url(PAGES[0]) + '#' + (c && c[1] === 'gym' ? 'gym' : 'apparel');
+    home.href = url(PAGES[0]) + '#' + (c && (c[1] === 'gym' || c[2] === 'Gym') ? 'gym' : 'apparel');
     if (c) { sel.value = String(PAGES.indexOf(c)); lab.textContent = c[0] === 'hub' ? '' : c[2].endsWith(c[3]) ? c[2] : c[2] + ' · ' + c[3]; }
   };
   sel.addEventListener('change', () => {
@@ -131,7 +132,7 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
   <div class="choose">
     <button class="pick gym" data-cat="gym" aria-pressed="false" aria-controls="panel-gym">
       <span class="ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg></span>
-      <span><span class="t">Gym</span><br><span class="d">Gym businesses on Justdial by cohort</span></span><span class="n">1 page</span></button>
+      <span><span class="t">Gym</span><br><span class="d">Gym cohorts and survey calls</span></span><span class="n">2 pages</span></button>
     <button class="pick" data-cat="apparel" aria-pressed="false" aria-controls="panel-apparel">
       <span class="ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3l4 3 4-3 5 4-3 4-2-1v11H8V10l-2 1-3-4z"/></svg></span>
       <span><span class="t">Apparel</span><br><span class="d">Cohorts, Google search, calls by city, market trend</span></span><span class="n">8 pages</span></button>
@@ -141,6 +142,7 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
   <section class="panel" id="panel-gym" hidden>
     <div class="grp gymg"><h3>Gym</h3><div class="btns">
       <a class="pg" data-p="cohorts" data-h="gym"><b>Gym cohorts</b><span>Gym docids by cohort: branded, years on Justdial, paid status and city tier; docid download.</span><i>Open →</i></a>
+      <a class="pg" data-p="survey" data-h=""><b>Gym survey calls</b><span>What 249 non-branded gyms said on the survey calls (3 - 13 Nov 2026): leads, conversion, daily work, renewals, by paid status.</span><i>Open →</i></a>
     </div></div>
   </section>
 
@@ -162,15 +164,15 @@ a.pg b{font-size:15px} a.pg span{font-size:12.5px;color:var(--ink-2)} a.pg i{mar
       <a class="pg" data-p="market" data-h=""><b>Market trend</b><span>Is the apparel market growing? Business counts (MoSPI) and VC funding.</span><i>Open →</i></a>
     </div></div>
   </section>
-  <p class="foot">Apparel &amp; Gym dashboards · built 06 Nov 2026 15:19</p>
+  <p class="foot">Apparel &amp; Gym dashboards · built 19 Nov 2026 12:27</p>
 </div>
 <script>
 (() => {
   // same links as the shared menu: HTML Drop when served from it, the laptop files otherwise
-  const HD = { cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/' };
+  const HD = { cohorts: '/s/apparel-gym-cohorts/', gsc: '/s/apparel-gsc-analysis/', city: '/s/apparel-city-search-calls/', market: '/s/apparel-market-trend/', survey: '/s/gym-survey-summary/' };
   const L = 'file:///D:/claude/01%20Dashboards/apparel_gym_dashboard/';
   const LOCAL = { cohorts: L + 'Apparel_Gym_Cohorts.html', gsc: L + 'Apparel_GSC_Analysis.html', city: L + 'Apparel_City_Search_Calls.html',
-    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html' };
+    market: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/apparel_market_trend/Apparel_Market_Trend.html', survey: 'file:///D:/claude/03%20Campaigns%20%26%20Analysis/gym_survey_analysis/output/Gym_Survey_Summary.html' };
   const onHD = location.pathname.startsWith('/s/');
   document.querySelectorAll('a.pg').forEach(a => { a.href = (onHD ? HD : LOCAL)[a.dataset.p] + (a.dataset.h ? '#' + a.dataset.h : ''); });
   const show = cat => {
