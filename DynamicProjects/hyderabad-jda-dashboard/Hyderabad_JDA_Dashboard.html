@@ -1038,7 +1038,7 @@ function helpMap() {
     'LY Deals': ['Last Year Deals', 'Distinct businesses (docids) closed in the exact same calendar dates one year earlier.', 'COUNT(DISTINCT docid) over the matching last-year date window.'],
     'Growing (Good)': ['Good (Growing) Categories', 'Categories with at least +5% YoY deal growth (or +10 net deals) compared to the same period last year.', 'Count of categories classified as Good, plus total net deals gained across them.'],
     'Declining (Bad)': ['Bad (Declining) Categories', 'Categories with at least −5% YoY deal drop (or −10 net deals) compared to the same period last year.', 'Count of categories classified as Bad, plus total net deals lost across them.'],
-    'TY 3-Yr RV': ['This Year 3-Year RV', 'Total 3-year revenue value of deals closed in the selected period (deduplicated across joint-deal rows).', 'SUM(rv_3yr) with joint (jda_flag = 2) rows halved so each joint deal counts once.'],
+    'TY RV': ['This Year RV', 'Total revenue value (RV) of deals closed in the selected period (deduplicated across joint-deal rows).', 'SUM(rv_3yr) with joint (jda_flag = 2) rows halved so each joint deal counts once.'],
     'Status': ['YoY Status', 'Quick verdict for each category or sub-category vs the exact same dates last year.', 'Good: YoY ≥ +5% (or net ≥ +10 deals). Bad: YoY ≤ −5% (or net ≤ −10 deals). Flat: within ±5%.'],
   };
 }
@@ -1940,7 +1940,6 @@ function pageCategories() {
         <td class="num"><b>${fmtDeals(x.ty)}</b></td>
         <td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td>
         <td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td>
-        <td class="num muted">${c.ty ? pct(x.ty / c.ty) : '—'}</td>
         <td class="num muted">${fmtRv(x.rvTy)}</td>
         <td class="num muted">${fmtYoy(x.rvTy, x.rvLy)}</td>
       </tr>`).join('');
@@ -1954,8 +1953,7 @@ function pageCategories() {
       { k: 'ty', label: `${fyTyLbl} Deals`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
       { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, csv: c => c.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
-      { k: 'share', label: `${fyTyLbl} Share`, num: true, html: c => barCell(c.share, maxShare, pct(c.share)), csv: c => pct(c.share), totalHtml: () => '100%' },
-      { k: 'rvTy', label: `${fyTyLbl} 3-Yr RV`, num: true, fmt: fmtRv, csv: c => c.rvTy },
+      { k: 'rvTy', label: `${fyTyLbl} RV`, num: true, fmt: fmtRv, csv: c => c.rvTy },
       { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy) },
     ], filteredCats, { sort: 'diff', dir: 1, noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
   } else {
@@ -1990,7 +1988,7 @@ function pageCategories() {
       { k: 'diff', label: 'Net Δ', num: true, html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span>`, csv: e => e.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: e => e.yoy == null ? -999 : (isFinite(e.yoy) ? e.yoy : 999), html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(e.ty, e.ly)}</span>`, csv: e => fmtYoy(e.ty, e.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
       { k: 'topCats', label: 'Top categories secured', wrap: true, fmt: v => v || '—', totalHtml: () => '' },
-      { k: 'rvTy', label: `${fyTyLbl} 3-Yr RV`, num: true, fmt: fmtRv, csv: e => e.rvTy },
+      { k: 'rvTy', label: `${fyTyLbl} RV`, num: true, fmt: fmtRv, csv: e => e.rvTy },
     ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
@@ -2021,7 +2019,7 @@ function downloadDrawerSecuredCsv() {
   if (!lastDrawerSecured) return;
   const { title, rows, tyLbl, lyLbl, showSub } = lastDrawerSecured;
   const cell = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const hdr = ['Emp Name', 'Emp ID', `LY Deals (${lyLbl})`, `TY Deals (${tyLbl})`, 'Net Delta', 'YoY %', 'TY 3-Yr RV', ...(showSub ? ['Top Sub-category'] : [])];
+  const hdr = ['Emp Name', 'Emp ID', `LY Deals (${lyLbl})`, `TY Deals (${tyLbl})`, 'Net Delta', 'YoY %', 'TY RV', ...(showSub ? ['Top Sub-category'] : [])];
   const lines = [hdr.map(cell).join(',')];
   for (const e of rows) {
     const r = [e.label, e.code, e.ly, e.ty, e.diff, fmtYoy(e.ty, e.ly), e.rvTy, ...(showSub ? [e.topSub] : [])];
