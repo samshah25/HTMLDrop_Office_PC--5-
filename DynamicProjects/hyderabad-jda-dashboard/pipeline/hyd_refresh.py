@@ -377,26 +377,13 @@ def load_cat_cache():
         try:
             with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
                 c = json.load(f)
-            if isinstance(c, dict) and isinstance(c.get("days"), dict):
-                # Migrate any v1 6-element rows [loc, si, fr, jt, dc, rv] -> v2 5-element [loc, si, fr, dc, rv]
-                migrated = False
-                for ds, entries in c["days"].items():
-                    if entries and len(entries[0]) == 6:
-                        agg = defaultdict(lambda: [0.0, 0.0])
-                        for loc, si, fr, _jt, dc, rv in entries:
-                            acc = agg[(loc, si, fr)]
-                            acc[0] += dc
-                            acc[1] += rv
-                        c["days"][ds] = [[loc, si, fr, round(dc, 2), round(rv)]
-                                         for (loc, si, fr), (dc, rv) in sorted(agg.items())]
-                        migrated = True
-                if migrated:
-                    c["version"] = 2
-                    save_cat_cache(c)
+            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 3:
+                c.setdefault("emps", [])
                 return c
+            log("Category cache schema upgraded to v3 (includes employee IDs/names); rebuilding cache.")
         except Exception as e:
             log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
-    return {"version": 2, "cats": [], "subcats": [], "days": {}}
+    return {"version": 3, "cats": [], "subcats": [], "emps": [], "days": {}}
 
 
 def save_cat_cache(cache):
@@ -406,10 +393,48 @@ def save_cat_cache(cache):
     os.replace(tmp, CAT_CACHE_PATH)
 
 
-def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_dates):
-    """Aggregate raw deal tuples into compact daily totals in cache['days'] (no raw deals stored)."""
+def fill_emp_names_from_map(cache, name_map):
+    """Populate missing employee names in cache['emps'] from an {empcode: name} mapping."""
+    updated = 0
+    for item in cache.get("emps", []):
+        code, cur_name = item[0], item[1]
+        if code and (not cur_name or cur_name == code) and code in name_map and name_map[code]:
+            item[1] = name_map[code]
+            updated += 1
+    return updated
+
+
+def fetch_hr_names_sql(env, codes):
+    """Fetch {empcode: Title-Cased Name} from db_paidcontracts.hr_all_daily_copy_ganesh for missing codes."""
+    codes = sorted({c for c in codes if c})
+    out = {}
+    if not codes:
+        return out
+    conn = db_connect(env)
+    with conn.cursor() as cur:
+        for i in range(0, len(codes), 1000):
+            ch = codes[i:i + 1000]
+            ph = ",".join(["%s"] * len(ch))
+            cur.execute(f"""SELECT TRIM(empcode), MAX(empname)
+                            FROM {HR}
+                            WHERE TRIM(empcode) IN ({ph})
+                            GROUP BY TRIM(empcode)""", ch)
+            for code, nm in cur.fetchall():
+                c = str(code or "").strip()
+                t = " ".join(str(nm or "").split()).title()
+                if c and t:
+                    out[c] = t
+    conn.close()
+    return out
+
+
+def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_dates, name_map=None):
+    """Aggregate raw deal tuples into compact daily totals in cache['days'] (no raw deals stored).
+    raw_row tuple: (ds, docid, pin, main_remote, fresh, jda_flag, me, dc_genio, rv_3yr)."""
+    name_map = name_map or {}
     cat_ix = {c: i for i, c in enumerate(cache["cats"])}
     sub_ix = {(cache["cats"][ci], s): i for i, (ci, s) in enumerate(cache["subcats"])}
+    emp_ix = {e[0]: i for i, e in enumerate(cache["emps"])}
 
     def get_sub_idx(cat, sub):
         ci = cat_ix.get(cat)
@@ -424,9 +449,20 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
             sub_ix[(cat, sub)] = si
         return si
 
+    def get_emp_idx(me):
+        code = str(me or "").strip()
+        ei = emp_ix.get(code)
+        if ei is None:
+            ei = len(cache["emps"])
+            cache["emps"].append([code, name_map.get(code, "")])
+            emp_ix[code] = ei
+        elif code and not cache["emps"][ei][1] and name_map.get(code):
+            cache["emps"][ei][1] = name_map[code]
+        return ei
+
     by_day = {ds: defaultdict(lambda: [0.0, 0.0]) for ds in fetched_dates}
     matched = 0
-    for ds, docid, pin, mr, fresh, flag, dc, rv in raw_rows:
+    for ds, docid, pin, mr, fresh, flag, me, dc, rv in raw_rows:
         if ds not in by_day or dc <= 0:
             continue
         cinfo = doc_cat.get(docid)
@@ -437,17 +473,18 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
         else:
             cat, sub = "Unmapped", "Unmapped"
         si = get_sub_idx(cat, sub)
+        ei = get_emp_idx(me)
         loc = loc_bucket(pin, mr, pin_area, areas)
         fr = 1 if str(fresh).strip() == "1" else 0
         # rv_3yr repeats on both rows of a joint (jda_flag=2) deal; halving each row gives exact 1x deal RV
         rv_w = rv * (0.5 if int(flag or 1) == 2 else 1.0)
-        acc = by_day[ds][(loc, si, fr)]
+        acc = by_day[ds][(loc, si, fr, ei)]
         acc[0] += dc
         acc[1] += rv_w
 
     for ds, agg in by_day.items():
-        cache["days"][ds] = [[loc, si, fr, round(dc, 2), round(rv)]
-                             for (loc, si, fr), (dc, rv) in sorted(agg.items())]
+        cache["days"][ds] = [[loc, si, fr, ei, round(dc, 2), round(rv)]
+                             for (loc, si, fr, ei), (dc, rv) in sorted(agg.items())]
     return matched
 
 
@@ -459,11 +496,12 @@ def prune_cat_cache(cache, keep_from_iso):
     return len(old)
 
 
-def seed_cat_cache_from_csv(cache, pin_area, areas):
-    """One-time seed from exported CSVs in pipeline\\category_data\\ when no cache exists yet."""
-    f25 = os.path.join(CAT_CSV_DIR, "hyd_2025_deals.csv")
-    f26 = os.path.join(CAT_CSV_DIR, "hyd_2026_deals.csv")
-    fcat = os.path.join(CAT_CSV_DIR, "hyd_2025_2026_categories.csv")
+def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None):
+    """One-time seed from exported CSVs (in seed_dir or pipeline\\category_data\\) when no v3 cache exists yet."""
+    base_dir = seed_dir or CAT_CSV_DIR
+    f25 = os.path.join(base_dir, "hyd_2025_deals.csv")
+    f26 = os.path.join(base_dir, "hyd_2026_deals.csv")
+    fcat = os.path.join(base_dir, "hyd_2025_2026_categories.csv")
     if not (os.path.exists(f25) and os.path.exists(f26) and os.path.exists(fcat)):
         return False
 
@@ -494,7 +532,7 @@ def seed_cat_cache_from_csv(cache, pin_area, areas):
                     out.append((
                         ds, (row.get("docid") or "").strip(), (row.get("pincode") or "").strip(),
                         (row.get("branch_main_remote") or "").strip(), (row.get("fresh") or "").strip(),
-                        fl, dc, to_float(row.get("rv_3yr")),
+                        fl, (row.get("me") or "").strip(), dc, to_float(row.get("rv_3yr")),
                     ))
         return out
 
@@ -505,13 +543,15 @@ def seed_cat_cache_from_csv(cache, pin_area, areas):
             ds_list = sorted(r[0] for r in rows)
             for d in iter_dates(datetime.date.fromisoformat(ds_list[0]), datetime.date.fromisoformat(ds_list[-1])):
                 fetched.add(d.isoformat())
-    matched = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched)
-    log(f"Seeded {CAT_CACHE_PATH} from CSVs: {len(fetched)} days ({matched}/{len(ly_rows) + len(ty_rows)} rows matched)")
+    matched = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched, name_map=name_map)
+    log(f"Seeded {CAT_CACHE_PATH} from CSVs ({base_dir}): {len(fetched)} days, {len(cache['emps'])} emps "
+        f"({matched}/{len(ly_rows) + len(ty_rows)} rows matched)")
     return True
 
 
-def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=False):
+def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=False, name_map=None):
     """Incrementally fetch ONLY missing LY dates and missing/recent (last 14d) TY dates from MySQL."""
+    name_map = dict(name_map or {})
     days_map = cache["days"]
     recheck_from = max(ty_start, ty_end - datetime.timedelta(days=CAT_RECHECK_DAYS - 1))
     if full:
@@ -521,63 +561,76 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
         ly_need = [d for d in iter_dates(ly_start, ly_end) if d.isoformat() not in days_map]
         ty_need = [d for d in iter_dates(ty_start, ty_end) if d >= recheck_from or d.isoformat() not in days_map]
 
+    changed = False
     need_dates = sorted(set(ly_need) | set(ty_need))
-    if not need_dates:
-        log("Categories (incremental SQL): all TY and LY dates already cached; 0 SQL queries needed.")
-        return False
+    if need_dates:
+        chunks = date_span_chunks(need_dates)
+        raw_rows = []
+        for a, b in chunks:
+            conn = db_connect(env)
+            with conn.cursor() as cur:
+                cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(pincode, '')),
+                                       branch_main_remote, fresh, jda_flag, TRIM(IFNULL(me, '')),
+                                       dc_genio, IFNULL(rv_3yr, 0)
+                                FROM {MODIFIED_DEALS}
+                                WHERE dealclosed_date BETWEEN %s AND %s
+                                  AND sales_branch = %s
+                                  AND dc_genio > 0
+                                  AND fresh IN (0, 1)
+                                  AND jda_flag IN (1, 2)""", (a, b, BRANCH))
+                for day, docid, pin, mr, fresh, flag, me, dc, rv in cur.fetchall():
+                    ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
+                    raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 1), me, to_float(dc), to_float(rv)))
+            conn.close()
 
-    chunks = date_span_chunks(need_dates)
-    raw_rows = []
-    for a, b in chunks:
-        conn = db_connect(env)
-        with conn.cursor() as cur:
-            cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(pincode, '')),
-                                   branch_main_remote, fresh, jda_flag, dc_genio, IFNULL(rv_3yr, 0)
-                            FROM {MODIFIED_DEALS}
-                            WHERE dealclosed_date BETWEEN %s AND %s
-                              AND sales_branch = %s
-                              AND dc_genio > 0
-                              AND fresh IN (0, 1)
-                              AND jda_flag IN (1, 2)""", (a, b, BRANCH))
-            for day, docid, pin, mr, fresh, flag, dc, rv in cur.fetchall():
-                ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
-                raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 1), to_float(dc), to_float(rv)))
-        conn.close()
+        docids = sorted({r[1] for r in raw_rows if r[1]})
+        doc_cat = {}
+        if docids:
+            conn = db_connect(env)
+            with conn.cursor() as cur:
+                for i in range(0, len(docids), 1000):
+                    ch = docids[i:i + 1000]
+                    ph = ",".join(["%s"] * len(ch))
+                    cur.execute(f"""SELECT TRIM(docid),
+                                           MAX(TRIM(IFNULL(vertical, ''))),
+                                           MAX(TRIM(IFNULL(sub_vertical, '')))
+                                    FROM {CAT_MAP}
+                                    WHERE docid IN ({ph})
+                                    GROUP BY TRIM(docid)""", ch)
+                    for did, v, sv in cur.fetchall():
+                        if did:
+                            doc_cat[did] = (v, sv)
+            conn.close()
 
-    docids = sorted({r[1] for r in raw_rows if r[1]})
-    doc_cat = {}
-    if docids:
-        conn = db_connect(env)
-        with conn.cursor() as cur:
-            for i in range(0, len(docids), 1000):
-                ch = docids[i:i + 1000]
-                ph = ",".join(["%s"] * len(ch))
-                cur.execute(f"""SELECT TRIM(docid),
-                                       MAX(TRIM(IFNULL(vertical, ''))),
-                                       MAX(TRIM(IFNULL(sub_vertical, '')))
-                                FROM {CAT_MAP}
-                                WHERE docid IN ({ph})
-                                GROUP BY TRIM(docid)""", ch)
-                for did, v, sv in cur.fetchall():
-                    if did:
-                        doc_cat[did] = (v, sv)
-        conn.close()
+        fetched_isos = {d.isoformat() for d in need_dates}
+        matched = merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_isos, name_map=name_map)
+        pruned = prune_cat_cache(cache, ly_start.isoformat())
+        log(f"Categories (incremental SQL): fetched {len(ly_need)} LY + {len(ty_need)} TY days ({len(chunks)} chunk(s), "
+            f"{len(raw_rows)} deal rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
+        changed = True
+    else:
+        log("Categories (incremental SQL): all TY and LY dates already cached; 0 deal SQL queries needed.")
 
-    fetched_isos = {d.isoformat() for d in need_dates}
-    matched = merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_isos)
-    pruned = prune_cat_cache(cache, ly_start.isoformat())
-    log(f"Categories (incremental SQL): fetched {len(ly_need)} LY + {len(ty_need)} TY days ({len(chunks)} chunk(s), "
-        f"{len(raw_rows)} deal rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
-    return True
+    # Resolve any missing employee names in cache['emps'] from HR (one-time per unknown code)
+    missing_emps = [e[0] for e in cache.get("emps", []) if e[0] and (not e[1] or e[1] == e[0])]
+    if missing_emps:
+        try:
+            hr_names = fetch_hr_names_sql(env, missing_emps)
+            if fill_emp_names_from_map(cache, hr_names):
+                log(f"Categories HR names: resolved {len(hr_names)} of {len(missing_emps)} missing emp codes")
+                changed = True
+        except Exception as e:
+            log(f"WARNING: could not resolve missing category emp names ({type(e).__name__}: {e})")
+    return changed
 
 
 def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source):
-    """Pack compact dashboard JSON from the pre-aggregated daily cache for TY vs LY."""
+    """Pack compact dashboard JSON from the pre-aggregated daily cache for TY vs LY (including emp_idx)."""
     ly_a, ly_b = ly_start.isoformat(), ly_end.isoformat()
     ty_a, ty_b = ty_start.isoformat(), ty_end.isoformat()
-    old_cats, old_subs = cache["cats"], cache["subcats"]
+    old_cats, old_subs, old_emps = cache["cats"], cache["subcats"], cache.get("emps", [])
 
-    cat_tot, sub_tot = Counter(), Counter()
+    cat_tot, sub_tot, emp_tot = Counter(), Counter(), Counter()
     agg_rows = []
     ly_dates, ty_dates = [], []
 
@@ -595,12 +648,14 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         if not entries:
             continue
         mmdd = fy_mmdd(ds)
-        for loc, si, fr, dc, rv in entries:
+        for loc, si, fr, ei, dc, rv in entries:
             ci, sub = old_subs[si]
             cat = old_cats[ci]
+            code, ename = old_emps[ei] if ei < len(old_emps) else ("", "")
             cat_tot[cat] += dc
             sub_tot[(cat, sub)] += dc
-            agg_rows.append((yr, mmdd, loc, cat, sub, fr, dc, rv))
+            emp_tot[(code, ename)] += dc
+            agg_rows.append((yr, mmdd, loc, cat, sub, fr, code, ename, dc, rv))
 
     if not ly_dates or not ty_dates:
         return None
@@ -612,15 +667,19 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
     sub_ix = {cs: i for i, cs in enumerate(sub_keys)}
     subcats = [[cat_ix[c], s] for c, s in sub_keys]
 
-    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, round(dc, 2), round(rv)]
-              for yr, mmdd, loc, cat, sub, fr, dc, rv in agg_rows]
+    emp_keys = sorted(emp_tot, key=lambda ce: (1 if not ce[0] else 0, -emp_tot[ce], ce[1] or ce[0]))
+    emp_ix = {ce: i for i, ce in enumerate(emp_keys)}
+    emps = [[code, ename] for code, ename in emp_keys]
+
+    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, emp_ix[(code, ename)], round(dc, 2), round(rv)]
+              for yr, mmdd, loc, cat, sub, fr, code, ename, dc, rv in agg_rows]
 
     c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
     c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))
     fmt_k = lambda k: f"{(k // 100 - (12 if k // 100 > 12 else 0)):02d}-{k % 100:02d}"
     common_start, common_end = fmt_k(c_start_k), fmt_k(c_end_k)
-    log(f"Categories ({source}): {len(cats)} categories, {len(subcats)} sub-categories, {len(packed)} agg rows | "
-        f"LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
+    log(f"Categories ({source}): {len(cats)} categories, {len(subcats)} sub-categories, {len(emps)} emps, "
+        f"{len(packed)} agg rows | LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
     return {
         "source": source,
         "ty_year": ty_start.year,
@@ -635,11 +694,12 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         "common_end_k": c_end_k,
         "cats": cats,
         "subcats": subcats,
+        "emps": emps,
         "rows": packed,
     }
 
 
-def load_category_deals(env, pin_area, areas, notes, full=False):
+def load_category_deals(env, pin_area, areas, notes, full=False, name_map=None, seed_dir=None):
     end_d = datetime.date.fromisoformat(WINDOW_END)
     fy_year = end_d.year if end_d.month >= 4 else end_d.year - 1
     ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
@@ -647,15 +707,17 @@ def load_category_deals(env, pin_area, areas, notes, full=False):
 
     cache = load_cat_cache()
     changed = False
-    if not cache["days"] and not full:
-        if seed_cat_cache_from_csv(cache, pin_area, areas):
+    if fill_emp_names_from_map(cache, name_map or {}):
+        changed = True
+    if (not cache["days"] or seed_dir) and not full:
+        if seed_cat_cache_from_csv(cache, pin_area, areas, name_map=name_map, seed_dir=seed_dir):
             prune_cat_cache(cache, ly_start.isoformat())
             changed = True
 
     source = "cache"
     if env:
         try:
-            if update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=full):
+            if update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=full, name_map=name_map):
                 changed = True
             source = "sql"
         except Exception as e:
@@ -671,6 +733,7 @@ def load_category_deals(env, pin_area, areas, notes, full=False):
 def main():
     cat_only = "--cat-only" in sys.argv
     full_cat = "--full-cat-refresh" in sys.argv
+    seed_dir = sys.argv[sys.argv.index("--seed-dir") + 1] if "--seed-dir" in sys.argv else None
     pin_area, areas, city_area = load_geo()
     env_file = find_env()
     env = load_env(env_file) if env_file else None
@@ -681,8 +744,10 @@ def main():
         log("=== Hyderabad dashboard category-only refresh ===")
         with open(OUT_PATH, encoding="utf-8") as f:
             data = json.load(f)
+        name_map = {str(r["id"]).strip(): r["name"] for r in data.get("reps", []) if r.get("id") and r.get("name")}
+        name_map.update({str(m[0]).strip(): m[1] for m in data.get("mgrs", []) if len(m) >= 2 and m[0] and m[1]})
         notes = []
-        cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat)
+        cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat, name_map=name_map, seed_dir=seed_dir)
         if not cat_deals:
             sys.exit("Category YoY data could not be loaded from SQL, cache, or pipeline\\category_data.")
         data["cat_deals"] = cat_deals
@@ -691,7 +756,7 @@ def main():
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(data, f, separators=(",", ":"))
         os.replace(tmp, OUT_PATH)
-        log(f"Updated cat_deals in {OUT_PATH} ({len(cat_deals['cats'])} categories, {len(cat_deals['subcats'])} sub-categories)")
+        log(f"Updated cat_deals in {OUT_PATH} ({len(cat_deals['cats'])} categories, {len(cat_deals['subcats'])} sub-categories, {len(cat_deals['emps'])} emps)")
         return
 
     log(f"=== Hyderabad dashboard refresh: {WINDOW_START} to {WINDOW_END} ===")
@@ -714,7 +779,12 @@ def main():
             log(f"WARNING: HR details not read ({type(e).__name__}: {e})")
     else:
         log("No pipeline\\db_216.env: presentations only (no sales, no HR tenure).")
-    cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat)
+    cat_name_map = dict(names)
+    cat_name_map.update(mgr_names)
+    for e, v in hr.items():
+        if v.get("hname"):
+            cat_name_map.setdefault(e, v["hname"])
+    cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat, name_map=cat_name_map, seed_dir=seed_dir)
 
     # JDAs on the HR list who never presented in the window are still active (they count as absent)
     for e, v in hr.items():

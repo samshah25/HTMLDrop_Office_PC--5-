@@ -55,6 +55,10 @@ def main():
                 cmd.append("--cat-only")
             if full_cat:
                 cmd.append("--full-cat-refresh")
+            if "--seed-dir" in sys.argv:
+                ix = sys.argv.index("--seed-dir")
+                if ix + 1 < len(sys.argv):
+                    cmd.extend(["--seed-dir", sys.argv[ix + 1]])
             if cat_only:
                 print("[1/2] Refresh category & subcategory YoY deals (incremental) ...", flush=True)
             else:
