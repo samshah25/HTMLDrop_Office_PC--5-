@@ -674,7 +674,7 @@ const S = {
   catView: 'category', // category | emp (Who secured by JDA)
   catOpen: null,    // Set of expanded category indexes in Category view
   catEmpOpen: null, // Set of expanded emp indexes in Who secured (by JDA) view
-  catDr: { ci: -1, si: -1, tab: 'sub', q: '' }, // active Category / Sub-category drawer state
+  catDr: { ci: -1, si: -1, tab: 'sub', q: '', subq: '' }, // active Category / Sub-category drawer state
 };
 if (!['today', 'territory', 'managers', 'actions', 'field', 'categories'].includes(S.page)) S.page = 'today';
 if (!CITY_OPTS.some(o => o[0] === S.city)) S.city = 'all';
@@ -1033,8 +1033,8 @@ function helpMap() {
     'Longest gap': ['Longest gap', 'The longest break between two presentations in a row.', ''],
     'Per hour': ['Per hour', 'Pace: presentations per hour between the first and the last.', '(Presentations − 1) ÷ span.'],
     'Flags': ['Flags', `Late = first after ${hm(F.start)}. Early = last before ${hm(F.end)}. Gap = a break over ${F.gap} min. Clean = none of these.`, ''],
-    'TY Deals': ['This Year Deals', 'Total deals closed in the selected period this year.', 'SUM(dc_genio) from ops_analytics.tbl_modified_deal_level_data for Hyderabad JDA deals (jda_flag 1 & 2, fresh 0/1).'],
-    'LY Deals': ['Last Year Deals', 'Total deals closed in the exact same calendar dates one year earlier.', 'SUM(dc_genio) over the matching last-year date window.'],
+    'TY Deals': ['This Year Deals', 'Distinct businesses (docids) closed in the selected period this year.', 'COUNT(DISTINCT docid) from ops_analytics.tbl_modified_deal_level_data for Hyderabad JDA deals (jda_flag 1 & 2, fresh 0/1).'],
+    'LY Deals': ['Last Year Deals', 'Distinct businesses (docids) closed in the exact same calendar dates one year earlier.', 'COUNT(DISTINCT docid) over the matching last-year date window.'],
     'Growing (Good)': ['Good (Growing) Categories', 'Categories with at least +5% YoY deal growth (or +10 net deals) compared to the same period last year.', 'Count of categories classified as Good, plus total net deals gained across them.'],
     'Declining (Bad)': ['Bad (Declining) Categories', 'Categories with at least −5% YoY deal drop (or −10 net deals) compared to the same period last year.', 'Count of categories classified as Bad, plus total net deals lost across them.'],
     'TY 3-Yr RV': ['This Year 3-Year RV', 'Total 3-year revenue value of deals closed in the selected period (deduplicated across joint-deal rows).', 'SUM(rv_3yr) with joint (jda_flag = 2) rows halved so each joint deal counts once.'],
@@ -1696,46 +1696,56 @@ function computeCatAgg(winOverride) {
   const nC = CATD.cats.length, nS = CATD.subcats.length, hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   const nE = hasEmps ? CATD.emps.length : 0;
   const mgrF = hasEmps ? catEmpAllowed() : null;
-  const cLy = new Float64Array(nC), cTy = new Float64Array(nC), cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
-  const sLy = new Float64Array(nS), sTy = new Float64Array(nS), sRvLy = new Float64Array(nS), sRvTy = new Float64Array(nS);
-  const eLy = new Float64Array(nE), eTy = new Float64Array(nE), eRvLy = new Float64Array(nE), eRvTy = new Float64Array(nE);
-  const eCats = Array.from({ length: nE }, () => new Map()); // ei -> Map(ci -> {ly, ty, rvTy})
-  const mLy = new Map(), mTy = new Map();
-  let totLy = 0, totTy = 0, rvLy = 0, rvTy = 0;
+  const cLy = Array.from({ length: nC }, () => new Set()), cTy = Array.from({ length: nC }, () => new Set());
+  const cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
+  const sLy = Array.from({ length: nS }, () => new Set()), sTy = Array.from({ length: nS }, () => new Set());
+  const sRvLy = new Float64Array(nS), sRvTy = new Float64Array(nS);
+  const eLy = Array.from({ length: nE }, () => new Set()), eTy = Array.from({ length: nE }, () => new Set());
+  const eRvLy = new Float64Array(nE), eRvTy = new Float64Array(nE);
+  const eCats = Array.from({ length: nE }, () => new Map()); // ei -> Map(ci -> {ly:Set, ty:Set, rvLy, rvTy})
+  const mLyS = new Map(), mTyS = new Map();
+  const totLyS = new Set(), totTyS = new Set();
+  let rvLy = 0, rvTy = 0;
   for (const r of CATD.rows) {
-    const yr = r[0], k = r[1], loc = r[2], si = r[3], fr = r[4];
-    const ei = hasEmps ? r[5] : -1, dc = hasEmps ? r[6] : r[5], rv = hasEmps ? r[7] : r[6];
+    // [yr, fy_mmdd, di, loc, si, fr, ei, rv]
+    const [yr, k, di, loc, si, fr, ei, rv] = r;
     if (!catLocOk(loc)) continue;
     if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     // Monthly series always spans full common_start_k..common_end_k so same-day partial month is fair
     if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
       const fm = Math.floor(k / 100);
-      if (yr === 1) mTy.set(fm, (mTy.get(fm) || 0) + dc);
-      else mLy.set(fm, (mLy.get(fm) || 0) + dc);
+      const mp = yr === 1 ? mTyS : mLyS;
+      let st = mp.get(fm); if (!st) { st = new Set(); mp.set(fm, st); }
+      st.add(di);
     }
     if (k < W.a || k > W.b) continue;
     const ci = CATD.subcats[si][0];
     if (yr === 1) {
-      cTy[ci] += dc; cRvTy[ci] += rv; sTy[si] += dc; sRvTy[si] += rv; totTy += dc; rvTy += rv;
+      cTy[ci].add(di); cRvTy[ci] += rv; sTy[si].add(di); sRvTy[si] += rv; totTyS.add(di); rvTy += rv;
       if (ei >= 0) {
-        eTy[ei] += dc; eRvTy[ei] += rv;
-        const m = eCats[ei]; const v = m.get(ci) || { ly: 0, ty: 0, rvLy: 0, rvTy: 0 };
-        v.ty += dc; v.rvTy += rv; m.set(ci, v);
+        eTy[ei].add(di); eRvTy[ei] += rv;
+        const m = eCats[ei]; let v = m.get(ci);
+        if (!v) { v = { ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0 }; m.set(ci, v); }
+        v.ty.add(di); v.rvTy += rv;
       }
     } else {
-      cLy[ci] += dc; cRvLy[ci] += rv; sLy[si] += dc; sRvLy[si] += rv; totLy += dc; rvLy += rv;
+      cLy[ci].add(di); cRvLy[ci] += rv; sLy[si].add(di); sRvLy[si] += rv; totLyS.add(di); rvLy += rv;
       if (ei >= 0) {
-        eLy[ei] += dc; eRvLy[ei] += rv;
-        const m = eCats[ei]; const v = m.get(ci) || { ly: 0, ty: 0, rvLy: 0, rvTy: 0 };
-        v.ly += dc; v.rvLy += rv; m.set(ci, v);
+        eLy[ei].add(di); eRvLy[ei] += rv;
+        const m = eCats[ei]; let v = m.get(ci);
+        if (!v) { v = { ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0 }; m.set(ci, v); }
+        v.ly.add(di); v.rvLy += rv;
       }
     }
   }
+  const totLy = totLyS.size, totTy = totTyS.size;
+  const mLy = new Map([...mLyS].map(([k, s]) => [k, s.size]));
+  const mTy = new Map([...mTyS].map(([k, s]) => [k, s.size]));
   const subsByCat = Array.from({ length: nC }, () => []);
   for (let si = 0; si < nS; si++) {
     const [ci, name] = CATD.subcats[si];
-    const ly = sLy[si], ty = sTy[si], rL = sRvLy[si], rT = sRvTy[si];
+    const ly = sLy[si].size, ty = sTy[si].size, rL = sRvLy[si], rT = sRvTy[si];
     if (!ly && !ty) continue;
     const diff = ty - ly, yoy = yoyRatio(ty, ly), verdict = catVerdict(ty, ly);
     subsByCat[ci].push({ si, ci, name, ly, ty, diff, yoy, rvLy: rL, rvTy: rT, rvYoy: yoyRatio(rT, rL), verdict });
@@ -1743,7 +1753,7 @@ function computeCatAgg(winOverride) {
   subsByCat.forEach(list => list.sort((a, b) => b.ty - a.ty || b.ly - a.ly));
   const cats = [];
   for (let ci = 0; ci < nC; ci++) {
-    const ly = cLy[ci], ty = cTy[ci], rL = cRvLy[ci], rT = cRvTy[ci];
+    const ly = cLy[ci].size, ty = cTy[ci].size, rL = cRvLy[ci], rT = cRvTy[ci];
     if (!ly && !ty) continue;
     const diff = ty - ly, yoy = yoyRatio(ty, ly), verdict = catVerdict(ty, ly);
     const subs = subsByCat[ci];
@@ -1755,14 +1765,17 @@ function computeCatAgg(winOverride) {
   }
   const emps = [];
   for (let ei = 0; ei < nE; ei++) {
-    const ly = eLy[ei], ty = eTy[ei], rL = eRvLy[ei], rT = eRvTy[ei];
+    const ly = eLy[ei].size, ty = eTy[ei].size, rL = eRvLy[ei], rT = eRvTy[ei];
     if (!ly && !ty) continue;
     const info = empInfo(ei);
     const diff = ty - ly, yoy = yoyRatio(ty, ly), verdict = catVerdict(ty, ly);
-    const clist = [...eCats[ei].entries()].map(([ci, v]) => ({
-      ci, name: CATD.cats[ci], ly: v.ly, ty: v.ty, diff: v.ty - v.ly,
-      yoy: yoyRatio(v.ty, v.ly), rvLy: v.rvLy, rvTy: v.rvTy, verdict: catVerdict(v.ty, v.ly),
-    })).sort((a, b) => b.ty - a.ty || b.ly - a.ly);
+    const clist = [...eCats[ei].entries()].map(([ci, v]) => {
+      const l = v.ly.size, t = v.ty.size;
+      return {
+        ci, name: CATD.cats[ci], ly: l, ty: t, diff: t - l,
+        yoy: yoyRatio(t, l), rvLy: v.rvLy, rvTy: v.rvTy, verdict: catVerdict(t, l),
+      };
+    }).sort((a, b) => b.ty - a.ty || b.ly - a.ly);
     const topCats = clist.filter(x => x.ty > 0).slice(0, 2).map(x => `${x.name} (${fmtDeals(x.ty)})`).join(', ')
       || clist.slice(0, 2).map(x => `${x.name} (${fmtDeals(x.ly)} LY)`).join(', ');
     emps.push({
@@ -1778,23 +1791,29 @@ function computeSecuredBy(ci, si) {
   const mgrF = catEmpAllowed();
   const map = new Map();
   for (const r of CATD.rows) {
-    const [yr, k, loc, rsi, fr, ei, dc, rv] = r;
+    const [yr, k, di, loc, rsi, fr, ei, rv] = r;
     if (si >= 0 ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
     if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < W.a || k > W.b) continue;
     let rec = map.get(ei);
-    if (!rec) { rec = { ei, ly: 0, ty: 0, rvLy: 0, rvTy: 0, subs: new Map() }; map.set(ei, rec); }
-    if (yr === 1) { rec.ty += dc; rec.rvTy += rv; rec.subs.set(rsi, (rec.subs.get(rsi) || 0) + dc); }
-    else { rec.ly += dc; rec.rvLy += rv; }
+    if (!rec) { rec = { ei, ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0, subs: new Map() }; map.set(ei, rec); }
+    if (yr === 1) {
+      rec.ty.add(di); rec.rvTy += rv;
+      let ss = rec.subs.get(rsi); if (!ss) { ss = new Set(); rec.subs.set(rsi, ss); }
+      ss.add(di);
+    } else {
+      rec.ly.add(di); rec.rvLy += rv;
+    }
   }
   return [...map.values()].map(rec => {
     const info = empInfo(rec.ei);
-    const topS = [...rec.subs.entries()].sort((a, b) => b[1] - a[1])[0];
+    const ly = rec.ly.size, ty = rec.ty.size;
+    const topS = [...rec.subs.entries()].sort((a, b) => b[1].size - a[1].size)[0];
     return {
-      ...info, ly: rec.ly, ty: rec.ty, diff: rec.ty - rec.ly, yoy: yoyRatio(rec.ty, rec.ly),
-      rvLy: rec.rvLy, rvTy: rec.rvTy, verdict: catVerdict(rec.ty, rec.ly),
+      ...info, ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
+      rvLy: rec.rvLy, rvTy: rec.rvTy, verdict: catVerdict(ty, ly),
       topSub: topS ? CATD.subcats[topS[0]][1] : '',
     };
   }).sort((a, b) => b.ty - a.ty || b.diff - a.diff || b.ly - a.ly);
@@ -1850,7 +1869,7 @@ function pageCategories() {
     ? ((b.ly >= 10 || b.ty >= 10 ? 1 : 0) - (a.ly >= 10 || a.ty >= 10 ? 1 : 0)) || ((a.yoy || 9) - (b.yoy || 9))
     : a.diff - b.diff);
 
-  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' using SUM(dc_genio) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
+  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
     <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
     <h2>Category-wise deals (YoY)</h2>
     <p>Same-period comparison showing which categories are performing well (good) vs declining (bad). Click any category for its sub-category breakdown.</p></div>
@@ -1879,20 +1898,6 @@ function pageCategories() {
   if (S.mgr >= 0 && mgrF) {
     h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active deal-securing employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} deals secured by these employees.`);
   }
-
-  // KPI tiles
-  const chipOf = (diff, pctVal, suffix) => {
-    if (pctVal == null || !isFinite(pctVal)) return `<span class="chip flat">No ${fyLyLbl} base</span>`;
-    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
-    return `<span class="chip ${cls}">${diff > 0 ? '▲' : diff < 0 ? '▼' : '●'} ${nf(Math.abs(pctVal), 1)}%</span><span>${esc(suffix)}</span>`;
-  };
-  h += tiles([
-    tile({ lbl: 'TY Deals', val: fmtDeals(totTy), unit: fyTyLbl, ic: 'trophy', hue: '#6366f1', sub: chipOf(netDiff, yoyPct, `${fmtDelta(netDiff)} vs ${fyLyLbl}`) }),
-    tile({ lbl: 'LY Deals', val: fmtDeals(totLy), unit: fyLyLbl, ic: 'cal2', hue: '#0ea5e9', sub: `Same dates (${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)})` }),
-    tile({ lbl: 'Growing (Good)', val: nf(goodCats.length), unit: `of ${nf(realCats.length)}`, ic: 'up', hue: '#10b981', sub: `<span class="chip up">+${fmtDeals(goodGain)} deals</span><span>gained YoY</span>` }),
-    tile({ lbl: 'Declining (Bad)', val: nf(badCats.length), unit: `of ${nf(realCats.length)}`, ic: 'down', hue: '#ef4444', sub: `<span class="chip down">${fmtDelta(badDrop)} deals</span><span>lost YoY</span>` }),
-    tile({ lbl: 'TY 3-Yr RV', val: fmtRv(rvTy), ic: 'rupee', hue: '#8b5cf6', sub: chipOf(rvDiff, rvPct, `vs ${fmtRv(rvLy)} (${fyLyLbl})`) }),
-  ]);
 
   // Good vs Bad side-by-side cards
   const rankToggle = `<div class="seg" role="group" aria-label="Rank by">${[['net', 'By net deals Δ'], ['pct', 'By YoY %']].map(([k, l]) => `<button type="button" data-catrank="${k}" aria-pressed="${S.catRank === k}">${l}</button>`).join('')}</div>`;
@@ -2027,7 +2032,7 @@ function pageCategories() {
     ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
-  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>SUM(dc_genio)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
 }
 
@@ -2060,26 +2065,27 @@ function openCat(ci, si = -1, tab = null) {
   if (tab) S.catDr.tab = tab;
   else if (isSub) S.catDr.tab = 'emp';
   else if (!prevSame) S.catDr.tab = 'sub';
-  if (!prevSame) S.catDr.q = '';
+  if (!prevSame) { S.catDr.q = ''; S.catDr.subq = ''; }
 
   const fyTyLbl = String(CATD.ty_year), fyLyLbl = String(CATD.ly_year);
   const fms = catMonths(), eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
-  const mLy = new Map(), mTy = new Map();
+  const mLyS = new Map(), mTyS = new Map();
   for (const r of CATD.rows) {
-    const yr = r[0], k = r[1], loc = r[2], rsi = r[3], fr = r[4], ei = hasEmps ? r[5] : -1, dc = hasEmps ? r[6] : r[5];
+    const [yr, k, di, loc, rsi, fr, ei] = r;
     if (isSub ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
     if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < CATD.common_start_k || k > CATD.common_end_k) continue;
     const fm = Math.floor(k / 100);
-    if (yr === 1) mTy.set(fm, (mTy.get(fm) || 0) + dc);
-    else mLy.set(fm, (mLy.get(fm) || 0) + dc);
+    const mp = yr === 1 ? mTyS : mLyS;
+    let st = mp.get(fm); if (!st) { st = new Set(); mp.set(fm, st); }
+    st.add(di);
   }
   const monItems = fms.map(fm => ({
     label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
     full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay})` : ''),
-    ly: mLy.get(fm) || 0, ty: mTy.get(fm) || 0,
+    ly: mLyS.get(fm) ? mLyS.get(fm).size : 0, ty: mTyS.get(fm) ? mTyS.get(fm).size : 0,
   }));
 
   const target = isSub ? sub : c;
@@ -2093,9 +2099,12 @@ function openCat(ci, si = -1, tab = null) {
   const hdrBg = target.verdict === 'good' ? 'linear-gradient(120deg, #047857, #10b981)' : target.verdict === 'bad' ? 'linear-gradient(120deg, #b91c1c, #f97316)' : 'linear-gradient(120deg, #4338ca, #6366f1)';
   const showEmpTab = isSub || (hasEmps && S.catDr.tab === 'emp');
 
-  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${c.nSub})</h3><div class="cap">${hasEmps ? 'Click any sub-category to see who secured those deals' : 'Sorted by TY deals'} · ${esc(W.label)}</div></div></div>
+  const subq = (S.catDr.subq || '').trim().toLowerCase();
+  const subsView = subq ? c.subs.filter(x => x.name.toLowerCase().includes(subq)) : c.subs;
+  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${nf(subsView.length)}${subq ? ' of ' + nf(c.nSub) : ''})</h3><div class="cap">${hasEmps ? 'Click any sub-category to see who secured those deals' : 'Sorted by TY deals'} · ${esc(W.label)}</div></div></div>
+    ${c.nSub > 8 ? `<label class="search dr-search">${icon('search')}<input type="search" id="catDrSubQ" placeholder="Search sub-category (sales group)" value="${esc(S.catDr.subq || '')}"></label>` : ''}
     <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Sub-category</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">YoY</th><th>Status</th></tr></thead>
-    <tbody>${c.subs.map(x => `<tr class="${hasEmps ? 'click-row' : ''}"${hasEmps ? ` data-catsub="${ci}|${x.si}"` : ''}><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('')}</tbody></table></div>
+    <tbody>${subsView.length ? subsView.map(x => `<tr class="${hasEmps ? 'click-row' : ''}"${hasEmps ? ` data-catsub="${ci}|${x.si}"` : ''}><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('') : `<tr><td colspan="6" class="empty">No sub-categories match.</td></tr>`}</tbody></table></div>
   </div>`;
 
   const empCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#6366f1"></i>Who secured (${nf(securedView.length)} JDAs)</h3><div class="cap">${isSub ? esc(sub.name) : esc(c.name)} · sorted by TY deals · click a name for profile</div></div>
@@ -2112,12 +2121,6 @@ function openCat(ci, si = -1, tab = null) {
       <div class="meta">${fyLyLbl}: <b>${fmtDeals(target.ly)}</b> → ${fyTyLbl}: <b>${fmtDeals(target.ty)}</b> (${fmtDelta(target.diff)}, ${fmtYoy(target.ty, target.ly)})</div>
     </div><button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
     <div class="dr-body">
-      <div class="tiles">
-        ${tile({ lbl: `TY Deals (${fyTyLbl})`, val: fmtDeals(target.ty), ic: 'trophy', hue: '#6366f1', sub: isSub ? `${c.ty ? pct(target.ty / c.ty) : '—'} of ${esc(c.name)}` : `${pct(c.share)} of total deals` })}
-        ${tile({ lbl: `LY Deals (${fyLyLbl})`, val: fmtDeals(target.ly), ic: 'cal2', hue: '#0ea5e9', sub: `YoY: ${fmtDelta(target.diff)} (${fmtYoy(target.ty, target.ly)})` })}
-        ${tile({ lbl: 'TY 3-Yr RV', val: fmtRv(target.rvTy), ic: 'rupee', hue: '#8b5cf6', sub: `LY ${fmtRv(target.rvLy)} (${fmtYoy(target.rvTy, target.rvLy)})` })}
-        ${tile({ lbl: 'Who secured', val: nf(secured.filter(e => e.ty > 0).length), unit: `in ${fyTyLbl}`, ic: 'users', hue: '#10b981', sub: `${nf(secured.length)} total across ${fyLyLbl}–${fyTyLbl}` })}
-      </div>
       ${(!isSub && (bestSub || worstSub)) ? `<div class="cat-hi">
         <div class="st"><span>Top growing sub-category</span><b class="ok-t">${bestSub ? esc(bestSub.name) : 'None'}</b><small>${bestSub ? `${fmtDeals(bestSub.ly)} → ${fmtDeals(bestSub.ty)} (${fmtDelta(bestSub.diff)}, ${fmtYoy(bestSub.ty, bestSub.ly)})` : 'No sub-category grew'}</small></div>
         <div class="st"><span>Steepest drop sub-category</span><b class="lo-t">${worstSub ? esc(worstSub.name) : 'None'}</b><small>${worstSub ? `${fmtDeals(worstSub.ly)} → ${fmtDeals(worstSub.ty)} (${fmtDelta(worstSub.diff)}, ${fmtYoy(worstSub.ty, worstSub.ly)})` : 'No sub-category declined'}</small></div>
@@ -2349,6 +2352,13 @@ function setup() {
   });
   document.addEventListener('input', e => {
     if (e.target.id === 'mgrQ') { renderMgrPop(e.target.value); return; }
+    if (e.target.id === 'catDrSubQ') {
+      S.catDr.subq = e.target.value;
+      const pos = e.target.selectionStart;
+      if (S.catDr.ci >= 0) openCat(S.catDr.ci, -1, 'sub');
+      const el = $('#catDrSubQ'); if (el) { el.focus(); el.setSelectionRange(pos, pos); }
+      return;
+    }
     if (e.target.id === 'catDrQ') {
       S.catDr.q = e.target.value;
       const pos = e.target.selectionStart;

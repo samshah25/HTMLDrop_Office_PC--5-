@@ -44,3 +44,15 @@
 2026-11-25 15:00:13  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 590 emps (14915/15100 rows matched)
 2026-11-25 15:00:14  Categories (cache): 25 categories, 139 sub-categories, 590 emps, 12762 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
 2026-11-25 15:00:16  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (25 categories, 139 sub-categories, 590 emps)
+2026-11-25 15:20:12  === Hyderabad dashboard category-only refresh ===
+2026-11-25 15:20:14  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 13221 unique (docid, version) deals, 590 emps (13049/13221 cat-matched)
+2026-11-25 15:20:15  Categories (cache): 25 categories, 139 sub-categories, 590 emps, 12762 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-25 15:20:16  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (25 categories, 139 sub-categories, 590 emps)
+2026-11-25 15:52:31  === Hyderabad dashboard category-only refresh ===
+2026-11-25 15:52:34  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 13221 unique (docid, version) deals, 590 emps (13102/13221 cat-matched)
+2026-11-25 15:52:35  Categories (cache): 26 categories, 1080 sub-categories, 590 emps, 12808 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-25 15:52:37  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 590 emps)
+2026-11-25 15:58:34  === Hyderabad dashboard category-only refresh ===
+2026-11-25 15:58:37  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 10633 unique (docid, version) deals, 590 emps (10522/10633 cat-matched)
+2026-11-25 15:58:37  Categories (cache): 26 categories, 1080 sub-categories, 590 emps, 10633 distinct docids, 12939 day-doc rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-25 15:58:39  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 590 emps)
