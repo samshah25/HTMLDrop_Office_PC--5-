@@ -129,6 +129,7 @@ select.plain { border: 1px solid var(--line); border-radius: 12px; background: v
 .hero-managers { background: linear-gradient(120deg, #7c3aed 0%, #c026d3 55%, #e11d48 100%); box-shadow: 0 18px 40px -22px rgba(192,38,211,.7); }
 .hero-actions { background: linear-gradient(120deg, #be123c 0%, #e11d48 45%, #f97316 100%); box-shadow: 0 18px 40px -22px rgba(225,29,72,.7); }
 .hero-field { background: linear-gradient(120deg, #1d4ed8 0%, #0284c7 50%, #0d9488 100%); box-shadow: 0 18px 40px -22px rgba(2,132,199,.7); }
+.hero-categories { background: linear-gradient(120deg, #047857 0%, #0d9488 48%, #4f46e5 100%); box-shadow: 0 18px 40px -22px rgba(13,148,136,.75); }
 .h-txt { position: relative; z-index: 1; max-width: 640px; }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
 .hero h2 { margin: 4px 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
@@ -461,6 +462,35 @@ tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
 .btn-ghost { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 600; font-size: 12px; }
 .btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
 
+/* ---------- categories YoY page ---------- */
+.cat-bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.cat-grp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gb-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.gb-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(70px, 1fr) auto; gap: 10px; align-items: center; width: 100%; border: 0; background: var(--surface-2); border-radius: 10px; padding: 8px 11px; cursor: pointer; text-align: left; transition: background .12s, box-shadow .12s; }
+.gb-row:hover { background: var(--brand-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent); }
+.gb-nm { min-width: 0; }
+.gb-nm b { display: block; font-size: 13px; font-weight: 700; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-nm small { display: block; font-size: 11px; color: var(--ink-3); }
+.gb-track { height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.gb-track i { display: block; height: 100%; border-radius: 99px; }
+.gb-track.good i { background: linear-gradient(90deg, #34d399, #10b981); }
+.gb-track.bad i { background: linear-gradient(90deg, #fb7185, #ef4444); }
+.gb-val { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gb-val b { display: block; font-size: 13.5px; font-weight: 800; line-height: 1.2; }
+.gb-val small { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; }
+#tw-cats td:first-child, #tw-cats th:first-child { width: 1%; }
+#tw-cats tbody tr:not(.perf-sub) td button.rep { font-weight: 700; }
+.cat-sub-tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; margin-top: 6px; }
+.cat-sub-tbl th { position: static; background: var(--surface-2); padding: 7px 8px; font-size: 10.5px; cursor: default; }
+.cat-sub-tbl th:hover { color: var(--ink-3); }
+.cat-sub-tbl td { padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.cat-sub-tbl td.wrap { white-space: normal; max-width: 170px; }
+.cat-sub-tbl tbody tr:last-child td { border-bottom: 0; }
+.cat-hi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cat-hi .st { border: 1px solid var(--line); }
+.cat-hi .st b { font-size: 14px; display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-hi .st small { display: block; margin: 2px 0 0; font-size: 11.5px; }
+
 @media (max-width: 1600px) { .upd { display: none; } }
 @media (max-width: 1400px) { .crumb-pre { display: none; } .mgr-btn { max-width: 190px; } .top { gap: 10px; } }
 @media (max-width: 1180px) { .grid3 { grid-template-columns: 1fr 1fr; } }
@@ -512,6 +542,7 @@ tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
     <button class="nav-btn" data-page="managers" title="Managers &amp; tenure"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>Managers</button>
     <button class="nav-btn" data-page="actions" title="Action list: absenteeism, zero sale, low output"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.5"/></svg>Actions<span class="badge" id="actBadge" hidden></span></button>
     <button class="nav-btn" data-page="field" title="Field discipline: start, finish, gaps, pacing"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Field</button>
+    <button class="nav-btn" data-page="categories" title="Category &amp; sub-category deals (YoY comparison)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Categories</button>
     <div class="rail-foot">
       <span class="live-dot" id="liveDot"></span>
       <button type="button" class="rail-ic" id="themeBtn" title="Switch light / dark" aria-label="Switch light or dark"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
@@ -626,8 +657,15 @@ const S = {
   act: 'abs3',
   fieldThr: { start: 11 * 60, end: 18 * 60, gap: 240 },
   treeOpen: null,   // TLs whose JDAs are shown on the Managers page
+  catWin: 'ytd',    // ytd | qtd | mtd | d30 | month
+  catMonth: 0,      // FY month number (4..15) when catWin === 'month'
+  catFresh: 'all',  // all | 1 | 0
+  catMode: 'all',   // all (SUM dc_genio across all JDA-involved rows) | jda (final_team_type_name == JDA)
+  catRank: 'net',   // net (TY - LY deals) | pct (YoY % with min base)
+  catStatus: 'all', // all | good | flat | bad
+  catOpen: null,    // Set of expanded category indexes in the Categories table
 };
-if (!['today', 'territory', 'managers', 'actions', 'field'].includes(S.page)) S.page = 'today';
+if (!['today', 'territory', 'managers', 'actions', 'field', 'categories'].includes(S.page)) S.page = 'today';
 if (!CITY_OPTS.some(o => o[0] === S.city)) S.city = 'all';
 if (!STATE_OPTS.some(o => o[0] === S.st)) S.st = 'all';
 if (S.city !== 'all' && S.st !== 'all') { S.city = 'all'; S.st = 'all'; }   // one area at a time
@@ -731,6 +769,8 @@ const ICON = {
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
   dl: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/>',
+  layers: '<path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>',
+  up: '<path d="m3 17 7-7 4 4 7-7"/><path d="M21 13V7h-6"/>',
 };
 const icon = k => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k] || ''}</svg>`;
 function hashHue(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return HUES[h % HUES.length]; }
@@ -749,6 +789,7 @@ const PURPOSE = {
   managers: ['Managers & TLs', 'Attendance and output of every team'],
   actions: ['Action list', 'JDAs who need a follow-up today'],
   field: ['Field discipline', 'When JDAs start, finish and pace their day'],
+  categories: ['Category-wise deals (YoY)', 'Same-period comparison showing which categories are growing (good) and declining (bad) · click any category for sub-categories'],
 };
 function hero(theme, title, text, chips = []) {
   const [name, what] = PURPOSE[theme] || [title, ''];
@@ -981,6 +1022,12 @@ function helpMap() {
     'Longest gap': ['Longest gap', 'The longest break between two presentations in a row.', ''],
     'Per hour': ['Per hour', 'Pace: presentations per hour between the first and the last.', '(Presentations − 1) ÷ span.'],
     'Flags': ['Flags', `Late = first after ${hm(F.start)}. Early = last before ${hm(F.end)}. Gap = a break over ${F.gap} min. Clean = none of these.`, ''],
+    'TY Deals': ['This Year Deals', 'Total deals closed in the selected period this year.', 'SUM(dc_genio) from ops_analytics.tbl_modified_deal_level_data for Hyderabad JDA deals (jda_flag 1 & 2, fresh 0/1).'],
+    'LY Deals': ['Last Year Deals', 'Total deals closed in the exact same calendar dates one year earlier.', 'SUM(dc_genio) over the matching last-year date window.'],
+    'Growing (Good)': ['Good (Growing) Categories', 'Categories with at least +5% YoY deal growth (or +10 net deals) compared to the same period last year.', 'Count of categories classified as Good, plus total net deals gained across them.'],
+    'Declining (Bad)': ['Bad (Declining) Categories', 'Categories with at least −5% YoY deal drop (or −10 net deals) compared to the same period last year.', 'Count of categories classified as Bad, plus total net deals lost across them.'],
+    'TY 3-Yr RV': ['This Year 3-Year RV', 'Total 3-year revenue value of deals closed in the selected period (deduplicated across joint-deal rows).', 'SUM(rv_3yr) with joint (jda_flag = 2) rows halved so each joint deal counts once.'],
+    'Status': ['YoY Status', 'Quick verdict for each category or sub-category vs the exact same dates last year.', 'Good: YoY ≥ +5% (or net ≥ +10 deals). Bad: YoY ≤ −5% (or net ≤ −10 deals). Flat: within ±5%.'],
   };
 }
 function tipHtml(h, extra) {
@@ -1538,6 +1585,366 @@ function pageField() {
   return h;
 }
 
+// ================= PAGE 6: CATEGORIES (YoY) =================
+const CATD = D.cat_deals || null;
+const fyMonIdx = m => m >= 4 ? m : m + 12;          // 4..15 (Apr..Mar)
+const fyMonNum = fm => fm > 12 ? fm - 12 : fm;      // 1..12
+const fyKeyLabel = k => { const fm = Math.floor(k / 100), d = k % 100; return d + ' ' + MON[fyMonNum(fm) - 1]; };
+const fmtRv = v => {
+  if (v == null || !isFinite(v)) return '—';
+  const a = Math.abs(v), sg = v < 0 ? '−' : '';
+  if (a >= 1e7) return sg + '₹' + nf(a / 1e7, 2) + ' Cr';
+  if (a >= 1e5) return sg + '₹' + nf(a / 1e5, 1) + ' L';
+  return sg + '₹' + nf(a, 0);
+};
+const fmtDeals = v => v == null || isNaN(v) ? '—' : nf(v, Math.abs(v % 1) > 1e-4 ? 1 : 0);
+const fmtDelta = v => v == null || isNaN(v) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + fmtDeals(Math.abs(v));
+const fmtYoy = (ty, ly) => {
+  if (ly > 0) { const p = (ty - ly) / ly * 100; return (p > 0 ? '+' : '') + nf(p, 1) + '%'; }
+  return ty > 0 ? 'NEW' : '—';
+};
+const yoyRatio = (ty, ly) => ly > 0 ? (ty - ly) / ly : (ty > 0 ? Infinity : null);
+function catVerdict(ty, ly) {
+  const diff = ty - ly, p = ly > 0 ? diff / ly : null;
+  if ((p != null && p >= 0.05) || diff >= 10 || (ly === 0 && ty >= 3)) return 'good';
+  if ((p != null && p <= -0.05) || diff <= -10 || (ty === 0 && ly >= 3)) return 'bad';
+  return 'flat';
+}
+const verdictPill = v => v === 'good' ? '<span class="pill good">Good</span>' : v === 'bad' ? '<span class="pill crit">Bad</span>' : '<span class="pill neutral">Flat</span>';
+const catLocOk = loc => {
+  if (S.city === 'main') return loc === 0;
+  if (S.city === 'remote') return loc !== 0;
+  if (S.st === 'TS') return loc === 0 || loc === 1;
+  if (S.st === 'AP') return loc === 2;
+  return true;
+};
+function catMonths() {
+  if (!CATD) return [];
+  const sM = Math.floor(CATD.common_start_k / 100), eM = Math.floor(CATD.common_end_k / 100);
+  const out = [];
+  for (let fm = sM; fm <= eM; fm++) out.push(fm);
+  return out;
+}
+function catWindow() {
+  const sK = CATD.common_start_k, eK = CATD.common_end_k;
+  const eFm = Math.floor(eK / 100), eDay = eK % 100;
+  if (S.catWin === 'mtd') return { a: Math.max(sK, eFm * 100 + 1), b: eK, label: `MTD (${fyKeyLabel(Math.max(sK, eFm * 100 + 1))} – ${fyKeyLabel(eK)})` };
+  if (S.catWin === 'qtd') {
+    const qStartFm = 4 + Math.floor((eFm - 4) / 3) * 3;
+    const a = Math.max(sK, qStartFm * 100 + 1);
+    return { a, b: eK, label: `QTD (${fyKeyLabel(a)} – ${fyKeyLabel(eK)})` };
+  }
+  if (S.catWin === 'd30') {
+    // exact 30 calendar days ending at common_end in TY
+    const endIso = `${fyMonNum(eFm) < 4 ? CATD.ty_year + 1 : CATD.ty_year}-${String(fyMonNum(eFm)).padStart(2, '0')}-${String(eDay).padStart(2, '0')}`;
+    const d0 = dt(endIso); d0.setDate(d0.getDate() - 29);
+    const k0 = fyMonIdx(d0.getMonth() + 1) * 100 + d0.getDate();
+    const a = Math.max(sK, k0);
+    return { a, b: eK, label: `Last 30 days (${fyKeyLabel(a)} – ${fyKeyLabel(eK)})` };
+  }
+  if (S.catWin === 'month' && S.catMonth) {
+    const fm = S.catMonth;
+    const a = Math.max(sK, fm * 100 + 1), b = Math.min(eK, fm * 100 + 31);
+    const mName = MONTHS[fyMonNum(fm) - 1];
+    return { a, b, label: fm === eFm ? `${mName} (${fyKeyLabel(a)} – ${fyKeyLabel(b)})` : mName };
+  }
+  return { a: sK, b: eK, label: `YTD (${fyKeyLabel(sK)} – ${fyKeyLabel(eK)})` };
+}
+function computeCatAgg(winOverride) {
+  const W = winOverride || catWindow();
+  const nC = CATD.cats.length, nS = CATD.subcats.length;
+  const cLy = new Float64Array(nC), cTy = new Float64Array(nC), cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
+  const sLy = new Float64Array(nS), sTy = new Float64Array(nS), sRvLy = new Float64Array(nS), sRvTy = new Float64Array(nS);
+  const mLy = new Map(), mTy = new Map();
+  let totLy = 0, totTy = 0, rvLy = 0, rvTy = 0;
+  for (const r of CATD.rows) {
+    const [yr, k, loc, si, fr, jt, dc, rv] = r;
+    if (!catLocOk(loc)) continue;
+    if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
+    if (S.catMode === 'jda' && jt !== 1) continue;
+    // Monthly series always spans full common_start_k..common_end_k so same-day partial month is fair
+    if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
+      const fm = Math.floor(k / 100);
+      if (yr === 1) mTy.set(fm, (mTy.get(fm) || 0) + dc);
+      else mLy.set(fm, (mLy.get(fm) || 0) + dc);
+    }
+    if (k < W.a || k > W.b) continue;
+    const ci = CATD.subcats[si][0];
+    if (yr === 1) {
+      cTy[ci] += dc; cRvTy[ci] += rv; sTy[si] += dc; sRvTy[si] += rv; totTy += dc; rvTy += rv;
+    } else {
+      cLy[ci] += dc; cRvLy[ci] += rv; sLy[si] += dc; sRvLy[si] += rv; totLy += dc; rvLy += rv;
+    }
+  }
+  const subsByCat = Array.from({ length: nC }, () => []);
+  for (let si = 0; si < nS; si++) {
+    const [ci, name] = CATD.subcats[si];
+    const ly = sLy[si], ty = sTy[si], rL = sRvLy[si], rT = sRvTy[si];
+    if (!ly && !ty) continue;
+    const diff = ty - ly, yoy = yoyRatio(ty, ly), verdict = catVerdict(ty, ly);
+    subsByCat[ci].push({ si, ci, name, ly, ty, diff, yoy, rvLy: rL, rvTy: rT, rvYoy: yoyRatio(rT, rL), verdict });
+  }
+  subsByCat.forEach(list => list.sort((a, b) => b.ty - a.ty || b.ly - a.ly));
+  const cats = [];
+  for (let ci = 0; ci < nC; ci++) {
+    const ly = cLy[ci], ty = cTy[ci], rL = cRvLy[ci], rT = cRvTy[ci];
+    if (!ly && !ty) continue;
+    const diff = ty - ly, yoy = yoyRatio(ty, ly), verdict = catVerdict(ty, ly);
+    const subs = subsByCat[ci];
+    cats.push({
+      ci, name: CATD.cats[ci], ly, ty, diff, yoy, share: totTy ? ty / totTy : 0,
+      rvLy: rL, rvTy: rT, rvYoy: yoyRatio(rT, rL), verdict, subs, nSub: subs.length,
+      subNames: subs.map(x => x.name).join(' '),
+    });
+  }
+  return { W, cats, totLy, totTy, rvLy, rvTy, mLy, mTy };
+}
+function groupedBarChart(items, { h = 230, W = 1100, tyLbl = 'TY', lyLbl = 'LY', fmt = fmtDeals } = {}) {
+  const padL = 48, padR = 12, padB = 26, padT = 18, iw = W - padL - padR, ih = h - padB - padT;
+  const max = niceMax(Math.max(...items.flatMap(x => [x.ly || 0, x.ty || 0]), 1));
+  const gw = iw / Math.max(items.length, 1), inner = Math.min(gw * 0.72, 62), bw = Math.max(6, (inner - 4) / 2);
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${h}" role="img">`;
+  for (const t of [0, .5, 1].map(f => f * max)) {
+    const y = padT + ih - t / max * ih;
+    s += `<line x1="${padL}" x2="${W - padR}" y1="${y}" y2="${y}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${y + 4}" text-anchor="end">${fmt(t)}</text>`;
+  }
+  items.forEach((x, i) => {
+    const cx = padL + i * gw + gw / 2, x1 = cx - bw - 2, x2 = cx + 2;
+    const h1 = (x.ly || 0) / max * ih, h2 = (x.ty || 0) / max * ih;
+    const y1 = padT + ih - h1, y2 = padT + ih - h2;
+    const tyCol = x.ty >= x.ly ? '#10b981' : '#6366f1';
+    if (h1 > 0) s += `<rect x="${x1}" y="${y1}" width="${bw}" height="${h1}" rx="2" fill="var(--axis)"/>`;
+    if (h2 > 0) s += `<rect x="${x2}" y="${y2}" width="${bw}" height="${h2}" rx="2" fill="${tyCol}"/>`;
+    if (items.length <= 12) {
+      if (x.ty > 0) s += `<text x="${x2 + bw / 2}" y="${y2 - 5}" text-anchor="middle" class="lbl-strong" style="font-size:10.5px">${fmt(x.ty)}</text>`;
+    }
+    s += `<text x="${cx}" y="${h - 7}" text-anchor="middle"${x.sel ? ' class="lbl-strong"' : ''}>${esc(x.label)}</text>`;
+    const diff = x.ty - x.ly;
+    const tip = `<b>${esc(x.full || x.label)}</b><br>${lyLbl}: <b>${fmt(x.ly)}</b><br>${tyLbl}: <b>${fmt(x.ty)}</b><br>YoY: <b>${fmtDelta(diff)} (${fmtYoy(x.ty, x.ly)})</b>`;
+    s += `<rect class="hit" x="${padL + i * gw}" y="${padT}" width="${gw}" height="${ih}" data-tip="${esc(tip)}"${x.fm != null ? ` data-catmon="${x.fm}"` : ''}/>`;
+  });
+  return s + `<line x1="${padL}" x2="${W - padR}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
+}
+function pageCategories() {
+  if (!CATD || !CATD.rows || !CATD.rows.length) {
+    return hero('categories', 'Category-wise deals (YoY)', 'No category YoY data loaded yet.')
+      + note('Run <b>python main.py</b> (with <code>db_216.env</code> or CSVs in <code>pipeline\\category_data\\</code>) to populate category-wise deals from <code>ops_analytics.tbl_modified_deal_level_data</code> and <code>vertical_owner.tbl_company_vertical_mapping_SB</code>.');
+  }
+  const { W, cats, totLy, totTy, rvLy, rvTy, mLy, mTy } = computeCatAgg();
+  const realCats = cats.filter(c => c.name !== 'Unmapped' && c.name !== 'No Category');
+  const goodCats = realCats.filter(c => c.verdict === 'good');
+  const badCats = realCats.filter(c => c.verdict === 'bad');
+  const goodGain = goodCats.reduce((s, c) => s + Math.max(0, c.diff), 0);
+  const badDrop = badCats.reduce((s, c) => s + Math.min(0, c.diff), 0);
+  const netDiff = totTy - totLy;
+  const yoyPct = totLy ? (netDiff / totLy * 100) : null;
+  const rvDiff = rvTy - rvLy;
+  const rvPct = rvLy ? (rvDiff / rvLy * 100) : null;
+  const fyTyLbl = String(CATD.ty_year), fyLyLbl = String(CATD.ly_year);
+  const periodStr = `${W.label} · ${fyTyLbl} vs ${fyLyLbl}`;
+
+  const topGood = [...realCats].filter(c => c.diff > 0).sort((a, b) => S.catRank === 'pct'
+    ? ((b.ly >= 10 || b.ty >= 10 ? 1 : 0) - (a.ly >= 10 || a.ty >= 10 ? 1 : 0)) || ((b.yoy || -9) - (a.yoy || -9))
+    : b.diff - a.diff);
+  const topBad = [...realCats].filter(c => c.diff < 0).sort((a, b) => S.catRank === 'pct'
+    ? ((b.ly >= 10 || b.ty >= 10 ? 1 : 0) - (a.ly >= 10 || a.ty >= 10 ? 1 : 0)) || ((a.yoy || 9) - (b.yoy || 9))
+    : a.diff - b.diff);
+
+  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' using SUM(dc_genio) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
+    <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}</div>
+    <h2>Category-wise deals (YoY)</h2>
+    <p>Same-period comparison showing which categories are performing well (good) vs declining (bad). Click any category for its sub-category breakdown.</p></div>
+    <div class="h-chips">
+      <div class="hc"><b>${yoyPct == null ? '—' : (yoyPct > 0 ? '+' : '') + nf(yoyPct, 1) + '%'}</b><span>Overall YoY</span><em>${fmtDelta(netDiff)} deals vs ${fyLyLbl}</em></div>
+      <div class="hc"><b>${nf(goodCats.length)}</b><span>Good (growing)</span><em>${topGood[0] ? 'Top: ' + esc(topGood[0].name) : 'None in period'}</em></div>
+      <div class="hc"><b>${nf(badCats.length)}</b><span>Bad (declining)</span><em>${topBad[0] ? 'Lag: ' + esc(topBad[0].name) : 'None in period'}</em></div>
+    </div></section>`;
+
+  // Controls toolbar
+  const fms = catMonths();
+  const winBtns = [['ytd', 'YTD'], ['qtd', 'QTD'], ['mtd', 'MTD'], ['d30', 'Last 30d']];
+  h += `<div class="toolbar cat-bar">
+    <div class="cat-grp">
+      <div class="seg" role="group" aria-label="Same-period window">${winBtns.map(([k, l]) => `<button type="button" data-catwin="${k}" aria-pressed="${S.catWin === k}">${l}</button>`).join('')}</div>
+      <select class="plain" id="catMonthSel" aria-label="Pick a single month" title="Compare a single month YoY (partial latest month compares exact same days)">
+        <option value="0"${S.catWin !== 'month' ? ' selected' : ''}>Pick month…</option>
+        ${fms.map(fm => `<option value="${fm}"${S.catWin === 'month' && S.catMonth === fm ? ' selected' : ''}>${MONTHS[fyMonNum(fm) - 1]} (${fyTyLbl} vs ${fyLyLbl})</option>`).join('')}
+      </select>
+    </div>
+    <div class="cat-grp">
+      <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All deals'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-catfresh="${k}" aria-pressed="${S.catFresh === k}">${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Deal counting mode" data-tip="All JDA deals = literal SUM(dc_genio) across JDA-involved deals (solo + joint). JDA share = final_team_type_name = JDA only (joint deals at 0.5).">
+        <button type="button" data-catmode="all" aria-pressed="${S.catMode === 'all'}">SUM(dc_genio)</button>
+        <button type="button" data-catmode="jda" aria-pressed="${S.catMode === 'jda'}">JDA share</button>
+      </div>
+    </div>
+  </div>`;
+
+  if (S.mgr >= 0) {
+    h += note(`Category YoY deals are shown at the <b>${esc(scopeLabel())}</b> level (manager filter <b>${esc(mgrName(S.mgr))}</b> applies to the daily presentation tabs, not last year's category baseline).`);
+  }
+
+  // KPI tiles
+  const chipOf = (diff, pctVal, suffix) => {
+    if (pctVal == null || !isFinite(pctVal)) return `<span class="chip flat">No ${fyLyLbl} base</span>`;
+    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+    return `<span class="chip ${cls}">${diff > 0 ? '▲' : diff < 0 ? '▼' : '●'} ${nf(Math.abs(pctVal), 1)}%</span><span>${esc(suffix)}</span>`;
+  };
+  h += tiles([
+    tile({ lbl: 'TY Deals', val: fmtDeals(totTy), unit: fyTyLbl, ic: 'trophy', hue: '#6366f1', sub: chipOf(netDiff, yoyPct, `${fmtDelta(netDiff)} vs ${fyLyLbl}`) }),
+    tile({ lbl: 'LY Deals', val: fmtDeals(totLy), unit: fyLyLbl, ic: 'cal2', hue: '#0ea5e9', sub: `Same dates (${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)})` }),
+    tile({ lbl: 'Growing (Good)', val: nf(goodCats.length), unit: `of ${nf(realCats.length)}`, ic: 'up', hue: '#10b981', sub: `<span class="chip up">+${fmtDeals(goodGain)} deals</span><span>gained YoY</span>` }),
+    tile({ lbl: 'Declining (Bad)', val: nf(badCats.length), unit: `of ${nf(realCats.length)}`, ic: 'down', hue: '#ef4444', sub: `<span class="chip down">${fmtDelta(badDrop)} deals</span><span>lost YoY</span>` }),
+    tile({ lbl: 'TY 3-Yr RV', val: fmtRv(rvTy), ic: 'rupee', hue: '#8b5cf6', sub: chipOf(rvDiff, rvPct, `vs ${fmtRv(rvLy)} (${fyLyLbl})`) }),
+  ]);
+
+  // Good vs Bad side-by-side cards
+  const rankToggle = `<div class="seg" role="group" aria-label="Rank by">${[['net', 'By net deals Δ'], ['pct', 'By YoY %']].map(([k, l]) => `<button type="button" data-catrank="${k}" aria-pressed="${S.catRank === k}">${l}</button>`).join('')}</div>`;
+  const renderGB = (list, kind) => {
+    const shown = list.slice(0, 7);
+    if (!shown.length) return `<div class="empty">No ${kind === 'good' ? 'growing' : 'declining'} categories in this period.</div>`;
+    const maxV = Math.max(...shown.map(c => S.catRank === 'pct' && isFinite(c.yoy) ? Math.abs(c.yoy * 100) : Math.abs(c.diff)), 1);
+    return `<div class="gb-list">${shown.map(c => {
+      const m = S.catRank === 'pct' && isFinite(c.yoy) ? Math.abs(c.yoy * 100) : Math.abs(c.diff);
+      const w = Math.max(4, Math.min(100, m / maxV * 100));
+      return `<button type="button" class="gb-row" data-cat="${c.ci}" data-tip="${esc('<b>' + c.name + '</b> · click for ' + c.nSub + ' sub-categories<br>' + fyLyLbl + ': ' + fmtDeals(c.ly) + ' deals → ' + fyTyLbl + ': ' + fmtDeals(c.ty) + ' deals<br>YoY: ' + fmtDelta(c.diff) + ' (' + fmtYoy(c.ty, c.ly) + ')')}">
+        <span class="gb-nm"><b>${esc(c.name)}</b><small>${fmtDeals(c.ly)} → ${fmtDeals(c.ty)} deals · ${c.nSub} sub-cat</small></span>
+        <span class="gb-track ${kind}"><i style="width:${w.toFixed(1)}%"></i></span>
+        <span class="gb-val"><b class="${kind === 'good' ? 'ok-t' : 'lo-t'}">${fmtDelta(c.diff)}</b><small>${fmtYoy(c.ty, c.ly)}</small></span>
+      </button>`;
+    }).join('')}</div>`;
+  };
+  h += `<div class="grid2">
+    ${card('Best performing categories (Good)', 'Highest YoY gains · click any category to inspect its sub-categories', renderGB(topGood, 'good'), '#10b981', rankToggle)}
+    ${card('Worst performing categories (Bad)', 'Steepest YoY drops · click any category to inspect its sub-categories', renderGB(topBad, 'bad'), '#ef4444', `<span class="pill crit">${nf(badCats.length)} declining</span>`)}
+  </div>`;
+
+  // Monthly TY vs LY grouped chart
+  const eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
+  const monItems = fms.map(fm => ({
+    fm,
+    label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
+    full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay} same days)` : ''),
+    ly: mLy.get(fm) || 0,
+    ty: mTy.get(fm) || 0,
+    sel: S.catWin === 'month' && S.catMonth === fm,
+  }));
+  h += `<div style="margin-top:16px">${card(
+    `Monthly JDA deals: ${fyTyLbl} vs ${fyLyLbl} (same dates)`,
+    `Click any month bar to filter the table to that month · * latest month compares 1–${eDay} in both years`,
+    groupedBarChart(monItems, { h: 225, W: 1100, tyLbl: fyTyLbl, lyLbl: fyLyLbl }),
+    '#6366f1',
+    `<div class="legend"><span><i style="background:var(--axis)"></i>${fyLyLbl}</span><span><i style="background:#10b981"></i>${fyTyLbl} (up)</span><span><i style="background:#6366f1"></i>${fyTyLbl} (down)</span></div>`
+  )}</div>`;
+
+  // Category -> Sub-category YoY table
+  const filteredCats = S.catStatus === 'all' ? cats : cats.filter(c => c.verdict === S.catStatus);
+  const openSet = S.catOpen || new Set();
+  const allOpen = filteredCats.length && filteredCats.every(c => openSet.has(c.ci));
+  const tblSt = tableState['cats'] || (tableState['cats'] = { sort: 'ty', dir: -1, q: '' });
+  const q = tblSt.q.trim().toLowerCase();
+  const maxShare = Math.max(0.01, ...filteredCats.map(c => c.share));
+
+  h += secTitle('All categories & sub-categories (YoY)', 'click a category name for its drill-down panel, or ▸ to expand sub-categories inline');
+  h += `<div class="mgr-bar">
+    <div class="seg" role="group" aria-label="Filter by YoY status">${[['all', `All (${cats.length})`], ['good', `Good (${cats.filter(c => c.verdict === 'good').length})`], ['flat', `Flat (${cats.filter(c => c.verdict === 'flat').length})`], ['bad', `Bad (${cats.filter(c => c.verdict === 'bad').length})`]].map(([k, l]) => `<button type="button" data-catst="${k}" aria-pressed="${S.catStatus === k}">${l}</button>`).join('')}</div>
+    <button type="button" class="btn-ghost" data-catall="${allOpen ? 'close' : 'open'}">${allOpen ? 'Collapse all' : 'Expand all sub-categories'}</button>
+  </div>`;
+
+  const subRows = c => {
+    const subMatch = q && !c.name.toLowerCase().includes(q);
+    if (!openSet.has(c.ci) && !subMatch) return '';
+    const list = subMatch ? c.subs.filter(x => x.name.toLowerCase().includes(q)) : c.subs;
+    return list.map(x => `<tr class="perf-sub">
+      <td></td>
+      <td class="sub-name">${esc(x.name)}</td>
+      <td>${verdictPill(x.verdict)}</td>
+      <td class="num">${fmtDeals(x.ly)}</td>
+      <td class="num"><b>${fmtDeals(x.ty)}</b></td>
+      <td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td>
+      <td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td>
+      <td class="num muted">${c.ty ? pct(x.ty / c.ty) : '—'}</td>
+      <td class="num muted">${fmtRv(x.rvTy)}</td>
+      <td class="num muted">${fmtYoy(x.rvTy, x.rvLy)}</td>
+    </tr>`).join('');
+  };
+
+  const totRow = {
+    name: 'Total', verdict: catVerdict(totTy, totLy), ly: totLy, ty: totTy, diff: netDiff,
+    yoy: yoyRatio(totTy, totLy), share: 1, rvTy, rvLy, rvYoy: yoyRatio(rvTy, rvLy),
+  };
+
+  h += table('cats', [
+    { k: 'tog', label: '', csv: false, html: c => `<button type="button" class="team-toggle${openSet.has(c.ci) ? ' open' : ''}" data-cattog="${c.ci}" aria-expanded="${openSet.has(c.ci)}">${openSet.has(c.ci) ? '▾' : '▸'} ${c.nSub}</button>` },
+    { k: 'name', label: 'Category', search: c => c.name + ' ' + c.subNames, html: c => `<button type="button" class="rep" data-cat="${c.ci}">${esc(c.name)}</button>`, csv: c => c.name, totalHtml: () => '<b>Total</b>' },
+    { k: 'verdict', label: 'Status', help: 'Status', html: c => verdictPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => verdictPill(t.verdict) },
+    { k: 'ly', label: `LY Deals (${fyLyLbl})`, num: true, fmt: fmtDeals, csv: c => c.ly },
+    { k: 'ty', label: `TY Deals (${fyTyLbl})`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
+    { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, csv: c => c.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
+    { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
+    { k: 'share', label: 'TY Share', num: true, html: c => barCell(c.share, maxShare, pct(c.share)), csv: c => pct(c.share), totalHtml: () => '100%' },
+    { k: 'rvTy', label: 'TY 3-Yr RV', num: true, fmt: fmtRv, csv: c => c.rvTy },
+    { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy) },
+  ], filteredCats, { sort: 'ty', noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
+
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>SUM(dc_genio)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> (${CATD.source === 'sql' ? 'live SQL pull' : 'saved CSV snapshot'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  return h;
+}
+
+function openCat(ci) {
+  if (!CATD) return;
+  const { W, cats } = computeCatAgg();
+  const c = cats.find(x => x.ci === ci);
+  if (!c) return;
+  const fyTyLbl = String(CATD.ty_year), fyLyLbl = String(CATD.ly_year);
+  const fms = catMonths(), eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
+  const mLy = new Map(), mTy = new Map();
+  for (const r of CATD.rows) {
+    const [yr, k, loc, si, fr, jt, dc] = r;
+    if (CATD.subcats[si][0] !== ci) continue;
+    if (!catLocOk(loc)) continue;
+    if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
+    if (S.catMode === 'jda' && jt !== 1) continue;
+    if (k < CATD.common_start_k || k > CATD.common_end_k) continue;
+    const fm = Math.floor(k / 100);
+    if (yr === 1) mTy.set(fm, (mTy.get(fm) || 0) + dc);
+    else mLy.set(fm, (mLy.get(fm) || 0) + dc);
+  }
+  const monItems = fms.map(fm => ({
+    label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
+    full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay})` : ''),
+    ly: mLy.get(fm) || 0, ty: mTy.get(fm) || 0,
+  }));
+  const bestSub = [...c.subs].filter(x => x.diff > 0).sort((a, b) => b.diff - a.diff)[0];
+  const worstSub = [...c.subs].filter(x => x.diff < 0).sort((a, b) => a.diff - b.diff)[0];
+  const hdrBg = c.verdict === 'good' ? 'linear-gradient(120deg, #047857, #10b981)' : c.verdict === 'bad' ? 'linear-gradient(120deg, #b91c1c, #f97316)' : 'linear-gradient(120deg, #4338ca, #6366f1)';
+
+  $('#drawer').innerHTML = `<div class="dr-head" style="background:${hdrBg}"><div>
+      <div class="meta">${esc(W.label)} · ${esc(scopeLabel())} · ${c.nSub} sub-categor${c.nSub === 1 ? 'y' : 'ies'}</div>
+      <h2>${esc(c.name)}</h2>
+      <div class="meta">${fyLyLbl}: <b>${fmtDeals(c.ly)}</b> → ${fyTyLbl}: <b>${fmtDeals(c.ty)}</b> (${fmtDelta(c.diff)}, ${fmtYoy(c.ty, c.ly)})</div>
+    </div><button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
+    <div class="dr-body">
+      <div class="tiles">
+        ${tile({ lbl: `TY Deals (${fyTyLbl})`, val: fmtDeals(c.ty), ic: 'trophy', hue: '#6366f1', sub: `${pct(c.share)} of total deals` })}
+        ${tile({ lbl: `LY Deals (${fyLyLbl})`, val: fmtDeals(c.ly), ic: 'cal2', hue: '#0ea5e9', sub: `YoY: ${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})` })}
+        ${tile({ lbl: 'TY 3-Yr RV', val: fmtRv(c.rvTy), ic: 'rupee', hue: '#8b5cf6', sub: `LY ${fmtRv(c.rvLy)} (${fmtYoy(c.rvTy, c.rvLy)})` })}
+        ${tile({ lbl: 'Sub-categories', val: nf(c.nSub), ic: 'layers', hue: '#10b981', sub: `${c.subs.filter(x => x.verdict === 'good').length} good · ${c.subs.filter(x => x.verdict === 'bad').length} bad` })}
+      </div>
+      ${(bestSub || worstSub) ? `<div class="cat-hi">
+        <div class="st"><span>Top growing sub-category</span><b class="ok-t">${bestSub ? esc(bestSub.name) : 'None'}</b><small>${bestSub ? `${fmtDeals(bestSub.ly)} → ${fmtDeals(bestSub.ty)} (${fmtDelta(bestSub.diff)}, ${fmtYoy(bestSub.ty, bestSub.ly)})` : 'No sub-category grew'}</small></div>
+        <div class="st"><span>Steepest drop sub-category</span><b class="lo-t">${worstSub ? esc(worstSub.name) : 'None'}</b><small>${worstSub ? `${fmtDeals(worstSub.ly)} → ${fmtDeals(worstSub.ty)} (${fmtDelta(worstSub.diff)}, ${fmtYoy(worstSub.ty, worstSub.ly)})` : 'No sub-category declined'}</small></div>
+      </div>` : ''}
+      ${card(`Monthly trend (${fyTyLbl} vs ${fyLyLbl})`, `Same calendar dates each month`, groupedBarChart(monItems, { h: 185, W: 440, tyLbl: fyTyLbl, lyLbl: fyLyLbl }), '#6366f1')}
+      <div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${c.nSub})</h3><div class="cap">Sorted by TY deals · ${esc(W.label)}</div></div></div>
+        <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Sub-category</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">YoY</th><th>Status</th></tr></thead>
+        <tbody>${c.subs.map(x => `<tr><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('')}</tbody></table></div>
+      </div>
+    </div>`;
+  $('#drawer').classList.add('open'); $('#drawerBg').classList.add('open');
+  $('#drawerX').focus();
+}
+
 // ================= KPI drill-down: the real list behind a card, with its 30-day trend =================
 function fieldOf(c) {   // a JDA's field day from their presentation times
   const t = c.rec ? c.rec.times : [];
@@ -1675,7 +2082,7 @@ function setLocLabel() {
 }
 
 // ================= shell =================
-const PAGES = { today: ['Today', pageToday], territory: ['Territories', pageTerritory], managers: ['Managers & TLs', pageManagers], actions: ['Action list', pageActions], field: ['Field discipline', pageField] };
+const PAGES = { today: ['Today', pageToday], territory: ['Territories', pageTerritory], managers: ['Managers & TLs', pageManagers], actions: ['Action list', pageActions], field: ['Field discipline', pageField], categories: ['Categories (YoY)', pageCategories] };
 function render() {
   HELPC = null;
   setMgrLabel();
@@ -1725,13 +2132,22 @@ function setup() {
     const pick = e.target.closest('[data-mgrpick]');
     if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
     if (!e.target.closest('#mgrPop')) closeMgrPop();
-    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill]');
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-cattog],[data-catall],[data-catwin],[data-catfresh],[data-catmode],[data-catrank],[data-catst],[data-catmon]');
     if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
     const ds = t.dataset;
     if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
     else if (ds.page) { S.page = ds.page; store.set('page', ds.page); history.replaceState(null, '', '#' + ds.page); window.scrollTo(0, 0); render(); }
     else if (ds.rep) openRep(+ds.rep);
-    else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
+    else if (ds.cat != null) openCat(+ds.cat);
+    else if (ds.cattog != null) { const ci = +ds.cattog; if (!S.catOpen) S.catOpen = new Set(); S.catOpen.has(ci) ? S.catOpen.delete(ci) : S.catOpen.add(ci); render(); }
+    else if (ds.catall) { S.catOpen = ds.catall === 'open' ? new Set(computeCatAgg().cats.map(c => c.ci)) : new Set(); render(); }
+    else if (ds.catwin) { S.catWin = ds.catwin; S.catMonth = 0; render(); }
+    else if (ds.catmon != null) { S.catWin = 'month'; S.catMonth = +ds.catmon; render(); }
+    else if (ds.catfresh) { S.catFresh = ds.catfresh; render(); }
+    else if (ds.catmode) { S.catMode = ds.catmode; render(); }
+    else if (ds.catrank) { S.catRank = ds.catrank; render(); }
+    else if (ds.catst) { S.catStatus = ds.catst; render(); }
+    else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip' || k === 'tog') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
     else if (ds.csv) downloadCsv(ds.csv);
     else if (ds.act) { S.act = ds.act; render(); }
     else if (ds.terr) { S.terrState = ds.terr; render(); }
@@ -1748,6 +2164,7 @@ function setup() {
   });
   document.addEventListener('change', e => {
     const id = e.target.id, toMin = v => { const [a, b] = v.split(':').map(Number); return a * 60 + b; };
+    if (id === 'catMonthSel') { const v = +e.target.value; if (v > 0) { S.catWin = 'month'; S.catMonth = v; } else { S.catWin = 'ytd'; S.catMonth = 0; } render(); return; }
     if (id === 'thrStart' && e.target.value) { S.fieldThr.start = toMin(e.target.value); render(); }
     if (id === 'thrEnd' && e.target.value) { S.fieldThr.end = toMin(e.target.value); render(); }
     if (id === 'thrGap' && +e.target.value > 0) { S.fieldThr.gap = +e.target.value; render(); }

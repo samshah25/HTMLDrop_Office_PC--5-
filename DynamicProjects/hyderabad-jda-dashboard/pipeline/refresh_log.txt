@@ -26,3 +26,6 @@
 2026-11-24 12:52:37  HR: 4261 branch field JDAs on the HR list ({'left': 4101, 'working': 160}); HR details for 567 of 567 people who presented
 2026-11-24 12:52:37  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4158, 'JDA CUSTOMER FACING': 50, 'JDA Team Leader + Cust. Facing': 48, 'JDA Sales Manager': 41, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2}
 2026-11-24 12:52:56  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 211 days, 603 reps, 94 managers, 35725 rep-days
+2026-11-25 13:38:05  === Hyderabad dashboard category-only refresh ===
+2026-11-25 13:38:08  Categories (csv): 25 categories, 139 sub-categories, 13367 agg rows | LY 2025-04-01..2025-11-22 (7747/7897 matched), TY 2026-04-01..2026-11-24 (7168/7203 matched), common 04-01..11-22
+2026-11-25 13:38:09  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (25 categories, 139 sub-categories)
