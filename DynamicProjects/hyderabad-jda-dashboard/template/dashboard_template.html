@@ -1887,7 +1887,7 @@ function pageCategories() {
     { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy) },
   ], filteredCats, { sort: 'ty', noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
 
-  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>SUM(dc_genio)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> (${CATD.source === 'sql' ? 'live SQL pull' : 'saved CSV snapshot'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>SUM(dc_genio)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
 }
 

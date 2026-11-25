@@ -45,14 +45,18 @@ def build_page():
 
 def main():
     skip_pull = "--page-only" in sys.argv   # rebuild the page from the last data, e.g. after a design change
-    cat_only = "--cat-only" in sys.argv     # refresh only category YoY data (SQL if db_216.env exists, else saved CSVs)
+    cat_only = "--cat-only" in sys.argv     # refresh only category YoY data (incremental SQL if db_216.env exists, else cache)
+    full_cat = "--full-cat-refresh" in sys.argv   # ignore category cache and re-fetch full FY + LY from SQL
     with open(LOG, "a", encoding="utf-8") as log:
         log.write(f"===== {datetime.datetime.now():%Y-%m-%d %H:%M} =====\n")
         if not skip_pull:
             cmd = [sys.executable, os.path.join(PIPE, "hyd_refresh.py")]
             if cat_only:
                 cmd.append("--cat-only")
-                print("[1/2] Refresh category & subcategory YoY deals ...", flush=True)
+            if full_cat:
+                cmd.append("--full-cat-refresh")
+            if cat_only:
+                print("[1/2] Refresh category & subcategory YoY deals (incremental) ...", flush=True)
             else:
                 print("[1/2] Pull presentations, sales, HR and category YoY deals ...", flush=True)
             log.flush()

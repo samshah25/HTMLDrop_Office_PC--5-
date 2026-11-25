@@ -10,7 +10,8 @@ Sources:
   shows presentations only and says so.
 - Category YoY deals (optional, same login): ops_analytics.tbl_modified_deal_level_data joined with
   vertical_owner.tbl_company_vertical_mapping_SB on docid, using SUM(dc_genio) for current FY vs same dates last FY.
-  Falls back to saved CSVs in pipeline\category_data\ when db_216.env is absent or the query fails.
+  Incremental refresh: pre-aggregated daily totals are stored in pipeline\cat_deals_cache.json.gz (no raw deal rows).
+  Each daily run fetches only missing LY dates + the last 14 days (and any missing gaps) of TY, pruning older FYs.
 - HR (optional, same login): db_paidcontracts.hr_all_daily_copy_ganesh, updated daily. It decides who is an ACTIVE
   JDA on each day: team_type JDA with a customer-facing section, an HR city in the Hyderabad branch, joined on or
   before that day and not left before it (date_of_leaving; emp_status 0 = left). It also gives joining date (tenure). Without the login, active = presented in the last 15 days.
@@ -27,6 +28,7 @@ Geography (from pincode_city_data_city_branch.xlsx, Branch == "Hyderabad"):
 """
 import csv
 import datetime
+import gzip
 import json
 import re
 import os
@@ -60,6 +62,8 @@ LOG_PATH = os.path.join(PIPE_DIR, "refresh_log.txt")
 DEALS = "`db_paidcontracts`.`daily_deals_closed_dump`"
 MODIFIED_DEALS = "`ops_analytics`.`tbl_modified_deal_level_data`"
 CAT_MAP = "`vertical_owner`.`tbl_company_vertical_mapping_SB`"
+CAT_CACHE_PATH = os.path.join(PIPE_DIR, "cat_deals_cache.json.gz")
+CAT_RECHECK_DAYS = 14   # re-fetch only the last 14 days of TY for late clearances; older TY & all fetched LY days stay cached
 CAT_CSV_DIR = os.path.join(PIPE_DIR, "category_data")
 HR = "`db_paidcontracts`.`hr_all_daily_copy_ganesh`"
 # who HR counts as a field JDA: team_type JDA and a customer-facing section (JDA Sales Managers and Retention are not;
@@ -335,120 +339,199 @@ def fy_mmdd(ds):
     return (m + (12 if m < 4 else 0)) * 100 + d
 
 
-def pack_category_deals(ty_rows, ly_rows, doc_cat, pin_area, areas, source, ty_year, ly_year):
-    """Aggregate TY & LY deals by (yr, fy_mmdd, loc, subcat_idx, fresh, jda_team) using SUM(dc_genio).
-    row tuple: (ds, docid, pin, main_remote, fresh, jda_flag, team, dc_genio, rv_3yr)."""
-    if not ty_rows and not ly_rows:
-        return None
-    ty_dates = sorted(r[0] for r in ty_rows if r[0])
-    ly_dates = sorted(r[0] for r in ly_rows if r[0])
-    if not ty_dates or not ly_dates:
-        return None
-
-    cat_tot = Counter()
-    sub_tot = Counter()
-    raw_agg = defaultdict(lambda: [0.0, 0.0])  # [deals (SUM dc_genio), rv_3yr (deduped for flag 2)]
-    matched = [0, 0]
-    totals = [len(ly_rows), len(ty_rows)]
-
-    for yr, rows in ((0, ly_rows), (1, ty_rows)):
-        for ds, docid, pin, mr, fresh, flag, team, dc, rv in rows:
-            if not ds or len(ds) < 10 or dc <= 0:
-                continue
-            try:
-                mmdd = fy_mmdd(ds)
-            except ValueError:
-                continue
-            cinfo = doc_cat.get(docid)
-            if cinfo:
-                matched[yr] += 1
-                cat = pretty_cat(cinfo[0], "No Category")
-                sub = pretty_cat(cinfo[1], "Other")
-            else:
-                cat, sub = "Unmapped", "Unmapped"
-            loc = loc_bucket(pin, mr, pin_area, areas)
-            fr = 1 if str(fresh).strip() == "1" else 0
-            jt = 1 if str(team or "").strip().upper() == "JDA" else 0
-            # rv_3yr is duplicated on both rows of a joint (jda_flag=2) deal; halving each row gives exact 1x deal RV
-            # across all rows and exact 0.5x JDA share when filtered to jda_team=1
-            rv_w = rv * (0.5 if int(flag or 1) == 2 else 1.0)
-            cat_tot[cat] += dc
-            sub_tot[(cat, sub)] += dc
-            acc = raw_agg[(yr, mmdd, loc, cat, sub, fr, jt)]
-            acc[0] += dc
-            acc[1] += rv_w
-
-    tail_cats = {"No Category", "Unmapped"}
-    cats = sorted(cat_tot, key=lambda c: (1 if c in tail_cats else 0, -cat_tot[c], c))
-    cat_ix = {c: i for i, c in enumerate(cats)}
-    sub_keys = sorted(sub_tot, key=lambda cs: (cat_ix[cs[0]], -sub_tot[cs], cs[1]))
-    sub_ix = {cs: i for i, cs in enumerate(sub_keys)}
-    subcats = [[cat_ix[c], s] for c, s in sub_keys]
-
-    packed = []
-    for (yr, mmdd, loc, cat, sub, fr, jt), (dc, rv) in sorted(raw_agg.items()):
-        packed.append([yr, mmdd, loc, sub_ix[(cat, sub)], fr, jt, round(dc, 2), round(rv)])
-
-    c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
-    c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))
-    fmt_k = lambda k: f"{(k // 100 - (12 if k // 100 > 12 else 0)):02d}-{k % 100:02d}"
-    common_start, common_end = fmt_k(c_start_k), fmt_k(c_end_k)
-    log(f"Categories ({source}): {len(cats)} categories, {len(subcats)} sub-categories, {len(packed)} agg rows | "
-        f"LY {ly_dates[0]}..{ly_dates[-1]} ({matched[0]}/{totals[0]} matched), "
-        f"TY {ty_dates[0]}..{ty_dates[-1]} ({matched[1]}/{totals[1]} matched), common {common_start}..{common_end}")
-    return {
-        "source": source,
-        "ty_year": ty_year,
-        "ly_year": ly_year,
-        "ty_start": ty_dates[0],
-        "ty_end": ty_dates[-1],
-        "ly_start": ly_dates[0],
-        "ly_end": ly_dates[-1],
-        "common_start": common_start,
-        "common_end": common_end,
-        "common_start_k": c_start_k,
-        "common_end_k": c_end_k,
-        "cats": cats,
-        "subcats": subcats,
-        "rows": packed,
-    }
-
-
-def read_category_deals_sql(env, pin_area, areas):
-    """Pull current FY and same-period last FY Hyderabad JDA deals from ops_analytics.tbl_modified_deal_level_data
-    and map docid -> (vertical, sub_vertical) via vertical_owner.tbl_company_vertical_mapping_SB."""
-    end_d = datetime.date.fromisoformat(WINDOW_END)
-    fy_year = end_d.year if end_d.month >= 4 else end_d.year - 1
-    ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
-    ly_start = datetime.date(fy_year - 1, 4, 1)
+def year_back(d):
     try:
-        ly_end = end_d.replace(year=end_d.year - 1)
+        return d.replace(year=d.year - 1)
     except ValueError:   # 29 Feb
-        ly_end = end_d.replace(year=end_d.year - 1, day=28)
+        return d.replace(year=d.year - 1, day=28)
 
-    def pull_range(start_d, finish_d):
+
+def iter_dates(a, b):
+    d = a
+    while d <= b:
+        yield d
+        d += datetime.timedelta(days=1)
+
+
+def date_span_chunks(dates):
+    """Group sorted datetime.date list into contiguous (start_iso, end_iso) spans, split by month."""
+    if not dates:
+        return []
+    spans = []
+    s = p = dates[0]
+    for d in dates[1:]:
+        if (d - p).days == 1:
+            p = d
+        else:
+            spans.append((s, p))
+            s = p = d
+    spans.append((s, p))
+    chunks = []
+    for a, b in spans:
+        chunks.extend(month_chunks(a.isoformat(), b.isoformat()))
+    return chunks
+
+
+def load_cat_cache():
+    if os.path.exists(CAT_CACHE_PATH):
+        try:
+            with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
+                c = json.load(f)
+            if isinstance(c, dict) and isinstance(c.get("days"), dict):
+                return c
+        except Exception as e:
+            log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
+    return {"version": 1, "cats": [], "subcats": [], "days": {}}
+
+
+def save_cat_cache(cache):
+    tmp = CAT_CACHE_PATH + ".tmp"
+    with gzip.open(tmp, "wt", encoding="utf-8") as f:
+        json.dump(cache, f, separators=(",", ":"))
+    os.replace(tmp, CAT_CACHE_PATH)
+
+
+def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_dates):
+    """Aggregate raw deal tuples into compact daily totals in cache['days'] (no raw deals stored)."""
+    cat_ix = {c: i for i, c in enumerate(cache["cats"])}
+    sub_ix = {(cache["cats"][ci], s): i for i, (ci, s) in enumerate(cache["subcats"])}
+
+    def get_sub_idx(cat, sub):
+        ci = cat_ix.get(cat)
+        if ci is None:
+            ci = len(cache["cats"])
+            cache["cats"].append(cat)
+            cat_ix[cat] = ci
+        si = sub_ix.get((cat, sub))
+        if si is None:
+            si = len(cache["subcats"])
+            cache["subcats"].append([ci, sub])
+            sub_ix[(cat, sub)] = si
+        return si
+
+    by_day = {ds: defaultdict(lambda: [0.0, 0.0]) for ds in fetched_dates}
+    matched = 0
+    for ds, docid, pin, mr, fresh, flag, team, dc, rv in raw_rows:
+        if ds not in by_day or dc <= 0:
+            continue
+        cinfo = doc_cat.get(docid)
+        if cinfo:
+            matched += 1
+            cat = pretty_cat(cinfo[0], "No Category")
+            sub = pretty_cat(cinfo[1], "Other")
+        else:
+            cat, sub = "Unmapped", "Unmapped"
+        si = get_sub_idx(cat, sub)
+        loc = loc_bucket(pin, mr, pin_area, areas)
+        fr = 1 if str(fresh).strip() == "1" else 0
+        jt = 1 if str(team or "").strip().upper() == "JDA" else 0
+        # rv_3yr repeats on both rows of a joint (jda_flag=2) deal; halving gives 1x total RV and 0.5x JDA share
+        rv_w = rv * (0.5 if int(flag or 1) == 2 else 1.0)
+        acc = by_day[ds][(loc, si, fr, jt)]
+        acc[0] += dc
+        acc[1] += rv_w
+
+    for ds, agg in by_day.items():
+        cache["days"][ds] = [[loc, si, fr, jt, round(dc, 2), round(rv)]
+                             for (loc, si, fr, jt), (dc, rv) in sorted(agg.items())]
+    return matched
+
+
+def prune_cat_cache(cache, keep_from_iso):
+    """Drop dates older than last FY start so the cache never grows across old years."""
+    old = [ds for ds in cache["days"] if ds < keep_from_iso]
+    for ds in old:
+        del cache["days"][ds]
+    return len(old)
+
+
+def seed_cat_cache_from_csv(cache, pin_area, areas):
+    """One-time seed from exported CSVs in pipeline\\category_data\\ when no cache exists yet."""
+    f25 = os.path.join(CAT_CSV_DIR, "hyd_2025_deals.csv")
+    f26 = os.path.join(CAT_CSV_DIR, "hyd_2026_deals.csv")
+    fcat = os.path.join(CAT_CSV_DIR, "hyd_2025_2026_categories.csv")
+    if not (os.path.exists(f25) and os.path.exists(f26) and os.path.exists(fcat)):
+        return False
+
+    doc_cat = {}
+    with open(fcat, encoding="utf-8", errors="replace", newline="") as f:
+        r = csv.reader(f)
+        hdr = next(r)
+        ix_d, ix_v, ix_sv = hdr.index("docid"), hdr.index("vertical"), hdr.index("sub_vertical")
+        for row in r:
+            if len(row) <= max(ix_d, ix_v, ix_sv):
+                continue
+            did = row[ix_d].strip()
+            if did and did not in doc_cat:
+                doc_cat[did] = (row[ix_v].strip(), row[ix_sv].strip())
+
+    def load_deals(path):
         out = []
-        for a, b in month_chunks(start_d.isoformat(), finish_d.isoformat()):
-            conn = db_connect(env)
-            with conn.cursor() as cur:
-                cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(pincode, '')),
-                                       branch_main_remote, fresh, jda_flag, TRIM(IFNULL(final_team_type_name, '')),
-                                       dc_genio, IFNULL(rv_3yr, 0)
-                                FROM {MODIFIED_DEALS}
-                                WHERE dealclosed_date BETWEEN %s AND %s
-                                  AND sales_branch = %s
-                                  AND dc_genio > 0
-                                  AND fresh IN (0, 1)
-                                  AND jda_flag IN (1, 2)""", (a, b, BRANCH))
-                for day, docid, pin, mr, fresh, flag, team, dc, rv in cur.fetchall():
-                    ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
-                    out.append((ds, docid, pin, mr, fresh, int(flag or 1), team, to_float(dc), to_float(rv)))
-            conn.close()
+        with open(path, encoding="utf-8", errors="replace", newline="") as f:
+            for row in csv.DictReader(f):
+                dc = to_float(row.get("dc_genio"))
+                if dc <= 0 or str(row.get("fresh") or "").strip() not in ("0", "1"):
+                    continue
+                fl = int(to_float(row.get("jda_flag")) or 1)
+                if fl not in (1, 2):
+                    continue
+                ds = (row.get("dealclosed_date") or "").strip()[:10]
+                if len(ds) == 10:
+                    out.append((
+                        ds, (row.get("docid") or "").strip(), (row.get("pincode") or "").strip(),
+                        (row.get("branch_main_remote") or "").strip(), (row.get("fresh") or "").strip(),
+                        fl, (row.get("final_team_type_name") or "").strip(), dc, to_float(row.get("rv_3yr")),
+                    ))
         return out
 
-    ty_rows = pull_range(ty_start, ty_end)
-    ly_rows = pull_range(ly_start, ly_end)
-    docids = sorted({r[1] for r in ty_rows + ly_rows if r[1]})
+    ly_rows, ty_rows = load_deals(f25), load_deals(f26)
+    fetched = set()
+    for rows in (ly_rows, ty_rows):
+        if rows:
+            ds_list = sorted(r[0] for r in rows)
+            for d in iter_dates(datetime.date.fromisoformat(ds_list[0]), datetime.date.fromisoformat(ds_list[-1])):
+                fetched.add(d.isoformat())
+    matched = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched)
+    log(f"Seeded {CAT_CACHE_PATH} from CSVs: {len(fetched)} days ({matched}/{len(ly_rows) + len(ty_rows)} rows matched)")
+    return True
+
+
+def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=False):
+    """Incrementally fetch ONLY missing LY dates and missing/recent (last 14d) TY dates from MySQL."""
+    days_map = cache["days"]
+    recheck_from = max(ty_start, ty_end - datetime.timedelta(days=CAT_RECHECK_DAYS - 1))
+    if full:
+        ly_need = list(iter_dates(ly_start, ly_end))
+        ty_need = list(iter_dates(ty_start, ty_end))
+    else:
+        ly_need = [d for d in iter_dates(ly_start, ly_end) if d.isoformat() not in days_map]
+        ty_need = [d for d in iter_dates(ty_start, ty_end) if d >= recheck_from or d.isoformat() not in days_map]
+
+    need_dates = sorted(set(ly_need) | set(ty_need))
+    if not need_dates:
+        log("Categories (incremental SQL): all TY and LY dates already cached; 0 SQL queries needed.")
+        return False
+
+    chunks = date_span_chunks(need_dates)
+    raw_rows = []
+    for a, b in chunks:
+        conn = db_connect(env)
+        with conn.cursor() as cur:
+            cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(pincode, '')),
+                                   branch_main_remote, fresh, jda_flag, TRIM(IFNULL(final_team_type_name, '')),
+                                   dc_genio, IFNULL(rv_3yr, 0)
+                            FROM {MODIFIED_DEALS}
+                            WHERE dealclosed_date BETWEEN %s AND %s
+                              AND sales_branch = %s
+                              AND dc_genio > 0
+                              AND fresh IN (0, 1)
+                              AND jda_flag IN (1, 2)""", (a, b, BRANCH))
+            for day, docid, pin, mr, fresh, flag, team, dc, rv in cur.fetchall():
+                ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
+                raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 1), team, to_float(dc), to_float(rv)))
+        conn.close()
+
+    docids = sorted({r[1] for r in raw_rows if r[1]})
     doc_cat = {}
     if docids:
         conn = db_connect(env)
@@ -466,80 +549,115 @@ def read_category_deals_sql(env, pin_area, areas):
                     if did:
                         doc_cat[did] = (v, sv)
         conn.close()
-    return pack_category_deals(ty_rows, ly_rows, doc_cat, pin_area, areas, "sql", ty_start.year, ly_start.year)
+
+    fetched_isos = {d.isoformat() for d in need_dates}
+    matched = merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_isos)
+    pruned = prune_cat_cache(cache, ly_start.isoformat())
+    log(f"Categories (incremental SQL): fetched {len(ly_need)} LY + {len(ty_need)} TY days ({len(chunks)} chunk(s), "
+        f"{len(raw_rows)} deal rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
+    return True
 
 
-def read_category_deals_csv(pin_area, areas):
-    """Fallback loader using exported CSVs in pipeline\\category_data\\."""
-    f25 = os.path.join(CAT_CSV_DIR, "hyd_2025_deals.csv")
-    f26 = os.path.join(CAT_CSV_DIR, "hyd_2026_deals.csv")
-    fcat = os.path.join(CAT_CSV_DIR, "hyd_2025_2026_categories.csv")
-    if not (os.path.exists(f25) and os.path.exists(f26) and os.path.exists(fcat)):
+def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source):
+    """Pack compact dashboard JSON from the pre-aggregated daily cache for TY vs LY."""
+    ly_a, ly_b = ly_start.isoformat(), ly_end.isoformat()
+    ty_a, ty_b = ty_start.isoformat(), ty_end.isoformat()
+    old_cats, old_subs = cache["cats"], cache["subcats"]
+
+    cat_tot, sub_tot = Counter(), Counter()
+    agg_rows = []
+    ly_dates, ty_dates = [], []
+
+    for ds, entries in sorted(cache["days"].items()):
+        if ly_a <= ds <= ly_b:
+            yr = 0
+            if entries:
+                ly_dates.append(ds)
+        elif ty_a <= ds <= ty_b:
+            yr = 1
+            if entries:
+                ty_dates.append(ds)
+        else:
+            continue
+        if not entries:
+            continue
+        mmdd = fy_mmdd(ds)
+        for loc, si, fr, jt, dc, rv in entries:
+            ci, sub = old_subs[si]
+            cat = old_cats[ci]
+            cat_tot[cat] += dc
+            sub_tot[(cat, sub)] += dc
+            agg_rows.append((yr, mmdd, loc, cat, sub, fr, jt, dc, rv))
+
+    if not ly_dates or not ty_dates:
         return None
 
-    doc_cat = {}
-    with open(fcat, encoding="utf-8", errors="replace", newline="") as f:
-        r = csv.reader(f)
-        hdr = next(r)
-        ix_d = hdr.index("docid")
-        ix_v = hdr.index("vertical")
-        ix_sv = hdr.index("sub_vertical")
-        for row in r:
-            if len(row) <= max(ix_d, ix_v, ix_sv):
-                continue
-            did = row[ix_d].strip()
-            if did and did not in doc_cat:
-                doc_cat[did] = (row[ix_v].strip(), row[ix_sv].strip())
+    tail_cats = {"No Category", "Unmapped"}
+    cats = sorted(cat_tot, key=lambda c: (1 if c in tail_cats else 0, -cat_tot[c], c))
+    cat_ix = {c: i for i, c in enumerate(cats)}
+    sub_keys = sorted(sub_tot, key=lambda cs: (cat_ix[cs[0]], -sub_tot[cs], cs[1]))
+    sub_ix = {cs: i for i, cs in enumerate(sub_keys)}
+    subcats = [[cat_ix[c], s] for c, s in sub_keys]
 
-    def load_deals(path):
-        out = []
-        with open(path, encoding="utf-8", errors="replace", newline="") as f:
-            for row in csv.DictReader(f):
-                dc = to_float(row.get("dc_genio"))
-                if dc <= 0:
-                    continue
-                if str(row.get("fresh") or "").strip() not in ("0", "1"):
-                    continue
-                fl = int(to_float(row.get("jda_flag")) or 1)
-                if fl not in (1, 2):
-                    continue
-                ds = (row.get("dealclosed_date") or "").strip()[:10]
-                out.append((
-                    ds,
-                    (row.get("docid") or "").strip(),
-                    (row.get("pincode") or "").strip(),
-                    (row.get("branch_main_remote") or "").strip(),
-                    (row.get("fresh") or "").strip(),
-                    fl,
-                    (row.get("final_team_type_name") or "").strip(),
-                    dc,
-                    to_float(row.get("rv_3yr")),
-                ))
-        return out
+    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, jt, round(dc, 2), round(rv)]
+              for yr, mmdd, loc, cat, sub, fr, jt, dc, rv in agg_rows]
 
-    ly_rows = load_deals(f25)
-    ty_rows = load_deals(f26)
-    ty_year = int(ty_rows[0][0][:4]) if ty_rows else datetime.date.today().year
-    ly_year = int(ly_rows[0][0][:4]) if ly_rows else ty_year - 1
-    return pack_category_deals(ty_rows, ly_rows, doc_cat, pin_area, areas, "csv", ty_year, ly_year)
+    c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
+    c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))
+    fmt_k = lambda k: f"{(k // 100 - (12 if k // 100 > 12 else 0)):02d}-{k % 100:02d}"
+    common_start, common_end = fmt_k(c_start_k), fmt_k(c_end_k)
+    log(f"Categories ({source}): {len(cats)} categories, {len(subcats)} sub-categories, {len(packed)} agg rows | "
+        f"LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
+    return {
+        "source": source,
+        "ty_year": ty_start.year,
+        "ly_year": ly_start.year,
+        "ty_start": ty_dates[0],
+        "ty_end": ty_dates[-1],
+        "ly_start": ly_dates[0],
+        "ly_end": ly_dates[-1],
+        "common_start": common_start,
+        "common_end": common_end,
+        "common_start_k": c_start_k,
+        "common_end_k": c_end_k,
+        "cats": cats,
+        "subcats": subcats,
+        "rows": packed,
+    }
 
 
-def load_category_deals(env, pin_area, areas, notes):
+def load_category_deals(env, pin_area, areas, notes, full=False):
+    end_d = datetime.date.fromisoformat(WINDOW_END)
+    fy_year = end_d.year if end_d.month >= 4 else end_d.year - 1
+    ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
+    ly_start, ly_end = datetime.date(fy_year - 1, 4, 1), year_back(end_d)
+
+    cache = load_cat_cache()
+    changed = False
+    if not cache["days"] and not full:
+        if seed_cat_cache_from_csv(cache, pin_area, areas):
+            prune_cat_cache(cache, ly_start.isoformat())
+            changed = True
+
+    source = "cache"
     if env:
         try:
-            res = read_category_deals_sql(env, pin_area, areas)
-            if res:
-                return res
+            if update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start, ly_end, full=full):
+                changed = True
+            source = "sql"
         except Exception as e:
-            log(f"WARNING: category YoY SQL failed ({type(e).__name__}: {e}); trying saved CSVs.")
-    res = read_category_deals_csv(pin_area, areas)
-    if res is None and env:
-        notes.append("Category YoY deals could not be read this time.")
-    return res
+            log(f"WARNING: category YoY SQL failed ({type(e).__name__}: {e}); using cached daily aggregates.")
+            if not cache["days"]:
+                notes.append("Category YoY deals could not be read this time.")
+    if changed:
+        save_cat_cache(cache)
+
+    return build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source)
 
 
 def main():
     cat_only = "--cat-only" in sys.argv
+    full_cat = "--full-cat-refresh" in sys.argv
     pin_area, areas, city_area = load_geo()
     env_file = find_env()
     env = load_env(env_file) if env_file else None
@@ -551,9 +669,9 @@ def main():
         with open(OUT_PATH, encoding="utf-8") as f:
             data = json.load(f)
         notes = []
-        cat_deals = load_category_deals(env, pin_area, areas, notes)
+        cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat)
         if not cat_deals:
-            sys.exit("Category YoY data could not be loaded from SQL or pipeline\\category_data.")
+            sys.exit("Category YoY data could not be loaded from SQL, cache, or pipeline\\category_data.")
         data["cat_deals"] = cat_deals
         data.setdefault("meta", {})["has_categories"] = True
         tmp = OUT_PATH + ".tmp"
@@ -583,7 +701,7 @@ def main():
             log(f"WARNING: HR details not read ({type(e).__name__}: {e})")
     else:
         log("No pipeline\\db_216.env: presentations only (no sales, no HR tenure).")
-    cat_deals = load_category_deals(env, pin_area, areas, notes)
+    cat_deals = load_category_deals(env, pin_area, areas, notes, full=full_cat)
 
     # JDAs on the HR list who never presented in the window are still active (they count as absent)
     for e, v in hr.items():
