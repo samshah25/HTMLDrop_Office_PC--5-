@@ -10,8 +10,9 @@ two can run side by side.
 ## One-time setup
 
 1. **Python 3.9 or newer.** In this folder, run `pip install -r requirements.txt`.
-2. **Database login.** In `pipeline\`, copy `db_216.env.template` to `db_216.env` and fill in the login for the deals
-   database (172.29.0.216). Read-only access is enough. Never share or commit this file.
+2. **Database login.** The kit comes with `pipeline\db_216.env` already filled in with the login for the deals
+   database (172.29.0.216). To use another login, edit that file (the template shows the format). Keep it private:
+   never email it, share it or put it on the web host.
 3. **Network.** The PC needs to reach the database (172.29.0.216, port 3306).
 4. **First refresh.** Run `python main.py --now`. It takes about a minute.
 5. **Schedule it.** Run `python main.py --install` once. This creates the Windows task "JD India sales overview refresh"

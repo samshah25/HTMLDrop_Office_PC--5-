@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaipur tenure grid</title>
+<style>
+/* Same look as the Jaipur report pages: navy band, sticky controls, thin rules, Inter.
+   Light only, no animation, no blur. Green/red only on the change text, always with an arrow and words. */
+:root {
+  --navy: #0E1F44; --navy-2: #172C5A; --navy-rule: #24396B; --navy-mute: #A9B7D0;
+  --bg: #F4F6F9; --card: #FFFFFF; --ink: #111A2E; --ink-2: #3A455C; --mute: #5B6475; --faint: #8A93A3;
+  --rule: #E1E5EC; --rule-2: #EEF1F5;
+  --jda: #1F5FAD; --jda-wash: #EAF1FB; --jds: #7C4DEB; --jds-text: #5B2FD0; --jds-wash: #F3EFFE; --b2b: #0F8B8D;
+  --good-ink: #146C43; --bad-ink: #9B1C1C; --hl: #FFF7E0; --accent: #F37021;
+  --fbar: #EAF1FB; --fbar-track: #D6E3F5; --fbar-rule: #C9D9EF;
+  --font: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 13.5px/1.45 var(--font); }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.015em; color: #fff; }
+h2 { margin: 0; font-size: 15px; font-weight: 700; }
+/* top: slim navy app bar (title + view tabs) over a white filter bar, both sticky; same pattern as the
+   Jaipur pages: orange marks the active tab and the pressed switch, nothing else */
+::selection { background: #FFE1CC; color: var(--ink); }
+.top { position: sticky; top: 0; z-index: 30; box-shadow: 0 4px 14px rgba(14, 31, 68, .10); }
+.appbar { background: var(--navy); }
+.appbar-in { max-width: 1880px; margin: 0 auto; padding: 0 20px; display: flex; align-items: stretch; gap: 6px 24px; min-height: 52px; flex-wrap: wrap; }
+.ttl { display: flex; flex-direction: column; justify-content: center; padding: 8px 0; min-width: 0; margin-right: auto; }
+.ttl h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+.ttl .sub { color: var(--navy-mute); font-size: 12px; margin-top: 2px; }
+.tabs { display: flex; align-items: stretch; gap: 2px; }
+.tabs [role="tab"] { display: inline-flex; align-items: center; gap: 8px; font: 600 14px var(--font); color: #C7D1E4; background: none; border: 0; padding: 0 16px; cursor: pointer; box-shadow: inset 0 -3px 0 transparent; }
+.tabs [role="tab"]:hover { color: #fff; background: rgba(255, 255, 255, .06); }
+.tabs [role="tab"][aria-selected="true"] { color: #fff; background: rgba(255, 255, 255, .10); box-shadow: inset 0 -3px 0 var(--accent); }
+svg.ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.csv { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; height: 32px; font: 600 12.5px var(--font); color: #fff; background: var(--navy); border: 0; border-radius: 7px; padding: 0 14px 0 12px; cursor: pointer; box-shadow: 0 1px 2px rgba(14, 31, 68, .25); white-space: nowrap; }
+.csv:hover { background: var(--navy-2); }
+.csv:active { background: #0A1733; }
+.csv[aria-busy="true"] { opacity: .75; cursor: progress; }
+.fbar { background: var(--fbar); border-bottom: 1px solid var(--fbar-rule); }
+.filters { max-width: 1880px; margin: 0 auto; padding: 6px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.fgrp { display: inline-flex; align-items: center; gap: 8px; }
+.lab { color: var(--mute); font-size: 12px; }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--fbar-track); border-radius: 8px; padding: 3px; }
+.seg button { font: 12.5px var(--font); color: var(--ink-2); background: transparent; border: 0; border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(20, 33, 61, .12), inset 0 -2px 0 var(--accent); }
+button:focus-visible, select:focus-visible, td:focus-visible, tr:focus-visible, [role="tab"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fbar select { font: 12.5px var(--font); color: var(--ink); background: #fff; border: 1px solid var(--fbar-rule); border-radius: 7px; padding: 0 8px; height: 30px; min-width: 280px; cursor: pointer; }
+.fbar select:hover { border-color: #9DB6DA; }
+.fbar .lab { color: var(--ink-2); }
+.tw { scrollbar-color: #C3CAD6 transparent; scrollbar-width: thin; }
+main { max-width: 1880px; margin: 0 auto; padding: 14px 20px 50px; }
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+.chead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.chead h2 { font-size: 17px; letter-spacing: -0.01em; }
+.chead .scope { margin-left: auto; font-size: 12px; color: var(--mute); }
+.strip { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 12.5px; color: var(--ink-2); background: var(--rule-2); border-radius: 7px; padding: 6px 10px; margin: 4px 0 8px; }
+.strip b { color: var(--ink); font-weight: 650; }
+.lead { font-size: 12.5px; color: var(--ink-2); margin: 2px 0 10px; }
+.tw { overflow-x: auto; }
+table.g { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.g th, table.g td { border-bottom: 1px solid var(--rule-2); padding: 5px 6px; text-align: right; vertical-align: top; }
+table.g thead th { position: sticky; top: 0; background: var(--card); font-size: 12px; font-weight: 650; color: var(--ink-2); border-bottom: 2px solid var(--ink); white-space: nowrap; }
+table.g thead th.all { color: var(--ink); }
+table.g thead th.unk { color: var(--mute); font-weight: 500; }
+table.g th.rl, table.g td.rl { text-align: left; white-space: nowrap; }
+table.g td.rl { font-weight: 600; color: var(--ink); width: 150px; }
+table.g.byteam td.rl { white-space: normal; width: 170px; min-width: 170px; font-weight: 600; font-size: 12.5px; line-height: 1.3; }
+table.g td.rl .tag { display: block; font-weight: 400; font-size: 11px; color: var(--mute); }
+table.g tr.sub td.rl { font-weight: 500; color: var(--ink-2); padding-left: 20px; }
+table.g tr.sub td { background: #FCFCFD; }
+table.g tr.subfirst td { border-top: 1px solid var(--rule); }
+table.g td.allc { background: #FAFBFC; }
+table.g td.unkc .v { font-weight: 500; color: var(--ink-2); }
+table.g tr.grp td { background: var(--rule-2); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); font-weight: 650; padding: 4px 8px; text-align: left; }
+table.g tr.k-jda td.rl { box-shadow: inset 3px 0 0 var(--jda); }
+table.g tr.k-jds td.rl { box-shadow: inset 3px 0 0 var(--jds); }
+table.g tr.k-b2b td.rl { box-shadow: inset 3px 0 0 var(--b2b); }
+table.g tr.k-area td.rl { box-shadow: inset 3px 0 0 var(--faint); }
+.v { font-size: 13.5px; font-weight: 650; color: var(--ink); white-space: nowrap; }
+.v.thin { color: var(--faint); font-weight: 500; font-style: italic; }
+.cl { font-size: 11px; color: var(--mute); white-space: nowrap; line-height: 1.35; }
+.cl b { font-weight: 600; color: var(--ink-2); }
+.up { color: var(--good-ink); } .dn { color: var(--bad-ink); } .eq { color: var(--mute); }
+td.na { color: var(--faint); text-align: center !important; }
+td.hov { background: var(--hl) !important; }
+/* managers view */
+table.g.lead td.rl { width: 260px; white-space: normal; }
+table.g.lead tr.mg { cursor: pointer; }
+table.g.lead tr.mg:hover td { background: #F7F9FC; }
+table.g.lead tr.mg td.rl::before { content: "▸"; display: inline-block; width: 14px; color: var(--mute); }
+table.g.lead tr.mg.open td.rl::before { content: "▾"; }
+table.g.lead tr.tl td { background: #FCFCFD; }
+table.g.lead tr.tl td.rl { padding-left: 26px; font-weight: 500; color: var(--ink-2); }
+table.g.lead tr.tot td { border-top: 2px solid var(--ink); font-weight: 650; }
+/* managers view, as the Mumbai ME page: Show (Managers / Team leaders / people), search, an All line, lines that open and close */
+.ltools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 10px; }
+.ltools #lcount { font-size: 17px; font-weight: 700; color: var(--ink); margin-right: 4px; }
+.ltools .slab { color: var(--mute); font-size: 12.5px; }
+.ltools .seg { background: var(--rule-2); }
+.lsearch { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; height: 32px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 8px; background: #fff; min-width: 280px; }
+.lsearch svg { width: 15px; height: 15px; fill: none; stroke: var(--mute); stroke-width: 1.8; flex: none; }
+.lsearch input { border: 0; outline: 0; font: 13px var(--font); color: var(--ink); width: 100%; background: transparent; }
+.lsearch:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px #FFE1CC; }
+table.g.lead td.rl { width: 300px; }
+table.g.lead tr.all td { background: #EEF1F5; font-weight: 650; border-bottom: 2px solid var(--ink); }
+table.g.lead tr.n1 td { background: #EEF1F5; }
+table.g.lead tr.n2 td { background: #F7F8FA; }
+table.g.lead tr.n2 td.rl { padding-left: 24px; font-weight: 600; }
+table.g.lead tr.n3 td.rl { padding-left: 48px; font-weight: 500; color: var(--ink-2); }
+table.g.lead tr.n1 td.rl::before, table.g.lead tr.n2 td.rl::before { content: none; }
+table.g.lead tr[data-node] { cursor: pointer; }
+table.g.lead tr[data-node]:hover td { box-shadow: inset 0 0 0 100vmax rgba(20, 33, 61, .04); }
+table.g.lead .chev { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-right: 2px; color: var(--mute); vertical-align: -3px; }
+table.g.lead .chev svg { width: 11px; height: 11px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+table.g.lead [aria-expanded="true"] .chev svg { transform: rotate(90deg); }
+table.g.lead td.rl .hit { background: var(--hl); border-radius: 3px; }
+table.g.lead thead th[data-c] { cursor: pointer; }
+table.g.lead thead th[aria-sort="descending"]::after { content: " ▾"; color: var(--accent); }
+table.g.lead thead th[aria-sort="ascending"]::after { content: " ▴"; color: var(--accent); }
+.note { font-size: 12px; color: var(--mute); margin-top: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; color: var(--mute); margin-top: 8px; }
+.legend i { font-style: italic; color: var(--faint); }
+#tip { position: fixed; z-index: 50; display: none; width: max-content; max-width: 380px; background: #fff; border: 1px solid var(--rule); border-radius: 9px; box-shadow: 0 6px 22px rgba(14,31,68,.16); padding: 10px 12px; font-size: 12px; color: var(--ink-2); pointer-events: none; }
+#tip h4 { margin: 0 0 6px; font-size: 12.5px; color: var(--ink); }
+#tip table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+#tip td { padding: 1px 0; white-space: nowrap; } #tip td:last-child { text-align: right; padding-left: 10px; } #tip td.b { color: var(--faint); padding-left: 8px; text-align: right; }
+#tip tr.me td { font-weight: 700; color: var(--ink); }
+#tip .sep td { border-top: 1px solid var(--rule-2); padding: 5px 0 2px; white-space: normal; text-align: left; color: var(--mute); }
+details.defs > summary { display: flex; align-items: baseline; gap: 8px; cursor: pointer; list-style: none; user-select: none; }
+details.defs > summary::-webkit-details-marker { display: none; }
+details.defs > summary .chev { color: var(--mute); font-size: 12px; width: 12px; }
+details.defs[open] > summary .chev { transform: rotate(90deg); }
+details.defs > summary .hint { font-size: 12px; color: var(--mute); }
+details.defs > summary:hover h2 { color: var(--jda); }
+details.defs[open] > summary { margin-bottom: 10px; }
+.notes { columns: 2 420px; column-gap: 28px; font-size: 12.5px; color: var(--ink-2); }
+.notes h3 { font-size: 12.5px; margin: 0 0 3px; color: var(--ink); break-after: avoid; }
+.notes p, .notes ul { margin: 0 0 9px; break-inside: avoid; }
+.notes ul { padding-left: 18px; } .notes li { margin: 1px 0; }
+
+/* custom dates (24 Nov 2026): a calendar button in the Period switch, its pop-up under it; no animation, no blur */
+.seg button.cust { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; border-left: 1px solid var(--fbar-rule); border-radius: 0 6px 6px 0; padding-left: 10px; }
+.seg button.cust .ic { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.seg button:disabled { color: var(--faint); cursor: not-allowed; }
+#calpop { position: fixed; z-index: 60; display: flex; gap: 0; background: #fff; border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 10px 28px rgba(14, 31, 68, .18); font-size: 12.5px; color: var(--ink); }
+#calpop[hidden] { display: none; }
+#calpop .cq { display: flex; flex-direction: column; gap: 2px; padding: 10px 8px; border-right: 1px solid var(--rule-2); min-width: 150px; }
+#calpop .cq button { text-align: left; font: 12.5px var(--font); color: var(--ink-2); background: none; border: 0; border-radius: 6px; padding: 6px 9px; cursor: pointer; }
+#calpop .cq button:hover { background: var(--fbar); color: var(--ink); }
+#calpop .cr { padding: 10px 14px 12px; }
+#calpop .cnav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+#calpop .cnav button { width: 28px; height: 28px; border: 1px solid var(--rule); background: #fff; border-radius: 7px; font-size: 16px; line-height: 1; color: var(--ink-2); cursor: pointer; }
+#calpop .cnav button:disabled { color: var(--rule); cursor: default; }
+#calpop .csel { font-weight: 650; color: var(--ink); }
+#calpop .cms { display: flex; gap: 22px; }
+#calpop .cmh { text-align: center; font-weight: 650; margin: 2px 0 6px; }
+#calpop .cwk, #calpop .cdays { display: grid; grid-template-columns: repeat(7, 34px); }
+#calpop .cwk span { text-align: center; font-size: 11px; color: var(--mute); padding-bottom: 4px; }
+#calpop .cdays > * { height: 32px; display: grid; place-items: center; font: 12.5px var(--font); }
+#calpop button.cd { border: 0; background: none; color: var(--ink); cursor: pointer; border-radius: 0; }
+#calpop button.cd:hover { background: var(--fbar); }
+#calpop .cd.in { background: #FFF1E6; }
+#calpop .cd.st, #calpop .cd.en { background: var(--accent); color: #fff; font-weight: 700; border-radius: 6px; }
+#calpop .cd.off { color: #C3C9D3; }
+#calpop .cd.today:not(.st):not(.en) { box-shadow: inset 0 -2px 0 var(--accent); }
+#calpop .cft { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule-2); }
+#calpop .cft label { display: inline-flex; align-items: center; gap: 6px; color: var(--mute); }
+#calpop .cft input { font: 12.5px var(--font); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px; padding: 3px 6px; }
+#calpop .cnote { color: var(--faint); font-size: 11.5px; margin-right: auto; }
+#calpop .cbtn { font: 600 12.5px var(--font); border-radius: 7px; padding: 6px 14px; cursor: pointer; border: 0; background: var(--navy); color: #fff; }
+#calpop .cbtn:disabled { background: #AAB4C3; cursor: default; }
+#calpop .cbtn.ghost { background: none; color: var(--ink-2); border: 1px solid var(--rule); }
+@media print { #calpop { display: none !important; } }
+@media print { .top { position: static; box-shadow: none; } .tabs, .csv { display: none; } #tip { display: none !important; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <header class="appbar">
+    <div class="appbar-in">
+      <div class="ttl"><h1>Jaipur teams by tenure</h1><div class="sub" id="sub">{{SUB}}</div></div>
+      <nav class="tabs" role="tablist" aria-label="Views" id="view" hidden></nav>
+    </div>
+  </header>
+  <nav class="fbar" aria-label="Filters" id="controls" hidden>
+    <div class="filters">
+      <span class="fgrp"><span class="lab">Period</span><span class="seg" id="per"></span></span>
+      <span class="fgrp"><span class="lab">Area</span><span class="seg" id="area"></span></span>
+      <span class="fgrp"><span class="lab">Compare with</span><span class="seg" id="cmp"></span></span>
+      <span class="fgrp" id="pickwrap"><span class="lab" id="picklab">Metric</span><select id="pick" aria-label="Metric"></select><span class="seg" id="segpick" hidden></span></span>
+      <button class="csv" id="csv" type="button"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg><span id="csvlab">Download CSV</span></button>
+    </div>
+  </nav>
+</div>
+<main>
+  <section class="card" id="app" hidden>
+    <div class="chead"><h2 id="ttl"></h2><span class="scope" id="scope"></span></div>
+    <div class="strip" id="strip"></div>
+    <p class="lead" id="lead"></p>
+    <div class="ltools" id="ltools" hidden><b id="lcount"></b><span class="slab">Show</span><span class="seg" id="llv" role="group" aria-label="Show"></span><label class="lsearch"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2L17 17"/></svg><input id="lq" type="search" placeholder="Find a person, team leader or manager" autocomplete="off" aria-label="Find a person, team leader or manager"></label></div>
+    <div class="tw"><table class="g" id="grid"></table></div>
+    <div class="note" id="note"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+<!--STATIC--><section class="card" id="tplnote" style="border-color:#F37021"><h2>This is the build template, not the report</h2><p class="lead">It holds no figures. Open <b>Jaipur / reports / jaipur-tenure-split.html</b> for the tables.</p></section><!--/STATIC-->
+</main>
+<div id="tip" role="tooltip"></div>
+<script>
+const D = /*DATA*/null;
+const HOME = D.home, BK = D.buckets, MI = Object.fromEntries(D.metrics.map((m, i) => [m.id, i])), M = Object.fromEntries(D.metrics.map(m => [m.id, m]));
+const REST = D.rest;
+const SEG = D.segl;              // row -> [label, tag, colour key], from the build
+const GROUPS = D.groups;
+const LEAD_SEGS = D.leadsegs;
+const QTRS = D.quarters || [], QTXT = QTRS.length > 1 ? QTRS.slice(0, -1).join(", ") + " and " + QTRS[QTRS.length - 1] : QTRS.join("");
+const CMP = [["lp", "Last year + previous"], ["ly", "Last year"], ["pv", "Previous period"], ...(QTRS.length ? [["q12", QTXT]] : []), ["best", "Best branch"]];
+const AREA = [["All", "All", "Whole branch, one line per team"], ["Main", "Main City", "Main City only"], ["Remote", "Remote", "Remote only"], ["split", "Split", "Each team in three lines: All, then Main City and Remote"]];
+const BKL = { "All": "All", "0-3M": "0–3M", "3-6M": "3–6M", "6-12M": "6–12M", "1-2Y": "1–2Y", "2-4Y": "2–4Y", "4Y+": "4Y+", "unknown": "Tenure unknown" };
+const COUNT_UNITS = new Set(["n", "lakh", "r1"]);
+const st = { view: "metric", per: "MTD", area: "All", cmp: "lp", lcmp: "pv", metric: "rv_deal", seg: "Super Cat", lseg: "Super Cat", lvl: "1", lsort: "2", cfrom: "", cto: "" };
+try { Object.assign(st, JSON.parse(localStorage.getItem("jtg3") || "{}")); } catch (e) {}
+for (const [k, v] of new URLSearchParams(location.hash.slice(1))) if (k in st) st[k] = v;   // e.g. #view=team&seg=BDE&per=YTD
+const open = new Set();
+
+const inr = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }), inr1 = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function fmt(v, u) {
+  if (v === null || v === undefined) return "–";
+  if (u === "rs") return "₹" + inr.format(Math.round(v));
+  if (u === "lakh") return "₹" + inr1.format(v) + " L";
+  if (u === "pct") return (v * 100).toFixed(1) + "%";
+  if (u === "r1") return inr1.format(v);
+  if (u === "r2") return v.toFixed(2);
+  if (u === "r3") return v.toFixed(3);
+  return inr.format(Math.round(v));
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function cell(win, seg, area, bk, id) {
+  const w = D.cube[win]; if (!w) return null;
+  const c = w[seg][area][BK.indexOf(bk)][MI[id]]; return c ? { v: c[0], n: c[1] } : null;
+}
+function best(win, seg, area, bk, id) {
+  const b = ((((D.best[win] || {})[seg] || {})[area] || {})[bk] || {})[id];
+  return b ? { v: b[0], city: b[1], n: b[2], k: b[3], rank: b[4] } : null;
+}
+function scale(win) { return Math.max(0.2, Math.min(1, (D.wdays[win] || 25) / 25)); }
+function thin(m, n, win) { return m.floor && n < m.floor * scale(win); }
+function pvName(p) { return D.pvname[p] || "Previous"; }
+function cmpWins() {
+  const p = st.per, out = [];
+  if (st.cmp === "lp" || st.cmp === "ly") out.push([p + "_ly", "LY", true]);
+  if (st.cmp === "lp" || st.cmp === "pv") out.push([D.cube[p + "_pv"] ? p + "_pv" : null, pvName(p), true]);
+  if (st.cmp === "q12") for (const q of QTRS) if (q !== p) out.push([q, q, false]);
+  if (st.cmp === "best") out.push(["best", "best", false]);
+  return out;
+}
+function change(now, was, m, same) {
+  if (now == null || was == null) return "";
+  if (COUNT_UNITS.has(m.unit) && !same) return "";
+  let d, txt;
+  if (m.unit === "pct") { d = (now - was) * 100; txt = Math.abs(d).toFixed(1) + " pts"; }
+  else { if (!was) return ""; d = (now / was - 1) * 100; txt = Math.abs(d).toFixed(0) + "%"; }
+  if (Math.abs(d) < 0.5) return `<span class="eq">level</span>`;
+  const good = m.hb === null || m.hb === undefined ? null : (d > 0) === m.hb;
+  const cls = good === null ? "eq" : good ? "up" : "dn";
+  return `<span class="${cls}">${d > 0 ? "▲" : "▼"}${txt}</span>`;
+}
+function vsBest(now, b, m) {
+  if (now == null || !b) return "";
+  if (m.unit === "pct") { const d = (now - b.v) * 100; return Math.abs(d) < 0.05 ? "level" : (d > 0 ? `<span class="up">${HOME[0]} +${d.toFixed(1)} pts</span>` : `${HOME[0]} −${Math.abs(d).toFixed(1)} pts`); }
+  const r = now / b.v * 100; return r >= 100 ? `<span class="up">${HOME[0]} ${r.toFixed(0)}%</span>` : `${HOME[0]} ${r.toFixed(0)}%`;
+}
+function td(seg, area, bk, id) {
+  const m = M[id], cls = bk === "All" ? "allc" : bk === "unknown" ? "unkc" : "";
+  if (id === "ecs_clear") return `<td class="na ${cls}">no data</td>`;
+  if (!m.segs.includes(seg)) return `<td class="na ${cls}" title="Not counted for this row">·</td>`;
+  const c = cell(st.per, seg, area, bk, id);
+  if (!c) return `<td class="na ${cls}" title="Not counted for this tenure column">·</td>`;
+  let html = `<div class="${c.v != null && thin(m, c.n, st.per) ? "v thin" : "v"}">${fmt(c.v, m.unit)}</div>`;
+  const line = (lab, v, extra) => `<div class="cl">${lab ? lab + " " : ""}<b>${fmt(v, m.unit)}</b>${extra ? " " + extra : ""}</div>`;
+  for (const [w, lab, same] of cmpWins()) {
+    if (w === "best") {
+      if (m.floor == null || m.hb == null || bk === "unknown") continue;
+      const b = best(st.per, seg, area, bk, id);
+      html += b ? line(b.city, b.v, vsBest(c.v, b, m)) + (b.rank ? `<div class="cl">${HOME} rank ${b.rank} of ${b.k}</div>` : "") : `<div class="cl">no branch with the base</div>`;
+    } else if (!w) {
+      html += `<div class="cl">${lab}: none</div>`;
+    } else {
+      const x = cell(w, seg, area, bk, id); html += line(lab, x ? x.v : null, change(c.v, x ? x.v : null, m, same));
+    }
+  }
+  return `<td class="${cls}" tabindex="0" data-k="${seg}|${area}|${bk}|${id}">${html}</td>`;
+}
+function headRow(first) { return `<thead><tr><th class="rl">${first}</th>${BK.map(b => `<th class="${b === "All" ? "all" : b === "unknown" ? "unk" : ""}">${BKL[b]}</th>`).join("")}</tr></thead>`; }
+function areas() { return st.area === "split" ? ["All", "Main", "Remote"] : [st.area]; }
+function rowsFor(label, tag, kind, cells) {
+  return areas().map((ar, i) => `<tr class="k-${kind}${i ? " sub" : ""}"><td class="rl">${i ? (ar === "Main" ? "Main City" : "Remote") : label + (tag ? `<span class="tag">${tag}${st.area !== "split" && st.area !== "All" ? " · " + (st.area === "Main" ? "Main City" : "Remote") : ""}</span>` : "")}</td>${cells(ar)}</tr>`).join("");
+}
+function perTxt(p) { return `${D.plabel[p]} (${D.wins[p][2]})`; }
+function stripHtml() {
+  const p = st.per, ly = D.wins[p + "_ly"], pv = D.wins[p + "_pv"];
+  let s = `<span><b>${D.plabel[p]}</b> = ${D.wins[p][2]} · <b>${D.wdays[p]}</b> working days</span>`;
+  s += ly ? `<span>Last year: ${ly[2]} · ${D.wdays[p + "_ly"]} working days</span>` : `<span>Last year: no data for these dates</span>`;
+  s += pv ? `<span>${pvName(p)}: ${pv[2]} · ${D.wdays[p + "_pv"]} working days</span>` : `<span>No previous period for YTD</span>`;
+  return s;
+}
+function cmpTxt() {
+  return { lp: `last year and ${pvName(st.per)}`, ly: "last year", pv: pvName(st.per),
+    q12: QTXT, best: `the best branch and ${HOME}'s rank` }[st.cmp];
+}
+function render() {
+  try { localStorage.setItem("jtg3", JSON.stringify(st)); } catch (e) {}
+  viewTabs(); csvLabel();
+  periodBtns();
+  if (st.view === "lead") {
+    segBtns("area", AREA.slice(0, 3), st.area === "split" ? "All" : st.area, v => { st.area = v; render(); });
+    segBtns("cmp", [["pv", "Previous period"], ["none", "No comparison"]], st.lcmp, v => { st.lcmp = v; render(); });
+  } else {
+    segBtns("area", AREA, st.area, v => { st.area = v; render(); });
+    segBtns("cmp", CMP.map(c => c[0] === "best" && st.per === "CUSTOM" ? [c[0], c[1], "Only for the preset periods"] : c), st.cmp, v => { if (v === "best" && st.per === "CUSTOM") return; st.cmp = v; render(); });
+    const bb = [...document.querySelectorAll("#cmp button")].find(b => b.textContent === "Best branch"); if (bb && st.per === "CUSTOM") bb.disabled = true;
+  }
+  const pick = document.getElementById("pick"), sp = document.getElementById("segpick");
+  pick.hidden = st.view !== "metric"; sp.hidden = st.view === "metric";
+  document.getElementById("picklab").textContent = st.view === "metric" ? "Metric" : "Team";
+  if (st.view === "team") segBtns("segpick", D.segs.map(s => [s, SEG[s][0]]), st.seg, v => { st.seg = v; render(); });
+  if (st.view === "lead") segBtns("segpick", LEAD_SEGS.map(s => [s, SEG[s][0]]), st.lseg, v => { st.lseg = v; ov.clear(); render(); });
+  pick.value = st.metric;
+  document.getElementById("strip").innerHTML = stripHtml();
+  const g = document.getElementById("grid"), note = document.getElementById("note");
+  note.innerHTML = "";
+  let h = "";
+  document.getElementById("ltools").hidden = st.view !== "lead";
+  if (st.view === "lead") { renderLead(g, note); return; }
+  const areaTxt = st.area === "split" ? "each row as All, then Main City and Remote" : st.area === "All" ? "whole branch" : (st.area === "Main" ? "Main City" : "Remote") + " only";
+  if (st.view === "metric") {
+    const m = M[st.metric];
+    document.getElementById("ttl").textContent = m.label;
+    document.getElementById("lead").innerHTML = `Bold = ${HOME}, ${perTxt(st.per)}, ${areaTxt}. Small lines = ${cmpTxt()}.`;
+    h = headRow("Team row");
+    h += "<tbody>" + GROUPS.map(([gl, segs]) => `<tr class="grp"><td colspan="${BK.length + 1}">${gl}</td></tr>` +
+      segs.map(s => rowsFor(SEG[s][0], SEG[s][1], SEG[s][2], ar => BK.map(b => td(s, ar, b, st.metric)).join(""))).join("")).join("") + "</tbody>";
+  } else {
+    const s = st.seg;
+    document.getElementById("ttl").textContent = `${SEG[s][0]} (${SEG[s][1]})`;
+    document.getElementById("lead").innerHTML = `Bold = ${HOME}, ${perTxt(st.per)}, ${areaTxt}. Small lines = ${cmpTxt()}.`;
+    h = headRow("Metric") + "<tbody>";
+    let grp = "";
+    for (const m of D.metrics) {
+      if (m.group !== grp) { grp = m.group; h += `<tr class="grp"><td colspan="${BK.length + 1}">${grp}</td></tr>`; }
+      h += rowsFor(m.label, "", SEG[s][2], ar => BK.map(b => td(s, ar, b, m.id)).join(""));
+    }
+    h += "</tbody>";
+  }
+  g.className = st.view === "team" ? "g byteam" : "g";
+  g.innerHTML = h;
+  document.getElementById("scope").textContent = "";
+  document.getElementById("legend").innerHTML = `<span>▲▼ = change from the small-line figure</span><span><i>Grey italic</i> = small numbers, read with care</span><span>Hover a cell for every period and the best branch</span>`;
+}
+// ------------------------------------------------------------------ managers view (Mumbai ME page flow: Manager > team leader > person)
+const ov = new Map();                     // lines opened or closed by hand (id -> true / false); cleared when Show changes
+let lq = "";
+function leadRows(win, seg, area) { return (((D.leaders[win] || {})[seg] || {})[area]) || []; }
+function renderLead(g, note) {
+  const s = st.lseg, ar = st.area === "split" ? "All" : st.area, p = st.per, pw = p + "_pv", lvl = +st.lvl;
+  const PEO = (D.people || {})[s] || "people";
+  const one = PEO === "B2B people" ? "B2B person" : PEO.replace(/s$/, ""), pn = n => `${inr.format(n)} ${n === 1 ? one : PEO}`;
+  const rows = leadRows(p, s, ar), prev = st.lcmp === "pv" && D.leaders[pw] ? leadRows(pw, s, ar) : null;
+  // previous period by id: managers, team leaders (under any manager) and people
+  const P = { m: {}, t: {}, p: {} };
+  if (prev) for (const r of prev) { P.m[r[6]] = r; for (const t of r[5]) { P.t[t[6]] = t; for (const x of t[5]) P.p[x[5]] = x; } }
+  const tot = rows.reduce((a, r) => [a[0] + r[1], a[1] + r[2], a[2] + r[3], a[3] + r[4]], [0, 0, 0, 0]);
+  const ptot = prev ? prev.reduce((a, r) => [a[0] + r[1], a[1] + r[2], a[2] + r[3], a[3] + r[4]], [0, 0, 0, 0]) : null;
+  const ppl = new Set(); rows.forEach(r => r[5].forEach(t => t[5].forEach(x => ppl.add(x[5]))));
+  document.getElementById("ttl").textContent = `Managers, team leaders and ${PEO}: ${SEG[s][0]}`;
+  document.getElementById("lead").innerHTML = `${HOME}, ${perTxt(p)}, ${ar === "All" ? "whole branch" : ar === "Main" ? "Main City" : "Remote"}.${prev ? ` Small line = ${pvName(p)} (${D.wins[pw][2]}).` : ""}`;
+  document.getElementById("scope").textContent = "";
+  const tools = document.getElementById("ltools"); tools.hidden = false;
+  document.getElementById("lcount").textContent = `${inr.format(ppl.size)} ${PEO}`;
+  segBtns("llv", [["1", "Managers"], ["2", "Team leaders"], ["3", PEO.charAt(0).toUpperCase() + PEO.slice(1)]], st.lvl, v => { st.lvl = v; ov.clear(); render(); });
+  const COLS = [["Headcount", "r1"], ["Man days", "n"], ["Deals", "n"], ["Share of team deals", "pct"], ["RV 3-yr", "lakh"], ["Share of team RV", "pct"], ["RV / deal", "rs"], ["Deals per manday", "r3"], ["RV per manday", "rs"]];
+  const vals = (r, t) => [r[1], r[2], r[3], t[2] ? r[3] / t[2] : null, r[4] / 1e5, t[3] ? r[4] / t[3] : null, r[3] ? r[4] / r[3] : null, r[2] ? r[3] / r[2] : null, r[2] ? r[4] / r[2] : null];
+  const HB = [null, null, true, null, true, null, true, true, true];
+  const cells = (r, t, pr, pt) => vals(r, t).map((v, i) => {
+    const u = COLS[i][1]; let x = `<div class="v">${fmt(v, u)}</div>`;
+    if (pr) { const w = vals(pr, pt)[i]; x += `<div class="cl"><b>${fmt(w, u)}</b> ${change(v, w, { unit: u, hb: HB[i] }, true)}</div>`; }
+    else if (prev) x += `<div class="cl">new</div>`;
+    return `<td>${x}</td>`;
+  }).join("");
+  // sort every level by the chosen column (largest first; click again for smallest first)
+  const sc = Math.abs(+st.lsort), sd = +st.lsort < 0 ? 1 : -1;
+  const key = r => { const v = vals(r, tot)[sc]; return v == null || !isFinite(v) ? -Infinity : v; };
+  const sorted = arr => arr.slice().sort((a, b) => sd * (key(a) - key(b)) || String(a[0]).localeCompare(String(b[0])));
+  // search: a line shows when it, a line above it or a line below it matches; the path to a match opens
+  const q = lq.trim().toLowerCase(), hit = n => q && String(n).toLowerCase().includes(q);
+  const mark = n => { const t = esc(n); if (!q) return t; const i = String(n).toLowerCase().indexOf(q); return i < 0 ? t : esc(String(n).slice(0, i)) + `<span class="hit">${esc(String(n).slice(i, i + q.length))}</span>` + esc(String(n).slice(i + q.length)); };
+  const isOpen = (id, depth, forced) => forced || (ov.has(id) ? ov.get(id) : depth < lvl);
+  const chev = '<span class="chev"><svg viewBox="0 0 12 12"><path d="M4 2l4 4-4 4"/></svg></span>';
+  let h = `<thead><tr><th class="rl">Name</th>${COLS.map((c, i) => `<th data-c="${i}" aria-sort="${i === sc ? (sd < 0 ? "descending" : "ascending") : "none"}" title="Sort by ${c[0]}">${c[0]}</th>`).join("")}</tr></thead><tbody>`;
+  h += `<tr class="all"><td class="rl">All ${HOME}, ${inr.format(ppl.size)} ${PEO}</td>${cells(["", ...tot], tot, ptot ? ["", ...ptot] : null, ptot)}</tr>`;
+  let shown = 0;
+  for (const r of sorted(rows)) {
+    const mHit = hit(r[0]);
+    const tls = r[5].map(t => ({ t, tHit: hit(t[0]), ps: t[5].filter(x => !q || mHit || hit(t[0]) || hit(x[0])) }))
+      .filter(o => !q || mHit || o.tHit || o.ps.length);
+    if (q && !tls.length && !mHit) continue;
+    const below = q && !mHit && tls.length > 0;
+    const mId = "m" + r[6], mo = isOpen(mId, 1, below), pr = P.m[r[6]];
+    const np = new Set(r[5].flatMap(t => t[5].map(x => x[5]))).size;
+    h += `<tr class="n1" data-node="${mId}" tabindex="0" aria-expanded="${mo}"><td class="rl">${chev}${mark(r[0])}<span class="tag">${r[5].length} team leader${r[5].length === 1 ? "" : "s"} · ${pn(np)}</span></td>${cells(r, tot, pr, ptot)}</tr>`;
+    shown++;
+    if (!mo) continue;
+    for (const o of sorted(tls.map(o => o.t)).map(t => tls.find(o => o.t === t))) {
+      const t = o.t, tId = "t" + r[6] + "_" + t[6], tBelow = q && !mHit && !o.tHit && o.ps.length > 0, to = isOpen(tId, 2, tBelow);
+      h += `<tr class="n2" data-node="${tId}" tabindex="0" aria-expanded="${to}"><td class="rl">${chev}${mark(t[0])}<span class="tag">${pn(t[5].length)}</span></td>${cells(t, tot, P.t[t[6]], ptot)}</tr>`;
+      if (!to) continue;
+      for (const x of sorted(q && !mHit && !o.tHit ? o.ps : t[5]))
+        h += `<tr class="n3"><td class="rl">${mark(x[0])}</td>${cells(x, tot, P.p[x[5]], ptot)}</tr>`;
+    }
+  }
+  if (q && !shown) h += `<tr><td class="rl" colspan="${COLS.length + 1}" style="text-align:left;color:var(--mute)">No manager, team leader or person matches “${esc(lq)}”.</td></tr>`;
+  g.className = "g lead"; g.innerHTML = h + "</tbody>";
+  document.getElementById("legend").innerHTML = `<span>Click a line to open or close it. Click a column title to sort.</span>${prev ? `<span>Small line = ${pvName(p)}, then ▲▼ the change. "new" = not in the team in the previous period.</span>` : ""}`;
+  g.querySelectorAll("tr[data-node]").forEach(tr => {
+    const tog = () => { const id = tr.dataset.node; ov.set(id, tr.getAttribute("aria-expanded") !== "true"); render(); };
+    tr.onclick = tog; tr.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tog(); } };
+  });
+  g.querySelectorAll("thead th[data-c]").forEach(th => th.onclick = () => { const c = +th.dataset.c; st.lsort = String(Math.abs(+st.lsort) === c && +st.lsort > 0 ? -c : c); render(); });
+}
+const lqEl = document.getElementById("lq");
+lqEl.addEventListener("input", () => { lq = lqEl.value; render(); lqEl.focus(); });
+const TABS = [
+  ["metric", "By metric", '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16"/>'],
+  ["team", "By team", '<path d="M4 6h16M4 12h10M4 18h6"/>'],
+  ["lead", "Managers", '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 14.2c2.3.2 4 1.8 4.7 4.8"/>'],
+];
+function viewTabs() {
+  const el = document.getElementById("view"); el.innerHTML = "";
+  for (const [v, l, ic] of TABS) {
+    const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(v === st.view));
+    b.tabIndex = v === st.view ? 0 : -1;
+    b.innerHTML = `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ic}</svg>${l}`;
+    b.onclick = () => { st.view = v; render(); document.querySelector('#view [aria-selected="true"]').focus(); };
+    el.appendChild(b);
+  }
+  el.onkeydown = e => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const i = TABS.findIndex(t => t[0] === st.view), j = (i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length;
+    st.view = TABS[j][0]; render(); document.querySelector('#view [aria-selected="true"]').focus();
+  };
+}
+function segBtns(id, opts, cur, on) {
+  const el = document.getElementById(id); el.innerHTML = "";
+  if (cur !== null && !opts.some(o => o[0] === cur)) cur = opts[0][0];
+  for (const [v, l, t] of opts) { const b = document.createElement("button"); b.type = "button"; b.textContent = l; if (t) b.title = t; b.setAttribute("aria-pressed", String(v === cur)); b.onclick = () => on(v); el.appendChild(b); }
+}
+function baseTxt(m, n) {
+  if (n == null) return "";
+  if (["rv_deal", "coll_deal", "ecs_pct", "nonecs_pct", "deals", "rv", "pk_pct", "pd_pct", "ot_pct", "contrib_deals", "contrib_rv"].includes(m.id)) return inr.format(Math.round(n)) + " deals";
+  if (m.id === "nonecs_rv") return inr.format(Math.round(n)) + " non-ECS deals";
+  if (m.id === "ecs_rv") return inr.format(Math.round(n)) + " ECS deals";
+  if (["pk_rv", "pd_rv", "ot_rv"].includes(m.id)) return inr.format(Math.round(n)) + " deals of the product";
+  if (m.id === "cog") return inr.format(Math.round(n)) + " appts";
+  if (m.id.startsWith("md_") || m.id.startsWith("hc_")) return "";
+  return inr.format(Math.round(n)) + " mandays";
+}
+const tip = document.getElementById("tip");
+function showTip(tdEl, x, y) {
+  const [seg, area, bk, id] = tdEl.dataset.k.split("|"), m = M[id], p = st.per;
+  const arTxt = area === "All" ? "" : " · " + (area === "Main" ? "Main City" : "Remote");
+  let r = `<h4>${SEG[seg][0]}${arTxt} · ${BKL[bk]} · ${m.label}</h4><table>`;
+  const wins = [[p, D.plabel[p], true], [p + "_ly", "Last year", false], [p + "_pv", pvName(p), false]];
+  for (const q of QTRS) if (q !== p) wins.push([q, q, false]);
+  for (const [w, lab, me] of wins) {
+    if (!D.wins[w]) continue;
+    const c = cell(w, seg, area, bk, id);
+    r += `<tr${me ? ' class="me"' : ""}><td>${lab} <span style="color:var(--faint)">${D.wins[w][2]}</span></td><td class="b">${c ? baseTxt(m, c.n) : ""}</td><td>${fmt(c ? c.v : null, m.unit)}</td></tr>`;
+  }
+  const b = best(p, seg, area, bk, id);
+  if (b) r += `<tr class="sep"><td colspan="3">Best branch, ${D.plabel[p]}</td></tr><tr><td>${b.city}</td><td class="b">${baseTxt(m, b.n)}</td><td>${fmt(b.v, m.unit)}</td></tr>` +
+    (b.rank ? `<tr><td colspan="2">${HOME}'s rank</td><td>${b.rank} of ${b.k}</td></tr>` : "");
+  tip.innerHTML = r + "</table>"; tip.style.display = "block";
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = Math.min(x + 14, innerWidth - w - 8) + "px"; tip.style.top = (y + 14 + hgt > innerHeight ? Math.max(8, y - hgt - 10) : y + 14) + "px";
+}
+const grid = document.getElementById("grid");
+grid.addEventListener("mousemove", e => { const t = e.target.closest("td[data-k]"); document.querySelectorAll("td.hov").forEach(x => x !== t && x.classList.remove("hov")); if (!t) { tip.style.display = "none"; return; } t.classList.add("hov"); showTip(t, e.clientX, e.clientY); });
+grid.addEventListener("mouseleave", () => { tip.style.display = "none"; document.querySelectorAll("td.hov").forEach(x => x.classList.remove("hov")); });
+grid.addEventListener("focusin", e => { const t = e.target.closest("td[data-k]"); if (t) { const r = t.getBoundingClientRect(); showTip(t, r.right, r.top); } });
+grid.addEventListener("focusout", () => { tip.style.display = "none"; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") tip.style.display = "none"; });
+
+const UNIT = { n: "count", lakh: "Rs lakh", rs: "Rs", pct: "share (0-1)", r1: "people", r2: "ratio", r3: "ratio", r0: "minutes" };
+function perLab(w) {
+  const [p, k] = w.split("_");
+  return k === "ly" ? D.plabel[p] + " · last year" : k === "pv" ? D.plabel[p] + " · " + pvName(p) : D.plabel[p];
+}
+function toCsv(rows) { return rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(",")).join("\r\n"); }
+function save(name, rows) {
+  const url = URL.createObjectURL(new Blob(["\ufeff" + toCsv(rows)], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+function gridRows() {
+  const out = [["team_row", "area", "metric", "unit", "tenure", "period", "dates", "working_days", "branch", "value", "base"]];
+  const wins = Object.keys(D.cube);
+  for (const s of D.segs) for (const m of D.metrics) if (m.segs.includes(s)) for (const ar of D.areas) for (const b of BK) {
+    for (const w of wins) { const c = cell(w, s, ar, b, m.id); if (c && c.v != null) out.push([SEG[s][0], ar, m.label, UNIT[m.unit] || "", BKL[b], perLab(w), D.wins[w][2], D.wdays[w], HOME, c.v, c.n]); }
+    for (const p of D.main) { const bb = best(p, s, ar, b, m.id); if (bb) out.push([SEG[s][0], ar, m.label, UNIT[m.unit] || "", BKL[b], perLab(p), D.wins[p][2], D.wdays[p], "Best: " + bb.city, bb.v, bb.n]); }
+  }
+  return out;
+}
+function leadRows_() {
+  const out = [["team", "area", "period", "dates", "manager", "team_leader", "person", "headcount", "man_days", "deals", "share_of_team_deals", "rv_3yr_rs", "share_of_team_rv", "rv_per_deal_rs", "deals_per_manday", "rv_per_manday_rs"]];
+  const r2 = (v, d) => v == null || !isFinite(v) ? "" : +v.toFixed(d);
+  for (const w of Object.keys(D.leaders)) for (const s of LEAD_SEGS) for (const ar of D.areas) {
+    const rows = leadRows(w, s, ar); if (!rows.length) continue;
+    const td_ = rows.reduce((a, r) => a + r[3], 0), tr_ = rows.reduce((a, r) => a + r[4], 0);
+    const line = (mg, tl, pn, hc, md, dl, rv) => [SEG[s][0], ar, perLab(w), D.wins[w][2], mg, tl, pn, r2(hc, 1), r2(md, 1), r2(dl, 1), r2(td_ ? dl / td_ : null, 4), Math.round(rv), r2(tr_ ? rv / tr_ : null, 4), r2(dl ? rv / dl : null, 0), r2(md ? dl / md : null, 4), r2(md ? rv / md : null, 0)];
+    for (const r of rows) { out.push(line(r[0], "", "", r[1], r[2], r[3], r[4])); for (const t of r[5]) { out.push(line(r[0], t[0], "", t[1], t[2], t[3], t[4])); for (const x of t[5]) out.push(line(r[0], t[0], x[0], x[1], x[2], x[3], x[4])); } }
+  }
+  return out;
+}
+function csv() {
+  const b = document.getElementById("csv"); b.setAttribute("aria-busy", "true");
+  setTimeout(() => {                         // let the busy state paint before the big file is built
+    try {
+      if (st.view === "lead") save(`${HOME}_tenure_grid_managers_${D.built}.csv`, leadRows_());
+      else save(`${HOME}_tenure_grid_all_figures_${D.built}.csv`, gridRows());
+    } finally { b.removeAttribute("aria-busy"); }
+  }, 30);
+}
+function csvLabel() {
+  const b = document.getElementById("csv");
+  document.getElementById("csvlab").textContent = st.view === "lead" ? "Download managers (CSV)" : "Download all figures (CSV)";
+  b.title = st.view === "lead" ? "Every manager, team leader and person: all periods, teams and areas" : "Every figure on this page: all periods (with last year and the previous period), teams, areas and tenure bands, plus the best branch";
+}
+document.getElementById("csv").onclick = csv;
+
+/*CUSTOM_JS*/
+(function init() {
+  const stat = document.getElementById("static"); if (stat) stat.remove();          // static copy is for viewers that run no scripts
+  for (const id of ["controls", "app", "view"]) document.getElementById(id).hidden = false;
+  const pick = document.getElementById("pick");
+  let html = "", grp = "";
+  for (const m of D.metrics) { if (m.group !== grp) { html += (grp ? "</optgroup>" : "") + `<optgroup label="${m.group}">`; grp = m.group; } html += `<option value="${m.id}">${m.label}</option>`; }
+  pick.innerHTML = html + "</optgroup>";
+  pick.onchange = () => { st.metric = pick.value; render(); };
+  if (!["metric", "team", "lead"].includes(st.view)) st.view = "metric";
+  if (st.per === "CUSTOM") { if (/^\d{4}-\d\d-\d\d$/.test(st.cfrom) && /^\d{4}-\d\d-\d\d$/.test(st.cto)) setCustom(dayN(st.cfrom), dayN(st.cto)); else st.per = "MTD"; }
+  if (st.per === "CUSTOM" && st.cmp === "best") st.cmp = "lp";
+  if (st.per !== "CUSTOM" && !D.main.includes(st.per)) st.per = "MTD"; if (!M[st.metric]) st.metric = "rv_deal";
+  if (!SEG[st.seg]) st.seg = "Super Cat"; if (!LEAD_SEGS.includes(st.lseg)) st.lseg = "Super Cat";
+  if (st.cmp === "q12" && !QTRS.length) st.cmp = "lp"; if (!["1", "2", "3"].includes(String(st.lvl))) st.lvl = "1";
+  render();
+})();
+</script>
+</body>
+</html>

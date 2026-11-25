@@ -14,10 +14,14 @@ import sys
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.dirname(PIPE)
-PAGE_NAME = "Mumbai ME Team Performance.html"
+# the branch (2026-11-23, Ahmedabad added): pipeline\city.txt holds the city key (e.g. "ahmedabad"); without it, Mumbai
+_ct = os.path.join(PIPE, "city.txt")
+CITY = (open(_ct, encoding="utf-8").read().strip().lower() if os.path.isfile(_ct) else "") or "mumbai"
+CITY_NAME = CITY.title()
+PAGE_NAME = f"{CITY_NAME} ME Team Performance.html"
 SHARED_KIT = os.path.isfile(os.path.join(KIT, "main.py"))
 PRIVATE = os.environ.get("ME_PRIVATE_DIR") or (
-    os.path.join(os.environ.get("ProgramData") or r"C:\ProgramData", "ME_dashboard_private") if SHARED_KIT else "")
+    os.path.join(os.environ.get("ProgramData") or r"C:\ProgramData", "ME_dashboard_private" + ("" if CITY == "mumbai" else "_" + CITY)) if SHARED_KIT else "")
 if PRIVATE:
     CACHE = os.path.join(PRIVATE, "cache")
     FULL = os.path.join(PRIVATE, PAGE_NAME)            # the unlocked full page (private)

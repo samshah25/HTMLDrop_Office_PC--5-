@@ -1657,3 +1657,17 @@ body.tmev .trd .te { color: var(--ink); } body.tmev .trd .t50 { color: var(--tb-
 .xtbl tr.bench .bnm { font-weight: 600; color: var(--ink-2); }
 .xtbl thead tr.bench td:first-child { left: 0; z-index: 5; }
 .chg.mixr { display: block; white-space: nowrap; margin-top: 1px; }
+
+/* top bar (2026-11-23): the lineage tag shrinks with "..." (full text on hover) instead of running past the name area into
+   the ME | TME switch when a long team name is picked */
+@media (min-width: 861px) {
+  .brand-txt .brand-name { display: flex; align-items: center; min-width: 0; }
+  .brand-txt .brand-name > .bn-who, .brand-txt .brand-name > .city { flex: none; }
+  .brand-txt .brand-name > .city { margin-left: 10px; }
+  .brand-txt .linetag { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brand-txt .linetag[hidden] { display: none; }
+}
+/* TME team boxes (2026-11-23, Ahmedabad: a longer city name): the "<city> 77%" line under each rate wraps rather than run
+   past its column; below 1340px wide the two rates sit closer and that line is a touch smaller (1366 and wider unchanged) */
+.tile.tf .tr1 small { white-space: normal; }
+@media (max-width: 1340px) { .tile.tf .trates { gap: 12px; } .tile.tf .tr1 small { font-size: 11px; } }

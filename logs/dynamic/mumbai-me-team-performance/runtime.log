@@ -216,3 +216,52 @@
 [2026-11-11 11:50:03]    [11:50:02] HR for 1,350 MEs and 940 more TMEs: 2,154 with days present, 2,288 with joining dates (29s). Saved cache\hr.pkl
 [2026-11-11 11:50:03]    ok (162s)
 [2026-11-11 11:50:03] -- fetch_calls.py
+
+[2026-11-23T19:57:12] Running data generation (main.py)...
+[2026-11-23 19:57:16] ===== ME dashboards refresh =====
+[2026-11-23 19:57:16] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-23 19:57:16] -- fetch_data.py
+[2026-11-23 19:57:43]    [19:57:39] mumbai: 53,780 appointments given and 6,269 not counted, 2026-04-01 to 2026-11-22 (21s)
+[2026-11-23 19:57:43]    [19:57:43] Saved cache\raw.pkl
+[2026-11-23 19:57:43]    ok (27s)
+[2026-11-23 19:57:43] -- fetch_api.py
+[2026-11-23 19:57:48]    [19:57:48] The appointment table already runs to 2026-11-22: no provisional days (removed any earlier ones).
+[2026-11-23 19:57:48]    ok (5s)
+[2026-11-23 19:57:48] -- fetch_deals.py
+[2026-11-23 20:00:29]    [19:59:59] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,394.96 since 2026-04-01 to 2026-11-21, 16,507 deal rows, 167 MEs (8s)
+[2026-11-23 20:00:29]    [20:00:00] Deals dump runs to 2026-11-21; the rolling table added 0 deal rows (nothing newer)
+[2026-11-23 20:00:29]    [20:00:00] Deals for 52,791 businesses: 14,092 deal rows since 2026-03-30 (129s). Saved cache\deals.pkl
+[2026-11-23 20:00:29]    [20:00:28] HR for 1,386 MEs and 965 more TMEs: 2,219 with days present, 2,349 with joining dates (28s). Saved cache\hr.pkl
+[2026-11-23 20:00:29]    ok (160s)
+[2026-11-23 20:00:29] -- fetch_calls.py
+[2026-11-23 20:00:55]    [20:00:43] 202610: 2,480,340 calls with an agent, 1,993,265 connected, 542 agents (11s)
+[2026-11-23 20:00:55]    [20:00:50] 202611: 1,421,950 calls with an agent, 1,147,446 connected, 484 agents (7s)
+[2026-11-23 20:00:55]    [20:00:54] TME check (HR emptype 'TME'): 16,520,464 of 17,331,959 calls with an agent are by TMEs (811,495 by other agents left out); 0 of the TMEs' calls are by TMEs whose HR city that month is not Mumbai
+[2026-11-23 20:00:55]    [20:00:54] Calls since 2026-04-01: 16,520,464 (13,269,110 connected) by 918 TMEs, to 2026-11-21; pulled 202610, 202611 (the rest from the cache). Saved cache\calls.pkl
+[2026-11-23 20:00:55]    ok (26s)
+[2026-11-23 20:00:55] -- build_review.py --full
+[2026-11-23 20:01:52]    [20:00:58] Sales MIS rules: 15 rows of Corporate / Sales (Training) MEs left out; 1,232 Sunday appointments reported on the Saturday before
+[2026-11-23 20:01:52]    [20:01:03] Deals from the deals table: 13,403 appointments converted (the appointment table marks 13,655); 4 marked not deal there, 256 marked deal there but their business's deal went to another appointment
+[2026-11-23 20:01:52]    [20:01:05] Deals closed (Sales MIS rule): 13,394.96 from 13,478 deal rows; after 2026-11-21 from the Dealclosed appointments
+[2026-11-23 20:01:52]    [20:01:06] 'Not available' appointments with the 30 days over: 8,299; customer attended within 30 days: 261
+[2026-11-23 20:01:52]    [20:01:07] Record checks since 1 April: pending 2,244, no_booking 3,823, deal_before_booked 291, na_early 297, same_day 423
+[2026-11-23 20:01:52]    [20:01:08] Not counted as given: 6,268 (Not Available (Online) 4,652, TME Cancelled 419, Fake Appt 311, Call Back 255, Bounced Collection 213, Appointment Refixed 154)
+[2026-11-23 20:01:52]    [20:01:08] HR: 1,391 of 1,391 MEs with a joining date
+[2026-11-23 20:01:52]    [20:01:08] Appointments 53,766 (left out: 0); attended 42,407; deals closed 13,394.96 (13,403 appointments with disposition Dealclosed)
+[2026-11-23 20:01:52]    [20:01:15] TME tree: head Deepak Thukral (VP - Tele Marketing; covers 99% of the last 60 days); 15 below the head, 14 below those, 0 further down, 38 outside the head's line; 2 appointments with no team leader; names not matched to the SSO lines: Rahul Gupta (1)
+[2026-11-23 20:01:52]    [20:01:16] TME calls: 16,444,359 of 16,520,464 dialer calls are by TMEs on the appointments (13,200,411 connected), to 2026-11-21
+[2026-11-23 20:01:52]    [20:01:16] TME HR: 1,045 of 1,119 TMEs with a joining date, 980 with days present
+[2026-11-23 20:01:52]    [20:01:16] Data: 7.3 MB; 1,391 MEs, 1,119 TMEs
+[2026-11-23 20:01:52]    [20:01:17] Wrote C:\ProgramData\ME_dashboard_private\Mumbai ME Team Performance.html (8.0 MB, built from the design files)
+[2026-11-23 20:01:52]    [20:01:20] Manager page Vijay Yadav: 3,775 appointments, 939.0 deals closed, 14 MEs (+ 47,154 anonymous appointments of the rest of the line; 3.6 MB)
+[2026-11-23 20:01:52]    [20:01:22] Manager page Ketan Rameshchandra Joshi: 5,611 appointments, 1,488.0 deals closed, 23 MEs (+ 45,318 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-23 20:01:52]    [20:01:24] Manager page Hemang Narendra Shah: 7,056 appointments, 2,027.99 deals closed, 20 MEs (+ 43,873 anonymous appointments of the rest of the line; 3.8 MB)
+[2026-11-23 20:01:52]    [20:01:26] Manager page Yash Pandey: 4,410 appointments, 1,240.99 deals closed, 14 MEs (+ 46,519 anonymous appointments of the rest of the line; 3.7 MB)
+[2026-11-23 20:01:52]    [20:01:28] Manager page Vikas Mishra: 8,764 appointments, 1,668.0 deals closed, 24 MEs (+ 42,165 anonymous appointments of the rest of the line; 3.9 MB)
+[2026-11-23 20:01:52]    [20:01:30] Manager page Deepak Tiwari: 6,805 appointments, 2,234.99 deals closed, 21 MEs (+ 44,124 anonymous appointments of the rest of the line; 3.8 MB)
+[2026-11-23 20:01:52]    [20:01:31] Manager page Jitendra Dubey: 6,923 appointments, 2,025.99 deals closed, 15 MEs (+ 44,006 anonymous appointments of the rest of the line; 3.8 MB)
+[2026-11-23 20:01:52]    [20:01:33] Manager page Zubin Shah: 7,585 appointments, 1,750.0 deals closed, 27 MEs (+ 43,344 anonymous appointments of the rest of the line; 3.9 MB)
+[2026-11-23 20:01:52]    [20:01:51] Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\mumbai-me-team-performance\Mumbai ME Team Performance.html (15.8 MB, 10 logins, 9 pages) - upload this file to HTML Drop.
+[2026-11-23 20:01:52]    ok (57s)
+[2026-11-23 20:01:52] ===== done in 279s =====
+[2026-11-23T20:01:52] Data generation completed successfully.

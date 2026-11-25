@@ -36,6 +36,7 @@ import kitpaths   # shared kit: unlocked pages and vault_keys.json in the privat
 FULL, MGR, KEYS, OUT = kitpaths.FULL, kitpaths.MGR, kitpaths.KEYS, kitpaths.SIGNIN
 OUT_DIR = os.path.dirname(OUT)
 ITER = 100_000
+NAME_TOKEN = "__JDME_SIGNED_IN_NAME__"
 b64 = lambda b: base64.b64encode(b).decode()
 
 
@@ -113,6 +114,28 @@ BAR = ('<div class="jd-signbar" style="position:fixed;right:12px;bottom:12px;z-i
        'onclick="try{sessionStorage.removeItem(\'jdme_s\')}catch(e){};location.replace(location.pathname);return false;">Sign out</a></div>'
        '<style>@media print{.jd-signbar{display:none}}</style>')
 
+# Usage tracking (23 Nov 2026): the unlocked page sends small notes to usage_recorder.py on the PC that hosts it (same
+# address, port USAGE_PORT): who signed in, page opened, buttons / tabs clicked and lists changed (their labels only, never
+# typed text), and one 'active' note a minute while the tab is in front and used in the last 5 minutes. Nothing goes outside
+# the office network; if the recorder is not running, the notes are simply lost and the page works as before.
+USAGE_PORT = int(os.environ.get("ME_USAGE_PORT") or 8170)
+TRACK = r"""<script>(function(){var W=window,who=W.__jdmeWho;if(!who||!/^https?:$/.test(location.protocol)||!location.hostname)return;
+var T=W.__jdTrack;if(T){clearInterval(T.iv);}else{T=W.__jdTrack={vid:Math.random().toString(36).slice(2,12),last:Date.now(),sent:0,opened:0};}
+var U=location.protocol+'//'+location.hostname+':%PORT%/hit';
+function send(e,v){if(T.sent>600)return;T.sent++;var d=JSON.stringify({d:'%DASH%',u:who.u||'',n:who.n||'',p:who.f||'',e:e,v:String(v||'').slice(0,80),vid:T.vid});
+ try{if(navigator.sendBeacon&&navigator.sendBeacon(U,d))return;}catch(x){}try{fetch(U,{method:'POST',body:d,mode:'no-cors',keepalive:true}).catch(function(){});}catch(x){}}
+if(!T.opened){T.opened=1;send(who.ev||'open','');}
+function act(){T.last=Date.now();}
+['pointerdown','keydown','wheel','mousemove','touchstart'].forEach(function(t){document.addEventListener(t,act,{passive:true,capture:true});});
+document.addEventListener('click',function(e){var el=e.target&&e.target.closest&&e.target.closest('button,a,[role=tab],[role=button],summary,[data-v]');if(!el)return;
+ var t=(el.getAttribute('aria-label')||el.textContent||el.getAttribute('title')||'').replace(/\s+/g,' ').trim();if(t)send('click',t);},true);
+document.addEventListener('change',function(e){var el=e.target,l;if(!el||!el.tagName)return;
+ if(el.tagName==='SELECT'){var o=el.options[el.selectedIndex];l=(el.getAttribute('aria-label')||el.name||el.id||'list')+': '+(o?o.text:'');}
+ else if(el.type==='date'){l=(el.getAttribute('aria-label')||el.id||'date')+': '+el.value;}else if(el.type==='checkbox'||el.type==='radio'){
+ var lb=el.closest('label');l=((lb&&lb.textContent)||el.getAttribute('aria-label')||el.name||el.id||el.type).replace(/\s+/g,' ').trim()+(el.type==='checkbox'?(el.checked?': on':': off'):'');}else return;send('change',l);},true);
+T.iv=setInterval(function(){if(document.visibilityState==='visible'&&Date.now()-T.last<300000)send('active','');},60000);
+})();</script>"""
+
 
 def build(log=print):
     _selftest()
@@ -131,7 +154,8 @@ def build(log=print):
             log(f"lock_page: the page of {login} ({page}) is not there - that login will not open.")
             continue
         raw = open(p, "rb").read()
-        bar = BAR.replace("%NAME%", e.get("name", login).replace("<", "&lt;")).encode("utf-8")
+        bar = (BAR.replace("%NAME%", NAME_TOKEN)   # the signed-in name goes in when the page opens (several logins can share a page)
+               + TRACK.replace("%PORT%", str(USAGE_PORT)).replace("%DASH%", kitpaths.CITY)).encode("utf-8")
         i = raw.rfind(b"</body>")
         raw = raw[:i] + bar + raw[i:] if i >= 0 else raw + bar
         kf, nf = secrets.token_bytes(32), secrets.token_bytes(12)
@@ -142,12 +166,12 @@ def build(log=print):
             continue
         ku = bytes.fromhex(e["key"])
         nw = secrets.token_bytes(12); w = chacha20(ku, nw, pkey[e["page"]])
-        U[login] = {"s": e["salt"], "k": [[e["page"], b64(nw), b64(w)]], "t": b64(hmac.new(ku, nw + w, hashlib.sha256).digest()[:16])}
+        U[login] = {"s": e["salt"], "k": [[e["page"], b64(nw), b64(w)]], "t": b64(hmac.new(ku, nw + w, hashlib.sha256).digest()[:16]), "n": e.get("name", login)}
     vault = json.dumps({"iter": it, "U": U, "F": F}, separators=(",", ":"))
     os.makedirs(OUT_DIR, exist_ok=True)
     tmp = OUT + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
-        f.write(GATE.replace("/*VAULT*/", vault.replace("</", "<\\/")))
+        f.write(GATE.replace("%CITY%", kitpaths.CITY_NAME).replace("/*VAULT*/", vault.replace("</", "<\\/")))
     os.replace(tmp, OUT)
     log(f"Wrote {OUT} ({os.path.getsize(OUT) / 1e6:.1f} MB, {len(U)} logins, {len(F)} pages) - upload this file to HTML Drop.")
     return OUT
@@ -169,7 +193,7 @@ def set_password(login, pw, name=None, page=None):
 
 GATE = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign in · ME team, Mumbai</title><script>try{if(sessionStorage.getItem('jdme_s'))document.documentElement.className='rs'}catch(e){}</script><style>
+<title>Sign in · ME team, %CITY%</title><script>try{if(sessionStorage.getItem('jdme_s'))document.documentElement.className='rs'}catch(e){}</script><style>
 :root{--navy:#0B1B3F;--ink:#14213D;--mu:#5B6475;--line:#D9DEE7;--bg:#F4F6FA;--red:#B8322A}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .card{width:min(360px,calc(100vw - 32px));background:#fff;border:1px solid var(--line);border-top:4px solid var(--navy);border-radius:10px;padding:26px 26px 22px}
@@ -178,11 +202,11 @@ input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px
 button{margin-top:18px;width:100%;padding:10px;border:0;border-radius:6px;background:var(--navy);color:#fff;font:inherit;font-weight:600;cursor:pointer}button:disabled{opacity:.7;cursor:default}
 .rs .card{visibility:hidden}.err{margin:12px 0 0;color:var(--red);font-size:13px;min-height:1px}.ft{margin:16px 0 0;color:var(--mu);font-size:12px}[hidden]{display:none!important}
 </style></head><body>
-<form class="card" id="gForm" hidden autocomplete="on"><h1>ME team, Mumbai</h1>
+<form class="card" id="gForm" hidden autocomplete="on"><h1>ME team, %CITY%</h1>
 <label for="gU">Login ID</label><input id="gU" name="username" autocomplete="username" required>
 <label for="gP">Password</label><input id="gP" name="password" type="password" autocomplete="current-password" required>
 <p class="err" id="gE" role="alert"></p><button id="gB" type="submit">Sign in</button></form>
-<div class="card" id="gLoad"><h1>ME team, Mumbai</h1><p class="s" style="margin:0">Opening the dashboard…</p></div>
+<div class="card" id="gLoad"><h1>ME team, %CITY%</h1><p class="s" style="margin:0">Opening the dashboard…</p></div>
 <script id="vault" type="application/json">/*VAULT*/</script>
 <script>
 (function(){
@@ -223,22 +247,24 @@ function chacha(key,nonce,data){const s=new Uint32Array(16),x=new Uint32Array(16
  return o;}
 function unlock(u,pw){const r=V.U[u];if(!r)return null;const ku=pbkdf2(new TextEncoder().encode(pw),b64(r.s),V.iter);
  const [f,n,w]=r.k[0],nb=b64(n),wb=b64(w),m=new Uint8Array(nb.length+wb.length);m.set(nb,0);m.set(wb,nb.length);
- const tag=hmac(ku,m).slice(0,16),t=b64(r.t);if(tag.some((v,i)=>v!==t[i]))return null;return {f,kf:chacha(ku,nb,wb)};}
-function page(f,kf){const F=V.F[f];const gz=chacha(kf,b64(F.n),b64(F.c));
- return new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text();}
+ const tag=hmac(ku,m).slice(0,16),t=b64(r.t);if(tag.some((v,i)=>v!==t[i]))return null;return {f,kf:chacha(ku,nb,wb),n:r.n||u};}
+const escN=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function page(f,kf,n){const F=V.F[f];const gz=chacha(kf,b64(F.n),b64(F.c));
+ return new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream('gzip'))).text().then(h=>h.split('__JDME_SIGNED_IN_NAME__').join(escN(n||'')));}
 function show(html){window.__jdmeHTML=html;
  window.jdmeReload=()=>{try{document.body.classList.add('switching');}catch(e){}setTimeout(()=>{document.open();document.write(window.__jdmeHTML);document.close();},40);};
  document.open();document.write(html);document.close();}
 const $=id=>document.getElementById(id);
 function form(){document.documentElement.className='';$('gLoad').hidden=true;$('gForm').hidden=false;try{const l=localStorage.getItem('jdme_user');if(l)$('gU').value=l;}catch(e){}($('gU').value?$('gP'):$('gU')).focus();}
 let ss=null;try{ss=JSON.parse(sessionStorage.getItem('jdme_s')||'null');}catch(e){}
-if(ss&&ss.f&&V.F[ss.f]){setTimeout(()=>page(ss.f,b64(ss.k)).then(show).catch(()=>{try{sessionStorage.removeItem('jdme_s');}catch(e){}form();}),20);}else form();
+if(ss&&ss.f&&V.F[ss.f]){window.__jdmeWho={u:ss.u||'',n:ss.n||(V.U[ss.u]&&V.U[ss.u].n)||ss.u||'',f:ss.f,ev:'reopen'};setTimeout(()=>page(ss.f,b64(ss.k),ss.n||(V.U[ss.u]&&V.U[ss.u].n)||ss.u).then(show).catch(()=>{try{sessionStorage.removeItem('jdme_s');}catch(e){}form();}),20);}else form();
 $('gForm').onsubmit=e=>{e.preventDefault();const u=$('gU').value.trim().toLowerCase(),p=$('gP').value;
  $('gB').disabled=true;$('gB').textContent='Opening…';$('gE').textContent='';
  setTimeout(async()=>{let R=null;try{R=unlock(u,p);}catch(err){R=null;}
   if(!R){$('gB').disabled=false;$('gB').textContent='Sign in';$('gE').textContent='The login ID or password is not right.';$('gP').select();return;}
-  try{localStorage.setItem('jdme_user',u);sessionStorage.setItem('jdme_s',JSON.stringify({u,f:R.f,k:toB64(R.kf)}));}catch(e){}
-  try{show(await page(R.f,R.kf));}catch(err){$('gB').disabled=false;$('gB').textContent='Sign in';$('gE').textContent='This page could not be opened. Please try again.';}},30);};
+  window.__jdmeWho={u,n:R.n,f:R.f,ev:'sign-in'};
+  try{localStorage.setItem('jdme_user',u);sessionStorage.setItem('jdme_s',JSON.stringify({u,f:R.f,k:toB64(R.kf),n:R.n}));}catch(e){}
+  try{show(await page(R.f,R.kf,R.n));}catch(err){$('gB').disabled=false;$('gB').textContent='Sign in';$('gE').textContent='This page could not be opened. Please try again.';}},30);};
 })();
 </script></body></html>
 """

@@ -14,6 +14,7 @@ import kitpaths
 import datetime
 import os
 import pickle
+import json
 
 OUTCOMES = ["Dealclosed", "Follow Up", "Not Interested", "Not Available", "Pending", "Not Visited"]   # 0-2 attended
 
@@ -87,7 +88,8 @@ def prepare(pipe, log=print):
     # 35,107 here vs 44,804 / 35,106 there, the 1 being overnight changes):
     # (1) an appointment whose ME sits in team 'Corporate' or section 'Sales (Training)' is not a JDS-ME appointment;
     # (2) a Sunday appointment is reported on the Saturday before (the MIS has no Sundays). The real date stays in
-    #     appt_date for the record checks that compare times.
+    #     appt_date for the record checks that compare times. A Sunday on the 1st stays in its own month (2026-11-23: the
+    #     sales dashboard's months keep it - Ahmedabad Sunday 1 Nov 2026, 23 appointments, were October +19 / November -23).
     def mis_me(r):
         return (str(r.get("me_team_type_name") or "").strip().lower() != "corporate"
                 and not str(r.get("me_section") or "").strip().lower().startswith("sales (training)"))
@@ -97,7 +99,7 @@ def prepare(pipe, log=print):
     for r in ALL:
         d = r["to_date"]
         r["appt_date"] = d
-        if d.weekday() == 6:
+        if d.weekday() == 6 and d.day > 1:
             r["to_date"] = d - datetime.timedelta(days=1)
             sundays += 1
     log(f"Sales MIS rules: {dropped:,} rows of Corporate / Sales (Training) MEs left out; {sundays:,} Sunday appointments reported on the Saturday before")
@@ -289,10 +291,47 @@ def prepare(pipe, log=print):
         f"customer attended within 30 days: {sum(1 for v in later if v == 1):,}")
 
     # each manager's own manager (when the manager is also an ME here), so a team includes everyone below
-    mg_up = []
-    for code, _name in MGRS:
+    base_up = {}
+    for i, (code, _name) in enumerate(MGRS):
         up = usual_mgr.get(code)
-        mg_up.append(mg_map[up] if up in mg_map and up != code else -1)
+        base_up[i] = mg_map[up] if up in mg_map and up != code else -1
+    # the branch's ME head (2026-11-23, Ahmedabad): pipeline\heads.json names the head and the people whose lines count as
+    # the head's (alias); for a manager the appointments give no manager for (a GM who takes no appointments), the
+    # official reporting lines (tme_lines.json, from the SSO dump) are followed up to a manager already here or the head,
+    # adding the people on the way. Without heads.json (Mumbai) nothing changes.
+    hp_ = os.path.join(pipe, "heads.json"); lp_ = os.path.join(pipe, "tme_lines.json")
+    if os.path.exists(hp_) and os.path.exists(lp_):
+        HC = json.load(open(hp_, encoding="utf-8")); LP = json.load(open(lp_, encoding="utf-8"))["people"]
+        zc = lambda c: str(c or "").strip().lstrip("0")
+        H, AL = zc(HC["me_head"]), {zc(x) for x in HC.get("me_alias", [])}
+        by_z = {zc(c): i for i, (c, _n) in enumerate(MGRS)}
+        if H not in by_z:
+            by_z[H] = mg_ix(H, [H, tidy(LP.get(H, [H])[0])]); base_up[by_z[H]] = -1
+        r1 = lambda c: (LP.get(c) or [None] * 4)[3]
+        def reach(c):
+            path, seen, p = [], {c}, r1(c)
+            while p and p not in seen:
+                seen.add(p)
+                if p == H or p in AL:
+                    return path, by_z[H]
+                if p in by_z:
+                    return path, by_z[p]
+                path.append(p); p = r1(p)
+            return path, None
+        added = linked = 0
+        i = 0
+        while i < len(MGRS):
+            if base_up.get(i, -1) < 0 and zc(MGRS[i][0]) != H:
+                path, top = reach(zc(MGRS[i][0]))
+                if top is not None:
+                    prev = i
+                    for p in path:
+                        k = mg_ix(p, [p, tidy(LP[p][0])]); by_z[p] = k; base_up[prev] = k; prev = k; added += 1
+                    base_up[prev] = top; linked += 1
+            i += 1
+        base_up[by_z[H]] = -1
+        log(f"ME head from heads.json: {MGRS[by_z[H]][1]}; {linked} managers linked up through the official lines, {added} people added on the way")
+    mg_up = [base_up.get(i, -1) for i in range(len(MGRS))]
 
     return {"provisional": provisional, "fy": fy, "end": end, "raw": raw, "rows": R, "not_counted": NC, "MES": MES, "MGRS": MGRS, "TMES": TMES,
             "TEAMS": TEAMS, "recs": recs, "bad": bad, "deal_src": deal_src, "later": later, "mg_up": mg_up,

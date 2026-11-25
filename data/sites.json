@@ -345,9 +345,9 @@
   "apparel-gym-cohorts": {
     "title": "Apparel & Gym Cohorts",
     "user": "priyal",
-    "version": 23,
+    "version": 34,
     "created": "2026-10-16T16:03:38",
-    "updated": "2026-11-19T12:28:05",
+    "updated": "2026-11-24T19:17:49",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -381,9 +381,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 61,
+    "version": 67,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-11-23T10:59:38",
+    "updated": "2026-11-25T10:59:30",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -543,9 +543,9 @@
   "apparel-gsc-analysis": {
     "title": "Apparel Search Analysis",
     "user": "priyal",
-    "version": 43,
+    "version": 49,
     "created": "2026-10-26T14:59:01",
-    "updated": "2026-11-19T12:28:10",
+    "updated": "2026-11-24T19:17:53",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -687,9 +687,9 @@
   "apparel-market-trend": {
     "title": "Apparel Market Trend",
     "user": "priyal",
-    "version": 12,
+    "version": 18,
     "created": "2026-11-04T11:07:44",
-    "updated": "2026-11-19T12:28:17",
+    "updated": "2026-11-24T19:17:56",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -705,9 +705,9 @@
   "apparel-city-search-calls": {
     "title": "Apparel City Search & Calls",
     "user": "priyal",
-    "version": 13,
+    "version": 21,
     "created": "2026-11-06T11:22:22",
-    "updated": "2026-11-19T12:28:15",
+    "updated": "2026-11-25T11:43:41",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -723,9 +723,9 @@
   "apparel-gym-hub": {
     "title": "Apparel & Gym Dashboards",
     "user": "priyal",
-    "version": 5,
+    "version": 13,
     "created": "2026-11-06T14:34:21",
-    "updated": "2026-11-19T12:28:03",
+    "updated": "2026-11-24T19:17:58",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -810,24 +810,6 @@
       "legacy_id": ""
     }
   },
-  "jaipur-tenure-split": {
-    "title": "jaipur tenure split",
-    "user": "sarvesh",
-    "version": 10,
-    "created": "2026-11-13T17:15:05",
-    "updated": "2026-11-16T18:16:45",
-    "entry": "index.html",
-    "hub": {
-      "show": false,
-      "scope": "general",
-      "reviewed": false,
-      "category": "funnel",
-      "branch": "",
-      "tags": [],
-      "title": "",
-      "legacy_id": ""
-    }
-  },
   "investor-deck-research": {
     "title": "Investor Deck Research",
     "user": "priyal",
@@ -885,9 +867,9 @@
   "gym-survey-summary": {
     "title": "Gym Survey Calls",
     "user": "priyal",
-    "version": 4,
+    "version": 15,
     "created": "2026-11-19T12:28:01",
-    "updated": "2026-11-23T10:43:41",
+    "updated": "2026-11-25T11:43:42",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -912,6 +894,78 @@
       "scope": "all",
       "reviewed": false,
       "category": "perf",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "ahmedabad-me-team-performance": {
+    "title": "Ahmedabad ME Team Performance",
+    "user": "sarvesh",
+    "version": 1,
+    "created": "2026-11-23T12:50:46",
+    "updated": "2026-11-23T12:50:46",
+    "entry": "index.html",
+    "hub": {
+      "show": true,
+      "scope": "all",
+      "reviewed": false,
+      "category": "perf",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "reseller-channel-growth-strategy": {
+    "title": "Reseller Channel Growth Strategy",
+    "user": "priyal",
+    "version": 24,
+    "created": "2026-11-24T11:06:42",
+    "updated": "2026-11-25T11:43:43",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "brand-health-kpis": {
+    "title": "Justdial Brand Health",
+    "user": "priyal",
+    "version": 15,
+    "created": "2026-11-24T15:47:24",
+    "updated": "2026-11-25T11:46:24",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "brand-health-draft": {
+    "title": "Justdial Brand Health (draft)",
+    "user": "priyal",
+    "version": 8,
+    "created": "2026-11-24T17:06:34",
+    "updated": "2026-11-25T11:43:44",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
       "branch": "",
       "tags": [],
       "title": "",

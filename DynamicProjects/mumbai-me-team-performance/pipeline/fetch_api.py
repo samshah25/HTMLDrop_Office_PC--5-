@@ -38,6 +38,10 @@ CACHE = kitpaths.CACHE
 OUT = os.environ.get("ME_API_OUT") or os.path.join(CACHE, "api_rows.pkl")   # ME_API_OUT: back-tests write elsewhere
 API = "http://192.168.8.121:8082/jdboxNode/bformsubmit/fetchAllocContract"
 PARTITIONS = ["mumbai", "remote", "delhi", "bangalore", "pune", "ahmedabad", "chennai", "hyderabad", "kolkata"]
+# the branch (2026-11-23): its own partition first, then every other one; city names compared without case
+CITY = str(pickle.load(open(os.path.join(CACHE, "raw.pkl"), "rb"))["city"]).strip().lower() if os.path.exists(os.path.join(CACHE, "raw.pkl")) else "mumbai"
+CITY_NAME = CITY.title()
+PARTS = [CITY] + [p for p in PARTITIONS if p != CITY]
 FIELDS = ["contractCode", "empcode", "allocationType", "allocationTime", "actionTime", "cancel_flag", "cancelledAt",
           "dispositon_type", "diposition_date", "parentcode", "team_type", "compname", "mename", "tmename", "sub_disp_val"]
 OUTCOME = {36: ("Follow Up", "Follow Up"), 33: ("Not Interested", "Not Interested"), 32: ("Not Available", "Not Available (Fixed)"),
@@ -146,8 +150,8 @@ def main():
     win = (first.replace(day=1) - datetime.timedelta(days=20)).isoformat() + " 00:00:00"
     proj = {"$project": {"_id": 0, **{f: 1 for f in FIELDS}}}
     t0 = time.time()
-    recs = api([{"$match": {"allocationTime": {"$gte": win, "$lt": CUT}}}, proj], "mumbai")
-    log(f"  mumbai partition: {len(recs):,} records since {win[:10]} ({time.time() - t0:.0f}s)")
+    recs = api([{"$match": {"allocationTime": {"$gte": win, "$lt": CUT}}}, proj], CITY)
+    log(f"  {CITY} partition: {len(recs):,} records since {win[:10]} ({time.time() - t0:.0f}s)")
 
     # reference data from the table: names, managers, sections of MEs and TMEs (their latest row)
     C = raw["cols"]
@@ -159,7 +163,7 @@ def main():
 
     # other city partitions: appointments for these days by any TME; kept only when the TME's HR city is Mumbai (below)
     other = []
-    for city in PARTITIONS[1:]:
+    for city in PARTS[1:]:
         o = api([{"$match": {"allocationType": 25, "allocationTime": {"$gte": win, "$lt": CUT},
                              "actionTime": {"$gte": first.replace(day=1).isoformat() + " 00:00:00"}}}, proj], city)
         other.append((city, o))
@@ -186,7 +190,7 @@ def main():
     for table in ("db_paidcontracts.tbl_30_day_rolling_dealdump_data", "db_paidcontracts.daily_deals_closed_dump"):
         try:
             cur.execute(f"""SELECT dealclosed_date, parentid, version, dc_genio, TRIM(IFNULL(me,'')), TRIM(IFNULL(tme,'')), jda_flag
-                            FROM {table} WHERE final_datacity = 'Mumbai' AND dealclosed_date BETWEEN %s AND %s AND dc_genio > 0""", (first, last))
+                            FROM {table} WHERE final_datacity = %s AND dealclosed_date BETWEEN %s AND %s AND dc_genio > 0""", (CITY_NAME, first, last))
             cur2 = c.cursor(); cur2.execute(f"SELECT MAX(dealclosed_date) FROM {table}"); mx = cur2.fetchone()[0]
             deals_to = max(deals_to or mx, mx) if mx else deals_to
             for d, pid, ver, dc, me, tme, jf in cur.fetchall():
@@ -196,15 +200,15 @@ def main():
         except pymysql.MySQLError as e:
             log(f"  {table} could not be read ({e}); deals from the other table only")
     c.close()
-    tme_mumbai = lambda p: bool(p) and (hr.get(p) or ("",))[0] == "Mumbai"
+    tme_mumbai = lambda p: bool(p) and (hr.get(p) or ("",))[0].lower() == CITY   # a TME of this branch
     keep_other = []
     for city, o in other:
         k = [a for a in o if tme_mumbai(norm(a.get("parentcode")))]
         keep_other += k
-        if k: log(f"  {city}: {len(k):,} appointments by Mumbai TMEs")
+        if k: log(f"  {city}: {len(k):,} appointments by {CITY_NAME} TMEs")
     if keep_other:   # their outcomes and refixes
         pids = sorted({a["contractCode"] for a in keep_other})
-        for city in PARTITIONS[1:]:
+        for city in PARTS[1:]:
             more = api([{"$match": {"contractCode": {"$in": pids}, "allocationTime": {"$gte": win, "$lt": CUT}}}, proj], city)
             recs += more
 
@@ -310,19 +314,19 @@ def main():
 
         def me_mumbai(me, day):
             mrow = monthly.get((me, day.year, day.month))
-            return (mrow[0] if mrow else (hr.get(me) or ("",))[0]) == "Mumbai"
+            return (mrow[0] if mrow else (hr.get(me) or ("",))[0]).lower() == CITY
         # a Mumbai ME's Dealclosed can sit in another city's partition when the business has no Mumbai TME appointment
         # (15 Oct 2026: 3 in "bangalore"). 29 Sep - 15 Oct: 21 of 27 such records had a table row that day, about the
         # same as the "mumbai" ones without a TME appointment, so they are taken the same way.
         extra = 0
-        for city in PARTITIONS[1:]:
+        for city in PARTS[1:]:
             for a in api([{"$match": {"allocationType": 103, "allocationTime": {"$gte": min(no_deals) + " 00:00:00", "$lt": CUT}}}, proj], city):
                 me, day = norm(a["empcode"]), a["allocationTime"][:10]
                 k = (a["contractCode"], a["empcode"], a["allocationType"], a["allocationTime"])
                 if day in no_deals and k not in seen_r and me_counted(me, D(day)) and me_mumbai(me, D(day)):
                     seen_r.add(k); BY[(a["contractCode"], me)].append(a); extra += 1
         if extra:
-            log(f"  {extra} Dealclosed records of Mumbai MEs found in other cities' partitions")
+            log(f"  {extra} Dealclosed records of {CITY_NAME} MEs found in other cities' partitions")
         for (pid, me), v in BY.items():
             mine25 = [a for a in v if a["allocationType"] == 25]
             for a in v:
@@ -362,7 +366,7 @@ def main():
                "given_count": int(bool(x["alloc"]) and x["tme"] != x["me"]), "tme_section": ti.get("tme_section") or "",
                "allocationtime": dt(x["alloc"]), "actiontime": dt(x["slot"]), "allocationType": x["atype"], "entry_date": None,
                "given_date": dt(x["slot"]), "attended_date": dt(x["dtime"]) if att else None,
-               "dealclosed_date": dt(x["dtime"]) if x["final"] == "Dealclosed" else None, "data_city": "mumbai",
+               "dealclosed_date": dt(x["dtime"]) if x["final"] == "Dealclosed" else None, "data_city": CITY,
                "sub_disposition_value": SUB.get(str(x["sub"] or "")), "me_team_type_name": mi.get("me_team_type_name") or "BDE",
                "jda_flag": 0}
         rows.append(tuple(rec.get(k) for k in C))

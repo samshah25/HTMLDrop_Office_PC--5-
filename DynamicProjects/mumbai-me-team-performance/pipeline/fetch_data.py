@@ -16,7 +16,7 @@ import pymysql
 PIPE = os.path.dirname(os.path.abspath(__file__))
 import kitpaths   # private files: outside the kit folder in the shared kit (6 Nov 2026)
 CACHE = kitpaths.CACHE
-CITY = os.environ.get("ME_CITY", "")
+CITY = os.environ.get("ME_CITY", "") or (kitpaths.CITY if os.path.isfile(os.path.join(kitpaths.PIPE, "city.txt")) else "")   # pipeline\city.txt first (2026-11-23)
 if not CITY:
     try:
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

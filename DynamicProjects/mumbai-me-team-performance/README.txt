@@ -96,3 +96,18 @@ that month; connected = call_trunk_duration > 0 and one of the agreed call end t
 
 The page shows internal employee data. environment.py holds passwords: keep both private, and do not put this kit
 or environment.py in a shared or public folder.
+
+
+Usage recorder (23 Nov 2026): who opens the dashboard
+-----------------------------------------------------
+usage_recorder.py notes who signs in, when, for how long and which buttons / tabs / lists they use (labels only, never
+typed text). The page sends the notes to this PC on port 8170; they are kept in C:\ProgramData\ME_dashboard_private\usage\
+(never in this folder). Viewers see nothing different, and the dashboard works the same if the recorder is off.
+One-time setup on the PC that hosts the dashboard:
+  1. Unzip over the old folder and run  python main.py  (the sign-in page then carries the notes; the page in this zip
+     already does).
+  2. Run  python usage_recorder.py --install   - it starts now and at every Windows sign-in (Startup folder).
+  3. Allow port 8170 in Windows Firewall: click Allow if Windows asks, or as administrator:
+       netsh advfirewall firewall add rule name="JD dashboard usage recorder" dir=in action=allow protocol=TCP localport=8170
+  Check:  python usage_recorder.py --status      Remove:  python usage_recorder.py --uninstall
+The usage page (http://<this PC>:8170/usage) needs a key that only the dashboard owner has.

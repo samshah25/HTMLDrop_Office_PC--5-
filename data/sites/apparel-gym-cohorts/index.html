@@ -103,6 +103,32 @@ h2::before{content:"";width:8px;height:18px;border-radius:3px;background:linear-
 /* tier panels */
 .tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 @media (max-width:860px){.tiers{grid-template-columns:1fr}}
+/* one-chart comparison (24 Nov 2026): branded bar overlaps the non-branded bar, both = % of their own group */
+.cmp{padding:16px 18px}
+.cmp .ph{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-bottom:6px}
+.cmp .ph .key{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+.cmp .ph .key .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.cmp .ph .key small{font-weight:400;color:var(--muted)}
+.cmp .ph .linkbtn{margin-left:auto}
+.cr{display:grid;grid-template-columns:72px minmax(0,1fr) 200px;gap:14px;align-items:center;padding:9px 6px;margin:0 -6px;border-radius:10px}
+.cr:hover{background:var(--surface-2)}
+.cr .tl{font-weight:700;font-size:13px}
+.ct{position:relative;height:30px;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),var(--grid) calc(25% - 1px) 25%)}
+.cb{position:absolute;left:0;cursor:pointer;border-radius:0 6px 6px 0;min-width:2px;outline-offset:2px}
+.cb.nb{top:0;height:30px;background:var(--nochain)}
+.cb.br{top:9px;height:12px;background:var(--chain);box-shadow:0 0 0 2px #fff}
+.sb{position:absolute;left:0;top:0;height:30px;display:flex;gap:2px;border-radius:0 6px 6px 0;overflow:hidden;min-width:2px}
+.sb .sg{display:block;height:100%;cursor:pointer;outline-offset:-2px} .sb .sg:hover{filter:brightness(.9)} .sb .sg:focus-visible{outline:2px solid var(--ink)}
+.cv small{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11.5px;color:var(--muted)} .cv small span{gap:5px} .cv small .dot{width:7px;height:7px}
+.cb:hover{filter:brightness(.9)} .cb:focus-visible{outline:2px solid var(--ink)}
+.cv{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--ink-2)}
+.cv span{display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.cv b{color:var(--ink);font-weight:700;min-width:42px;display:inline-block}
+.cv .dot{margin-top:0;width:8px;height:8px}
+.cax{display:grid;grid-template-columns:72px minmax(0,1fr) 200px;gap:14px;font-size:11px;color:var(--muted);padding:2px 0 0}
+.cax .sc{display:flex;justify-content:space-between}
+@media (max-width:700px){.cr,.cax{grid-template-columns:52px minmax(0,1fr) 120px;gap:8px}}
+table.t th.grp{text-align:center;border-bottom:2px solid var(--gc)}
 .panel{padding:16px 18px;background:linear-gradient(180deg,color-mix(in oklab,var(--g) 7%,#fff),#fff 40%);border-color:color-mix(in oklab,var(--g) 20%,#fff)}
 .panel .ph{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .panel .ph .t{font-weight:700}
@@ -348,20 +374,14 @@ table.mx .rs::after{content:"";position:absolute;left:-4px;right:-4px;top:-3px;h
 
   <section>
     <h2>By city tier</h2>
-    <p class="h2sub">Each group has its own scale, because branded (chain outlet) docids are a small share of the total. Bar segments show the paid flag. Tiers come from <code>cities.xlsx</code> (Search Group); 51+ includes cities not in the sheet. <button class="linkbtn" data-open="cities">See the city list</button></p>
-    <div class="tiers">
-      <div class="card panel" id="tp1" style="--g:var(--chain)"></div>
-      <div class="card panel" id="tp0" style="--g:var(--nochain)"></div>
-    </div>
+    <p class="h2sub">% of all docids in view: each bar is one tier, split into non-branded (orange) and branded (blue). Hover for counts and paid flag; click a bar to open that cohort. Tiers come from <code>cities.xlsx</code> (Search Group); 51+ includes cities not in the sheet. <button class="linkbtn" data-open="cities">See the city list</button></p>
+    <div class="card cmp" id="tpc"></div>
   </section>
 
   <section>
     <h2>By original date</h2>
     <p class="h2sub" id="age-sub">Listing age from <code>original_date</code>, counted back from the snapshot date. Bar segments show the paid flag.</p>
-    <div class="tiers">
-      <div class="card panel" id="ap1" style="--g:var(--chain)"></div>
-      <div class="card panel" id="ap0" style="--g:var(--nochain)"></div>
-    </div>
+    <div class="card cmp" id="apc"></div>
   </section>
 
   <section>
@@ -497,8 +517,7 @@ function render() {
   document.getElementById('hero-split').innerHTML = `<span style="width:${Math.max(pct(c1, total), .6)}%;background:var(--chain)"></span><span style="flex:1;background:var(--nochain)"></span>`;
   document.getElementById('hero-legend').innerHTML = `<span class="key"><i class="sw" style="background:var(--chain)"></i>Branded ${pf(c1, total)}</span><span class="key"><i class="sw" style="background:var(--nochain)"></i>Non-branded ${pf(c0, total)}</span>`;
   for (const v of [1, 0]) groupCard(v, B.filter(r => r[C.chain] === v), total);
-  for (const v of [1, 0]) dimPanel('tp' + v, v, B.filter(r => r[C.chain] === v), 'tier');
-  for (const v of [1, 0]) dimPanel('ap' + v, v, B.filter(r => r[C.chain] === v), 'age');
+  cmpPanel('tpc', B, 'tier'); cmpPanel('apc', B, 'age');   // one chart each (user, 24 Nov 2026)
   renderBuilder(D); renderMatrix(D, B);
 }
 
@@ -510,10 +529,47 @@ function groupCard(v, rs, total) {
   el.innerHTML = `<div class="head"><span class="ico">${ICON[v]}</span><span class="name">${BRL(v)}</span><span class="cnt">${fmt(n)}</span></div>
     <div class="share">${pf(n, total)} of ${SCOPE[st.scope]} · split by paid flag</div>` +
     [0, 1, 2].map(k => { const x = p.get(k) || 0; return `<div class="prow" tabindex="0" role="button" data-cohort='${JSON.stringify({ chain: v, paid: k })}'
-      data-tip="<b>${fmt(x)}</b> docids · ${PAID[k][0]} (${PAID[k][1]})<br>${pf(x, n)} of ${BR(v).toLowerCase()} docids">
+      data-tip="<b>${fmt(x)}</b> docids · ${PAID[k][0]} (${PAID[k][1]})<br>${pf(x, total)} of all ${fmt(total)} ${st.page} docids · ${pf(x, n)} of ${BR(v).toLowerCase()} docids">
       <span class="pl"><i class="dot" style="background:${PCOL[k]}"></i><span>${PAID[k][0]}<small>${PAID[k][1]}</small></span></span><span class="track"><i style="width:${x ? Math.max(pct(x, mx), 1) : 0}%;background:${PCOL[k]}"></i></span>
-      <span class="pv num"><b>${fmt(x)}</b> <span class="muted">${pf(x, n)}</span></span></div>`; }).join('') +
-    `<div class="hint">Bars are scaled within this card.</div>`;
+      <span class="pv num"><b>${fmt(x)}</b> <span class="muted">${pf(x, total)}</span></span></div>`; }).join('') +
+    `<div class="hint">% = of all ${fmt(total)} ${st.page} docids. Bars are scaled within this card.</div>`;   // user, 24 Nov 2026: % on total gym docids
+}
+
+// ONE chart for both groups (user, 24 Nov 2026: 'there should be 1 graph'), and every % on the TOTAL docids in view
+// (user, 24 Nov 2026: 'the % and everything should be calculated on total gym docid'): one stacked bar per tier / age =
+// non-branded + branded = the tier's docids; bar length = tier's share of all docids. Paid flag in the tooltip + table.
+function cmpPanel(id, B, dk) {
+  const P = PANEL[dk], V = P.vals(), T = sum(B);
+  const G = [0, 1].map(v => { const rs = B.filter(r => r[C.chain] === v);
+    return { v, n: sum(rs), t: by(rs, r => r[C[dk]]), tp: by(rs, r => r[C[dk]] + '|' + r[C.paid]), col: v ? 'var(--chain)' : 'var(--nochain)' }; });
+  const x = (g, k) => g.t.get(k) || 0, tk = k => G.reduce((a, g) => a + x(g, k), 0);
+  const mx = Math.max(.1, ...V.map(k => pct(tk(k), T)));
+  const top = Math.min(100, Math.ceil(mx / 10) * 10);                 // axis end, rounded up to 10%
+  const coh = (g, k) => JSON.stringify(g ? { chain: g.v, [dk]: k } : { [dk]: k });
+  const all = `${fmt(T)} ${DATA.sales_groups[st.page] === undefined ? '' : (st.page === 'gym' ? 'gym ' : 'apparel ')}docids`;
+  const tip = (g, k) => `<b>${BR(g.v)}</b> · ${P.tip(k)}<br><b>${fmt(x(g, k))}</b> docids = ${pf(x(g, k), T)} of all ${all}<br>` +
+    [0, 1, 2].map(p => { const y = g.tp.get(k + '|' + p) || 0; return `${PAID[p][0]} ${fmt(y)} (${pf(y, T)})`; }).join(' · ');
+  const el = document.getElementById(id);
+  let body;
+  if (tableMode[id]) {
+    const sub = '<th>Docids</th><th>% of all</th><th>Paid 0</th><th>Paid 1</th><th>Paid 2</th>';
+    const cells = (g, k) => `<td>${fmt(x(g, k))}</td><td>${pf(x(g, k), T)}</td>` + [0, 1, 2].map(p => `<td>${fmt(g.tp.get(k + '|' + p) || 0)}</td>`).join('');
+    const tot = g => `<td><b>${fmt(g.n)}</b></td><td><b>${pf(g.n, T)}</b></td>` + [0, 1, 2].map(p => `<td><b>${fmt(V.reduce((a, k) => a + (g.tp.get(k + '|' + p) || 0), 0))}</b></td>`).join('');
+    const GG = [G[1], G[0]];
+    body = `<div class="scroll"><table class="t num"><thead><tr><th></th>${GG.map(g => `<th colspan="5" class="grp" style="--gc:${g.col}">${BR(g.v)}</th>`).join('')}<th colspan="2" class="grp" style="--gc:var(--ink-2)">All</th></tr>` +
+      `<tr><th>${P.head}</th>${sub}${sub}<th>Docids</th><th>% of all</th></tr></thead><tbody>` +
+      V.map(k => `<tr><td>${P.name(k)}</td>${GG.map(g => cells(g, k)).join('')}<td><b>${fmt(tk(k))}</b></td><td><b>${pf(tk(k), T)}</b></td></tr>`).join('') +
+      `<tr><td><b>Total</b></td>${GG.map(tot).join('')}<td><b>${fmt(T)}</b></td><td><b>100%</b></td></tr></tbody></table></div>`;
+  } else {
+    body = V.map(k => { const n = tk(k), w = n ? Math.max(pct(n, T) / top * 100, .6) : 0;
+      const seg = G.map(g => x(g, k) ? `<span class="sg" style="flex:${x(g, k)} 1 0;min-width:${g.v ? 4 : 0}px;background:${g.col}" tabindex="0" role="button" data-cohort='${coh(g, k)}' data-tip="${tip(g, k)}" aria-label="${BR(g.v)} ${P.short(k)}: ${pf(x(g, k), T)} of all"></span>` : '').join('');
+      return `<div class="cr"><span class="tl">${P.short(k)}</span><span class="ct"><span class="sb" style="width:${w}%">${seg}</span></span>` +
+        `<span class="cv num"><span data-cohort='${coh(null, k)}' data-tip="<b>${fmt(n)}</b> docids · ${P.tip(k)}<br>${pf(n, T)} of all ${all}"><b>${pf(n, T)}</b>${fmt(n)} docids</span>` +
+        `<small>${[G[1], G[0]].map(g => `<span data-cohort='${coh(g, k)}' data-tip="${tip(g, k)}"><i class="dot" style="background:${g.col}"></i>${pf(x(g, k), T)} · ${fmt(x(g, k))}</span>`).join('')}</small></span></div>`; }).join('') +
+      `<div class="cax"><span></span><span class="sc"><span>0%</span><span>${top / 2}%</span><span>${top}%</span></span><span>% of all ${all}</span></div>`;
+  }
+  el.innerHTML = `<div class="ph">` + [G[1], G[0]].map(g => `<span class="key"><i class="sw" style="background:${g.col}"></i>${BR(g.v)} <small>${g.v ? 'chain outlet' : 'no chain outlet'} · ${fmt(g.n)} docids (${pf(g.n, T)})</small></span>`).join('') +
+    `<button class="linkbtn" data-tbl="${id}">${tableMode[id] ? 'Show chart' : 'Show table'}</button></div>` + body;
 }
 
 // one panel = one branded group split by city tier ('tier') or by original date ('age'), bars segmented by paid flag
@@ -879,7 +935,7 @@ async function downloadCohort(btn) {
 function closeDrawer() { document.getElementById('drawer').classList.remove('on'); document.getElementById('drawer').setAttribute('aria-hidden', 'true'); document.getElementById('scrim').classList.remove('on'); }
 
 document.getElementById('asof').textContent = `JD b2b TAM · snapshot ${DATA.snapshot}`;
-document.getElementById('age-sub').innerHTML = `Listing age from <code>original_date</code>: 0–7 years = listed after ${DATA.age_cutoff}, 7+ years = on or before it (snapshot ${DATA.snapshot}). Bar segments show the paid flag.`;
+document.getElementById('age-sub').innerHTML = `Listing age from <code>original_date</code>: 0–7 years = listed after ${DATA.age_cutoff}, 7+ years = on or before it (snapshot ${DATA.snapshot}). Same chart: % of all docids, each bar split into non-branded and branded; hover for the paid flag.`;
 document.getElementById('foot').innerHTML = `<b>Source &amp; definitions.</b> <code>db_paidcontracts.tbl_b2b_panindia_data</code> via the b2b master (snapshot ${DATA.snapshot}), TAM filter <code>${DATA.filter}</code>.
   Sales group from the master's <code>sales_group.parquet</code> (3Cr table → tbl_sales_group_tagged → hot category mapping).
   <b>Branded</b> = chain outlet: <code>chain_outlet_category</code> holds a chain code; <code>0</code> or empty = non-branded.

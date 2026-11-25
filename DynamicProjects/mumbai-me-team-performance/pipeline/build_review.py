@@ -247,7 +247,7 @@ def assemble(blob):
             fonts += (f"@font-face{{font-family:'{mm.group(1)}';font-style:normal;font-weight:{weight};font-display:swap;"
                       f"src:url(data:font/woff2;base64,{base64.b64encode(open(os.path.join(FONTS, f), 'rb').read()).decode()}) format('woff2');}}")
     logo = "data:image/png;base64," + base64.b64encode(open(LOGO, "rb").read()).decode()
-    page = shell.replace("/*FONTS*/", fonts).replace("/*CSS*/", css).replace("/*LOGO*/", logo).replace("/*DATA*/", blob).replace("/*JS*/", js)
+    page = shell.replace("/*CITY*/", kitpaths.CITY_NAME).replace("/*FONTS*/", fonts).replace("/*CSS*/", css).replace("/*LOGO*/", logo).replace("/*DATA*/", blob).replace("/*JS*/", js)
     return page.replace("<head>", f'<head>\n<meta name="jd-data-format" content="{DATA_FORMAT}">', 1)
 
 

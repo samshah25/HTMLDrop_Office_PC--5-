@@ -122,7 +122,7 @@ def main():
         for a, d, n, c in cur.fetchall():
             if not a or not d:
                 continue
-            if d.weekday() == 6:   # Sunday -> the Saturday before
+            if d.weekday() == 6 and d.day > 1:   # Sunday -> the Saturday before (a Sunday on the 1st stays in its month, as the appointments)
                 d -= datetime.timedelta(days=1)
             got.append((str(a), d, int(n), int(c or 0)))
         pickle.dump(got, open(cp + ".tmp", "wb")); os.replace(cp + ".tmp", cp)

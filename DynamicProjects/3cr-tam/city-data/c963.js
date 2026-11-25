@@ -1,1 +1,1 @@
-window.__CITY_DATA(963,{"Apparels & Clothing - Manufactures, Distributors & Wholesalers":"ilxBBC","Mobile Phone Dealers":"5l4BBC","Ngos":"xulBBCwpCBC","Painting Contractors":"2w6BBC","Share Brokers":"xulBDCC","Tyre Dealers":"213BBC"});
+window.__CITY_DATA(963,{"Apparels & Clothing - Manufactures, Distributors & Wholesalers":"ilxBBC","Fertilizer Dealers":"861BBC","Mobile Phone Dealers":"5l4BBC9qCBC","Ngos":"xulBBCwpCBC","Painting Contractors":"2w6BBC","Share Brokers":"xulBDCC","Tyre Dealers":"213BBC"});

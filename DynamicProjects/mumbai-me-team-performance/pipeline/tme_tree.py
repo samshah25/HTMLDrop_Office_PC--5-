@@ -41,6 +41,13 @@ def build(P, pipe, log):
         return None
     L = json.load(open(path, encoding="utf-8"))
     people = L["people"]   # code -> [name, designation, status, reporting-1 code, joined]
+    # pipeline\heads.json (2026-11-23, Ahmedabad): the branch's TME head and the people whose lines count as the head's
+    hp = os.path.join(pipe, "heads.json")
+    HC = json.load(open(hp, encoding="utf-8")) if os.path.exists(hp) else {}
+    T_HEAD = code(HC.get("tme_head", "")); T_ALIAS = {code(x) for x in HC.get("tme_alias", [])}
+    def r1(c):   # a person's direct manager in the lines; an alias of the head counts as the head
+        u = people[c][3] if c in people else ""
+        return T_HEAD if T_HEAD and u in T_ALIAS else u
     recs, TMES, DL, end = P["recs"], P["TMES"], P["deals"], P["end"]
     fy = P["fy"]
     D_end = (end - fy).days
@@ -84,7 +91,7 @@ def build(P, pipe, log):
     def chain(c):
         out, seen = [], set()
         while c and c in people and c not in seen:
-            seen.add(c); out.append(c); c = people[c][3]
+            seen.add(c); out.append(c); c = r1(c)
         return out
     cover, recent = Counter(), 0
     for x, k in zip(recs, keys):
@@ -94,8 +101,11 @@ def build(P, pipe, log):
         for c in chain(k):
             cover[c] += 1
     cands = [c for c, n in cover.items() if n >= COVER * recent]
-    head = min(cands, key=lambda c: (cover[c], c)) if cands else None
-    above = set(chain(people[head][3])) if head and people[head][3] else set()
+    # the lowest person covering COVER: least cover, then the longest line up (2026-11-23: on a tie the CEO came before the CRO)
+    head = min(cands, key=lambda c: (cover[c], -len(chain(c)), c)) if cands else None
+    if T_HEAD and T_HEAD in people:
+        head = T_HEAD
+    above = set(chain(r1(head))) if head and r1(head) else set()
 
     nodes, ix = [], {}
     def node(k):
@@ -118,7 +128,7 @@ def build(P, pipe, log):
         atl.append(i)
     up = []
     for c, _nm in nodes:
-        u = people[c][3] if c and c in people else ""
+        u = r1(c) if c and c in people else ""
         up.append(ix[u] if u and u in ix and u not in above and c != head else -1)
     root = ix.get(head, -1)
 

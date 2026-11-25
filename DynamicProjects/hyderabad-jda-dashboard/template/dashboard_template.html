@@ -168,6 +168,12 @@ select.plain { border: 1px solid var(--line); border-radius: 12px; background: v
 .chip.down { background: var(--crit-bg); color: var(--crit-ink); }
 .chip.flat { background: var(--surface-2); color: var(--ink-3); font-weight: 600; }
 .tile.click { cursor: pointer; width: 100%; }
+.act-tiles { grid-template-columns: repeat(7, minmax(0, 1fr)); }   /* one row, or 4 + 3, never a lone tile */
+@media (max-width: 1360px) { .act-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .act-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.act-tiles .t-top { align-items: flex-start; }
+.act-tiles .tile .lbl { min-height: 2.6em; }
+.act-tiles .tile .sub { flex-wrap: nowrap; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 .tile.sev-crit { --h: #ef4444; } .tile.sev-serious { --h: #f97316; } .tile.sev-warn { --h: #f59e0b; } .tile.sev-good { --h: #10b981; }
 .tile.click.sel { background: linear-gradient(135deg, var(--h), color-mix(in srgb, var(--h) 70%, #7c3aed)); border-color: transparent; color: #fff; box-shadow: 0 14px 30px -14px var(--h); }
 .tile.click.sel .lbl, .tile.click.sel .sub, .tile.click.sel .val small { color: rgba(255,255,255,.88); }
@@ -911,7 +917,8 @@ function helpMap() {
     'Absent 3+ days in a row': ['Absent 3+ days in a row', 'Not seen in the field for 3 or more working days in a row. Call them today.', 'No presentation on each of the last 3+ working days, up to the chosen day. Sundays and holidays are skipped. Approved leave also shows here (no leave data yet).'],
     'Absent 2 days': ['Absent 2 days', 'Missed the last 2 working days. Check before it becomes 3.', 'No presentation on exactly the last 2 working days.'],
     'On-and-off absence': ['On-and-off absence', 'Keeps skipping days now and then, without one long gap.', 'Absent on 3 or more of the last 10 working days, but not 2+ days in a row right now.'],
-    'Zero sale for 3 days': ['Zero sale for 3 days', 'Went out but closed nothing in the last 3 working days.', 'Presented on at least 1 of the last 3 working days and no sale closed in those days.'],
+    'Zero sale for 3 days': ['Zero sale for 3 days', 'Went out but closed nothing in the last 3 working days. The % is out of the JDAs who presented in those days.', 'Presented on at least 1 of the last 3 working days and no deal closed in those days.'],
+    'Zero sale for 30 days': ['Zero sale for 30 days', 'Went out but closed no deal in the last 30 working days. The % is out of the JDAs who presented in those days.', 'Presented on at least 1 of the last 30 working days and no deal closed from the first of those days to today.'],
     [`Under ${T} for 3 days running`]: [`Under ${T} for 3 days running`, `Working, but below target on each of the last 3 days they worked.`, `Under ${T} presentations today and on each of the 2 previous days they worked.`],
     'Back at work today': ['Back at work today', 'Returned today after being away 2+ working days. Shows today\'s output against their usual.', 'Present today, absent on the 2+ working days before. Usual = their average on the 7 days they worked before the absence.'],
     // charts
@@ -1393,12 +1400,22 @@ function pageManagers() {
 }
 
 // ================= PAGE 4: ACTION LIST =================
+function lastSaleDay(r, d) { for (let w = d; w >= 0; w--) if (salesMap[r].get(w)) return D.days[w]; return ''; }
 function actionLists(d) {
-  const L = { abs3: [], abs2: [], inter: [], back: [], zero: [], low: [] };
-  const w10 = lastWork(d, 10), w3 = lastWork(d, 3);
+  const L = { abs3: [], abs2: [], inter: [], back: [], zero: [], zero30: [], low: [], n3: 0, n30: 0, nAct: 0, nPres: 0 };
+  const w10 = lastWork(d, 10), w3 = lastWork(d, 3), w30 = lastWork(d, 30), from30 = w30[w30.length - 1];
   for (const { r, c } of roster(d)) {
     const base = { r, name: REPS[r].name, id: REPS[r].id, mgr: mgrName(c.mgr), area: areaName(c.home), lastDay: c.last ? D.days[c.last.d] : '', ten: tenureText(r, d) };
     const first = startDay[r];
+    L.nAct++; if (c.rec) L.nPres++;
+    if (HAS_SALES) {   // zero sale for 30 days: before the absence checks, so a JDA absent now still counts
+      const worked = w30.filter(w => repDays[r].has(w));
+      if (worked.length) {
+        L.n30++;
+        let sold = 0; for (let w = from30; w <= d; w++) sold += salesMap[r].get(w) || 0;   // a deal on any day in the window clears them
+        if (!sold) L.zero30.push({ ...base, days30: worked.length, pres30: worked.reduce((s, w) => s + repDays[r].get(w).n, 0), lastSale: lastSaleDay(r, d) });
+      }
+    }
     if (!c.rec) {
       const s = absentStreak(r, d);
       if (s >= 3) { L.abs3.push({ ...base, streak: s }); continue; }
@@ -1419,18 +1436,20 @@ function actionLists(d) {
     if (HAS_SALES) {
       const presented = w3.filter(w => repDays[r].has(w)).length;
       const sold = w3.reduce((s, w) => s + (salesMap[r].get(w) || 0), 0);
-      if (presented >= 1 && sold === 0) L.zero.push({ ...base, presented, pres3: w3.reduce((s, w) => s + (repDays[r].get(w)?.n || 0), 0), lastSale: (() => { for (const w of [...WORK].reverse()) if (w <= d && salesMap[r].get(w)) return D.days[w]; return ''; })() });
+      if (presented >= 1) L.n3++;
+      if (presented >= 1 && sold === 0) L.zero.push({ ...base, presented, pres3: w3.reduce((s, w) => s + (repDays[r].get(w)?.n || 0), 0), lastSale: lastSaleDay(r, d) });
     }
   }
   return L;
 }
 const ACTS = [
-  { k: 'abs3', lbl: 'Absent 3+ days in a row', sev: 'crit', ic: 'calx', help: 'No presentation on the last 3 or more working days. Call today.' },
-  { k: 'abs2', lbl: 'Absent 2 days', sev: 'serious', ic: 'cal2', help: 'No presentation on the last 2 working days. Check before it becomes 3.' },
-  { k: 'inter', lbl: 'On-and-off absence', sev: 'warn', ic: 'wave', help: 'Absent on 3 or more of the last 10 working days, but not in one long run.' },
-  { k: 'zero', lbl: 'Zero sale for 3 days', sev: 'crit', ic: 'zero', help: 'Presented on at least one of the last 3 working days but closed no deal in them.' },
-  { k: 'low', lbl: `Under ${TARGET} for 3 days running`, sev: 'warn', ic: 'down', help: `Under ${TARGET} presentations on each of the last 3 days they worked.` },
-  { k: 'back', lbl: 'Back at work today', sev: 'good', ic: 'back', help: 'Presented today after 2 or more absent working days: today\'s output against their usual.' },
+  { k: 'abs3', lbl: 'Absent 3+ days in a row', sev: 'crit', ic: 'calx', base: 'nAct', of: 'active JDAs', help: 'No presentation on the last 3 or more working days. Call today.' },
+  { k: 'abs2', lbl: 'Absent 2 days', sev: 'serious', ic: 'cal2', base: 'nAct', of: 'active JDAs', help: 'No presentation on the last 2 working days. Check before it becomes 3.' },
+  { k: 'inter', lbl: 'On-and-off absence', sev: 'warn', ic: 'wave', base: 'nAct', of: 'active JDAs', help: 'Absent on 3 or more of the last 10 working days, but not in one long run.' },
+  { k: 'zero', lbl: 'Zero sale for 3 days', sev: 'crit', ic: 'zero', sales: true, base: 'n3', of: 'JDAs who worked', help: 'Presented on at least one of the last 3 working days but closed no deal in them.' },
+  { k: 'zero30', lbl: 'Zero sale for 30 days', sev: 'serious', ic: 'zero', sales: true, base: 'n30', of: 'JDAs who worked', help: 'Presented on at least one of the last 30 working days but closed no deal in that time.' },
+  { k: 'low', lbl: `Under ${TARGET} for 3 days running`, sev: 'warn', ic: 'down', base: 'nPres', of: 'present JDAs', help: `Under ${TARGET} presentations on each of the last 3 days they worked.` },
+  { k: 'back', lbl: 'Back at work today', sev: 'good', ic: 'back', base: 'nPres', of: 'present JDAs', help: 'Presented today after 2 or more absent working days: today\'s output against their usual.' },
 ];
 function pageActions() {
   const d = S.day, L = actionLists(d);
@@ -1438,12 +1457,12 @@ function pageActions() {
   let h = hero('actions', urgent ? `${nf(urgent)} JDAs need a call today` : 'All clear today',
     `<b>${nf(L.abs3.length)}</b> absent 3+ days in a row, <b>${nf(L.abs2.length)}</b> absent 2 days, <b>${nf(L.inter.length)}</b> on-and-off. <b>${nf(L.back.length)}</b> came back to work today.`,
     [['Absent 3+', nf(L.abs3.length)], ['Under 5 × 3 days', nf(L.low.length)], ['Back today', nf(L.back.length)]]);
-  h += tiles(ACTS.map(a => a.k === 'zero' && !HAS_SALES
+  h += `<div class="tiles act-tiles">${ACTS.map(a => a.sales && !HAS_SALES
     ? tile({ lbl: a.lbl, val: '—', sub: 'Sales data not available', ic: a.ic, sev: a.sev })
-    : tile({ lbl: a.lbl, val: nf(L[a.k].length), sub: a.sev === 'good' ? 'returned' : 'JDAs', ic: a.ic, sev: a.sev, click: a.k, sel: S.act === a.k })));
+    : tile({ lbl: a.lbl, val: nf(L[a.k].length), unit: L[a.base] ? pct(L[a.k].length / L[a.base]) : '', sub: `of ${nf(L[a.base])} ${a.of}`, ic: a.ic, sev: a.sev, click: a.k, sel: S.act === a.k })).join('')}</div>`;
   const A = ACTS.find(a => a.k === S.act) || ACTS[0];
   h += secTitle(A.lbl, esc(A.help));
-  if (A.k === 'zero' && !HAS_SALES) return h + note('This list needs sales data, which is not available right now.');
+  if (A.sales && !HAS_SALES) return h + note('This list needs sales data, which is not available right now.');
   const common = [...repCols(), { k: 'mgr', label: 'Manager', search: x => x.mgr, wrap: true }, { k: 'area', label: 'Area', search: x => x.area }];
   const tail = [{ k: 'strip', label: 'Last 10 working days', html: x => strip(x.r, d), csv: false }, { k: 'ten', label: 'Tenure', sortv: x => tenureMonths(x.r, d) }];
   const last = { k: 'lastDay', label: 'Last presented', fmt: v => v ? dlabel(v, true) : '—' };
@@ -1453,9 +1472,10 @@ function pageActions() {
     inter: [{ k: 'abs10', label: 'Absent (last 10)', num: true, html: x => `<span class="pill warn">${x.abs10} of ${x.of10}</span>`, csv: x => x.abs10 }],
     back: [{ k: 'gap', label: 'Days away', num: true }, { k: 'n', label: 'Today', num: true, html: x => presCell(x.n), csv: x => x.n }, { k: 'usual', label: 'Usual', num: true, fmt: v => nf(v, 1), title: 'Average before the absence' }, { k: 'vs', label: 'Today vs usual', num: true, sortv: x => x.usual ? x.n / x.usual : null, html: x => x.usual ? `<span class="pill ${x.n >= x.usual ? 'good' : x.n >= x.usual * .6 ? 'warn' : 'crit'}">${Math.round(x.n / x.usual * 100)}%</span>` : '—', csv: x => x.usual ? Math.round(x.n / x.usual * 100) + '%' : '' }],
     zero: [{ k: 'presented', label: 'Days worked (of 3)', num: true }, { k: 'pres3', label: 'Presentations (3 days)', num: true }, { k: 'lastSale', label: 'Last deal', fmt: v => v ? dlabel(v, true) : 'none in data' }],
+    zero30: [{ k: 'days30', label: 'Days worked (of 30)', num: true }, { k: 'pres30', label: 'Presentations (30 days)', num: true }, { k: 'lastSale', label: 'Last deal', fmt: v => v ? dlabel(v, true) : 'none in data' }],
     low: [{ k: 'n', label: 'Today', num: true, html: x => presCell(x.n), csv: x => x.n }, { k: 'avg3', label: '3-day avg', num: true, fmt: v => nf(v, 1) }],
   }[A.k];
-  const sortK = { abs3: 'streak', abs2: 'name', inter: 'abs10', back: 'gap', zero: 'pres3', low: 'avg3' }[A.k];
+  const sortK = { abs3: 'streak', abs2: 'name', inter: 'abs10', back: 'gap', zero: 'pres3', zero30: 'pres30', low: 'avg3' }[A.k];
   h += table('act-' + A.k, [...common, ...specific, ...tail], L[A.k], { sort: sortK, dir: A.k === 'low' || A.k === 'abs2' ? 1 : -1, noun: 'JDAs', title: A.lbl });
   return h;
 }

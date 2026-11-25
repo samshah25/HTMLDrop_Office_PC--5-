@@ -45,9 +45,9 @@ SHARED = os.path.normpath(os.path.join(PIPE, "..", "..", "Kolkata", "pipeline"))
 sys.path.insert(0, PIPE)
 import kitpaths   # where the private files live (shared kit: outside this folder)
 LOG = os.path.join(kitpaths.LOGDIR, "refresh_log.txt")
-SIGNIN_MARK = b"<title>Sign in \xc2\xb7 ME team, Mumbai</title>"
-PLACEHOLDER = ("<!doctype html><html lang='en'><head><meta charset='utf-8'><title>ME team, Mumbai</title></head><body style="
-               "'font:15px/1.5 system-ui,Segoe UI,sans-serif;margin:40px;color:#14213D'><h1 style='font-size:18px'>ME team, Mumbai</h1>"
+SIGNIN_MARK = f"<title>Sign in \u00b7 ME team, {kitpaths.CITY_NAME}</title>".encode("utf-8")
+PLACEHOLDER = (f"<!doctype html><html lang='en'><head><meta charset='utf-8'><title>ME team, {kitpaths.CITY_NAME}</title></head><body style="
+               f"'font:15px/1.5 system-ui,Segoe UI,sans-serif;margin:40px;color:#14213D'><h1 style='font-size:18px'>ME team, {kitpaths.CITY_NAME}</h1>"
                "<p>The dashboard is being updated. Please try again in a few minutes.</p></body></html>")
 
 

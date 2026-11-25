@@ -12,7 +12,7 @@
 <a class="skip" href="#main">Skip to the dashboard</a>
 <div class="topbar" id="topbar">
   <div class="band-top">
-    <a class="brand" href="#" id="home" aria-label="ME team, Mumbai: back to the dashboard"><span class="logo"><img src="/*LOGO*/" alt="Justdial"></span><span class="brand-txt"><span class="brand-name"><span id="brandWho">ME</span> team <span class="city">Mumbai</span><span class="linetag" id="lineTag" hidden></span></span><span class="upd-top" id="updTop"></span></span></a>
+    <a class="brand" href="#" id="home" aria-label="ME team, /*CITY*/: back to the dashboard"><span class="logo"><img src="/*LOGO*/" alt="Justdial"></span><span class="brand-txt"><span class="brand-name"><span class="bn-who"><span id="brandWho">ME</span> team</span><span class="city">/*CITY*/</span><span class="linetag" id="lineTag" hidden></span></span><span class="upd-top" id="updTop"></span></span></a>
     <div class="controls">
       <div class="seg views mode" id="modeSw" role="group" aria-label="People"><button type="button" data-mode="me" title="MEs: the people who took the appointments">ME</button><button type="button" data-mode="tme" class="vtme" title="TMEs: the people who fixed the appointments (the page reloads)">TME</button></div>
       <div class="seg views" id="viewSw" role="group" aria-label="Show"><button type="button" data-view="table">Table</button><button type="button" data-view="team">Overview</button></div>
