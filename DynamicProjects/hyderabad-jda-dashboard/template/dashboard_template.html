@@ -479,6 +479,7 @@ tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
 .gb-val b { display: block; font-size: 13.5px; font-weight: 800; line-height: 1.2; }
 .gb-val small { display: block; font-size: 11px; color: var(--ink-3); font-weight: 600; }
 #tw-cats td:first-child, #tw-cats th:first-child { width: 1%; }
+#tw-cats .tbl-scroll { max-height: none; }
 #tw-cats tbody tr:not(.perf-sub) td button.rep { font-weight: 700; }
 .cat-sub-tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; margin-top: 6px; }
 .cat-sub-tbl th { position: static; background: var(--surface-2); padding: 7px 8px; font-size: 10.5px; cursor: default; }
@@ -1872,11 +1873,11 @@ function pageCategories() {
   let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
     <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
     <h2>Category-wise deals (YoY)</h2>
-    <p>Same-period comparison showing which categories are performing well (good) vs declining (bad). Click any category for its sub-category breakdown.</p></div>
+    <p>All categories in one view, starting with the poorest performers first. Click any category for its sales groups &amp; who secured them.</p></div>
     <div class="h-chips">
-      <div class="hc"><b>${yoyPct == null ? '—' : (yoyPct > 0 ? '+' : '') + nf(yoyPct, 1) + '%'}</b><span>Overall YoY</span><em>${fmtDelta(netDiff)} deals vs ${fyLyLbl}</em></div>
-      <div class="hc"><b>${nf(goodCats.length)}</b><span>Good (growing)</span><em>${topGood[0] ? 'Top: ' + esc(topGood[0].name) : 'None in period'}</em></div>
-      <div class="hc"><b>${nf(badCats.length)}</b><span>Bad (declining)</span><em>${topBad[0] ? 'Lag: ' + esc(topBad[0].name) : 'None in period'}</em></div>
+      <div class="hc"><b>${fmtDeals(totTy)}</b><span>Total deals (${fyTyLbl})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
+      <div class="hc"><b>${fmtDeals(totLy)}</b><span>Total deals (${fyLyLbl})</span><em>Previous year · same dates</em></div>
+      <div class="hc"><b>${yoyPct == null ? '—' : (yoyPct > 0 ? '+' : '') + nf(yoyPct, 1) + '%'}</b><span>YoY change</span><em>${fmtDelta(netDiff)} deals (${nf(badCats.length)} bad · ${nf(goodCats.length)} good)</em></div>
     </div></section>`;
 
   // Controls toolbar
@@ -1899,46 +1900,7 @@ function pageCategories() {
     h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active deal-securing employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} deals secured by these employees.`);
   }
 
-  // Good vs Bad side-by-side cards
-  const rankToggle = `<div class="seg" role="group" aria-label="Rank by">${[['net', 'By net deals Δ'], ['pct', 'By YoY %']].map(([k, l]) => `<button type="button" data-catrank="${k}" aria-pressed="${S.catRank === k}">${l}</button>`).join('')}</div>`;
-  const renderGB = (list, kind) => {
-    const shown = list.slice(0, 7);
-    if (!shown.length) return `<div class="empty">No ${kind === 'good' ? 'growing' : 'declining'} categories in this period.</div>`;
-    const maxV = Math.max(...shown.map(c => S.catRank === 'pct' && isFinite(c.yoy) ? Math.abs(c.yoy * 100) : Math.abs(c.diff)), 1);
-    return `<div class="gb-list">${shown.map(c => {
-      const m = S.catRank === 'pct' && isFinite(c.yoy) ? Math.abs(c.yoy * 100) : Math.abs(c.diff);
-      const w = Math.max(4, Math.min(100, m / maxV * 100));
-      return `<button type="button" class="gb-row" data-cat="${c.ci}" data-tip="${esc('<b>' + c.name + '</b> · click for ' + c.nSub + ' sub-categories<br>' + fyLyLbl + ': ' + fmtDeals(c.ly) + ' deals → ' + fyTyLbl + ': ' + fmtDeals(c.ty) + ' deals<br>YoY: ' + fmtDelta(c.diff) + ' (' + fmtYoy(c.ty, c.ly) + ')')}">
-        <span class="gb-nm"><b>${esc(c.name)}</b><small>${fmtDeals(c.ly)} → ${fmtDeals(c.ty)} deals · ${c.nSub} sub-cat</small></span>
-        <span class="gb-track ${kind}"><i style="width:${w.toFixed(1)}%"></i></span>
-        <span class="gb-val"><b class="${kind === 'good' ? 'ok-t' : 'lo-t'}">${fmtDelta(c.diff)}</b><small>${fmtYoy(c.ty, c.ly)}</small></span>
-      </button>`;
-    }).join('')}</div>`;
-  };
-  h += `<div class="grid2">
-    ${card('Best performing sales groups (Good)', 'Highest YoY gains · click any group to inspect its sub-categories', renderGB(topGood, 'good'), '#10b981', rankToggle)}
-    ${card('Worst performing sales groups (Bad)', 'Steepest YoY drops · click any group to inspect its sub-categories', renderGB(topBad, 'bad'), '#ef4444', `<span class="pill crit">${nf(badCats.length)} declining</span>`)}
-  </div>`;
-
-  // Monthly TY vs LY grouped chart
-  const eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
-  const monItems = fms.map(fm => ({
-    fm,
-    label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
-    full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay} same days)` : ''),
-    ly: mLy.get(fm) || 0,
-    ty: mTy.get(fm) || 0,
-    sel: S.catWin === 'month' && S.catMonth === fm,
-  }));
-  h += `<div style="margin-top:16px">${card(
-    `Monthly JDA deals: ${fyTyLbl} vs ${fyLyLbl} (same dates)`,
-    `Click any month bar to filter the table to that month · * latest month compares 1–${eDay} in both years`,
-    groupedBarChart(monItems, { h: 225, W: 1100, tyLbl: fyTyLbl, lyLbl: fyLyLbl }),
-    '#6366f1',
-    `<div class="legend"><span><i style="background:var(--axis)"></i>${fyLyLbl}</span><span><i style="background:#10b981"></i>${fyTyLbl} (up)</span><span><i style="background:#6366f1"></i>${fyTyLbl} (down)</span></div>`
-  )}</div>`;
-
-  // Category / Who secured (by JDA) interactive table
+  // Category / Who secured (by JDA) unified single-frame table (poorest performing first)
   const cview = hasEmps ? (S.catView || 'category') : 'category';
   const totRow = {
     name: 'Total', verdict: catVerdict(totTy, totLy), ly: totLy, ty: totTy, diff: netDiff,
@@ -1946,9 +1908,9 @@ function pageCategories() {
   };
 
   h += secTitle(
-    cview === 'category' ? 'All categories & sub-categories (YoY)' : 'Who secured deals (by JDA)',
+    cview === 'category' ? `All categories (${fyLyLbl} vs ${fyTyLbl})` : 'Who secured deals (by JDA)',
     cview === 'category'
-      ? 'click a category for sub-categories & who secured · click a sub-category to see who secured it'
+      ? 'sorted poorest performing first · click a category for sales groups & who secured · click ▸ to expand inline'
       : 'every employee who secured deals in this period · click ▸ to see their categories · search by name, Emp ID or category'
   );
 
@@ -1956,20 +1918,20 @@ function pageCategories() {
     const filteredCats = S.catStatus === 'all' ? cats : cats.filter(c => c.verdict === S.catStatus);
     const openSet = S.catOpen || new Set();
     const allOpen = filteredCats.length && filteredCats.every(c => openSet.has(c.ci));
-    const tblSt = tableState['cats'] || (tableState['cats'] = { sort: 'ty', dir: -1, q: '' });
+    const tblSt = tableState['cats'] || (tableState['cats'] = { sort: 'diff', dir: 1, q: '' });
     const q = tblSt.q.trim().toLowerCase();
     const maxShare = Math.max(0.01, ...filteredCats.map(c => c.share));
 
     h += `<div class="mgr-bar">
       ${hasEmps ? `<div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="true">Category view</button><button type="button" data-catview="emp" aria-pressed="false">Who secured (by JDA)</button></div>` : ''}
-      <div class="seg" role="group" aria-label="Filter by YoY status">${[['all', `All (${cats.length})`], ['good', `Good (${cats.filter(c => c.verdict === 'good').length})`], ['flat', `Flat (${cats.filter(c => c.verdict === 'flat').length})`], ['bad', `Bad (${cats.filter(c => c.verdict === 'bad').length})`]].map(([k, l]) => `<button type="button" data-catst="${k}" aria-pressed="${S.catStatus === k}">${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Filter by YoY status">${[['all', `All (${cats.length})`], ['bad', `Bad (${cats.filter(c => c.verdict === 'bad').length})`], ['flat', `Flat (${cats.filter(c => c.verdict === 'flat').length})`], ['good', `Good (${cats.filter(c => c.verdict === 'good').length})`]].map(([k, l]) => `<button type="button" data-catst="${k}" aria-pressed="${S.catStatus === k}">${l}</button>`).join('')}</div>
       <button type="button" class="btn-ghost" data-catall="${allOpen ? 'close' : 'open'}">${allOpen ? 'Collapse all' : 'Expand all sub-categories'}</button>
     </div>`;
 
     const subRows = c => {
       const subMatch = q && !c.name.toLowerCase().includes(q);
       if (!openSet.has(c.ci) && !subMatch) return '';
-      const list = subMatch ? c.subs.filter(x => x.name.toLowerCase().includes(q)) : c.subs;
+      const list = [...(subMatch ? c.subs.filter(x => x.name.toLowerCase().includes(q)) : c.subs)].sort((a, b) => a.diff - b.diff || b.ly - a.ly);
       return list.map(x => `<tr class="perf-sub">
         <td></td>
         <td class="sub-name">${hasEmps ? `<button type="button" class="rep" data-catsub="${c.ci}|${x.si}" title="Click to see who secured deals in ${esc(x.name)}">${esc(x.name)}</button>` : esc(x.name)}</td>
@@ -1988,14 +1950,14 @@ function pageCategories() {
       { k: 'tog', label: '', csv: false, html: c => `<button type="button" class="team-toggle${openSet.has(c.ci) ? ' open' : ''}" data-cattog="${c.ci}" aria-expanded="${openSet.has(c.ci)}">${openSet.has(c.ci) ? '▾' : '▸'} ${c.nSub}</button>` },
       { k: 'name', label: 'Category', search: c => c.name + ' ' + c.subNames, html: c => `<button type="button" class="rep" data-cat="${c.ci}">${esc(c.name)}</button>`, csv: c => c.name, totalHtml: () => '<b>Total</b>' },
       { k: 'verdict', label: 'Status', help: 'Status', html: c => verdictPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => verdictPill(t.verdict) },
-      { k: 'ly', label: `LY Deals (${fyLyLbl})`, num: true, fmt: fmtDeals, csv: c => c.ly },
-      { k: 'ty', label: `TY Deals (${fyTyLbl})`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
+      { k: 'ly', label: `${fyLyLbl} Deals`, num: true, fmt: fmtDeals, csv: c => c.ly },
+      { k: 'ty', label: `${fyTyLbl} Deals`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
       { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, csv: c => c.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
-      { k: 'share', label: 'TY Share', num: true, html: c => barCell(c.share, maxShare, pct(c.share)), csv: c => pct(c.share), totalHtml: () => '100%' },
-      { k: 'rvTy', label: 'TY 3-Yr RV', num: true, fmt: fmtRv, csv: c => c.rvTy },
+      { k: 'share', label: `${fyTyLbl} Share`, num: true, html: c => barCell(c.share, maxShare, pct(c.share)), csv: c => pct(c.share), totalHtml: () => '100%' },
+      { k: 'rvTy', label: `${fyTyLbl} 3-Yr RV`, num: true, fmt: fmtRv, csv: c => c.rvTy },
       { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy) },
-    ], filteredCats, { sort: 'ty', noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
+    ], filteredCats, { sort: 'diff', dir: 1, noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
   } else {
     const eOpen = S.catEmpOpen || new Set();
     const allEOpen = emps.length && emps.every(e => eOpen.has(e.ei));
@@ -2023,14 +1985,32 @@ function pageCategories() {
       { k: 'label', label: 'Employee', search: e => e.label + ' ' + e.code + ' ' + e.catNames, html: e => empCell(e, true), csv: e => e.label, totalHtml: () => '<b>Total</b>' },
       { k: 'code', label: 'Emp ID', search: e => e.code, fmt: v => v || '—', totalHtml: () => '' },
       { k: 'verdict', label: 'Status', help: 'Status', html: e => verdictPill(e.verdict), sortv: e => ({ good: 2, flat: 1, bad: 0 }[e.verdict]), csv: e => e.verdict.toUpperCase(), totalHtml: t => verdictPill(t.verdict) },
-      { k: 'ly', label: `LY Deals (${fyLyLbl})`, num: true, fmt: fmtDeals, csv: e => e.ly },
-      { k: 'ty', label: `TY Deals (${fyTyLbl})`, num: true, html: e => `<b>${fmtDeals(e.ty)}</b>`, csv: e => e.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
+      { k: 'ly', label: `${fyLyLbl} Deals`, num: true, fmt: fmtDeals, csv: e => e.ly },
+      { k: 'ty', label: `${fyTyLbl} Deals`, num: true, html: e => `<b>${fmtDeals(e.ty)}</b>`, csv: e => e.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
       { k: 'diff', label: 'Net Δ', num: true, html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span>`, csv: e => e.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: e => e.yoy == null ? -999 : (isFinite(e.yoy) ? e.yoy : 999), html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(e.ty, e.ly)}</span>`, csv: e => fmtYoy(e.ty, e.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
       { k: 'topCats', label: 'Top categories secured', wrap: true, fmt: v => v || '—', totalHtml: () => '' },
-      { k: 'rvTy', label: 'TY 3-Yr RV', num: true, fmt: fmtRv, csv: e => e.rvTy },
+      { k: 'rvTy', label: `${fyTyLbl} 3-Yr RV`, num: true, fmt: fmtRv, csv: e => e.rvTy },
     ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
+
+  // Monthly TY vs LY grouped chart below the unified table
+  const eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
+  const monItems = fms.map(fm => ({
+    fm,
+    label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
+    full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay} same days)` : ''),
+    ly: mLy.get(fm) || 0,
+    ty: mTy.get(fm) || 0,
+    sel: S.catWin === 'month' && S.catMonth === fm,
+  }));
+  h += `<div style="margin-top:20px">${card(
+    `Monthly JDA deals: ${fyTyLbl} vs ${fyLyLbl} (same dates)`,
+    `Click any month bar to filter the table to that month · * latest month compares 1–${eDay} in both years`,
+    groupedBarChart(monItems, { h: 225, W: 1100, tyLbl: fyTyLbl, lyLbl: fyLyLbl }),
+    '#6366f1',
+    `<div class="legend"><span><i style="background:var(--axis)"></i>${fyLyLbl}</span><span><i style="background:#10b981"></i>${fyTyLbl} (up)</span><span><i style="background:#6366f1"></i>${fyTyLbl} (down)</span></div>`
+  )}</div>`;
 
   h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
@@ -2100,8 +2080,8 @@ function openCat(ci, si = -1, tab = null) {
   const showEmpTab = isSub || (hasEmps && S.catDr.tab === 'emp');
 
   const subq = (S.catDr.subq || '').trim().toLowerCase();
-  const subsView = subq ? c.subs.filter(x => x.name.toLowerCase().includes(subq)) : c.subs;
-  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${nf(subsView.length)}${subq ? ' of ' + nf(c.nSub) : ''})</h3><div class="cap">${hasEmps ? 'Click any sub-category to see who secured those deals' : 'Sorted by TY deals'} · ${esc(W.label)}</div></div></div>
+  const subsView = [...(subq ? c.subs.filter(x => x.name.toLowerCase().includes(subq)) : c.subs)].sort((a, b) => a.diff - b.diff || b.ly - a.ly);
+  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${nf(subsView.length)}${subq ? ' of ' + nf(c.nSub) : ''})</h3><div class="cap">${hasEmps ? 'Poorest performing first · click any sub-category to see who secured those deals' : 'Poorest performing first'} · ${esc(W.label)}</div></div></div>
     ${c.nSub > 8 ? `<label class="search dr-search">${icon('search')}<input type="search" id="catDrSubQ" placeholder="Search sub-category (sales group)" value="${esc(S.catDr.subq || '')}"></label>` : ''}
     <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Sub-category</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">YoY</th><th>Status</th></tr></thead>
     <tbody>${subsView.length ? subsView.map(x => `<tr class="${hasEmps ? 'click-row' : ''}"${hasEmps ? ` data-catsub="${ci}|${x.si}"` : ''}><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('') : `<tr><td colspan="6" class="empty">No sub-categories match.</td></tr>`}</tbody></table></div>
