@@ -1675,10 +1675,27 @@ function empCell(e, small) {
     : `<b>${esc(e.label)}</b>`;
   return `<div class="who">${avatar(e.label, small ? 'sm' : '')}<div>${nm}<span class="emp-id">${esc(e.code || 'No ID')}</span></div></div>`;
 }
+function catEmpAllowed() {
+  if (S.mgr < 0 || !CATD || !Array.isArray(CATD.emps)) return null;
+  const sub = subtree(S.mgr, S.day);
+  const subCodes = new Set([...sub].map(m => String(MGRS[m][0])));
+  const ok = new Set();
+  for (let ei = 0; ei < CATD.emps.length; ei++) {
+    const code = String(CATD.emps[ei][0] || '');
+    if (!code) continue;
+    if (subCodes.has(code)) { ok.add(ei); continue; }
+    const r = REPIDX.get(code);
+    if (r == null) continue;
+    const rec = lastRec(r, S.day) || lastRec(r, NDAY - 1);
+    if (rec && rec.m >= 0 && sub.has(rec.m)) ok.add(ei);
+  }
+  return { ok, nMgr: sub.size };
+}
 function computeCatAgg(winOverride) {
   const W = winOverride || catWindow();
   const nC = CATD.cats.length, nS = CATD.subcats.length, hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   const nE = hasEmps ? CATD.emps.length : 0;
+  const mgrF = hasEmps ? catEmpAllowed() : null;
   const cLy = new Float64Array(nC), cTy = new Float64Array(nC), cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
   const sLy = new Float64Array(nS), sTy = new Float64Array(nS), sRvLy = new Float64Array(nS), sRvTy = new Float64Array(nS);
   const eLy = new Float64Array(nE), eTy = new Float64Array(nE), eRvLy = new Float64Array(nE), eRvTy = new Float64Array(nE);
@@ -1689,6 +1706,7 @@ function computeCatAgg(winOverride) {
     const yr = r[0], k = r[1], loc = r[2], si = r[3], fr = r[4];
     const ei = hasEmps ? r[5] : -1, dc = hasEmps ? r[6] : r[5], rv = hasEmps ? r[7] : r[6];
     if (!catLocOk(loc)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     // Monthly series always spans full common_start_k..common_end_k so same-day partial month is fair
     if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
@@ -1752,16 +1770,18 @@ function computeCatAgg(winOverride) {
       cats: clist, nCat: clist.length, topCats, catNames: clist.map(x => x.name).join(' '),
     });
   }
-  return { W, cats, emps, hasEmps, totLy, totTy, rvLy, rvTy, mLy, mTy };
+  return { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy };
 }
 function computeSecuredBy(ci, si) {
   const W = catWindow(), hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   if (!hasEmps) return [];
+  const mgrF = catEmpAllowed();
   const map = new Map();
   for (const r of CATD.rows) {
     const [yr, k, loc, rsi, fr, ei, dc, rv] = r;
     if (si >= 0 ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < W.a || k > W.b) continue;
     let rec = map.get(ei);
@@ -1810,7 +1830,7 @@ function pageCategories() {
     return hero('categories', 'Category-wise deals (YoY)', 'No category YoY data loaded yet.')
       + note('Run <b>python main.py</b> (with <code>db_216.env</code> or CSVs in <code>pipeline\\category_data\\</code>) to populate category-wise deals from <code>ops_analytics.tbl_modified_deal_level_data</code> and <code>vertical_owner.tbl_company_vertical_mapping_SB</code>.');
   }
-  const { W, cats, emps, hasEmps, totLy, totTy, rvLy, rvTy, mLy, mTy } = computeCatAgg();
+  const { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy } = computeCatAgg();
   const realCats = cats.filter(c => c.name !== 'Unmapped' && c.name !== 'No Category');
   const goodCats = realCats.filter(c => c.verdict === 'good');
   const badCats = realCats.filter(c => c.verdict === 'bad');
@@ -1831,7 +1851,7 @@ function pageCategories() {
     : a.diff - b.diff);
 
   let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' using SUM(dc_genio) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
-    <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}</div>
+    <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
     <h2>Category-wise deals (YoY)</h2>
     <p>Same-period comparison showing which categories are performing well (good) vs declining (bad). Click any category for its sub-category breakdown.</p></div>
     <div class="h-chips">
@@ -1856,8 +1876,8 @@ function pageCategories() {
     </div>
   </div>`;
 
-  if (S.mgr >= 0) {
-    h += note(`Category YoY deals are shown at the <b>${esc(scopeLabel())}</b> level (manager filter <b>${esc(mgrName(S.mgr))}</b> applies to the daily presentation tabs, not last year's category baseline).`);
+  if (S.mgr >= 0 && mgrF) {
+    h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active deal-securing employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} deals secured by these employees.`);
   }
 
   // KPI tiles
@@ -1972,13 +1992,11 @@ function pageCategories() {
       { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy) },
     ], filteredCats, { sort: 'ty', noun: 'categories', title: 'Categories YoY', after: subRows, total: totRow, empty: 'No categories match this filter.' });
   } else {
-    const filteredEmps = S.catStatus === 'all' ? emps : emps.filter(e => e.verdict === S.catStatus);
     const eOpen = S.catEmpOpen || new Set();
-    const allEOpen = filteredEmps.length && filteredEmps.every(e => eOpen.has(e.ei));
+    const allEOpen = emps.length && emps.every(e => eOpen.has(e.ei));
 
     h += `<div class="mgr-bar">
       <div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="false">Category view</button><button type="button" data-catview="emp" aria-pressed="true">Who secured (by JDA)</button></div>
-      <div class="seg" role="group" aria-label="Filter by YoY status">${[['all', `All (${emps.length})`], ['good', `Good (${emps.filter(e => e.verdict === 'good').length})`], ['flat', `Flat (${emps.filter(e => e.verdict === 'flat').length})`], ['bad', `Bad (${emps.filter(e => e.verdict === 'bad').length})`]].map(([k, l]) => `<button type="button" data-catst="${k}" aria-pressed="${S.catStatus === k}">${l}</button>`).join('')}</div>
       <button type="button" class="btn-ghost" data-catempall="${allEOpen ? 'close' : 'open'}">${allEOpen ? 'Collapse all' : 'Expand all categories'}</button>
     </div>`;
 
@@ -2006,7 +2024,7 @@ function pageCategories() {
       { k: 'yoy', label: 'YoY %', num: true, sortv: e => e.yoy == null ? -999 : (isFinite(e.yoy) ? e.yoy : 999), html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(e.ty, e.ly)}</span>`, csv: e => fmtYoy(e.ty, e.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
       { k: 'topCats', label: 'Top categories secured', wrap: true, fmt: v => v || '—', totalHtml: () => '' },
       { k: 'rvTy', label: 'TY 3-Yr RV', num: true, fmt: fmtRv, csv: e => e.rvTy },
-    ], filteredEmps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
+    ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
   h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>SUM(dc_genio)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
@@ -2031,7 +2049,7 @@ function downloadDrawerSecuredCsv() {
 
 function openCat(ci, si = -1, tab = null) {
   if (!CATD) return;
-  const { W, cats, hasEmps } = computeCatAgg();
+  const { W, cats, hasEmps, mgrF } = computeCatAgg();
   const c = cats.find(x => x.ci === ci);
   if (!c) return;
   const sub = si >= 0 ? c.subs.find(x => x.si === si) : null;
@@ -2048,9 +2066,10 @@ function openCat(ci, si = -1, tab = null) {
   const fms = catMonths(), eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
   const mLy = new Map(), mTy = new Map();
   for (const r of CATD.rows) {
-    const yr = r[0], k = r[1], loc = r[2], rsi = r[3], fr = r[4], dc = hasEmps ? r[6] : r[5];
+    const yr = r[0], k = r[1], loc = r[2], rsi = r[3], fr = r[4], ei = hasEmps ? r[5] : -1, dc = hasEmps ? r[6] : r[5];
     if (isSub ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < CATD.common_start_k || k > CATD.common_end_k) continue;
     const fm = Math.floor(k / 100);
@@ -2088,7 +2107,7 @@ function openCat(ci, si = -1, tab = null) {
 
   $('#drawer').innerHTML = `<div class="dr-head" style="background:${hdrBg}"><div>
       ${isSub ? `<button type="button" class="dr-back" data-cat="${ci}">← All ${esc(c.name)} sub-categories</button>` : ''}
-      <div class="meta">${esc(W.label)} · ${esc(scopeLabel())}${isSub ? ' · ' + esc(c.name) : ` · ${c.nSub} sub-categor${c.nSub === 1 ? 'y' : 'ies'}`}</div>
+      <div class="meta">${esc(W.label)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}${isSub ? ' · ' + esc(c.name) : ` · ${c.nSub} sub-categor${c.nSub === 1 ? 'y' : 'ies'}`}</div>
       <h2>${esc(target.name)}</h2>
       <div class="meta">${fyLyLbl}: <b>${fmtDeals(target.ly)}</b> → ${fyTyLbl}: <b>${fmtDeals(target.ty)}</b> (${fmtDelta(target.diff)}, ${fmtYoy(target.ty, target.ly)})</div>
     </div><button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
