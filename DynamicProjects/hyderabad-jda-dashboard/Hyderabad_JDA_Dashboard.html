@@ -1916,8 +1916,8 @@ function pageCategories() {
     }).join('')}</div>`;
   };
   h += `<div class="grid2">
-    ${card('Best performing categories (Good)', 'Highest YoY gains · click any category to inspect its sub-categories', renderGB(topGood, 'good'), '#10b981', rankToggle)}
-    ${card('Worst performing categories (Bad)', 'Steepest YoY drops · click any category to inspect its sub-categories', renderGB(topBad, 'bad'), '#ef4444', `<span class="pill crit">${nf(badCats.length)} declining</span>`)}
+    ${card('Best performing sales groups (Good)', 'Highest YoY gains · click any group to inspect its sub-categories', renderGB(topGood, 'good'), '#10b981', rankToggle)}
+    ${card('Worst performing sales groups (Bad)', 'Steepest YoY drops · click any group to inspect its sub-categories', renderGB(topBad, 'bad'), '#ef4444', `<span class="pill crit">${nf(badCats.length)} declining</span>`)}
   </div>`;
 
   // Monthly TY vs LY grouped chart
