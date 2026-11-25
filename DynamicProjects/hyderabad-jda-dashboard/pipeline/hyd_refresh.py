@@ -378,10 +378,25 @@ def load_cat_cache():
             with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
                 c = json.load(f)
             if isinstance(c, dict) and isinstance(c.get("days"), dict):
+                # Migrate any v1 6-element rows [loc, si, fr, jt, dc, rv] -> v2 5-element [loc, si, fr, dc, rv]
+                migrated = False
+                for ds, entries in c["days"].items():
+                    if entries and len(entries[0]) == 6:
+                        agg = defaultdict(lambda: [0.0, 0.0])
+                        for loc, si, fr, _jt, dc, rv in entries:
+                            acc = agg[(loc, si, fr)]
+                            acc[0] += dc
+                            acc[1] += rv
+                        c["days"][ds] = [[loc, si, fr, round(dc, 2), round(rv)]
+                                         for (loc, si, fr), (dc, rv) in sorted(agg.items())]
+                        migrated = True
+                if migrated:
+                    c["version"] = 2
+                    save_cat_cache(c)
                 return c
         except Exception as e:
             log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
-    return {"version": 1, "cats": [], "subcats": [], "days": {}}
+    return {"version": 2, "cats": [], "subcats": [], "days": {}}
 
 
 def save_cat_cache(cache):
@@ -411,7 +426,7 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
 
     by_day = {ds: defaultdict(lambda: [0.0, 0.0]) for ds in fetched_dates}
     matched = 0
-    for ds, docid, pin, mr, fresh, flag, team, dc, rv in raw_rows:
+    for ds, docid, pin, mr, fresh, flag, dc, rv in raw_rows:
         if ds not in by_day or dc <= 0:
             continue
         cinfo = doc_cat.get(docid)
@@ -424,16 +439,15 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
         si = get_sub_idx(cat, sub)
         loc = loc_bucket(pin, mr, pin_area, areas)
         fr = 1 if str(fresh).strip() == "1" else 0
-        jt = 1 if str(team or "").strip().upper() == "JDA" else 0
-        # rv_3yr repeats on both rows of a joint (jda_flag=2) deal; halving gives 1x total RV and 0.5x JDA share
+        # rv_3yr repeats on both rows of a joint (jda_flag=2) deal; halving each row gives exact 1x deal RV
         rv_w = rv * (0.5 if int(flag or 1) == 2 else 1.0)
-        acc = by_day[ds][(loc, si, fr, jt)]
+        acc = by_day[ds][(loc, si, fr)]
         acc[0] += dc
         acc[1] += rv_w
 
     for ds, agg in by_day.items():
-        cache["days"][ds] = [[loc, si, fr, jt, round(dc, 2), round(rv)]
-                             for (loc, si, fr, jt), (dc, rv) in sorted(agg.items())]
+        cache["days"][ds] = [[loc, si, fr, round(dc, 2), round(rv)]
+                             for (loc, si, fr), (dc, rv) in sorted(agg.items())]
     return matched
 
 
@@ -480,7 +494,7 @@ def seed_cat_cache_from_csv(cache, pin_area, areas):
                     out.append((
                         ds, (row.get("docid") or "").strip(), (row.get("pincode") or "").strip(),
                         (row.get("branch_main_remote") or "").strip(), (row.get("fresh") or "").strip(),
-                        fl, (row.get("final_team_type_name") or "").strip(), dc, to_float(row.get("rv_3yr")),
+                        fl, dc, to_float(row.get("rv_3yr")),
                     ))
         return out
 
@@ -518,17 +532,16 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
         conn = db_connect(env)
         with conn.cursor() as cur:
             cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(pincode, '')),
-                                   branch_main_remote, fresh, jda_flag, TRIM(IFNULL(final_team_type_name, '')),
-                                   dc_genio, IFNULL(rv_3yr, 0)
+                                   branch_main_remote, fresh, jda_flag, dc_genio, IFNULL(rv_3yr, 0)
                             FROM {MODIFIED_DEALS}
                             WHERE dealclosed_date BETWEEN %s AND %s
                               AND sales_branch = %s
                               AND dc_genio > 0
                               AND fresh IN (0, 1)
                               AND jda_flag IN (1, 2)""", (a, b, BRANCH))
-            for day, docid, pin, mr, fresh, flag, team, dc, rv in cur.fetchall():
+            for day, docid, pin, mr, fresh, flag, dc, rv in cur.fetchall():
                 ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
-                raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 1), team, to_float(dc), to_float(rv)))
+                raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 1), to_float(dc), to_float(rv)))
         conn.close()
 
     docids = sorted({r[1] for r in raw_rows if r[1]})
@@ -582,12 +595,12 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         if not entries:
             continue
         mmdd = fy_mmdd(ds)
-        for loc, si, fr, jt, dc, rv in entries:
+        for loc, si, fr, dc, rv in entries:
             ci, sub = old_subs[si]
             cat = old_cats[ci]
             cat_tot[cat] += dc
             sub_tot[(cat, sub)] += dc
-            agg_rows.append((yr, mmdd, loc, cat, sub, fr, jt, dc, rv))
+            agg_rows.append((yr, mmdd, loc, cat, sub, fr, dc, rv))
 
     if not ly_dates or not ty_dates:
         return None
@@ -599,8 +612,8 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
     sub_ix = {cs: i for i, cs in enumerate(sub_keys)}
     subcats = [[cat_ix[c], s] for c, s in sub_keys]
 
-    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, jt, round(dc, 2), round(rv)]
-              for yr, mmdd, loc, cat, sub, fr, jt, dc, rv in agg_rows]
+    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, round(dc, 2), round(rv)]
+              for yr, mmdd, loc, cat, sub, fr, dc, rv in agg_rows]
 
     c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
     c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))

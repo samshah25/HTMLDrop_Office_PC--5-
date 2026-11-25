@@ -36,3 +36,6 @@
 2026-11-25 13:44:31  === Hyderabad dashboard category-only refresh ===
 2026-11-25 13:44:32  Categories (cache): 25 categories, 139 sub-categories, 13367 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
 2026-11-25 13:44:33  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (25 categories, 139 sub-categories)
+2026-11-25 13:57:46  === Hyderabad dashboard category-only refresh ===
+2026-11-25 13:57:47  Categories (cache): 25 categories, 139 sub-categories, 11596 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-25 13:57:48  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (25 categories, 139 sub-categories)

@@ -660,7 +660,6 @@ const S = {
   catWin: 'ytd',    // ytd | qtd | mtd | d30 | month
   catMonth: 0,      // FY month number (4..15) when catWin === 'month'
   catFresh: 'all',  // all | 1 | 0
-  catMode: 'all',   // all (SUM dc_genio across all JDA-involved rows) | jda (final_team_type_name == JDA)
   catRank: 'net',   // net (TY - LY deals) | pct (YoY % with min base)
   catStatus: 'all', // all | good | flat | bad
   catOpen: null,    // Set of expanded category indexes in the Categories table
@@ -1658,10 +1657,9 @@ function computeCatAgg(winOverride) {
   const mLy = new Map(), mTy = new Map();
   let totLy = 0, totTy = 0, rvLy = 0, rvTy = 0;
   for (const r of CATD.rows) {
-    const [yr, k, loc, si, fr, jt, dc, rv] = r;
+    const [yr, k, loc, si, fr, dc, rv] = r;
     if (!catLocOk(loc)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
-    if (S.catMode === 'jda' && jt !== 1) continue;
     // Monthly series always spans full common_start_k..common_end_k so same-day partial month is fair
     if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
       const fm = Math.floor(k / 100);
@@ -1773,10 +1771,6 @@ function pageCategories() {
     </div>
     <div class="cat-grp">
       <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All deals'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-catfresh="${k}" aria-pressed="${S.catFresh === k}">${l}</button>`).join('')}</div>
-      <div class="seg" role="group" aria-label="Deal counting mode" data-tip="All JDA deals = literal SUM(dc_genio) across JDA-involved deals (solo + joint). JDA share = final_team_type_name = JDA only (joint deals at 0.5).">
-        <button type="button" data-catmode="all" aria-pressed="${S.catMode === 'all'}">SUM(dc_genio)</button>
-        <button type="button" data-catmode="jda" aria-pressed="${S.catMode === 'jda'}">JDA share</button>
-      </div>
     </div>
   </div>`;
 
@@ -1900,11 +1894,10 @@ function openCat(ci) {
   const fms = catMonths(), eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
   const mLy = new Map(), mTy = new Map();
   for (const r of CATD.rows) {
-    const [yr, k, loc, si, fr, jt, dc] = r;
+    const [yr, k, loc, si, fr, dc] = r;
     if (CATD.subcats[si][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
-    if (S.catMode === 'jda' && jt !== 1) continue;
     if (k < CATD.common_start_k || k > CATD.common_end_k) continue;
     const fm = Math.floor(k / 100);
     if (yr === 1) mTy.set(fm, (mTy.get(fm) || 0) + dc);
@@ -2132,7 +2125,7 @@ function setup() {
     const pick = e.target.closest('[data-mgrpick]');
     if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
     if (!e.target.closest('#mgrPop')) closeMgrPop();
-    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-cattog],[data-catall],[data-catwin],[data-catfresh],[data-catmode],[data-catrank],[data-catst],[data-catmon]');
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-cattog],[data-catall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon]');
     if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
     const ds = t.dataset;
     if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
@@ -2144,7 +2137,6 @@ function setup() {
     else if (ds.catwin) { S.catWin = ds.catwin; S.catMonth = 0; render(); }
     else if (ds.catmon != null) { S.catWin = 'month'; S.catMonth = +ds.catmon; render(); }
     else if (ds.catfresh) { S.catFresh = ds.catfresh; render(); }
-    else if (ds.catmode) { S.catMode = ds.catmode; render(); }
     else if (ds.catrank) { S.catRank = ds.catrank; render(); }
     else if (ds.catst) { S.catStatus = ds.catst; render(); }
     else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip' || k === 'tog') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
