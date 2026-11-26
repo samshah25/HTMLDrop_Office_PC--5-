@@ -680,7 +680,6 @@ const S = {
   catOpen: null,    // Set of expanded category indexes in Category view
   catEmpOpen: null, // Set of expanded emp indexes in Who secured (by JDA) view
   catDr: { ci: -1, si: -1, tab: 'sub', q: '', subq: '' }, // active Category / Sub-category drawer state
-  catChartMode: 'grouped', // grouped (2025 vs 2026 + diff) | diff (net Δ diverging bars)
 };
 if (!['today', 'territory', 'managers', 'actions', 'field', 'categories'].includes(S.page)) S.page = 'today';
 if (!CITY_OPTS.some(o => o[0] === S.city)) S.city = 'all';
@@ -2004,13 +2003,12 @@ function pageCategories() {
     ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
-  // Category-wise Top 10 YoY Chart (2025 vs 2026 & Net Diff, driven by selected tenure & filters, without Others)
+  // Category-wise Top 10 YoY Chart (2025 vs 2026, driven by selected tenure & filters, without Others)
   {
     const top10 = [...realCats]
       .filter(c => !/^others?$/i.test(c.name))
       .sort((a, b) => b.ly - a.ly || b.ty - a.ty)
       .slice(0, 10);
-    const mode = S.catChartMode === 'diff' ? 'diff' : 'grouped';
     const wrapLbl = (name, maxLen = 13) => {
       if (name.length <= maxLen) return [name];
       const words = name.split(/\s+/), lines = [];
@@ -2033,30 +2031,26 @@ function pageCategories() {
 
     const barTop = `<div class="cat-leg">
       <div class="cat-leg-items">
-        ${mode === 'grouped' ? `<span class="cat-leg-it"><i style="background:var(--axis)"></i>${fyLyLbl} deals</span>` : ''}
-        <span class="cat-leg-it"><i style="background:#10b981"></i>${mode === 'grouped' ? `${fyTyLbl} up vs ${fyLyLbl}` : `Gain vs ${fyLyLbl} (+Δ)`}</span>
-        <span class="cat-leg-it"><i style="background:#ef4444"></i>${mode === 'grouped' ? `${fyTyLbl} down vs ${fyLyLbl}` : `Drop vs ${fyLyLbl} (−Δ)`}</span>
-      </div>
-      <div class="seg" role="group" aria-label="Top 10 chart mode">
-        <button type="button" data-catchart="grouped" aria-pressed="${mode === 'grouped'}">${fyLyLbl} vs ${fyTyLbl}</button>
-        <button type="button" data-catchart="diff" aria-pressed="${mode === 'diff'}">Net Diff (Δ)</button>
+        <span class="cat-leg-it"><i style="background:var(--axis)"></i>${fyLyLbl} deals</span>
+        <span class="cat-leg-it"><i style="background:#10b981"></i>${fyTyLbl} up vs ${fyLyLbl}</span>
+        <span class="cat-leg-it"><i style="background:#ef4444"></i>${fyTyLbl} down vs ${fyLyLbl}</span>
       </div>
     </div>`;
 
     let chartBody = '';
     if (!top10.length) {
       chartBody = '<div class="empty">No category deals in the selected period and filter.</div>';
-    } else if (mode === 'grouped') {
-      const Wc = 1100, Hc = 305, padL = 48, padR = 14, padT = 48, padB = 46, iw = Wc - padL - padR, ih = Hc - padT - padB;
+    } else {
+      const Wc = 1100, Hc = 320, padL = 48, padR = 14, padT = 48, padB = 60, iw = Wc - padL - padR, ih = Hc - padT - padB;
       const maxV = niceMax(Math.max(...top10.flatMap(c => [c.ly, c.ty]), 1));
-      const gw = iw / top10.length, bw = Math.min(28, Math.max(14, (gw * 0.62 - 5) / 2));
+      const gw = iw / top10.length, bw = Math.min(30, Math.max(16, (gw * 0.66 - 6) / 2));
       let svg = `<svg class="chart" viewBox="0 0 ${Wc} ${Hc}" role="img">`;
       for (const t of [0, .5, 1].map(f => f * maxV)) {
         const y = padT + ih - t / maxV * ih;
         svg += `<line x1="${padL}" x2="${Wc - padR}" y1="${y}" y2="${y}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${y + 4}" text-anchor="end">${fmtDeals(t)}</text>`;
       }
       top10.forEach((c, i) => {
-        const cx = padL + i * gw + gw / 2, x1 = cx - bw - 2.5, x2 = cx + 2.5;
+        const cx = padL + i * gw + gw / 2, x1 = cx - bw - 3, x2 = cx + 3;
         const h1 = c.ly / maxV * ih, h2 = c.ty / maxV * ih;
         const y1 = padT + ih - h1, y2 = padT + ih - h2;
         const tyCol = c.diff > 0 ? '#10b981' : (c.diff < 0 ? '#ef4444' : '#6366f1');
@@ -2069,49 +2063,16 @@ function pageCategories() {
         if (h2 > 0) svg += `<rect x="${x2}" y="${y2}" width="${bw}" height="${Math.max(h2, 1.5)}" rx="3" fill="${tyCol}"/>`;
         svg += `<text x="${x1 + bw / 2}" y="${y1 - 5}" text-anchor="middle" style="font-size:9.5px;fill:var(--ink-3)">${fmtDeals(c.ly)}</text>`;
         svg += `<text x="${x2 + bw / 2}" y="${y2 - 5}" text-anchor="middle" class="lbl-strong" style="font-size:10.5px">${fmtDeals(c.ty)}</text>`;
+        svg += `<text x="${x1 + bw / 2}" y="${padT + ih + 13}" text-anchor="middle" style="font-size:9.5px;fill:var(--ink-3)">${fyLyLbl}</text>`;
+        svg += `<text x="${x2 + bw / 2}" y="${padT + ih + 13}" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--ink-2)">${fyTyLbl}</text>`;
         const lines = wrapLbl(c.name, 13);
         lines.forEach((ln, li) => {
-          svg += `<text x="${cx}" y="${padT + ih + 16 + li * 13}" text-anchor="middle" class="${li === 0 ? 'lbl-strong' : ''}" style="font-size:10.5px">${esc(ln)}</text>`;
+          svg += `<text x="${cx}" y="${padT + ih + 30 + li * 13}" text-anchor="middle" class="${li === 0 ? 'lbl-strong' : ''}" style="font-size:10.5px">${esc(ln)}</text>`;
         });
         const tip = `<div class="tt-t">${esc(c.name)} · ${esc(W.label)}</div>${fyLyLbl} deals: <b>${fmtDeals(c.ly)}</b><br>${fyTyLbl} deals: <b>${fmtDeals(c.ty)}</b><br>Diff vs ${fyLyLbl}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${fyLyLbl} RV: <b>${fmtRv(c.rvLy)}</b> · ${fyTyLbl} RV: <b>${fmtRv(c.rvTy)}</b> (${fmtYoy(c.rvTy, c.rvLy)})`;
         svg += `<rect class="hit" x="${padL + i * gw}" y="4" width="${gw}" height="${Hc - 8}" data-tip="${esc(tip)}" data-cat="${c.ci}" style="cursor:pointer"/>`;
       });
       svg += `<line x1="${padL}" x2="${Wc - padR}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
-      chartBody = svg;
-    } else {
-      const Wc = 1100, Hc = 305, padL = 48, padR = 14, padT = 34, padB = 46, iw = Wc - padL - padR, ih = Hc - padT - padB;
-      const maxPos = Math.max(...top10.map(c => Math.max(0, c.diff)), 0);
-      const maxNeg = Math.max(...top10.map(c => Math.max(0, -c.diff)), 0);
-      const span = Math.max(niceMax(Math.max(maxPos, maxNeg, 1)), 1);
-      const posLim = maxPos > 0 ? niceMax(maxPos) : span * 0.25;
-      const negLim = maxNeg > 0 ? niceMax(maxNeg) : span * 0.25;
-      const totSpan = posLim + negLim;
-      const zeroY = padT + (posLim / totSpan) * ih;
-      const gw = iw / top10.length, bw = Math.min(44, Math.max(20, gw * 0.48));
-      let svg = `<svg class="chart" viewBox="0 0 ${Wc} ${Hc}" role="img">`;
-      const ticks = [posLim, 0, -negLim].filter((v, idx, arr) => arr.indexOf(v) === idx);
-      for (const t of ticks) {
-        const y = zeroY - (t / totSpan) * ih;
-        svg += `<line x1="${padL}" x2="${Wc - padR}" y1="${y}" y2="${y}" stroke="${t === 0 ? 'var(--axis)' : 'var(--grid)'}" ${t ? 'stroke-dasharray="4 4"' : 'stroke-width="1.2"'}/>`;
-        svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end">${t > 0 ? '+' + fmtDeals(t) : t < 0 ? '−' + fmtDeals(-t) : '0'}</text>`;
-      }
-      top10.forEach((c, i) => {
-        const cx = padL + i * gw + gw / 2;
-        const bh = Math.abs(c.diff) / totSpan * ih;
-        const by = c.diff >= 0 ? zeroY - bh : zeroY;
-        const col = c.diff > 0 ? '#10b981' : (c.diff < 0 ? '#ef4444' : '#94a3b8');
-        const txtCol = c.diff > 0 ? 'var(--good-ink)' : (c.diff < 0 ? 'var(--crit-ink)' : 'var(--ink-3)');
-        if (bh > 0) svg += `<rect x="${cx - bw / 2}" y="${by}" width="${bw}" height="${Math.max(bh, 2)}" rx="4" fill="${col}"/>`;
-        const lblY = c.diff >= 0 ? Math.max(14, by - 6) : Math.min(padT + ih + 2, by + bh + 13);
-        svg += `<text x="${cx}" y="${lblY}" text-anchor="middle" style="font-size:10.5px;font-weight:700;fill:${txtCol}">${esc(compactDiff(c))}</text>`;
-        const lines = wrapLbl(c.name, 13);
-        lines.forEach((ln, li) => {
-          svg += `<text x="${cx}" y="${padT + ih + 18 + li * 13}" text-anchor="middle" class="${li === 0 ? 'lbl-strong' : ''}" style="font-size:10.5px">${esc(ln)}</text>`;
-        });
-        const tip = `<div class="tt-t">${esc(c.name)} · ${esc(W.label)}</div>${fyLyLbl} deals: <b>${fmtDeals(c.ly)}</b><br>${fyTyLbl} deals: <b>${fmtDeals(c.ty)}</b><br>Diff vs ${fyLyLbl}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${fyLyLbl} RV: <b>${fmtRv(c.rvLy)}</b> · ${fyTyLbl} RV: <b>${fmtRv(c.rvTy)}</b> (${fmtYoy(c.rvTy, c.rvLy)})`;
-        svg += `<rect class="hit" x="${padL + i * gw}" y="4" width="${gw}" height="${Hc - 8}" data-tip="${esc(tip)}" data-cat="${c.ci}" style="cursor:pointer"/>`;
-      });
-      svg += `</svg>`;
       chartBody = svg;
     }
 
@@ -2410,7 +2371,7 @@ function setup() {
     const pick = e.target.closest('[data-mgrpick]');
     if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
     if (!e.target.closest('#mgrPop')) closeMgrPop();
-    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon],[data-catchart]');
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon]');
     if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
     const ds = t.dataset;
     if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
@@ -2430,7 +2391,6 @@ function setup() {
     else if (ds.catfresh) { S.catFresh = ds.catfresh; render(); }
     else if (ds.catrank) { S.catRank = ds.catrank; render(); }
     else if (ds.catst) { S.catStatus = ds.catst; render(); }
-    else if (ds.catchart) { S.catChartMode = ds.catchart; render(); }
     else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip' || k === 'tog') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
     else if (ds.csv) downloadCsv(ds.csv);
     else if (ds.act) { S.act = ds.act; render(); }
