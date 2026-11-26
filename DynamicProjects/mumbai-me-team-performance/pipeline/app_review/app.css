@@ -1240,6 +1240,7 @@ body.nodata #vTeam, body.nodata #vTable { display: none; }
 #meDet details.appts { margin-top: 12px; }
 #meDet .dline { margin: 4px 0; }
 
+/*SKEW:start*/
 /* Super Cat skewness card on the Overview (2026-10-19): the day's factor, each day's dots + 6-day average, the heavy MEs */
 .skcard .card-h > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 12px; }
 .skb { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, .9fr); }
@@ -1253,10 +1254,10 @@ body.nodata #vTeam, body.nodata #vTable { display: none; }
 .skc { width: 100%; height: auto; display: block; cursor: pointer; }
 .skax { font-size: 10.5px; fill: var(--mute); } .skgl { stroke: var(--rule-2); } .skband { fill: #EEF2F7; }
 .skfair { stroke: var(--up); stroke-dasharray: 4 3; } .skfairt { font-size: 10.5px; fill: var(--up); font-weight: 600; }
-.skdt { fill: #9DB7D6; } .skdt.on { fill: var(--ink); } .skavg { fill: none; stroke: var(--blue); stroke-width: 2; }
+.skdt { fill: #C9D6E6; } .skdt.on { fill: #5B6475; } .skavg { fill: none; stroke: var(--blue); stroke-width: 2.4; }   /* 25 Nov 2026: the 6-day line leads, days are faint */
 .skcross { stroke: #9AA4B5; } .skhit { fill: transparent; }
 .skkey { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--mute); margin-top: 2px; }
-.skkey i { display: inline-block; vertical-align: 1px; margin-right: 5px; } .skkey .k1 { width: 7px; height: 7px; border-radius: 50%; background: #9DB7D6; }
+.skkey i { display: inline-block; vertical-align: 1px; margin-right: 5px; } .skkey .k1 { width: 6px; height: 6px; border-radius: 50%; background: #C9D6E6; }
 .skkey .k2 { width: 14px; height: 2px; background: var(--blue); vertical-align: 3px; } .skkey .k3 { width: 14px; height: 9px; background: #EEF2F7; border: 1px solid var(--rule); }
 .skkey .k4 { width: 14px; border-top: 2px dashed var(--up); vertical-align: 3px; }
 .sktrio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
@@ -1274,6 +1275,18 @@ body.nodata #vTeam, body.nodata #vTable { display: none; }
 #drawerBody .sktbl td small.pid { white-space: normal; }
 #drawerBody .sktbl td.tn, #drawerBody .sktbl td:last-child { white-space: nowrap; }
 #drawerBody .sktbl .skwhy { color: #9A5B00; font-weight: 600; }
+/* where the leads go (2026-11-26): lead types against the area, Super Cat TME teams, habit and Hot Data */
+.ska .skrow { display: grid; grid-template-columns: 150px minmax(0, 1fr) 52px; align-items: center; gap: 8px; margin: 7px 0; font-size: 12.8px; }
+.ska .skrow .nm { color: var(--ink-2); } .ska .skrow .nm small { display: block; color: var(--mute); font-size: 11.5px; }
+.ska .sktrack { position: relative; height: 12px; background: #F1F4F8; border-radius: 3px; }
+.ska .sktrack i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: #9DB7D6; }
+.ska .sktrack i.hi { background: #5B7FA8; } .ska .sktrack b { position: absolute; top: -3px; bottom: -3px; width: 0; border-left: 2px dashed var(--up); }
+.ska .skrow .v { font: 700 15px/1 var(--num); text-align: right; color: var(--ink); }
+.ska table.skt { width: 100%; border-collapse: collapse; font-size: 12.5px; } .ska .skt th { text-align: right; font-weight: 600; color: var(--mute); font-size: 11.5px; padding: 0 0 4px 6px; }
+.ska .skt th:first-child, .ska .skt td:first-child { text-align: left; padding-left: 0; } .ska .skt td { text-align: right; padding: 5px 0 5px 6px; border-top: 1px solid var(--rule-2); white-space: nowrap; }
+.ska .skt td:first-child { white-space: normal; } .ska .skt td b { font-weight: 700; }
+.ska .skcov { font-size: 11.5px; color: var(--mute); margin-top: 8px; }
+/*SKEW:end*/
 /* ---------- the TME view (2026-10-28): amber where the ME view is navy - the band, the active controls and the TME's side
    window - so it is plain which side is shown; cards, type and the data colours stay the same ---------- */
 :root { --tb: #FBF1DC; --tb-2: #F1E1BC; --tb-3: #EBD6A8; --tb-ink: #3D4860; --tb-mute: #6E5A36; }

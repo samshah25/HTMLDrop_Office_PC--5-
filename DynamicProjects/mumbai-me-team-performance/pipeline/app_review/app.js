@@ -104,6 +104,17 @@
     return { ROOT: R0, DEPTH, TEAMOF, OWN, LEAD, OUT, nodeA };
   }
   const MT = makeTree(RAW.mgrs, RAW.mgUp, ME_L, AME0, AMG0, -1), MEHEAD = RAW.mgrs[MT.ROOT][1];   // the ME tree and the ME head
+  // team leaders by month (2026-11-26): a team leader (depth 2) leads a team only in the months they are the team leader on
+  // ANOTHER ME's appointment or deal; in other months their own appointments and deals sit with their own manager, as in the
+  // official lines (22 Oct check: Karan Krishna Gaikwad led a team until 30 May only, and was tagged TL on every date).
+  const monOf = d => { const x = dOf(d); return x.getUTCFullYear() * 12 + x.getUTCMonth(); };
+  const MON0 = (() => { const c = new Map(); return d => { let v = c.get(d); if (v === undefined) { v = monOf(d); c.set(d, v); } return v; }; })();
+  const LEADS_M = new Set(), NG_ = RAW.mgrs.length;
+  for (let i = 0; i < N0; i++) { const g = AMG0[i]; if (g < NG_ && MT.LEAD[AME0[i]] !== g) LEADS_M.add(g * 4096 + MON0(AD0[i])); }
+  for (let j = 0; j < DLN0; j++) { const g = DLMG0[j]; if (g < NG_ && MT.LEAD[DLME0[j]] !== g) LEADS_M.add(g * 4096 + MON0(DLD0[j])); }
+  // the team an ME's own record sits in on day d (-1 = with their team leader / manager on the record)
+  const ownAt = (me, d) => { const o = MT.OWN[me]; if (o < 0) return -1; const m = MT.LEAD[me]; return m >= 0 && MT.DEPTH[m] === 2 && !LEADS_M.has(m * 4096 + MON0(d)) ? -1 : o; };
+  const leadsAt = (me, d) => { const m = MT.LEAD[me]; return m >= 0 && (MT.DEPTH[m] < 2 || LEADS_M.has(m * 4096 + MON0(d))); };
 
   /* ---------- which MEs the page counts (2026-10-27, settings: the ME head's line only, or all MEs) ---------- */
   // The ME head's line only (the default; the user, 27 Oct): the appointments, deals closed and not-counted appointments of
@@ -117,9 +128,9 @@
   // 2026-11-02 (the user): every fresh open starts on the line only; 'All MEs' lasts for this browser tab's session only
   const LINE_ONLY = (() => { try { localStorage.removeItem(LINE_KEY); return sessionStorage.getItem(LINE_KEY) !== 'all'; } catch (e) { return true; } })();
   const NME0 = ME_L.length, NMG0 = RAW.mgrs.length;
-  const nodeA0 = MT.nodeA;
+  const nodeA0 = i => { const o = ownAt(AME0[i], AD0[i]); return o >= 0 ? o : AMG0[i] < NMG0 ? MT.TEAMOF[AMG0[i]] : MT.OUT; };   // = MT.nodeA, by month (2026-11-26)
   const ME_NODE0 = (() => { const c = new Map(); for (let i = 0; i < N0; i++) { const k = AME0[i] * 65536 + nodeA0(i); c.set(k, (c.get(k) || 0) + 1); } const best = new Int32Array(NME0).fill(-1), bn = new Int32Array(NME0); for (const [k, v] of c) { const me = Math.floor(k / 65536); if (v > bn[me]) { bn[me] = v; best[me] = k % 65536; } } return best; })();
-  const nodeD0 = j => { const me = DLME0[j], o = MT.OWN[me]; return o >= 0 ? o : DLMG0[j] < NMG0 ? MT.TEAMOF[DLMG0[j]] : ME_NODE0[me] >= 0 ? ME_NODE0[me] : MT.OUT; };
+  const nodeD0 = j => { const me = DLME0[j], o = ownAt(me, DLD0[j]); return o >= 0 ? o : DLMG0[j] < NMG0 ? MT.TEAMOF[DLMG0[j]] : ME_NODE0[me] >= 0 ? ME_NODE0[me] : MT.OUT; };
   const inLineNC = k => { const nd = ME_NODE0[NCME0[k]]; return nd >= 0 && nd !== MT.OUT; };
   // OUTSIDE: the records outside the line (whatever the setting), for the settings text and the note under the heading
   const KA = [], KD = [], KN = [], OUTSIDE = { ad: [], ame: [], dd: [], dw: [], dme: [], nd: [] };
@@ -191,7 +202,7 @@
   const ME_TL = (() => { const c = new Map(); for (let i = 0; i < N; i++) { if (AMG[i] >= NMG) continue; const k = AME[i] * 65536 + AMG[i]; c.set(k, (c.get(k) || 0) + 1); } const best = new Int32Array(NME).fill(-1), bn = new Int32Array(NME); for (const [k, v] of c) { const me = Math.floor(k / 65536); if (v > bn[me]) { bn[me] = v; best[me] = k % 65536; } } return best; })();
   const TME_TEAM = (() => { const c = new Float64Array(NTM * NT); for (let i = 0; i < N; i++) c[ATM[i] * NT + ATT[i]]++; const out = new Int16Array(NTM).fill(-1); for (let t = 0; t < NTM; t++) { let b = 0; for (let k = 0; k < NT; k++) if (c[t * NT + k] > b) { b = c[t * NT + k]; out[t] = k; } } return out; })();
   const ANODE = new Uint16Array(N);
-  for (let i = 0; i < N; i++) { const o = ME_OWN[AME[i]]; ANODE[i] = o >= 0 ? o : AMG[i] < NMG ? TEAMOF[AMG[i]] : OUTN; }
+  for (let i = 0; i < N; i++) { const o = TM ? ME_OWN[AME[i]] : ownAt(AME[i], AD[i]); ANODE[i] = o >= 0 ? o : AMG[i] < NMG ? TEAMOF[AMG[i]] : OUTN; }
   const KIDS = Array.from({ length: NMG + 1 }, () => []);
   for (let m = 0; m < NMG; m++) if (DEPTH[m] === 1 || DEPTH[m] === 2) KIDS[MGUP[m]].push(m);
   KIDS[ROOT].push(OUTN);
@@ -201,7 +212,7 @@
   const ME_NODE = (() => { const c = new Map(); for (let i = 0; i < N; i++) { const k = AME[i] * 65536 + ANODE[i]; c.set(k, (c.get(k) || 0) + 1); } const best = new Int32Array(NME).fill(-1), bn = new Int32Array(NME); for (const [k, v] of c) { const me = Math.floor(k / 65536); if (v > bn[me]) { bn[me] = v; best[me] = k % 65536; } } return best; })();
   // a deal sits where its ME's appointments sit: the ME's own team when they lead one, else their team leader's that month
   const DNODE = new Uint16Array(DLN);
-  for (let j = 0; j < DLN; j++) { const me = DLME[j], o = ME_OWN[me]; DNODE[j] = TM && me === NOTME ? ROOT : o >= 0 ? o : DLMG[j] < NMG ? TEAMOF[DLMG[j]] : ME_NODE[me] >= 0 ? ME_NODE[me] : OUTN; }
+  for (let j = 0; j < DLN; j++) { const me = DLME[j], o = TM ? ME_OWN[me] : ownAt(me, DLD[j]); DNODE[j] = TM && me === NOTME ? ROOT : o >= 0 ? o : DLMG[j] < NMG ? TEAMOF[DLMG[j]] : ME_NODE[me] >= 0 ? ME_NODE[me] : OUTN; }
   // teams with appointments in the last 60 days (the team picker lists these, plus any with appointments in the dates)
   const RECENT = new Uint8Array(NMG + 1);
   for (let i = 0; i < N; i++) if (AD[i] >= LAST - 60) for (let c = ANODE[i], g = 0; c >= 0 && g < 6; g++) { RECENT[c] = 1; if (c === ROOT) break; c = UPN(c); }
@@ -1121,6 +1132,7 @@
   }
   const MHEAD = `<div class="mrow mh"><span class="ml">TME team</span><span></span><span class="mn"><span class="lg">Appointments given</span><span class="sh">Given</span></span><span class="mn">Attended</span><span class="mn">Deals closed</span></div>`;
 
+  /*SKEW:start*/
   /* ---------- Super Cat skewness (2026-10-19, for Kushal: is Super Cat still going to the same MEs?) ---------- */
   // The day's factor: how much Super Cat the MEs who got the day's Super Cat appointments usually do (their Super Cat share
   // of attended appts in the 12 working days before), against the same for the MEs who got the day's OTHER teams'
@@ -1133,6 +1145,10 @@
   // clearly normal before (under 1.5x Mumbai's share; 3+ attended appts before are enough to tell), back to normal =
   // clearly normal now (8+ attended appts); in between = close to the line.
   const SK_K = 12, SK_MIN = 8, SK_DAYMIN = 100, SK_NEAR = 1.5, SK_SC = TEAMS.map(t => t === 'Super Cat');
+  // the ME's own clients (25 Nov 2026, the user): a business the same ME sold to 15+ days before the appointment (deals since
+  // Jan 2024) is left out of the whole card - the factor, the heavy MEs and the team leaders' line. 1 = own client.
+  const SK_OWN = RAW.a.own ? keep(b64(RAW.a.own, Uint8Array), KA) : null;
+  const skIn = i => !SK_OWN || !SK_OWN[i];
   const skRatio = (mx, m, minV = SK_MIN) => { const v = mx.v.get(m); return v && v[0] >= minV && mx.sh ? (v[1] / v[0]) / mx.sh : null; };
   const SKD = (() => { const d = Array.from({ length: LAST + 1 }, () => []); for (let i = 0; i < N; i++) d[AD[i]].push(i); return d; })();
   const SK_WORK = []; for (let d = 0; d <= LAST; d++) if (SKD[d].length >= SK_DAYMIN) SK_WORK.push(d);
@@ -1140,92 +1156,197 @@
   const skBefore = (d, skip = 0) => { let i = SK_WORK.findIndex(x => x >= d); if (i < 0) i = SK_WORK.length; const e = Math.max(0, i - skip); return SK_WORK.slice(Math.max(0, e - SK_K), e); };
   const skRange = (a, b) => { const o = []; for (let d = Math.max(0, a); d <= b; d++) o.push(d); return o; };
   function skMix(days, minV) {   // attended appts on these days: Mumbai's Super Cat share, each ME's [attended appts, Super Cat ones], the heavy MEs
-    const v = new Map(); let n = 0, s = 0;   // per ME: [attended appts, Super Cat ones, appointments given, Super Cat ones]
+    const v = new Map(); let n = 0, s = 0, nG = 0, sG = 0;   // per ME: [attended appts, Super Cat ones, appointments given, Super Cat ones]
     for (const d of days) for (const i of SKD[d]) {
-      const sc = SK_SC[ATT[i]] ? 1 : 0, x = v.get(AME[i]) || [0, 0, 0, 0]; x[2]++; x[3] += sc; v.set(AME[i], x);
+      if (!skIn(i)) continue;
+      const sc = SK_SC[ATT[i]] ? 1 : 0, x = v.get(AME[i]) || [0, 0, 0, 0]; x[2]++; x[3] += sc; v.set(AME[i], x); nG++; sG += sc;
       if (AO[i] > 2) continue;
       n++; s += sc; x[0]++; x[1] += sc;
     }
-    const sh = n ? s / n : 0, heavy = new Set();
+    const sh = n ? s / n : 0, shG = nG ? sG / nG : 0, heavy = new Set();
     for (const [m, x] of v) if (x[0] >= minV && x[0] && x[1] / x[0] >= 2 * sh) heavy.add(m);
-    return { sh, v, heavy };
+    return { sh, shG, v, heavy };
   }
   const SK_DAY = new Map();
   function skDay(d) {
     if (SK_DAY.has(d)) return SK_DAY.get(d);
     let r = null; const t = SKD[d], ds = skBefore(d);
     if (t && t.length >= SK_DAYMIN && ds.length === SK_K) {
-      const M = skMix(ds, 1), u = m => { const x = M.v.get(m); return x && x[0] >= 4 ? x[1] / x[0] : M.sh; };
-      let sc = 0, scU = 0, oU = 0;
-      for (const i of t) { const v = u(AME[i]); if (SK_SC[ATT[i]]) { sc++; scU += v; } else oU += v; }
-      const o = t.length - sc;
-      if (sc && o) r = { d, sc, o, n: t.length, scU: scU / sc, oU: oU / o, f: (scU / sc) / (oU / o) };
+      // usual share = Super Cat share of the appointments GIVEN to the ME in the 12 working days before (25 Nov 2026; was attended
+      // appts: 2.46 vs 2.42 on the last 60 working days, so the lean is about who is given Super Cat; 4+ given, else Mumbai's share)
+      const M = skMix(ds, 1), u = m => { const x = M.v.get(m); return x && x[2] >= 4 ? x[3] / x[2] : M.shG; };
+      let sc = 0, scU = 0, oU = 0, scQ = 0, oQ = 0;
+      let o = 0, nOwn = 0, ownSc = 0;
+      for (const i of t) { if (!skIn(i)) { nOwn++; if (SK_SC[ATT[i]]) ownSc++; continue; } const v = u(AME[i]); if (SK_SC[ATT[i]]) { sc++; scU += v; scQ += v * v; } else { o++; oU += v; oQ += v * v; } }
+      if (sc && o) r = { d, sc, o, n: sc + o, nOwn, ownSc, scU: scU / sc, oU: oU / o, scQ: scQ / sc, oQ: oQ / o, f: (scU / sc) / (oU / o) };
     }
     SK_DAY.set(d, r); return r;
   }
   const skDays = (a, b) => { const o = []; for (let d = Math.max(0, a); d <= b; d++) { const r = skDay(d); if (r) o.push(r); } return o; };
   // several days together: each day's usual shares, weighted by its appointments
-  const skSum = rs => { if (!rs.length) return null; const sc = rs.reduce((t, r) => t + r.sc, 0), o = rs.reduce((t, r) => t + r.o, 0), scU = rs.reduce((t, r) => t + r.sc * r.scU, 0) / sc, oU = rs.reduce((t, r) => t + r.o * r.oU, 0) / o; return { sc, o, n: sc + o, scU, oU, f: scU / oU }; };
+  const skSum = rs => { if (!rs.length) return null; const sc = rs.reduce((t, r) => t + r.sc, 0), o = rs.reduce((t, r) => t + r.o, 0), scU = rs.reduce((t, r) => t + r.sc * r.scU, 0) / sc, oU = rs.reduce((t, r) => t + r.o * r.oU, 0) / o,
+    scQ = rs.reduce((t, r) => t + r.sc * r.scQ, 0) / sc, oQ = rs.reduce((t, r) => t + r.o * r.oQ, 0) / o, ownSc = rs.reduce((t, r) => t + (r.ownSc || 0), 0), nOwn = rs.reduce((t, r) => t + (r.nOwn || 0), 0);
+    return { sc, o, n: sc + o, scU, oU, scQ, oQ, ownSc, nOwn, f: scU / oU, days: rs.map(r => r.d) }; };
+  // sampling noise of a factor (1 standard error, delta method over the appointments; 25 Nov 2026 check: one day +-0.29)
+  const skSE = x => x ? x.f * Math.sqrt(Math.max(0, x.scQ - x.scU * x.scU) / (x.sc * x.scU * x.scU) + Math.max(0, x.oQ - x.oU * x.oU) / (x.o * x.oU * x.oU)) : null;
+  // the headline (25 Nov 2026): the last SK_P working days pooled, so one day's noise (+-0.3) does not read as a change
+  const SK_P = 6, SK_POOL = new Map();
+  const skPool = d => { if (SK_POOL.has(d)) return SK_POOL.get(d); const rs = []; for (let x = d; x >= 0 && rs.length < SK_P; x--) { const r = skDay(x); if (r) rs.unshift(r); } const p = rs.length === SK_P ? skSum(rs) : null; SK_POOL.set(d, p); return p; };
   const skAvg = (d, k = 6) => { const o = []; for (let x = d; x >= 0 && o.length < k; x--) { const r = skDay(x); if (r) o.push(r.f); } return o.length ? o.reduce((s, v) => s + v, 0) / o.length : null; };
   const fWD = d => `${WD[dOf(d).getUTCDay()]} ${fDate(dOf(d))}`;
   const pc0 = v => Math.round(v * 100) + '%';
   let SK = null;   // what the card shows (for the list)
-  // the card is hidden while the user works on it (31 Oct 2026): shown only with sk=1 in the page link, kept in the link
-  const SK_ON = new URLSearchParams(location.hash.slice(1)).get('sk') === '1' && !META.mgr;
+  // 25 Nov 2026 (the user: "skewness factor should never be shown to Kushal and other logins. only show it to Sounak Biswas"):
+  // build_review.py cuts everything between the SKEW markers (here, in app.css and in shell.tpl) out of every page except the
+  // page of the sounak.biswas login ("<page> - Sounak.html"), so the card exists only in that page and always shows there.
+  const SK_ON = !META.mgr;
   function renderSkew() {
     const box = $('#skBody'); if (!box) return;
-    if (TM || !SK_ON) { $('#skCard').hidden = true; SK = null; return; }   // about MEs; hidden unless sk=1 (the user, 31 Oct 2026: still working on it)
+    if (TM || !SK_ON) { $('#skCard').hidden = true; if ($('#skaCard')) $('#skaCard').hidden = true; SK = null; return; }   // about MEs
     $('#skCard').hidden = false;
     let D = V.to; while (D > 0 && !skDay(D)) D--;
-    const one = V.from === V.to, x = one ? skDay(D) : skSum(skDays(V.from, V.to));
+    renderSkArea(D);
+    // the headline: the dates picked when they hold SK_P+ working days, else the last SK_P working days up to the day shown
+    const rsRange = V.from === V.to ? [] : skDays(V.from, V.to), isRange = rsRange.length >= SK_P;
+    const x = isRange ? skSum(rsRange) : skPool(D);
     if (!x) { $('#skSub').textContent = 'Not enough appointments in these dates'; box.innerHTML = '<p class="empty">Too few appointments to judge where Super Cat went.</p>'; SK = null; return; }
-    const prev = one ? (() => { for (let d = D - 1; d > 0; d--) { const r = skDay(d); if (r) return r; } return null; })() : (V.pa !== null ? skSum(skDays(V.pa, V.pb)) : null);
-    const avg = skAvg(D), avgWk = skAvg(D - 7);
-    const all = skDays(0, D).map(r => r.f).sort((a, b) => a - b), band = all.length >= 8 ? [all[Math.floor(all.length / 4)], all[Math.floor(all.length * 3 / 4)]] : null;
-    const when = one ? fWD(D) : fRange(V.from, V.to);
-    const ch = (a, b, lab) => { if (a === null || b === null || b === undefined) return ''; const v = +(a - b).toFixed(1); return v ? `<b class="${v < 0 ? 'better' : 'worse'}">${v < 0 ? '▼' : '▲'} ${Math.abs(v).toFixed(1)}×</b> ${lab}` : `<b>no change</b> ${lab}`; };
+    const d0 = x.days[0], d1 = x.days[x.days.length - 1];
+    const prev = isRange ? (V.pa !== null ? skSum(skDays(V.pa, V.pb)) : null) : skPool(d0 - 1);
+    const mS = dOf(D), mFrom = D - (mS.getUTCDate() - 1), mon = skSum(skDays(mFrom, D)), pm = new Date(Date.UTC(mS.getUTCFullYear(), mS.getUTCMonth() - 1, 1));
+    const pmFrom = mFrom - Math.round((mS.getTime() - (mS.getUTCDate() - 1) * 864e5 - pm.getTime()) / 864e5), pmon = skSum(skDays(Math.max(0, pmFrom), mFrom - 1));
+    const all = skDays(0, D).map(r => skPool(r.d)).filter(Boolean).map(p => p.f).sort((a, b) => a - b), band = all.length >= 8 ? [all[Math.floor(all.length / 4)], all[Math.floor(all.length * 3 / 4)]] : null;
+    const when = isRange ? fRange(V.from, V.to) : `${SK_P} working days to ${fWD(D)}`;
+    // a change counts only beyond 2 standard errors of the difference; otherwise it is normal noise
+    const chg = (a, b, lab) => {
+      if (!a || !b) return '';
+      const v = a.f - b.f, lim = 2 * Math.hypot(skSE(a), skSE(b)), r1 = +v.toFixed(1);
+      if (Math.abs(v) < lim) return `<b>${r1 ? (r1 < 0 ? '▼ ' : '▲ ') + Math.abs(r1).toFixed(1) + '×' : 'no change'}</b> ${lab} <span class="mu">(within normal noise, ±${lim.toFixed(1)})</span>`;
+      return `<b class="${v < 0 ? 'better' : 'worse'}">${v < 0 ? '▼' : '▲'} ${Math.abs(v).toFixed(1)}×</b> ${lab}`;
+    };
     // the MEs: judged on the 12 working days before D, against the 12 working days before those
     const win = skBefore(D), win0 = skBefore(D, SK_K), now = skMix(win, SK_MIN), was = skMix(win0, SK_MIN);
     const L = [...now.heavy].map(m => { const rb = skRatio(was, m, 3); return { m, rb, st: rb !== null && rb >= SK_NEAR ? 'still' : 'new' }; });
     const back = [...was.heavy].filter(m => !now.heavy.has(m));
     const backOk = back.filter(m => { const r = skRatio(now, m); return r !== null && r < SK_NEAR; }), still = L.filter(r => r.st === 'still').length, nw = L.length - still;
-    const mixOf = f => { let n = 0, s = 0; for (const [m, v] of now.v) if (v[0] >= SK_MIN && f(m)) { n += v[0]; s += v[1]; } return n ? Math.round(s / n * 100) : 0; };
-    const leads = L.filter(r => ME_LEAD[r.m] >= 0).length, leadSc = mixOf(m => ME_LEAD[m] >= 0), othSc = mixOf(m => ME_LEAD[m] < 0);
+    const leads = L.filter(r => win.some(d => leadsAt(r.m, d))).length;   // led a team in the window's months (2026-11-26, by month)
+    // team leaders (25 Nov 2026, the user: Super Cat is not meant to go to them): their share of the Super Cat given vs of all given
+    let tG = 0, tS = 0, aG = 0, aS = 0;   // each appointment by whether its ME led a team that month (2026-11-26)
+    for (const d of win) for (const i of SKD[d]) { if (!skIn(i)) continue; const sc = SK_SC[ATT[i]] ? 1 : 0; aG++; aS += sc; if (leadsAt(AME[i], d)) { tG++; tS += sc; } }
     const wl = w => w.length ? `${fDate(dOf(w[0]))} – ${fDate(dOf(w[w.length - 1]))}` : '';
     SK = { D, now, was, L, back, backOk, win, win0, wl };
-    $('#skSub').textContent = `${when} · where Super Cat went, all ${META.city} · 1.0× = no lean · lower is better`;
-    // the chart: each day for about three months up to D, the 6-day average, the usual band, the fair line
+    $('#skSub').textContent = `${when} · where Super Cat went, all ${META.city}${SK_OWN ? ", the MEs' own clients left out" : ''} · 1.0× = no lean · lower is better`;
+    // the chart: each day (faint: one day swings about ±0.6), the 6-working-day line, the usual band of that line, the no-lean line
     const T = skDays(Math.max(0, D - 95), D), Wd = 620, Hd = 200, L0 = 30, R0 = 8, T0 = 8, B0 = 20, y1 = Math.max(3, Math.ceil(Math.max(...T.map(r => r.f)) + .2));
     const X = i => L0 + (T.length > 1 ? i / (T.length - 1) : .5) * (Wd - L0 - R0), Y = v => T0 + (1 - v / y1) * (Hd - T0 - B0);
+    const inX = new Set(x.days);
     let g = band ? `<rect class="skband" x="${L0}" width="${Wd - L0 - R0}" y="${Y(band[1])}" height="${Y(band[0]) - Y(band[1])}"/>` : '';
     for (let v = 0; v <= y1; v++) g += `<line class="skgl" x1="${L0}" x2="${Wd - R0}" y1="${Y(v)}" y2="${Y(v)}"/><text class="skax" x="${L0 - 5}" y="${Y(v) + 3.5}" text-anchor="end">${v}×</text>`;
     g += `<line class="skfair" x1="${L0}" x2="${Wd - R0}" y1="${Y(1)}" y2="${Y(1)}"/><text class="skfairt" x="${L0 + 4}" y="${Y(1) - 4}">no lean</text>`;
     T.forEach((r, i) => { if (i === 0 || dOf(T[i - 1].d).getUTCMonth() !== dOf(r.d).getUTCMonth()) g += `<text class="skax" x="${X(i)}" y="${Hd - 5}">${MON3[dOf(r.d).getUTCMonth()]}</text>`; });
-    g += `<path class="skavg" d="${T.map((r, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(skAvg(r.d)).toFixed(1)}`).join('')}"/>`;
-    g += T.map((r, i) => `<circle class="skdt${r.d >= V.from && r.d <= V.to ? ' on' : ''}" cx="${X(i)}" cy="${Y(r.f)}" r="${r.d >= V.from && r.d <= V.to ? 4.5 : 3}"/>`).join('');
+    g += T.map((r, i) => `<circle class="skdt${inX.has(r.d) ? ' on' : ''}" cx="${X(i)}" cy="${Y(r.f)}" r="${inX.has(r.d) ? 3.5 : 2.6}"/>`).join('');
+    const pts = T.map((r, i) => { const p = skPool(r.d); return p ? `${X(i).toFixed(1)},${Y(p.f).toFixed(1)}` : null; });
+    g += `<path class="skavg" d="${pts.map((p, i) => p ? (i && pts[i - 1] ? 'L' : 'M') + p : '').join('')}"/>`;
+    const se2 = 2 * skSE(x);
+    const dn_ = T.map(r => 2 * skSE(r)).filter(v => isFinite(v)).sort((p, q) => p - q), dayNoise = dn_.length ? dn_[Math.floor(dn_.length / 2)].toFixed(1) : '0.6';   // one day's usual noise (2 SE, median)
     box.innerHTML =
-      `<div><div class="skbig">${x.f.toFixed(1)}<small>×</small></div><div class="sklab">Super Cat went to MEs who already do ${x.f.toFixed(1)} times as much Super Cat as those who got the other teams' appointments</div>` +
-      `<div class="skex">${esc(when)}: the <b>${n0(x.sc)} Super Cat appointments</b> went to MEs whose attended appts are usually <b>${pc0(x.scU)}</b> Super Cat; the <b>${n0(x.o)} other teams' appointments</b> went to MEs whose attended appts are usually <b>${pc0(x.oU)}</b> Super Cat.</div>` +
-      `<div class="skchg">${[ch(x.f, prev && prev.f, one && prev ? `from ${WD[dOf(prev.d).getUTCDay()]}` : 'from the period before'), avg !== null ? `6-day average <b>${avg.toFixed(1)}×</b>${avgWk !== null ? ` (${ch(avg, avgWk, 'in a week')})` : ''}` : ''].filter(Boolean).join(' · ')}</div></div>` +
+      `<div><div class="skbig">${x.f.toFixed(1)}<small>×</small></div><div class="sklab">Super Cat went to MEs who are usually given ${x.f.toFixed(1)} times as much Super Cat as those who got the other teams' appointments</div>` +
+      `<div class="skex">${isRange ? esc(when) : `${wl(x.days)} (${SK_P} working days)`}: the <b>${n0(x.sc)} Super Cat appointments</b> went to MEs who are usually given <b>${pc0(x.scU)}</b> Super Cat; the <b>${n0(x.o)} other teams' appointments</b> went to MEs who are usually given <b>${pc0(x.oU)}</b> Super Cat. Usually = of the appointments given to them in the ${SK_K} working days before each day.${SK_OWN ? ` Left out: <b>${n0(x.ownSc)} Super Cat</b> and ${n0(x.nOwn - x.ownSc)} other appointments that went to the ME's own clients (a business the same ME sold to 15+ days before).` : ''}</div>` +
+      `<div class="skchg">${[chg(x, prev, isRange ? 'from the period before' : `from the ${SK_P} working days before`),
+        mon && !isRange ? `${MON3[mS.getUTCMonth()]} so far <b>${mon.f.toFixed(1)}×</b>${pmon ? ` · ${MON3[pm.getUTCMonth()]} <b>${pmon.f.toFixed(1)}×</b>` : ''}` : ''].filter(Boolean).join(' · ')}</div></div>` +
       `<div><div class="skk">Each day${T.length ? ' since ' + fDate(dOf(T[0].d)) : ''}${band ? `<span>usual ${band[0].toFixed(1)}–${band[1].toFixed(1)}×</span>` : ''}</div>` +
-      `<svg class="skc" viewBox="0 0 ${Wd} ${Hd}" role="img" aria-label="Skewness factor each day, with the 6-day average">${g}<line class="skcross" x1="0" x2="0" y1="${T0}" y2="${Hd - B0}" visibility="hidden"/><rect class="skhit" x="${L0}" y="0" width="${Wd - L0 - R0}" height="${Hd}"/></svg>` +
-      `<div class="skkey"><span><i class="k1"></i>a day (click one to show it)</span><span><i class="k2"></i>6-day average</span>${band ? '<span><i class="k3"></i>usual range</span>' : ''}<span><i class="k4"></i>no lean (1.0×)</span></div></div>` +
+      `<svg class="skc" viewBox="0 0 ${Wd} ${Hd}" role="img" aria-label="Skewness factor: ${SK_P} working days, with each day">${g}<line class="skcross" x1="0" x2="0" y1="${T0}" y2="${Hd - B0}" visibility="hidden"/><rect class="skhit" x="${L0}" y="0" width="${Wd - L0 - R0}" height="${Hd}"/></svg>` +
+      `<div class="skkey"><span><i class="k2"></i>${SK_P} working days</span><span title="One day swings about ±${dayNoise} by chance; click a day to show the ${SK_P} working days up to it"><i class="k1"></i>one day (±${dayNoise})</span>${band ? '<span><i class="k3"></i>usual range</span>' : ''}<span><i class="k4"></i>no lean (1.0×)</span></div></div>` +
       `<div><div class="skk">Super Cat-heavy MEs<span>${wl(win)}</span></div>` +
       `<div class="sknote" style="margin-top:0"><b>${L.length} MEs</b> do more than twice ${esc(META.city)}'s Super Cat share of attended appts (${Math.round(now.sh * 100)}%) in the last ${SK_K} working days. Against the ${SK_K} before:</div>` +
       `<div class="sktrio"><div title="Super Cat-heavy in the ${SK_K} working days before, clearly normal now (under ${SK_NEAR}× ${esc(META.city)}'s share)"><b class="better">${backOk.length}</b><span>back to normal</span></div>` +
       `<div title="Super Cat-heavy now, and heavy or close to it before"><b>${still}</b><span>still heavy</span></div>` +
       `<div title="Super Cat-heavy now, clearly normal before (under ${SK_NEAR}× ${esc(META.city)}'s share)"><b class="${nw ? 'worse' : ''}">${nw}</b><span>newly heavy</span></div></div>` +
-      (L.length ? `<div class="sknote"><b>${leads} of the ${L.length}</b> lead a team: team leaders do <b>${leadSc}%</b> of their attended appts on Super Cat, other MEs <b>${othSc}%</b>.</div>` : '') +
+      (aS ? `<div class="sknote">Team leaders got <b>${pc0(tS / aS)}</b> of the Super Cat appointments with <b>${pc0(tG / aG)}</b> of all appointments given in the last ${SK_K} working days${L.length ? `; <b>${leads} of the ${L.length}</b> heavy MEs lead a team` : ''}.</div>` : '') +
       `<button type="button" class="btn skbtn" id="skOpen">See the ${L.length + backOk.length} MEs</button></div>`;
     const sv = box.querySelector('svg.skc');
     const at = ev => { const r = sv.getBoundingClientRect(), xv = (ev.clientX - r.left) / r.width * Wd; return Math.max(0, Math.min(T.length - 1, Math.round((xv - L0) / (Wd - L0 - R0) * (T.length - 1)))); };
     sv.addEventListener('mousemove', ev => {
-      if (!T.length) return; const i = at(ev), r = T[i], c = sv.querySelector('.skcross'), a = skAvg(r.d);
+      if (!T.length) return; const i = at(ev), r = T[i], c = sv.querySelector('.skcross'), p = skPool(r.d);
       c.setAttribute('x1', X(i)); c.setAttribute('x2', X(i)); c.setAttribute('visibility', 'visible');
-      tip(`<b>${fWD(r.d)}: ${r.f.toFixed(1)}×</b>${a !== null ? ` (6-day average ${a.toFixed(1)}×)` : ''}<br>${r.sc} Super Cat appointments went to MEs whose attended appts are usually ${pc0(r.scU)} Super Cat; the ${r.o} other teams' ones to MEs whose attended appts are usually ${pc0(r.oU)}`, ev);
+      tip(`<b>${fWD(r.d)}</b>${p ? `<br>${SK_P} working days to it: <b>${p.f.toFixed(1)}×</b> (±${(2 * skSE(p)).toFixed(1)})` : ''}<br>That day alone: ${r.f.toFixed(1)}× (±${(2 * skSE(r)).toFixed(1)}): ${r.sc} Super Cat appointments to MEs usually given ${pc0(r.scU)} Super Cat, the ${r.o} other teams' ones to MEs usually given ${pc0(r.oU)}`, ev);
     });
     sv.addEventListener('mouseleave', () => { untip(); sv.querySelector('.skcross').setAttribute('visibility', 'hidden'); });
     sv.addEventListener('click', ev => { if (!T.length) return; const t = T[at(ev)].d, p = PRESETS.find(z => z.a === t && z.b === t); if (p) setPreset(p.k); else setRange(t, t); render(true); });
+    void se2;
+  }
+  /* ---------- where the leads go (2026-11-26, the user: show how Super Cat reaches the Super Cat-heavy MEs) ----------
+     The TME picks the ME when fixing the appointment (98-99% stay with that ME). Against the area: the heavy MEs' share of each lead
+     type vs their share of ALL appointments in the same pincode and week. Heavy = judged on the 60 working days BEFORE the window
+     (own clients out, 30+ attended appts, over twice Mumbai's Super Cat share), so the window does not pick its own list. */
+  const SK_PIN = RAW.a.pin ? keep(b64(RAW.a.pin, Uint16Array), KA) : null;          // 0 = no pincode found
+  const SK_TL = RAW.tl && RAW.tl.a ? keep(b64(RAW.tl.a, Uint16Array), KA) : null;  // the TME's team leader on the appointment
+  const SK_TN = RAW.tl ? RAW.tl.nodes : [], SK_HD = TEAMS.indexOf('Hot Data'), SK_RV = TEAMS.indexOf('Revival (Expiry)');
+  const SK_WK0 = (dOf(0).getUTCDay() + 6) % 7;                                     // days from Monday on the first day
+  // deals from the deals data only (26 Nov 2026, the user: "deal closed shall be confirmed from the deal closed dump only"): each deal
+  // of the deals data (the page's deal records) is credited to the last appointment of the same business with the same ME on or
+  // before the deal day (the day after when none: the deals data dates holiday deals on the working day before), within 30 days.
+  // An appointment 'closed' = 1+ deal credited to it. The appointment's own 'Dealclosed' disposition is not used.
+  const SK_DEAL = (() => {
+    const out = new Uint8Array(N), idx = new Map();
+    for (let i = 0; i < N; i++) { const k = PID[i] + '|' + AME[i]; let a = idx.get(k); if (!a) { a = []; idx.set(k, a); } a.push(i); }
+    for (const a of idx.values()) a.sort((x, y) => AD[x] - AD[y]);
+    for (let j = 0; j < DLN; j++) {
+      if (!(DLW[j] > 0)) continue; const a = idx.get(DLPID[j] + '|' + DLME[j]); if (!a) continue;
+      let best = -1, next = -1;
+      for (const i of a) { if (AD[i] <= DLD[j]) { if (DLD[j] - AD[i] <= 30) best = i; } else { if (AD[i] === DLD[j] + 1) next = i; break; } }
+      const i = best >= 0 ? best : next; if (i >= 0) out[i] = 1;
+    }
+    return out;
+  })();
+  function renderSkArea(D) {
+    const card = $('#skaCard'), box = $('#skaBody'); if (!card || !box) return;
+    if (TM || !SK_ON || !SK_PIN) { card.hidden = true; return; }
+    card.hidden = false;
+    const inR = SK_WORK.filter(d => d >= V.from && d <= V.to), W = inR.length >= 20 ? inR : SK_WORK.filter(d => d <= D).slice(-30);
+    const i0 = W.length ? SK_WORK.indexOf(W[0]) : -1, bef = i0 >= 0 ? SK_WORK.slice(Math.max(0, i0 - 60), i0) : [];
+    if (W.length < 10 || bef.length < 30) { $('#skaSub').textContent = ''; box.innerHTML = '<p class="empty">Too few working days before these dates to judge the Super Cat-heavy MEs.</p>'; return; }
+    const H = skMix(bef, 30).heavy, wk = d => Math.floor((d + SK_WK0) / 7), Wset = new Set(W), last = W[W.length - 1];
+    const isH = m => H.has(m), own = i => !!(SK_OWN && SK_OWN[i]);
+    const cat = i => SK_SC[ATT[i]] ? (own(i) ? 'sco' : 'scn') : ATT[i] === SK_HD ? 'hd' : ATT[i] === SK_RV ? 'rv' : null;
+    const tName = i => SK_TL && SK_TL[i] < SK_TN.length ? SK_TN[SK_TL[i]][1] : 'No team on the record';
+    // the area: each pincode and week, all appointments, the heavy MEs' share
+    const A = new Map(); let nAll = 0, nPin = 0;
+    for (const d of W) for (const i of SKD[d]) { nAll++; const p = SK_PIN[i]; if (!p) continue; nPin++; const k = p * 4096 + wk(d), x = A.get(k) || [0, 0]; x[0]++; if (isH(AME[i])) x[1]++; A.set(k, x); }
+    const L = { scn: [0, 0, 0], sco: [0, 0, 0], hd: [0, 0, 0], rv: [0, 0, 0] }, T = new Map(), HD = new Map();
+    for (const d of W) for (const i of SKD[d]) {
+      const c = cat(i); if (!c) continue;
+      const h = isH(AME[i]), p = SK_PIN[i];
+      if (p) { const x = A.get(p * 4096 + wk(d)), e = x[1] / x[0]; L[c][0]++; L[c][1] += h ? 1 : 0; L[c][2] += e;
+        if (c === 'scn') { const t = T.get(tName(i)) || [0, 0, 0, 0, 0, 0, 0]; t[0]++; t[1] += h ? 1 : 0; t[2] += e; T.set(tName(i), t); } }
+      // closing: appointments the TME fixed only (26 Nov 2026: rows with no TME fix are deal records turned into rows, 96% Dealclosed)
+      if (c === 'scn' && AO[i] <= 2 && p) { const t = T.get(tName(i)) || [0, 0, 0, 0, 0, 0, 0]; if (h) { t[3]++; t[4] += SK_DEAL[i]; } else { t[5]++; t[6] += SK_DEAL[i]; } T.set(tName(i), t); }
+      if (c === 'hd' && p) { const x = HD.get(ATM[i]) || [0, 0, 0, 0]; if (h) { x[0]++; x[1] += SK_DEAL[i]; } else { x[2]++; x[3] += SK_DEAL[i]; } HD.set(ATM[i], x); }
+    }
+    // habit: the same TME sent the same ME an appointment for a different business in the 30 days before
+    const R = { h: [0, 0], o: [0, 0], hd: [0, 0] }, seen = new Map();
+    for (let d = Math.max(0, W[0] - 31); d <= last; d++) for (const i of SKD[d]) {
+      const k = ATM[i] * 65536 + AME[i]; let arr = seen.get(k); if (!arr) { arr = []; seen.set(k, arr); }
+      if (Wset.has(d)) { const c = cat(i); if (c === 'scn' || c === 'hd') { const r = arr.some(([dd, pd]) => dd < d && d - dd <= 30 && pd !== PID[i]) ? 1 : 0, key = c === 'hd' ? 'hd' : isH(AME[i]) ? 'h' : 'o'; R[key][0]++; R[key][1] += r; } }
+      arr.push([d, PID[i]]); if (arr.length > 80) arr.splice(0, arr.length - 80);
+    }
+    // Hot Data on the same TMEs' appointments: the heavy MEs' deals vs the other MEs' rate per appointment given
+    let hdAct = 0, hdExp = 0, hdN = 0;
+    for (const x of HD.values()) if (x[2] >= 5 && x[0]) { hdAct += x[1]; hdExp += x[0] * x[3] / x[2]; hdN += x[0]; }
+    const lean = x => x[2] ? x[1] / x[2] : null, fx = v => v === null ? '—' : v.toFixed(2) + '×', pc = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+    const rows = [['scn', 'Super Cat', "not the ME's own clients"], ['sco', 'Super Cat', "the ME's own clients"], ['hd', 'Hot Data', ''], ['rv', 'Revival (Expiry)', '']];
+    const mx = Math.max(2.5, ...rows.map(r => lean(L[r[0]]) || 0)) * 1.05, pct = v => Math.min(100, v / mx * 100);
+    const bars = rows.map(([k, nm, sub]) => { const v = lean(L[k]), x = L[k];
+      return `<div class="skrow" title="${n0(x[0])} appointments with a pincode: ${n0(x[1])} went to the Super Cat-heavy MEs; their share of the same pincodes' appointments in the same weeks would give ${n0(Math.round(x[2]))}"><span class="nm">${nm}${sub ? `<small>${sub}</small>` : ''}</span><span class="sktrack"><i class="${v !== null && v >= 1 ? 'hi' : ''}" style="width:${v === null ? 0 : pct(v)}%"></i><b style="left:${pct(1)}%"></b></span><span class="v">${fx(v)}</span></div>`; }).join('');
+    const teams = [...T.entries()].filter(([, t]) => t[0] >= 30).sort((a, b) => (lean(b[1]) || 0) - (lean(a[1]) || 0));
+    const tbl = teams.length ? `<table class="skt"><thead><tr><th>Super Cat TME team</th><th>Appts</th><th>To heavy MEs</th><th title="Attended appointments a TME fixed that led to a deal in the deals data (same business, same ME, within 30 days)">Closed per attended<br>heavy · other MEs</th></tr></thead><tbody>` +
+      teams.map(([nm, t]) => `<tr><td>${esc(nm)}</td><td>${n0(t[0])}</td><td><b>${fx(lean(t))}</b></td><td>${pc(t[4], t[3])} · ${pc(t[6], t[5])}</td></tr>`).join('') + `</tbody></table>` : '<p class="empty">Too few Super Cat appointments with a pincode.</p>';
+    $('#skaSub').textContent = `${fRange(W[0], last)} (${W.length} working days) · ${H.size} Super Cat-heavy MEs, judged on the ${bef.length} working days before · 1.0× = their share of the same area's appointments · own clients counted apart`;
+    box.innerHTML =
+      `<div><div class="skk">Where each lead type goes<span>× the area</span></div>${bars}<div class="skcov">The TME picks the ME when fixing the appointment. Area = the same pincode in the same week. Pincode found for ${pc(nPin, nAll)} of the appointments. Closed = a deal in the deals data (same business and ME, within 30 days) after an appointment a TME fixed.</div></div>` +
+      `<div><div class="skk">Super Cat, the ME's own clients left out, by TME team</div>${tbl}</div>` +
+      `<div><div class="skk">Habit and Hot Data</div>` +
+      `<div class="sknote" style="margin-top:0">Same TME, same ME again (a different business, within 30 days): Super Cat to the heavy MEs <b>${pc(R.h[1], R.h[0])}</b>, to the other MEs <b>${pc(R.o[1], R.o[0])}</b>; Hot Data <b>${pc(R.hd[1], R.hd[0])}</b>.</div>` +
+      `<div class="sknote">Hot Data: the heavy MEs got <b>${fx(lean(L.hd))}</b> their area's share. On the same TMEs' Hot Data, <b>${n0(hdAct)}</b> of their appointments led to a deal where the other MEs' rate gives <b>${n0(Math.round(hdExp))}</b>${hdExp ? ` (${hdAct >= hdExp ? '+' : '−'}${Math.abs(Math.round((hdAct / hdExp - 1) * 100))}% per appointment given)` : ''}, on ${n0(hdN)} appointments.</div></div>`;
   }
   // the list: in the side window
   function openSkew() {
@@ -1235,9 +1356,9 @@
       const a = Math.max(0, Math.round((m - FY0) / 864e5)), b = Math.min(D - 1, Math.round((Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1) - FY0) / 864e5) - 1);
       Mo.push({ k: MON3[m.getUTCMonth()], x: skMix(skRange(a, b), 15) });
     }
-    const day = new Map(); for (const i of SKD[D]) { const x = day.get(AME[i]) || [0, 0]; x[0]++; if (SK_SC[ATT[i]]) x[1]++; day.set(AME[i], x); }
+    const day = new Map(); for (const i of SKD[D]) { if (!skIn(i)) continue; const x = day.get(AME[i]) || [0, 0]; x[0]++; if (SK_SC[ATT[i]]) x[1]++; day.set(AME[i], x); }
     const who = m => {
-      const l = ME_LEAD[m];
+      const l = leadsAt(m, D) ? ME_LEAD[m] : -1;   // by month (2026-11-26)
       if (l >= 0) return DEPTH[l] === 0 ? 'ME head' : DEPTH[l] === 1 ? 'Manager' : `Team leader · Manager ${esc(MGRS[MGUP[l]][1])}`;
       const mg = mgOf(ME_NODE[m]); return mg >= 0 ? 'Manager ' + esc(MGRS[mg][1]) : '';
     };
@@ -1257,6 +1378,7 @@
       (notCounted.length ? `<p class="cmpn">Also Super Cat-heavy in the ${SK_K} working days before (${wl(win0)}) but not counted as back to normal yet: ${notCounted.map(m => { const n = (now.v.get(m) || [0])[0], r = skRatio(now, m); return `<button type="button" class="lnk" data-me="${m}">${esc(MES[m][1])}</button> (${n < SK_MIN ? 'too few attended appts now' : `${pcOf(now, m)}% now, close to the line`})`; }).join(' · ')}.</p>` : ''));
   }
   $('#skCard') && $('#skCard').addEventListener('click', ev => { if (ev.target.closest('#skOpen')) openSkew(); });
+  /*SKEW:end*/
 
   /* ---------- where the appointments came from: three tiles ---------- */
   // TME mode (2026-10-30, the user: every TME team on its own, not under 'Other teams'): the teams in order, those with a
@@ -3330,7 +3452,6 @@
   function writeHash() {
     const h = new URLSearchParams();
     if (TM) h.set('mode', 'tme');
-    if (SK_ON) h.set('sk', '1');
     if (TM && V.tsec !== 'teams') h.set('sec', V.tsec);
     if (V.view !== 'table') h.set('view', V.view);   // the Table page is the default (the ME Head works there)
     if (scoped() && V.scope !== OUTN) h.set('team', MGRS[V.scope][0]);

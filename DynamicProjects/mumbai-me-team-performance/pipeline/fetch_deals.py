@@ -157,6 +157,7 @@ MIS_SQL = """SELECT d.dealclosed_date, TRIM(d.parentid), d.dc_genio, TRIM(LEADIN
              WHERE d.dealclosed_date {when}
                AND d.jda_flag IN (0, 3)
                AND TRIM(IFNULL(d.me, '')) <> ''
+               AND NOT (d.dc_genio > 0 AND IFNULL(d.collection, 0) = 0)   -- 26 Nov 2026: a deal row with no collection is not on the sales dashboard (Mumbai Oct +1)
                AND (   (w.emp IS NOT NULL AND w.city = %s AND w.emptype = 'ME' AND w.team NOT IN ('Corporate', 'JDA'))
                     OR (w.emp IS NULL AND h.city = %s))"""
 

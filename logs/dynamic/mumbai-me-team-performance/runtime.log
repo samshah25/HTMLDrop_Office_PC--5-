@@ -265,3 +265,82 @@
 [2026-11-23 20:01:52]    ok (57s)
 [2026-11-23 20:01:52] ===== done in 279s =====
 [2026-11-23T20:01:52] Data generation completed successfully.
+
+[2026-11-26T12:13:41] Running data generation (main.py)...
+[2026-11-26 12:13:45] ===== ME dashboards refresh =====
+[2026-11-26 12:13:45] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-26 12:13:46] -- fetch_data.py
+[2026-11-26 12:14:14]    [12:14:08] mumbai: 54,311 appointments given and 6,350 not counted, 2026-04-01 to 2026-11-24 (22s)
+[2026-11-26 12:14:14]    [12:14:13] Saved cache\raw.pkl
+[2026-11-26 12:14:14]    ok (28s)
+[2026-11-26 12:14:14] -- fetch_api.py
+[2026-11-26 12:14:57]    [12:14:20] Appointment table runs to 2026-11-24; building 2026-11-25 to 2026-11-25 from the allocation API (cut-off 2026-11-26 00:00:00)
+[2026-11-26 12:14:57]    [12:14:24]   mumbai partition: 55,636 records since 2026-10-12 (5s)
+[2026-11-26 12:14:57]    [12:14:54]   remote: 441 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   delhi: 59 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   bangalore: 34 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   pune: 64 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   chennai: 8 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   hyderabad: 26 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:54]   kolkata: 11 appointments by Mumbai TMEs
+[2026-11-26 12:14:57]    [12:14:56] Provisional appointments given: 2026-11-25 285 (396 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-26 12:14:57]    ok (43s)
+[2026-11-26 12:14:57] -- fetch_deals.py
+[2026-11-26 12:17:45]    [12:17:16] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,624.96 since 2026-04-01 to 2026-11-25, 16,753 deal rows, 168 MEs (7s)
+[2026-11-26 12:17:45]    [12:17:16] Deals dump runs to 2026-11-25; the rolling table added 0 deal rows (nothing newer)
+[2026-11-26 12:17:45]    [12:17:16] Deals for 53,567 businesses: 14,322 deal rows since 2026-03-30 (136s). Saved cache\deals.pkl
+[2026-11-26 12:17:45]    [12:17:44] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (28s). Saved cache\hr.pkl
+[2026-11-26 12:17:45]    ok (167s)
+[2026-11-26 12:17:45] -- fetch_history.py
+
+[2026-11-26T12:55:49] Running data generation (main.py)...
+[2026-11-26 12:56:03] ===== ME dashboards refresh =====
+[2026-11-26 12:56:03] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-26 12:56:04] -- fetch_data.py
+[2026-11-26 12:56:38]    [12:56:33] mumbai: 54,311 appointments given and 6,350 not counted, 2026-04-01 to 2026-11-24 (25s)
+[2026-11-26 12:56:38]    [12:56:38] Saved cache\raw.pkl
+[2026-11-26 12:56:38]    ok (35s)
+[2026-11-26 12:56:38] -- fetch_api.py
+[2026-11-26 12:57:18]    [12:56:44] Appointment table runs to 2026-11-24; building 2026-11-25 to 2026-11-25 from the allocation API (cut-off 2026-11-26 00:00:00)
+[2026-11-26 12:57:18]    [12:56:49]   mumbai partition: 55,636 records since 2026-10-12 (5s)
+[2026-11-26 12:57:18]    [12:57:15]   remote: 441 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   delhi: 59 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   bangalore: 34 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   pune: 64 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   chennai: 8 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   hyderabad: 26 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:15]   kolkata: 11 appointments by Mumbai TMEs
+[2026-11-26 12:57:18]    [12:57:18] Provisional appointments given: 2026-11-25 285 (396 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-26 12:57:18]    ok (40s)
+[2026-11-26 12:57:18] -- fetch_deals.py
+[2026-11-26 13:00:00]    [12:59:33] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,625.96 since 2026-04-01 to 2026-11-25, 16,754 deal rows, 168 MEs (7s)
+[2026-11-26 13:00:00]    [12:59:33] Deals dump runs to 2026-11-25; the rolling table added 0 deal rows (nothing newer)
+[2026-11-26 13:00:00]    [12:59:34] Deals for 53,567 businesses: 14,322 deal rows since 2026-03-30 (132s). Saved cache\deals.pkl
+[2026-11-26 13:00:00]    [12:59:59] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (26s). Saved cache\hr.pkl
+[2026-11-26 13:00:00]    ok (161s)
+[2026-11-26 13:00:00] -- fetch_history.py
+350 not counted, 2026-04-01 to 2026-11-24 (19s)
+[2026-11-26 12:58:45]    [12:58:45] Saved cache\raw.pkl
+[2026-11-26 12:58:45]    ok (24s)
+[2026-11-26 12:58:45] -- fetch_api.py
+[2026-11-26 12:59:28]    [12:58:49] Appointment table runs to 2026-11-24; building 2026-11-25 to 2026-11-25 from the allocation API (cut-off 2026-11-26 00:00:00)
+[2026-11-26 12:59:28]    [12:58:54]   mumbai partition: 55,636 records since 2026-10-12 (5s)
+[2026-11-26 12:59:28]    [12:59:25]   remote: 441 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   delhi: 59 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   bangalore: 34 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   pune: 64 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   chennai: 8 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   hyderabad: 26 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:25]   kolkata: 11 appointments by Mumbai TMEs
+[2026-11-26 12:59:28]    [12:59:28] Provisional appointments given: 2026-11-25 285 (396 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-26 12:59:29]    ok (44s)
+[2026-11-26 12:59:29] -- fetch_deals.py
+[2026-11-26 13:02:11]    [13:01:43] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,624.96 since 2026-04-01 to 2026-11-25, 16,753 deal rows, 168 MEs (8s)
+[2026-11-26 13:02:11]    [13:01:43] Deals dump runs to 2026-11-25; the rolling table added 0 deal rows (nothing newer)
+[2026-11-26 13:02:11]    [13:01:44] Deals for 53,567 businesses: 14,322 deal rows since 2026-03-30 (133s). Saved cache\deals.pkl
+[2026-11-26 13:02:11]    [13:02:11] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (27s). Saved cache\hr.pkl
+[2026-11-26 13:02:12]    ok (163s)
+[2026-11-26 13:02:12] -- fetch_history.py

@@ -95,12 +95,15 @@
         <div id="meList"></div>
       </div>
     </section>
-    <!-- Super Cat skewness (2026-10-19): moved to the end and hidden on 31 Oct 2026 (the user is still working on it);
-         it shows only with sk=1 in the page link -->
+    <!--SKEW:start--><!-- Super Cat skewness (2026-10-19): only in the sounak.biswas page (25 Nov 2026) -->
     <section class="card skcard" id="skCard" aria-labelledby="skH" hidden>
       <div class="card-h"><div><h2 id="skH">Skewness factor · Super Cat</h2><p class="sub" id="skSub"></p></div></div>
       <div class="skb" id="skBody"></div>
     </section>
+    <section class="card skcard" id="skaCard" aria-labelledby="skaH" hidden>
+      <div class="card-h"><div><h2 id="skaH">Where the leads go · Super Cat-heavy MEs against their area</h2><p class="sub" id="skaSub"></p></div></div>
+      <div class="skb ska" id="skaBody"></div>
+    </section><!--SKEW:end-->
   </div>
   <div id="vTable" hidden>
     <section class="card" id="bdCard" aria-labelledby="bdH" hidden>

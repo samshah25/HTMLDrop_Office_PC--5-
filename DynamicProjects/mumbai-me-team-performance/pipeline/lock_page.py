@@ -105,6 +105,8 @@ def save_keys(k):
 
 
 def page_file(page):
+    if page == "full_sk":   # the full page with the skewness card (sounak.biswas only, 25 Nov 2026)
+        return kitpaths.FULL_SK if kitpaths.SKEW_PAGE else None
     return FULL if page == "full" else os.path.join(MGR, f"{page}.html") if page and page.isalnum() else None
 
 

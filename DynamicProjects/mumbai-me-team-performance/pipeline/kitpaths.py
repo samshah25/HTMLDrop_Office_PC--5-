@@ -38,3 +38,6 @@ else:
     LOGDIR = PIPE
 FULL = os.environ.get("ME_REVIEW_OUT") or FULL
 MGR = os.path.join(os.path.dirname(FULL), "manager_pages")
+# the full page WITH the skewness card, opened only by the sounak.biswas login (25 Nov 2026; Mumbai only), beside the full page
+SKEW_PAGE = CITY == "mumbai"
+FULL_SK = FULL[:-5] + " - Sounak.html"

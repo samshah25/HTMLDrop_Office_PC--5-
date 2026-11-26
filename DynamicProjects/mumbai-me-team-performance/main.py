@@ -236,6 +236,9 @@ if __name__ == "__main__":
         run("fetch_data.py")
         run_optional("fetch_api.py")
         run("fetch_deals.py")
+        if kitpaths.SKEW_PAGE:   # past paid deals of the businesses: the skewness card leaves out the ME's own clients (25 Nov 2026)
+            run_soft("fetch_history.py")
+            run_soft("fetch_pincodes.py")   # appointment pincodes: the card's 'where the leads go' section (26 Nov 2026)
         e120 = env_file("ME_CALLS_DB_ENV", "db_120.env")   # the TMEs' dialer calls (server 120), for TME mode's funnel
         if e120: ENV["ME_CALLS_DB_ENV"] = e120
         run_soft("fetch_calls.py")

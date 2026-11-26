@@ -220,18 +220,70 @@ def main():
     else:
         page = assemble(blob)
         how = "built from the design files"
+    # the skewness card (25 Nov 2026, the user: "never be shown to Kushal and other logins. only show it to Sounak Biswas"):
+    # only the sounak.biswas page (kitpaths.FULL_SK, Mumbai) has it; every other page has it cut out (strip_skew)
+    if kitpaths.SKEW_PAGE:
+        # the ME's own clients (25 Nov 2026, the user: the factor should leave them out): a business with a paid deal closed by the
+        # same ME 15+ days before the appointment (cache\own_hist.pkl from fetch_history.py, deals since Jan 2024). Only this page
+        # gets the flag.
+        hp_ = os.path.join(kitpaths.CACHE, "own_hist.pkl"); blob_sk = blob; a_sk = dict(data["a"])
+        if os.path.exists(hp_):
+            OH = pickle.load(open(hp_, "rb"))["deals"]
+            own = []
+            for x in recs:
+                code = str(MES[x[1]][0]).strip().lstrip("0") if 0 <= x[1] < len(MES) else ""
+                cut = fy + datetime.timedelta(days=x[0] - 15)
+                own.append(1 if code and x[7] and any(d <= cut and m == code for d, m in OH.get(str(x[7]).strip(), ())) else 0)
+            a_sk["own"] = pack("B", own)
+            log(f"Own clients (skewness card): {sum(own):,} of {len(own):,} appointments")
+        else:
+            log("Own clients: no cache\\own_hist.pkl (fetch_history.py) - the skewness card keeps them in")
+        # the appointment's pincode (26 Nov 2026, 'where the leads go'): the TME's fix for that business on the appointment day (else the
+        # latest fix in the 30 days before), from cache\pins.pkl (fetch_pincodes.py, allocation API). 0 = not found.
+        pp_ = os.path.join(kitpaths.CACHE, "pins.pkl")
+        if os.path.exists(pp_):
+            FX = pickle.load(open(pp_, "rb"))["fix"]; PINS = {"": 0}; pin = []
+            for x in recs:
+                day = fy + datetime.timedelta(days=x[0]); d0, d1, lo = str(day), str(day + datetime.timedelta(days=1)), str(day - datetime.timedelta(days=30))
+                c = [f for f in FX.get(str(x[7]).strip(), ()) if lo <= f[0] <= d1]
+                best = max([f for f in c if f[1] in (d0, d1)] or c or [("", "", "")])
+                pin.append(PINS.setdefault(best[2], len(PINS)))
+            a_sk["pin"] = pack("H", pin)
+            log(f"Pincodes (skewness card): found for {sum(1 for v in pin if v):,} of {len(pin):,} appointments ({len(PINS) - 1} pincodes)")
+        else:
+            log("Pincodes: no cache\\pins.pkl (fetch_pincodes.py) - the card's 'where the leads go' section is left out")
+        if len(a_sk) != len(data["a"]):
+            data_sk = dict(data); data_sk["a"] = a_sk
+            blob_sk = json.dumps(data_sk, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
+        sk = assemble(blob_sk); tmp = kitpaths.FULL_SK + ".tmp"
+        open(tmp, "w", encoding="utf-8").write(sk); os.replace(tmp, kitpaths.FULL_SK)
+        log(f"Wrote {kitpaths.FULL_SK} ({len(sk) / 1e6:.1f} MB, with the skewness card; for the sounak.biswas login only)")
+    page = strip_skew(page)
     tmp = PAGE + ".tmp"
     open(tmp, "w", encoding="utf-8").write(page)
     os.replace(tmp, PAGE)
-    log(f"Wrote {PAGE} ({len(page) / 1e6:.1f} MB, {how})")
+    log(f"Wrote {PAGE} ({len(page) / 1e6:.1f} MB, {how}; no skewness card)")
     # one page per manager under the ME head, each with only that manager's line (2 Nov 2026; served behind a login by
     # serve_dashboard.py), always built from the design files
     if "--no-managers" not in sys.argv:
         import manager_pages
-        manager_pages.build(data, assemble, os.path.join(os.path.dirname(PAGE), "manager_pages"), log)
+        manager_pages.build(data, lambda b: strip_skew(assemble(b)), os.path.join(os.path.dirname(PAGE), "manager_pages"), log)
         # the sign-in page for HTML Drop: every page encrypted in one file, upload\Mumbai ME Team Performance.html (5 Nov 2026)
         import lock_page
         lock_page.build(log)
+
+
+SKEW_JS = re.compile(r"/\*SKEW:start\*/.*?/\*SKEW:end\*/", re.S)
+SKEW_HTML = re.compile(r"<!--SKEW:start-->.*?<!--SKEW:end-->", re.S)
+
+
+def strip_skew(page):
+    """cut the skewness card out of a page: its script (left as an empty renderSkew), its styles and its card (25 Nov 2026)"""
+    page = SKEW_JS.sub(lambda m: "function renderSkew() {}" if "function renderSkew" in m.group(0) else "", page)
+    page = SKEW_HTML.sub("", page)
+    for w in ("skCard", "skaCard", "Skewness", "skBody", "openSkew", "SKEW:", "leads go"):
+        assert w not in page, f"skewness left in a page: {w}"
+    return page
 
 
 def assemble(blob):
