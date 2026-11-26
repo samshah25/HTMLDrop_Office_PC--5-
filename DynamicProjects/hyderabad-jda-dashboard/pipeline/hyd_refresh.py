@@ -378,15 +378,15 @@ def load_cat_cache():
         try:
             with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
                 c = json.load(f)
-            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 7:
+            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 8:
                 c.setdefault("emps", [])
                 c.setdefault("docids", [])
                 c.setdefault("sql_full_jds", False)
                 return c
-            log("Category cache schema upgraded to v7 (distinct docids with JDA/JDS toggle); rebuilding cache.")
+            log("Category cache schema upgraded to v8 (distinct docids; JDA incl. JDA-B2B, JDS, Self Signup); rebuilding cache.")
         except Exception as e:
             log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
-    return {"version": 7, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False, "sql_full_jds": False}
+    return {"version": 8, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False, "sql_full_jds": False}
 
 
 def save_cat_cache(cache):
@@ -480,15 +480,15 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
             continue
         t_up = str(team_name or "").strip().upper()
         fl_i = int(flag or 0)
-        if fl_i == 10 or t_up == "ANONYMOUS":
-            continue
-        is_jda = (t_up == "JDA")
+        is_self = (fl_i == 10 or t_up == "ANONYMOUS")
+        # Matches JD Sales Dashboard: jda_flag=3 (B2B) is JDA(B2B), jda_flag=10 (Anonymous) is Self Signup
+        is_jda = (t_up == "JDA" or fl_i == 3)
         me_c = "" if str(me or "").strip() in ("", "999999999", "\\N") else str(me).strip()
         tme_c = "" if str(tme or "").strip() in ("", "999999999", "\\N") else str(tme).strip()
-        if not is_jda and not me_c and not tme_c:
+        if not is_self and not is_jda and not me_c and not tme_c:
             continue
-        tm = 0 if is_jda else 1
-        owner = (me_c or tme_c) if (is_jda or t_up == "ME") else (tme_c or me_c)
+        tm = 2 if is_self else (0 if is_jda else 1)
+        owner = "" if is_self else ((me_c or tme_c) if (is_jda or t_up == "ME") else (tme_c or me_c))
         all_docs.add(docid)
         cinfo = doc_cat.get(docid)
         if cinfo:
@@ -603,13 +603,12 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
                     continue
                 fl = int(to_float(row.get("jda_flag")) or 0)
                 tname = (row.get("final_team_type_name") or "").strip()
-                if fl == 10 or tname.upper() == "ANONYMOUS":
-                    continue
+                is_self = (fl == 10 or tname.upper() == "ANONYMOUS")
                 me_c = (row.get("me") or "").strip()
                 tme_c = (row.get("tme") or "").strip()
-                if tname.upper() != "JDA" and me_c in ("", "999999999", "\\N") and tme_c in ("", "999999999", "\\N"):
+                if not is_self and tname.upper() != "JDA" and fl != 3 and me_c in ("", "999999999", "\\N") and tme_c in ("", "999999999", "\\N"):
                     continue
-                if tname.upper() != "JDA" and fl == 0:
+                if not is_self and tname.upper() != "JDA" and fl == 0:
                     has_solo_jds = True
                 ds = (row.get("dealclosed_date") or "").strip()[:10]
                 if len(ds) == 10:
@@ -670,10 +669,7 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
                                 WHERE dealclosed_date BETWEEN %s AND %s
                                   AND sales_branch = %s
                                   AND dc_genio > 0
-                                  AND fresh IN (0, 1)
-                                  AND IFNULL(jda_flag, 0) != 10
-                                  AND UPPER(TRIM(IFNULL(final_team_type_name, ''))) != 'ANONYMOUS'
-                                  AND NOT (TRIM(IFNULL(me, '')) IN ('', '999999999') AND TRIM(IFNULL(tme, '')) IN ('', '999999999'))""", (a, b, BRANCH))
+                                  AND fresh IN (0, 1)""", (a, b, BRANCH))
                 for day, docid, pin, mr, fresh, flag, tname, me, tme, dc, rv in cur.fetchall():
                     ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
                     raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 0), tname, me, tme, to_float(dc), to_float(rv)))
@@ -815,7 +811,7 @@ def load_category_deals(env, pin_area, areas, notes, full=False, name_map=None, 
     ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
     ly_start, ly_end = datetime.date(fy_year - 1, 4, 1), year_back(end_d)
 
-    cache = {"version": 7, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False} if seed_dir else load_cat_cache()
+    cache = {"version": 8, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False, "sql_full_jds": False} if seed_dir else load_cat_cache()
     changed = False
     if fill_emp_names_from_map(cache, name_map or {}):
         changed = True

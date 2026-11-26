@@ -1699,13 +1699,13 @@ function catEmpAllowed() {
 }
 const r2 = v => Math.round((v || 0) * 100) / 100;
 const catTeamOk = tm => S.catTeam === 'all' || (S.catTeam === 'jda' ? tm === 0 : tm === 1);
-const catTeamLbl = () => S.catTeam === 'jda' ? 'JDA' : S.catTeam === 'jds' ? 'JDS (TME & ME)' : 'All (JDA + JDS)';
+const catTeamLbl = () => S.catTeam === 'jda' ? 'JDA (incl. B2B)' : S.catTeam === 'jds' ? 'JDS (TME & ME)' : 'All (JDA + JDS + Self Signup)';
 const catTeamShort = () => S.catTeam === 'jda' ? 'JDA' : S.catTeam === 'jds' ? 'JDS' : 'Rep';
 function computeCatAgg(winOverride) {
   const W = winOverride || catWindow();
   const nC = CATD.cats.length, nS = CATD.subcats.length, hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   const nE = hasEmps ? CATD.emps.length : 0;
-  const mgrF = hasEmps && S.catTeam !== 'jds' ? catEmpAllowed() : null;
+  const mgrF = hasEmps && S.catTeam === 'jda' ? catEmpAllowed() : null;
   const cLy = Array.from({ length: nC }, () => new Set()), cTy = Array.from({ length: nC }, () => new Set());
   const cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
   const sLy = Array.from({ length: nS }, () => new Set()), sTy = Array.from({ length: nS }, () => new Set());
@@ -1798,7 +1798,7 @@ function computeCatAgg(winOverride) {
 function computeSecuredBy(ci, si) {
   const W = catWindow(), hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   if (!hasEmps) return [];
-  const mgrF = S.catTeam !== 'jds' ? catEmpAllowed() : null;
+  const mgrF = S.catTeam === 'jda' ? catEmpAllowed() : null;
   const map = new Map();
   for (const r of CATD.rows) {
     const [yr, k, di, loc, rsi, fr, ei, tm, rv] = r;
@@ -1909,8 +1909,8 @@ function pageCategories() {
   if (S.catTeam !== 'jda' && !CATD.jds_full) {
     h += note(`Showing joint JDS deals from the offline CSV seed (which was exported with <code>jda_flag IN (1,2)</code>). Run <b>python main.py</b> on the office PC with <code>db_216.env</code> to pull all solo &amp; joint JDS (TME &amp; ME) deals directly from SQL.`);
   }
-  if (S.mgr >= 0 && S.catTeam === 'jds') {
-    h += note(`Manager filter (<b>${esc(mgrName(S.mgr))}</b>) applies to JDA reporting lines only; showing all Hyderabad JDS (TME &amp; ME) deals.`);
+  if (S.mgr >= 0 && S.catTeam !== 'jda') {
+    h += note(`Manager filter (<b>${esc(mgrName(S.mgr))}</b>) applies to JDA reporting lines only; showing all Hyderabad ${esc(catTeamLbl())} deals.`);
   } else if (S.mgr >= 0 && mgrF) {
     h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active deal-securing employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} deals secured by these employees.`);
   }
@@ -2091,7 +2091,7 @@ function pageCategories() {
     )}</div>`;
   }
 
-  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>; <b>JDA</b> = <code>final_team_type_name = 'JDA'</code>, <b>JDS</b> = TME &amp; ME teams) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>; <b>JDA</b> = JDA + JDA(B2B) [<code>jda_flag 1,2,3</code>], <b>JDS</b> = TME &amp; ME teams, <b>All</b> = JDA + JDS + Self Signup) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
 }
 
