@@ -56,3 +56,11 @@
 2026-11-25 15:58:37  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 10633 unique (docid, version) deals, 590 emps (10522/10633 cat-matched)
 2026-11-25 15:58:37  Categories (cache): 26 categories, 1080 sub-categories, 590 emps, 10633 distinct docids, 12939 day-doc rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
 2026-11-25 15:58:39  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 590 emps)
+2026-11-26 15:18:12  === Hyderabad dashboard category-only refresh ===
+2026-11-26 15:18:15  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 12289.5 JDA deals (SUM dc_genio), 590 emps (12175.0/12289.5 cat-matched)
+2026-11-26 15:18:16  Categories (cache): 26 categories, 1080 sub-categories, 590 emps, 12808 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-26 15:18:17  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 590 emps)
+2026-11-26 16:01:53  === Hyderabad dashboard category-only refresh ===
+2026-11-26 16:01:56  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 13221.0 JDA+JDS deals (SUM dc_genio), 908 emps (13102.0/13221.0 cat-matched)
+2026-11-26 16:01:57  Categories (cache): 26 categories, 1080 sub-categories, 908 emps, 14633 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
+2026-11-26 16:01:58  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 908 emps)

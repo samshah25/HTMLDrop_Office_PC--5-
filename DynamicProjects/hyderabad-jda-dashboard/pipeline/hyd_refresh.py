@@ -9,8 +9,9 @@ Sources:
 - Sales (optional): db_paidcontracts.daily_deals_closed_dump, through pipeline\db_216.env. Without that file the page
   shows presentations only and says so.
 - Category YoY deals (optional, same login): ops_analytics.tbl_modified_deal_level_data joined with
-  vertical_owner.tbl_company_vertical_mapping_SB on docid, counting distinct docids (COUNT(DISTINCT docid)) for current FY vs same dates last FY.
-  Incremental refresh: pre-aggregated daily totals with compact integer docid keys are stored in pipeline\cat_deals_cache.json.gz.
+  vertical_owner.tbl_company_vertical_mapping_SB on docid, summing JDA deals (SUM(dc_genio) where
+  final_team_type_name = 'JDA', 1.0 solo / 0.5 joint — matching official Sales MIS) for current FY vs same dates last FY.
+  Incremental refresh: pre-aggregated daily totals are stored in pipeline\cat_deals_cache.json.gz.
   Each daily run fetches only missing LY dates + the last 14 days (and any missing gaps) of TY, pruning older FYs.
 - HR (optional, same login): db_paidcontracts.hr_all_daily_copy_ganesh, updated daily. It decides who is an ACTIVE
   JDA on each day: team_type JDA with a customer-facing section, an HR city in the Hyderabad branch, joined on or
@@ -377,14 +378,13 @@ def load_cat_cache():
         try:
             with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
                 c = json.load(f)
-            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 4:
+            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 6:
                 c.setdefault("emps", [])
-                c.setdefault("docids", [])
                 return c
-            log("Category cache schema upgraded to v4 (distinct docid counting); rebuilding cache.")
+            log("Category cache schema upgraded to v6 (JDA + JDS TME/ME toggle); rebuilding cache.")
         except Exception as e:
             log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
-    return {"version": 4, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}}
+    return {"version": 6, "cats": [], "subcats": [], "emps": [], "days": {}, "jds_full": False}
 
 
 def save_cat_cache(cache):
@@ -430,14 +430,13 @@ def fetch_hr_names_sql(env, codes):
 
 
 def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_dates, name_map=None):
-    """Store compact daily records keyed by integer docid index so the dashboard computes exact COUNT(DISTINCT docid)
-    across any date window, area, freshness, or manager filter.
-    raw_row tuple: (ds, docid, version, pin, main_remote, fresh, jda_flag, me, rv_3yr)."""
+    """Aggregate JDA (tm=0) and JDS TME/ME (tm=1) deals via SUM(dc_genio)
+    by (day, loc, subcat, fresh, emp, tm) so dashboard totals match the official Sales MIS 1-to-1.
+    raw_row tuple: (ds, docid, pin, main_remote, fresh, jda_flag, team_name, me, tme, dc_genio, rv_3yr)."""
     name_map = name_map or {}
     cat_ix = {c: i for i, c in enumerate(cache["cats"])}
     sub_ix = {(cache["cats"][ci], s): i for i, (ci, s) in enumerate(cache["subcats"])}
     emp_ix = {e[0]: i for i, e in enumerate(cache["emps"])}
-    doc_ix = {d: i for i, d in enumerate(cache.setdefault("docids", []))}
 
     def get_sub_idx(cat, sub):
         ci = cat_ix.get(cat)
@@ -452,8 +451,8 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
             sub_ix[(cat, sub)] = si
         return si
 
-    def get_emp_idx(me):
-        code = str(me or "").strip()
+    def get_emp_idx(code):
+        code = str(code or "").strip()
         ei = emp_ix.get(code)
         if ei is None:
             ei = len(cache["emps"])
@@ -463,40 +462,42 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
             cache["emps"][ei][1] = name_map[code]
         return ei
 
-    def get_doc_idx(docid):
-        di = doc_ix.get(docid)
-        if di is None:
-            di = len(cache["docids"])
-            cache["docids"].append(docid)
-            doc_ix[docid] = di
-        return di
-
-    by_day = {ds: defaultdict(float) for ds in fetched_dates}
-    matched_docs, all_docs = set(), set()
-    for ds, docid, _ver, pin, mr, fresh, flag, me, rv in raw_rows:
-        if ds not in fetched_dates or not docid:
+    by_day = {ds: defaultdict(lambda: [0.0, 0.0]) for ds in fetched_dates}
+    matched_dc, total_dc = 0.0, 0.0
+    for ds, docid, pin, mr, fresh, flag, team_name, me, tme, dc, rv in raw_rows:
+        if ds not in fetched_dates or dc <= 0:
             continue
-        all_docs.add(docid)
-        cinfo = doc_cat.get(docid)
+        t_up = str(team_name or "").strip().upper()
+        is_jda = (t_up == "JDA")
+        me_c, tme_c = str(me or "").strip(), str(tme or "").strip()
+        if not is_jda and not me_c and not tme_c:
+            continue
+        if not is_jda and int(flag or 0) == 0:
+            cache["jds_full"] = True
+        tm = 0 if is_jda else 1
+        owner = (me_c or tme_c) if (is_jda or t_up == "ME") else (tme_c or me_c)
+        total_dc += dc
+        cinfo = doc_cat.get(docid) if docid else None
         if cinfo:
-            matched_docs.add(docid)
+            matched_dc += dc
             cat = pretty_cat(cinfo[0], "No Category")
             sub = pretty_cat(cinfo[1], "Other")
         else:
             cat, sub = "Unmapped", "Unmapped"
-        di = get_doc_idx(docid)
         si = get_sub_idx(cat, sub)
-        ei = get_emp_idx(me)
+        ei = get_emp_idx(owner)
         loc = loc_bucket(pin, mr, pin_area, areas)
         fr = 1 if str(fresh).strip() == "1" else 0
-        # rv_3yr repeats on both rows of a joint (jda_flag=2) deal; halving each row yields exact 1x deal RV
-        rv_w = rv * (0.5 if int(flag or 1) == 2 else 1.0)
-        by_day[ds][(di, loc, si, fr, ei)] += rv_w
+        # RV share weighted by dc_genio (1.0 solo, 0.5 joint) so JDA + JDS sums to exact 1.0x contract RV
+        rv_w = rv * min(dc, 1.0) if dc < 1.0 else rv
+        acc = by_day[ds][(loc, si, fr, ei, tm)]
+        acc[0] += dc
+        acc[1] += rv_w
 
     for ds, agg in by_day.items():
-        cache["days"][ds] = [[di, loc, si, fr, ei, round(rv)]
-                             for (di, loc, si, fr, ei), rv in sorted(agg.items())]
-    return len(matched_docs), len(all_docs)
+        cache["days"][ds] = [[loc, si, fr, ei, tm, round(dc, 3), round(rv)]
+                             for (loc, si, fr, ei, tm), (dc, rv) in sorted(agg.items())]
+    return round(matched_dc, 1), round(total_dc, 1)
 
 
 def prune_cat_cache(cache, keep_from_iso):
@@ -579,15 +580,18 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
                 dc = to_float(row.get("dc_genio"))
                 if dc <= 0 or str(row.get("fresh") or "").strip() not in ("0", "1"):
                     continue
-                fl = int(to_float(row.get("jda_flag")) or 1)
-                if fl not in (1, 2):
+                fl = int(to_float(row.get("jda_flag")) or 0)
+                tname = (row.get("final_team_type_name") or "").strip()
+                me_c = (row.get("me") or "").strip()
+                tme_c = (row.get("tme") or "").strip()
+                if tname.upper() != "JDA" and not me_c and not tme_c:
                     continue
                 ds = (row.get("dealclosed_date") or "").strip()[:10]
                 if len(ds) == 10:
                     out.append((
-                        ds, (row.get("docid") or "").strip(), (row.get("version") or "").strip(),
+                        ds, (row.get("docid") or "").strip(),
                         (row.get("pincode") or "").strip(), (row.get("branch_main_remote") or "").strip(),
-                        (row.get("fresh") or "").strip(), fl, (row.get("me") or "").strip(), to_float(row.get("rv_3yr")),
+                        (row.get("fresh") or "").strip(), fl, tname, me_c, tme_c, dc, to_float(row.get("rv_3yr")),
                     ))
         return out
 
@@ -599,7 +603,7 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
             for d in iter_dates(datetime.date.fromisoformat(ds_list[0]), datetime.date.fromisoformat(ds_list[-1])):
                 fetched.add(d.isoformat())
     matched, n_deals = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched, name_map=name_map)
-    log(f"Seeded {CAT_CACHE_PATH} from CSVs ({base_dir}): {len(fetched)} days, {n_deals} unique (docid, version) deals, "
+    log(f"Seeded {CAT_CACHE_PATH} from CSVs ({base_dir}): {len(fetched)} days, {n_deals} JDA+JDS deals (SUM dc_genio), "
         f"{len(cache['emps'])} emps ({matched}/{n_deals} cat-matched)")
     return True
 
@@ -624,18 +628,20 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
         for a, b in chunks:
             conn = db_connect(env)
             with conn.cursor() as cur:
-                cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')), TRIM(IFNULL(version, '')),
+                cur.execute(f"""SELECT dealclosed_date, TRIM(IFNULL(docid, '')),
                                        TRIM(IFNULL(pincode, '')), branch_main_remote, fresh, jda_flag,
-                                       TRIM(IFNULL(me, '')), IFNULL(rv_3yr, 0)
+                                       TRIM(IFNULL(final_team_type_name, '')),
+                                       TRIM(IFNULL(me, '')), TRIM(IFNULL(tme, '')),
+                                       IFNULL(dc_genio, 0), IFNULL(rv_3yr, 0)
                                 FROM {MODIFIED_DEALS}
                                 WHERE dealclosed_date BETWEEN %s AND %s
                                   AND sales_branch = %s
                                   AND dc_genio > 0
                                   AND fresh IN (0, 1)
-                                  AND jda_flag IN (1, 2)""", (a, b, BRANCH))
-                for day, docid, ver, pin, mr, fresh, flag, me, rv in cur.fetchall():
+                                  AND (TRIM(IFNULL(me, '')) != '' OR TRIM(IFNULL(tme, '')) != '')""", (a, b, BRANCH))
+                for day, docid, pin, mr, fresh, flag, tname, me, tme, dc, rv in cur.fetchall():
                     ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
-                    raw_rows.append((ds, docid, ver, pin, mr, fresh, int(flag or 1), me, to_float(rv)))
+                    raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 0), tname, me, tme, to_float(dc), to_float(rv)))
             conn.close()
 
         docids = sorted({r[1] for r in raw_rows if r[1]})
@@ -665,7 +671,7 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
         matched, n_deals = merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_isos, name_map=name_map)
         pruned = prune_cat_cache(cache, ly_start.isoformat())
         log(f"Categories (incremental SQL): fetched {len(ly_need)} LY + {len(ty_need)} TY days ({len(chunks)} chunk(s), "
-            f"{n_deals} unique (docid, version) deals from {len(raw_rows)} rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
+            f"{n_deals} JDA deals from {len(raw_rows)} rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
         changed = True
     else:
         log("Categories (incremental SQL): all TY and LY dates already cached; 0 deal SQL queries needed.")
@@ -684,15 +690,14 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
 
 
 def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source):
-    """Pack compact dashboard JSON from the daily cache with integer docid keys for exact COUNT(DISTINCT docid)."""
+    """Pack compact dashboard JSON from the daily cache using SUM(dc_genio) for JDA deals (matching Sales MIS)."""
     ly_a, ly_b = ly_start.isoformat(), ly_end.isoformat()
     ty_a, ty_b = ty_start.isoformat(), ty_end.isoformat()
     old_cats, old_subs, old_emps = cache["cats"], cache["subcats"], cache.get("emps", [])
 
-    cat_docs, sub_docs, emp_docs = defaultdict(set), defaultdict(set), defaultdict(set)
+    cat_tot, sub_tot, emp_tot = defaultdict(float), defaultdict(float), defaultdict(float)
     agg_rows = []
     ly_dates, ty_dates = [], []
-    used_docs = {}
 
     for ds, entries in sorted(cache["days"].items()):
         if ly_a <= ds <= ly_b:
@@ -708,45 +713,42 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         if not entries:
             continue
         mmdd = fy_mmdd(ds)
-        for di, loc, si, fr, ei, rv in entries:
+        for loc, si, fr, ei, tm, dc, rv in entries:
             ci, sub = old_subs[si]
             cat = old_cats[ci]
             code, ename = old_emps[ei] if ei < len(old_emps) else ("", "")
-            ndi = used_docs.get(di)
-            if ndi is None:
-                ndi = len(used_docs)
-                used_docs[di] = ndi
-            cat_docs[cat].add((yr, ndi))
-            sub_docs[(cat, sub)].add((yr, ndi))
-            emp_docs[(code, ename)].add((yr, ndi))
-            agg_rows.append((yr, mmdd, ndi, loc, cat, sub, fr, code, ename, rv))
+            cat_tot[cat] += dc
+            sub_tot[(cat, sub)] += dc
+            emp_tot[(code, ename)] += dc
+            agg_rows.append((yr, mmdd, loc, cat, sub, fr, code, ename, tm, dc, rv))
 
     if not ly_dates or not ty_dates:
         return None
 
     tail_cats = {"No Category", "Unmapped"}
-    cats = sorted(cat_docs, key=lambda c: (1 if c in tail_cats else 0, -len(cat_docs[c]), c))
+    cats = sorted(cat_tot, key=lambda c: (1 if c in tail_cats else 0, -cat_tot[c], c))
     cat_ix = {c: i for i, c in enumerate(cats)}
-    sub_keys = sorted(sub_docs, key=lambda cs: (cat_ix[cs[0]], -len(sub_docs[cs]), cs[1]))
+    sub_keys = sorted(sub_tot, key=lambda cs: (cat_ix[cs[0]], -sub_tot[cs], cs[1]))
     sub_ix = {cs: i for i, cs in enumerate(sub_keys)}
     subcats = [[cat_ix[c], s] for c, s in sub_keys]
 
-    emp_keys = sorted(emp_docs, key=lambda ce: (1 if not ce[0] else 0, -len(emp_docs[ce]), ce[1] or ce[0]))
+    emp_keys = sorted(emp_tot, key=lambda ce: (1 if not ce[0] else 0, -emp_tot[ce], ce[1] or ce[0]))
     emp_ix = {ce: i for i, ce in enumerate(emp_keys)}
     emps = [[code, ename] for code, ename in emp_keys]
 
-    packed = [[yr, mmdd, ndi, loc, sub_ix[(cat, sub)], fr, emp_ix[(code, ename)], round(rv)]
-              for yr, mmdd, ndi, loc, cat, sub, fr, code, ename, rv in agg_rows]
+    packed = [[yr, mmdd, loc, sub_ix[(cat, sub)], fr, emp_ix[(code, ename)], tm, round(dc, 3), round(rv)]
+              for yr, mmdd, loc, cat, sub, fr, code, ename, tm, dc, rv in agg_rows]
 
     c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
     c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))
     fmt_k = lambda k: f"{(k // 100 - (12 if k // 100 > 12 else 0)):02d}-{k % 100:02d}"
     common_start, common_end = fmt_k(c_start_k), fmt_k(c_end_k)
     log(f"Categories ({source}): {len(cats)} categories, {len(subcats)} sub-categories, {len(emps)} emps, "
-        f"{len(used_docs)} distinct docids, {len(packed)} day-doc rows | LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
+        f"{len(packed)} agg rows | LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
     return {
         "source": source,
-        "mode": "distinct_docid",
+        "mode": "dc_genio_team",
+        "jds_full": bool(cache.get("jds_full")) or source == "sql",
         "ty_year": ty_start.year,
         "ly_year": ly_start.year,
         "ty_start": ty_dates[0],
@@ -770,7 +772,7 @@ def load_category_deals(env, pin_area, areas, notes, full=False, name_map=None, 
     ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
     ly_start, ly_end = datetime.date(fy_year - 1, 4, 1), year_back(end_d)
 
-    cache = {"version": 4, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}} if seed_dir else load_cat_cache()
+    cache = {"version": 6, "cats": [], "subcats": [], "emps": [], "days": {}, "jds_full": False} if seed_dir else load_cat_cache()
     changed = False
     if fill_emp_names_from_map(cache, name_map or {}):
         changed = True
