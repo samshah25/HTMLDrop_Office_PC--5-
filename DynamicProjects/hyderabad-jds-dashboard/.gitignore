@@ -1,0 +1,14 @@
+# Credentials — never commit
+pipeline/db_216.env
+*.env
+
+# Temp / logs / Python caches
+__pycache__/
+*.pyc
+*.tmp
+pipeline/*.log
+pipeline/refresh_log.txt
+
+# Raw CSV exports
+*.csv
+pipeline/raw_data/

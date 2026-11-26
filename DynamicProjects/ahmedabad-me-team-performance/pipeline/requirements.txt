@@ -1,0 +1,3 @@
+pymysql>=1.0
+cryptography   # server 216 logins that use MySQL 8 password checks (caching_sha2_password)
+openpyxl>=3.0   # only for tme_lines.py (re-reading a newer SSO dump)

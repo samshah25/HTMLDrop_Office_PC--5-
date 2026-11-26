@@ -261,5 +261,78 @@
       "updated": "2026-11-23T23:40:42",
       "last_status": "scheduled"
     }
+  },
+  "ahmedabad-me-team-performance": {
+    "slug": "ahmedabad-me-team-performance",
+    "title": "Ahmedabad ME Team Performance",
+    "owner": "sarvesh",
+    "created": "2026-11-23T12:50:46",
+    "updated": "2026-11-26T18:35:53",
+    "port": 8150,
+    "status": "running",
+    "entry": "Ahmedabad ME Team Performance.html",
+    "launch_type": "static",
+    "pid": null,
+    "url": "/s/ahmedabad-me-team-performance/",
+    "show_on_master": true,
+    "master_scope": "all",
+    "category": "perf",
+    "category_pinned": true,
+    "message": "Dashboard is live on port 8150.",
+    "refresh": {
+      "frequency": "daily",
+      "time": "06:00",
+      "hours": 1,
+      "days_interval": 1,
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri"
+      ],
+      "catch_up": true,
+      "wake_to_run": true,
+      "enabled": true,
+      "task_name": "HTMLDrop_Refresh_ahmedabad-me-team-performance",
+      "updated": "2026-11-26T18:35:53",
+      "last_status": "scheduled"
+    }
+  },
+  "hyderabad-jds-dashboard": {
+    "slug": "hyderabad-jds-dashboard",
+    "title": "hyderabad jds dashboard",
+    "owner": "muskan",
+    "created": "2026-11-26T18:47:52",
+    "updated": "2026-11-26T18:49:22",
+    "port": 8150,
+    "status": "running",
+    "entry": "Hyderabad_JDS_Dashboard.html",
+    "launch_type": "static",
+    "pid": null,
+    "url": "/s/hyderabad-jds-dashboard/",
+    "show_on_master": false,
+    "master_scope": "all",
+    "category": "funnel",
+    "message": "Dashboard is live on port 8150.",
+    "refresh": {
+      "frequency": "daily",
+      "time": "13:15",
+      "hours": 1,
+      "days_interval": 1,
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri"
+      ],
+      "catch_up": true,
+      "wake_to_run": true,
+      "enabled": true,
+      "task_name": "HTMLDrop_Refresh_hyderabad-jds-dashboard",
+      "updated": "2026-11-26T18:49:22",
+      "last_status": "scheduled"
+    }
   }
 }

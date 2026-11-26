@@ -381,9 +381,9 @@
   "reseller-onboarding-snapshot": {
     "title": "Reseller Onboarding Snapshot",
     "user": "priyal",
-    "version": 67,
+    "version": 69,
     "created": "2026-10-16T16:03:39",
-    "updated": "2026-11-25T10:59:30",
+    "updated": "2026-11-26T18:29:38",
     "entry": "index.html",
     "hub": {
       "show": false,
@@ -900,24 +900,6 @@
       "legacy_id": ""
     }
   },
-  "ahmedabad-me-team-performance": {
-    "title": "Ahmedabad ME Team Performance",
-    "user": "sarvesh",
-    "version": 1,
-    "created": "2026-11-23T12:50:46",
-    "updated": "2026-11-23T12:50:46",
-    "entry": "index.html",
-    "hub": {
-      "show": true,
-      "scope": "all",
-      "reviewed": false,
-      "category": "perf",
-      "branch": "",
-      "tags": [],
-      "title": "",
-      "legacy_id": ""
-    }
-  },
   "reseller-channel-growth-strategy": {
     "title": "Reseller Channel Growth Strategy",
     "user": "priyal",
@@ -960,6 +942,24 @@
     "version": 8,
     "created": "2026-11-24T17:06:34",
     "updated": "2026-11-25T11:43:44",
+    "entry": "index.html",
+    "hub": {
+      "show": false,
+      "scope": "general",
+      "reviewed": false,
+      "category": "",
+      "branch": "",
+      "tags": [],
+      "title": "",
+      "legacy_id": ""
+    }
+  },
+  "brand-health-merchant": {
+    "title": "Justdial Brand Health - Merchant Story",
+    "user": "priyal",
+    "version": 11,
+    "created": "2026-11-26T16:59:43",
+    "updated": "2026-11-26T18:00:43",
     "entry": "index.html",
     "hub": {
       "show": false,
