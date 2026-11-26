@@ -8,9 +8,9 @@ Sources:
   6 months, so older days exist only in that folder: NEVER DELETE IT.
 - Sales (optional): db_paidcontracts.daily_deals_closed_dump, through pipeline\db_216.env. Without that file the page
   shows presentations only and says so.
-- Category YoY deals (optional, same login): ops_analytics.tbl_modified_deal_level_data joined with
+- Category YoY docids (optional, same login): ops_analytics.tbl_modified_deal_level_data joined with
   vertical_owner.tbl_company_vertical_mapping_SB on docid, counting distinct docids (COUNT(DISTINCT docid))
-  for JDA and JDS (TME & ME) deals for current FY vs same dates last FY.
+  for JDA deals (incl. JDA-B2B, jda_flag 3) for current FY vs same dates last FY.
   Incremental refresh: pre-aggregated daily totals with compact integer docid keys are stored in pipeline\cat_deals_cache.json.gz.
   Each daily run fetches only missing LY dates + the last 14 days (and any missing gaps) of TY, pruning older FYs.
 - HR (optional, same login): db_paidcontracts.hr_all_daily_copy_ganesh, updated daily. It decides who is an ACTIVE
@@ -378,15 +378,14 @@ def load_cat_cache():
         try:
             with gzip.open(CAT_CACHE_PATH, "rt", encoding="utf-8") as f:
                 c = json.load(f)
-            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 8:
+            if isinstance(c, dict) and isinstance(c.get("days"), dict) and c.get("version") == 9:
                 c.setdefault("emps", [])
                 c.setdefault("docids", [])
-                c.setdefault("sql_full_jds", False)
                 return c
-            log("Category cache schema upgraded to v8 (distinct docids; JDA incl. JDA-B2B, JDS, Self Signup); rebuilding cache.")
+            log("Category cache schema upgraded to v9 (JDA-only distinct docids); rebuilding cache.")
         except Exception as e:
             log(f"WARNING: could not read {CAT_CACHE_PATH} ({e}); starting fresh cache.")
-    return {"version": 8, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False, "sql_full_jds": False}
+    return {"version": 9, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}}
 
 
 def save_cat_cache(cache):
@@ -480,15 +479,12 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
             continue
         t_up = str(team_name or "").strip().upper()
         fl_i = int(flag or 0)
-        is_self = (fl_i == 10 or t_up == "ANONYMOUS")
-        # Matches JD Sales Dashboard: jda_flag=3 (B2B) is JDA(B2B), jda_flag=10 (Anonymous) is Self Signup
-        is_jda = (t_up == "JDA" or fl_i == 3)
+        # JDA-only dashboard: final_team_type_name='JDA' + jda_flag=3 (JDA B2B)
+        if t_up != "JDA" and fl_i != 3:
+            continue
         me_c = "" if str(me or "").strip() in ("", "999999999", "\\N") else str(me).strip()
         tme_c = "" if str(tme or "").strip() in ("", "999999999", "\\N") else str(tme).strip()
-        if not is_self and not is_jda and not me_c and not tme_c:
-            continue
-        tm = 2 if is_self else (0 if is_jda else 1)
-        owner = "" if is_self else ((me_c or tme_c) if (is_jda or t_up == "ME") else (tme_c or me_c))
+        owner = me_c or tme_c
         all_docs.add(docid)
         cinfo = doc_cat.get(docid)
         if cinfo:
@@ -502,13 +498,12 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
         ei = get_emp_idx(owner)
         loc = loc_bucket(pin, mr, pin_area, areas)
         fr = 1 if str(fresh).strip() == "1" else 0
-        # RV share weighted by dc_genio (1.0 solo, 0.5 joint) so JDA + JDS sums to exact 1.0x contract RV
         rv_w = rv * min(dc, 1.0) if dc < 1.0 else rv
-        by_day[ds][(di, loc, si, fr, ei, tm)] += rv_w
+        by_day[ds][(di, loc, si, fr, ei)] += rv_w
 
     for ds, agg in by_day.items():
-        cache["days"][ds] = [[di, loc, si, fr, ei, tm, round(rv)]
-                             for (di, loc, si, fr, ei, tm), rv in sorted(agg.items())]
+        cache["days"][ds] = [[di, loc, si, fr, ei, round(rv)]
+                             for (di, loc, si, fr, ei), rv in sorted(agg.items())]
     return len(matched_docs), len(all_docs)
 
 
@@ -595,7 +590,6 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
 
     def load_deals(path):
         out = []
-        has_solo_jds = False
         with open(path, encoding="utf-8-sig", errors="replace", newline="") as f:
             for row in csv.DictReader(f):
                 dc = to_float(row.get("dc_genio"))
@@ -603,13 +597,10 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
                     continue
                 fl = int(to_float(row.get("jda_flag")) or 0)
                 tname = (row.get("final_team_type_name") or "").strip()
-                is_self = (fl == 10 or tname.upper() == "ANONYMOUS")
+                if tname.upper() != "JDA" and fl != 3:
+                    continue
                 me_c = (row.get("me") or "").strip()
                 tme_c = (row.get("tme") or "").strip()
-                if not is_self and tname.upper() != "JDA" and fl != 3 and me_c in ("", "999999999", "\\N") and tme_c in ("", "999999999", "\\N"):
-                    continue
-                if not is_self and tname.upper() != "JDA" and fl == 0:
-                    has_solo_jds = True
                 ds = (row.get("dealclosed_date") or "").strip()[:10]
                 if len(ds) == 10:
                     out.append((
@@ -617,9 +608,9 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
                         (row.get("pincode") or "").strip(), (row.get("branch_main_remote") or "").strip(),
                         (row.get("fresh") or "").strip(), fl, tname, me_c, tme_c, dc, to_float(row.get("rv_3yr")),
                     ))
-        return out, has_solo_jds
+        return out
 
-    (ly_rows, ly_jds), (ty_rows, ty_jds) = load_deals(f25), load_deals(f26)
+    ly_rows, ty_rows = load_deals(f25), load_deals(f26)
     fetched = set()
     for rows in (ly_rows, ty_rows):
         if rows:
@@ -627,11 +618,8 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
             for d in iter_dates(datetime.date.fromisoformat(ds_list[0]), datetime.date.fromisoformat(ds_list[-1])):
                 fetched.add(d.isoformat())
     matched, n_deals = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched, name_map=name_map)
-    if ly_jds and ty_jds:
-        cache["jds_full"] = True
-        cache["sql_full_jds"] = True
     log(f"Seeded {CAT_CACHE_PATH} from CSVs ({os.path.basename(f25)}, {os.path.basename(f26)}): {len(fetched)} days, "
-        f"{n_deals} distinct docids, {len(cache['emps'])} emps ({matched}/{n_deals} cat-matched, jds_full={cache['jds_full']})")
+        f"{n_deals} JDA distinct docids, {len(cache['emps'])} emps ({matched}/{n_deals} cat-matched)")
     return True
 
 
@@ -640,11 +628,6 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
     name_map = dict(name_map or {})
     days_map = cache["days"]
     recheck_from = max(ty_start, ty_end - datetime.timedelta(days=CAT_RECHECK_DAYS - 1))
-    # If cache was seeded from JDA-only CSVs (sql_full_jds=False), force a one-time full SQL pull
-    # so all 2025 & 2026 solo+joint JDS (TME & ME) days replace the partial CSV days automatically.
-    if not full and not cache.get("sql_full_jds"):
-        log("Categories: cache was CSV-seeded without full JDS days; upgrading to full SQL refresh automatically.")
-        full = True
     if full:
         ly_need = list(iter_dates(ly_start, ly_end))
         ty_need = list(iter_dates(ty_start, ty_end))
@@ -669,7 +652,8 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
                                 WHERE dealclosed_date BETWEEN %s AND %s
                                   AND sales_branch = %s
                                   AND dc_genio > 0
-                                  AND fresh IN (0, 1)""", (a, b, BRANCH))
+                                  AND fresh IN (0, 1)
+                                  AND (UPPER(TRIM(IFNULL(final_team_type_name, ''))) = 'JDA' OR IFNULL(jda_flag, 0) = 3)""", (a, b, BRANCH))
                 for day, docid, pin, mr, fresh, flag, tname, me, tme, dc, rv in cur.fetchall():
                     ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
                     raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 0), tname, me, tme, to_float(dc), to_float(rv)))
@@ -700,12 +684,9 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
 
         fetched_isos = {d.isoformat() for d in need_dates}
         matched, n_deals = merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched_isos, name_map=name_map)
-        if full:
-            cache["sql_full_jds"] = True
-            cache["jds_full"] = True
         pruned = prune_cat_cache(cache, ly_start.isoformat())
         log(f"Categories (incremental SQL): fetched {len(ly_need)} LY + {len(ty_need)} TY days ({len(chunks)} chunk(s), "
-            f"{n_deals} distinct docids from {len(raw_rows)} rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
+            f"{n_deals} JDA distinct docids from {len(raw_rows)} rows, {matched} cat-matched, {len(docids)} docids); pruned {pruned} old days")
         changed = True
     else:
         log("Categories (incremental SQL): all TY and LY dates already cached; 0 deal SQL queries needed.")
@@ -748,7 +729,7 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         if not entries:
             continue
         mmdd = fy_mmdd(ds)
-        for di, loc, si, fr, ei, tm, rv in entries:
+        for di, loc, si, fr, ei, rv in entries:
             ci, sub = old_subs[si]
             cat = old_cats[ci]
             code, ename = old_emps[ei] if ei < len(old_emps) else ("", "")
@@ -759,7 +740,7 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
             cat_docs[cat].add((yr, ndi))
             sub_docs[(cat, sub)].add((yr, ndi))
             emp_docs[(code, ename)].add((yr, ndi))
-            agg_rows.append((yr, mmdd, ndi, loc, cat, sub, fr, code, ename, tm, rv))
+            agg_rows.append((yr, mmdd, ndi, loc, cat, sub, fr, code, ename, rv))
 
     if not ly_dates or not ty_dates:
         return None
@@ -775,8 +756,8 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
     emp_ix = {ce: i for i, ce in enumerate(emp_keys)}
     emps = [[code, ename] for code, ename in emp_keys]
 
-    packed = [[yr, mmdd, ndi, loc, sub_ix[(cat, sub)], fr, emp_ix[(code, ename)], tm, round(rv)]
-              for yr, mmdd, ndi, loc, cat, sub, fr, code, ename, tm, rv in agg_rows]
+    packed = [[yr, mmdd, ndi, loc, sub_ix[(cat, sub)], fr, emp_ix[(code, ename)], round(rv)]
+              for yr, mmdd, ndi, loc, cat, sub, fr, code, ename, rv in agg_rows]
 
     c_start_k = max(fy_mmdd(ty_dates[0]), fy_mmdd(ly_dates[0]))
     c_end_k = min(fy_mmdd(ty_dates[-1]), fy_mmdd(ly_dates[-1]))
@@ -786,8 +767,7 @@ def build_cat_deals_from_cache(cache, ty_start, ty_end, ly_start, ly_end, source
         f"{len(used_docs)} distinct docids, {len(packed)} day-doc rows | LY {ly_dates[0]}..{ly_dates[-1]}, TY {ty_dates[0]}..{ty_dates[-1]}, common {common_start}..{common_end}")
     return {
         "source": source,
-        "mode": "distinct_docid_team",
-        "jds_full": bool(cache.get("sql_full_jds")) or bool(cache.get("jds_full")),
+        "mode": "distinct_docid",
         "ty_year": ty_start.year,
         "ly_year": ly_start.year,
         "ty_start": ty_dates[0],
@@ -811,7 +791,7 @@ def load_category_deals(env, pin_area, areas, notes, full=False, name_map=None, 
     ty_start, ty_end = datetime.date(fy_year, 4, 1), end_d
     ly_start, ly_end = datetime.date(fy_year - 1, 4, 1), year_back(end_d)
 
-    cache = {"version": 8, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}, "jds_full": False, "sql_full_jds": False} if seed_dir else load_cat_cache()
+    cache = {"version": 9, "cats": [], "subcats": [], "emps": [], "docids": [], "days": {}} if seed_dir else load_cat_cache()
     changed = False
     if fill_emp_names_from_map(cache, name_map or {}):
         changed = True

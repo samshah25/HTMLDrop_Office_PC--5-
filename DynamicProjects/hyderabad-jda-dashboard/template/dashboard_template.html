@@ -673,7 +673,6 @@ const S = {
   treeOpen: null,   // TLs whose JDAs are shown on the Managers page
   catWin: 'ytd',    // ytd | qtd | mtd | d30 | month
   catMonth: 0,      // FY month number (4..15) when catWin === 'month'
-  catTeam: 'jda',   // jda | jds | all (JDA vs JDS TME/ME)
   catFresh: 'all',  // all | 1 | 0
   catRank: 'net',   // net (TY - LY deals) | pct (YoY % with min base)
   catStatus: 'all', // all | good | flat | bad
@@ -1698,14 +1697,11 @@ function catEmpAllowed() {
   return { ok, nMgr: sub.size };
 }
 const r2 = v => Math.round((v || 0) * 100) / 100;
-const catTeamOk = tm => S.catTeam === 'all' || (S.catTeam === 'jda' ? tm === 0 : tm === 1);
-const catTeamLbl = () => S.catTeam === 'jda' ? 'JDA (incl. B2B)' : S.catTeam === 'jds' ? 'JDS (TME & ME)' : 'All (JDA + JDS + Self Signup)';
-const catTeamShort = () => S.catTeam === 'jda' ? 'JDA' : S.catTeam === 'jds' ? 'JDS' : 'Rep';
 function computeCatAgg(winOverride) {
   const W = winOverride || catWindow();
   const nC = CATD.cats.length, nS = CATD.subcats.length, hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   const nE = hasEmps ? CATD.emps.length : 0;
-  const mgrF = hasEmps && S.catTeam === 'jda' ? catEmpAllowed() : null;
+  const mgrF = hasEmps ? catEmpAllowed() : null;
   const cLy = Array.from({ length: nC }, () => new Set()), cTy = Array.from({ length: nC }, () => new Set());
   const cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
   const sLy = Array.from({ length: nS }, () => new Set()), sTy = Array.from({ length: nS }, () => new Set());
@@ -1717,11 +1713,10 @@ function computeCatAgg(winOverride) {
   const totLyS = new Set(), totTyS = new Set();
   let rvLy = 0, rvTy = 0;
   for (const r of CATD.rows) {
-    // [yr, fy_mmdd, di, loc, si, fr, ei, tm, rv]
-    const [yr, k, di, loc, si, fr, ei, tm, rv] = r;
-    if (!catTeamOk(tm)) continue;
+    // [yr, fy_mmdd, di, loc, si, fr, ei, rv]
+    const [yr, k, di, loc, si, fr, ei, rv] = r;
     if (!catLocOk(loc)) continue;
-    if (mgrF && tm === 0 && !mgrF.ok.has(ei)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
       const fm = Math.floor(k / 100);
@@ -1798,14 +1793,13 @@ function computeCatAgg(winOverride) {
 function computeSecuredBy(ci, si) {
   const W = catWindow(), hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
   if (!hasEmps) return [];
-  const mgrF = S.catTeam === 'jda' ? catEmpAllowed() : null;
+  const mgrF = catEmpAllowed();
   const map = new Map();
   for (const r of CATD.rows) {
-    const [yr, k, di, loc, rsi, fr, ei, tm, rv] = r;
-    if (!catTeamOk(tm)) continue;
+    const [yr, k, di, loc, rsi, fr, ei, rv] = r;
     if (si >= 0 ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
-    if (mgrF && tm === 0 && !mgrF.ok.has(ei)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < W.a || k > W.b) continue;
     let rec = map.get(ei);
@@ -1880,8 +1874,8 @@ function pageCategories() {
     ? ((b.ly >= 10 || b.ty >= 10 ? 1 : 0) - (a.ly >= 10 || a.ty >= 10 ? 1 : 0)) || ((a.yoy || 9) - (b.yoy || 9))
     : a.diff - b.diff);
 
-  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Total DocIDs (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) for ' + catTeamLbl() + ' from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
-    <div class="h-txt"><div class="eyebrow">${esc(catTeamLbl())} · ${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 && S.catTeam === 'jda' ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
+  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Total DocIDs (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) for JDA (incl. JDA-B2B) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
+    <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
     <h2>Category-wise total docids (YoY)</h2></div>
     <div class="h-chips">
       <div class="hc"><b>${fmtDeals(totTy)}</b><span>Total docids (${fyTyLbl})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
@@ -1894,7 +1888,6 @@ function pageCategories() {
   const winBtns = [['ytd', 'YTD'], ['qtd', 'QTD'], ['mtd', 'MTD'], ['d30', 'Last 30d']];
   h += `<div class="toolbar cat-bar">
     <div class="cat-grp">
-      <div class="seg" role="group" aria-label="Sales team">${[['jda', 'JDA'], ['jds', 'JDS'], ['all', 'All']].map(([k, l]) => `<button type="button" data-catteam="${k}" aria-pressed="${S.catTeam === k}">${l}</button>`).join('')}</div>
       <div class="seg" role="group" aria-label="Same-period window">${winBtns.map(([k, l]) => `<button type="button" data-catwin="${k}" aria-pressed="${S.catWin === k}">${l}</button>`).join('')}</div>
       <select class="plain" id="catMonthSel" aria-label="Pick a single month" title="Compare a single month YoY (partial latest month compares exact same days)">
         <option value="0"${S.catWin !== 'month' ? ' selected' : ''}>Pick month…</option>
@@ -1906,12 +1899,7 @@ function pageCategories() {
     </div>
   </div>`;
 
-  if (S.catTeam !== 'jda' && !CATD.jds_full) {
-    h += note(`Showing joint JDS docids from the offline CSV seed (which was exported with <code>jda_flag IN (1,2)</code>). Run <b>python main.py</b> on the office PC with <code>db_216.env</code> to pull all solo &amp; joint JDS (TME &amp; ME) docids directly from SQL.`);
-  }
-  if (S.mgr >= 0 && S.catTeam !== 'jda') {
-    h += note(`Manager filter (<b>${esc(mgrName(S.mgr))}</b>) applies to JDA reporting lines only; showing all Hyderabad ${esc(catTeamLbl())} docids.`);
-  } else if (S.mgr >= 0 && mgrF) {
+  if (S.mgr >= 0 && mgrF) {
     h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} docids secured by these employees.`);
   }
 
@@ -1923,7 +1911,7 @@ function pageCategories() {
   };
 
   h += secTitle(
-    cview === 'category' ? `All categories · ${catTeamLbl()} (${fyLyLbl} vs ${fyTyLbl})` : `Who secured docids (by ${catTeamShort()})`,
+    cview === 'category' ? `All categories (${fyLyLbl} vs ${fyTyLbl})` : 'Who secured docids (by JDA)',
     cview === 'category'
       ? `sorted by ${fyLyLbl} docids descending · click a category for sales groups & who secured · click ▸ to expand inline`
       : 'every employee who secured docids in this period · click ▸ to see their categories · search by name, Emp ID or category'
@@ -1938,7 +1926,7 @@ function pageCategories() {
     const maxShare = Math.max(0.01, ...filteredCats.map(c => c.share));
 
     h += `<div class="mgr-bar">
-      ${hasEmps ? `<div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="true">Category view</button><button type="button" data-catview="emp" aria-pressed="false">Who secured (by ${catTeamShort()})</button></div>` : ''}
+      ${hasEmps ? `<div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="true">Category view</button><button type="button" data-catview="emp" aria-pressed="false">Who secured (by JDA)</button></div>` : ''}
       <div class="seg" role="group" aria-label="Filter by YoY status">${[['all', `All (${cats.length})`], ['bad', `Bad (${cats.filter(c => c.verdict === 'bad').length})`], ['flat', `Flat (${cats.filter(c => c.verdict === 'flat').length})`], ['good', `Good (${cats.filter(c => c.verdict === 'good').length})`]].map(([k, l]) => `<button type="button" data-catst="${k}" aria-pressed="${S.catStatus === k}">${l}</button>`).join('')}</div>
       <button type="button" class="btn-ghost" data-catall="${allOpen ? 'close' : 'open'}">${allOpen ? 'Collapse all' : 'Expand all sub-categories'}</button>
     </div>`;
@@ -1978,7 +1966,7 @@ function pageCategories() {
     const allEOpen = emps.length && emps.every(e => eOpen.has(e.ei));
 
     h += `<div class="mgr-bar">
-      <div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="false">Category view</button><button type="button" data-catview="emp" aria-pressed="true">Who secured (by ${catTeamShort()})</button></div>
+      <div class="seg" role="group" aria-label="View mode"><button type="button" data-catview="category" aria-pressed="false">Category view</button><button type="button" data-catview="emp" aria-pressed="true">Who secured (by JDA)</button></div>
       <button type="button" class="btn-ghost" data-catempall="${allEOpen ? 'close' : 'open'}">${allEOpen ? 'Collapse all' : 'Expand all categories'}</button>
     </div>`;
 
@@ -2085,13 +2073,13 @@ function pageCategories() {
     }
 
     h += `<div style="margin-top:20px">${card(
-      `Top 10 categories (${catTeamLbl()}) vs ${fyLyLbl} · ${W.label}`,
-      `Updates with the selected team, tenure & filters · click any category bar to open its sales groups & who secured`,
+      `Top 10 categories vs ${fyLyLbl} · ${W.label}`,
+      `Updates with the selected tenure & filters · click any category bar to open its sales groups & who secured`,
       barTop + chartBody, '#6366f1'
     )}</div>`;
   }
 
-  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (total docids = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>; <b>JDA</b> = JDA + JDA(B2B) [<code>jda_flag 1,2,3</code>], <b>JDS</b> = TME &amp; ME teams, <b>All</b> = JDA + JDS + Self Signup) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (total docids = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, JDA incl. JDA-B2B [<code>jda_flag 1,2,3</code>], <code>fresh IN (0,1)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
 }
 
@@ -2130,11 +2118,10 @@ function openCat(ci, si = -1, tab = null) {
   const fms = catMonths(), eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
   const mLyS = new Map(), mTyS = new Map();
   for (const r of CATD.rows) {
-    const [yr, k, di, loc, rsi, fr, ei, tm] = r;
-    if (!catTeamOk(tm)) continue;
+    const [yr, k, di, loc, rsi, fr, ei] = r;
     if (isSub ? rsi !== si : CATD.subcats[rsi][0] !== ci) continue;
     if (!catLocOk(loc)) continue;
-    if (mgrF && tm === 0 && !mgrF.ok.has(ei)) continue;
+    if (mgrF && !mgrF.ok.has(ei)) continue;
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     if (k < CATD.common_start_k || k > CATD.common_end_k) continue;
     const fm = Math.floor(k / 100);
@@ -2167,7 +2154,7 @@ function openCat(ci, si = -1, tab = null) {
     <tbody>${subsView.length ? subsView.map(x => `<tr class="${hasEmps ? 'click-row' : ''}"${hasEmps ? ` data-catsub="${ci}|${x.si}"` : ''}><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('') : `<tr><td colspan="6" class="empty">No sub-categories match.</td></tr>`}</tbody></table></div>
   </div>`;
 
-  const empCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#6366f1"></i>Who secured (${nf(securedView.length)} ${catTeamShort()}s)</h3><div class="cap">${isSub ? esc(sub.name) : esc(c.name)} · sorted by TY docids · click a name for profile</div></div>
+  const empCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#6366f1"></i>Who secured (${nf(securedView.length)} JDAs)</h3><div class="cap">${isSub ? esc(sub.name) : esc(c.name)} · sorted by TY docids · click a name for profile</div></div>
     <button type="button" class="btn" data-catdrcsv="1">${icon('dl')}Excel</button></div>
     <label class="search dr-search">${icon('search')}<input type="search" id="catDrQ" placeholder="Search Emp Name or Emp ID" value="${esc(S.catDr.q || '')}"></label>
     <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Employee (ID)</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">${fyLyLbl} RV</th><th class="num">${fyTyLbl} RV</th>${!isSub ? '<th>Top sub-cat</th>' : ''}</tr></thead>
@@ -2176,7 +2163,7 @@ function openCat(ci, si = -1, tab = null) {
 
   $('#drawer').innerHTML = `<div class="dr-head" style="background:${hdrBg}"><div>
       ${isSub ? `<button type="button" class="dr-back" data-cat="${ci}">← All ${esc(c.name)} sub-categories</button>` : ''}
-      <div class="meta">${esc(catTeamLbl())} · ${esc(W.label)} · ${esc(scopeLabel())}${S.mgr >= 0 && S.catTeam !== 'jds' ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}${isSub ? ' · ' + esc(c.name) : ` · ${c.nSub} sub-categor${c.nSub === 1 ? 'y' : 'ies'}`}</div>
+      <div class="meta">${esc(W.label)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}${isSub ? ' · ' + esc(c.name) : ` · ${c.nSub} sub-categor${c.nSub === 1 ? 'y' : 'ies'}`}</div>
       <h2>${esc(target.name)}</h2>
       <div class="meta">${fyLyLbl}: <b>${fmtDeals(target.ly)}</b> → ${fyTyLbl}: <b>${fmtDeals(target.ty)}</b> (${fmtDelta(target.diff)}, ${fmtYoy(target.ty, target.ly)})</div>
     </div><button type="button" class="x" id="drawerX" aria-label="Close">✕</button></div>
@@ -2380,7 +2367,7 @@ function setup() {
     const pick = e.target.closest('[data-mgrpick]');
     if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
     if (!e.target.closest('#mgrPop')) closeMgrPop();
-    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catteam],[data-catfresh],[data-catrank],[data-catst],[data-catmon]');
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon]');
     if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
     const ds = t.dataset;
     if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
@@ -2396,7 +2383,6 @@ function setup() {
     else if (ds.catemptog != null) { const ei = +ds.catemptog; if (!S.catEmpOpen) S.catEmpOpen = new Set(); S.catEmpOpen.has(ei) ? S.catEmpOpen.delete(ei) : S.catEmpOpen.add(ei); render(); }
     else if (ds.catempall) { S.catEmpOpen = ds.catempall === 'open' ? new Set(computeCatAgg().emps.map(x => x.ei)) : new Set(); render(); }
     else if (ds.catwin) { S.catWin = ds.catwin; S.catMonth = 0; render(); }
-    else if (ds.catteam) { S.catTeam = ds.catteam; render(); }
     else if (ds.catmon != null) { S.catWin = 'month'; S.catMonth = +ds.catmon; render(); }
     else if (ds.catfresh) { S.catFresh = ds.catfresh; render(); }
     else if (ds.catrank) { S.catRank = ds.catrank; render(); }
