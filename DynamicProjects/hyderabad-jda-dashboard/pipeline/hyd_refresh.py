@@ -479,12 +479,14 @@ def merge_raw_rows_into_cache(cache, raw_rows, doc_cat, pin_area, areas, fetched
         if ds not in fetched_dates or dc <= 0 or not docid:
             continue
         t_up = str(team_name or "").strip().upper()
+        fl_i = int(flag or 0)
+        if fl_i == 10 or t_up == "ANONYMOUS":
+            continue
         is_jda = (t_up == "JDA")
-        me_c, tme_c = str(me or "").strip(), str(tme or "").strip()
+        me_c = "" if str(me or "").strip() in ("", "999999999", "\\N") else str(me).strip()
+        tme_c = "" if str(tme or "").strip() in ("", "999999999", "\\N") else str(tme).strip()
         if not is_jda and not me_c and not tme_c:
             continue
-        if not is_jda and int(flag or 0) == 0:
-            cache["jds_full"] = True
         tm = 0 if is_jda else 1
         owner = (me_c or tme_c) if (is_jda or t_up == "ME") else (tme_c or me_c)
         all_docs.add(docid)
@@ -527,22 +529,22 @@ def parse_hot_cat(s):
 
 def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None):
     """One-time seed from exported CSVs (in seed_dir or pipeline\\category_data\\).
-    Uses vertical from hyd_2025_2026_categories.csv as Category and primary sales_group (highest
-    num_of_categories_in_sales_group) from hyd_2025_2026_salesgroup.csv as Sub-category, falling back
-    to hot_cat_info / sub_vertical for newer listings not yet in the salesgroup snapshot."""
+    Prefers full JDA+JDS exports (hyd_2025_deals_all.csv, hyd_2026_deals_all.csv,
+    hyd_cat_group_deals_all.csv, hyd_sales_group_deals_all.csv), falling back to legacy JDA-only filenames."""
     base_dir = seed_dir or CAT_CSV_DIR
-    f25 = os.path.join(base_dir, "hyd_2025_deals.csv")
-    f26 = os.path.join(base_dir, "hyd_2026_deals.csv")
-    fcat = os.path.join(base_dir, "hyd_2025_2026_categories.csv")
-    fsg = os.path.join(base_dir, "hyd_2025_2026_salesgroup.csv")
-    if not (os.path.exists(f25) and os.path.exists(f26) and os.path.exists(fcat)):
+    pick = lambda *names: next((os.path.join(base_dir, n) for n in names if os.path.exists(os.path.join(base_dir, n))), "")
+    f25 = pick("hyd_2025_deals_all.csv", "hyd_2025_deals.csv")
+    f26 = pick("hyd_2026_deals_all.csv", "hyd_2026_deals.csv")
+    fcat = pick("hyd_cat_group_deals_all.csv", "hyd_2025_2026_categories.csv")
+    fsg = pick("hyd_sales_group_deals_all.csv", "hyd_2025_2026_salesgroup.csv")
+    if not (f25 and f26 and fcat):
         return False
 
     # 1. Primary sales_group per docid (highest num_of_categories_in_sales_group; tie-break alphabetically)
     doc_sg = {}
-    if os.path.exists(fsg):
+    if fsg:
         sg_raw = defaultdict(dict)
-        with open(fsg, encoding="utf-8", errors="replace", newline="") as f:
+        with open(fsg, encoding="utf-8-sig", errors="replace", newline="") as f:
             r = csv.reader(f)
             hdr = next(r)
             ix_d = hdr.index("docid")
@@ -560,14 +562,16 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
         for did, mp in sg_raw.items():
             doc_sg[did] = sorted(mp.items(), key=lambda x: (-x[1], x[0]))[0][0]
 
-    # 2. Vertical + hot_cat_info / sub_vertical fallback from hyd_2025_2026_categories.csv
+    # 2. Vertical + sales_group / hot_cat_info / sub_vertical fallback from category mapping CSV
     doc_cat = {}
-    with open(fcat, encoding="utf-8", errors="replace", newline="") as f:
+    with open(fcat, encoding="utf-8-sig", errors="replace", newline="") as f:
         r = csv.reader(f)
         hdr = next(r)
         ix_d = hdr.index("docid")
         ix_v = hdr.index("vertical")
         ix_sv = hdr.index("sub_vertical")
+        ix_tsg = hdr.index("top_sales_group_by_count") if "top_sales_group_by_count" in hdr else -1
+        ix_hsg = hdr.index("hot_catinfo_sales_group") if "hot_catinfo_sales_group" in hdr else -1
         ix_hc = hdr.index("hot_cat_info") if "hot_cat_info" in hdr else -1
         for row in r:
             if len(row) <= max(ix_d, ix_v, ix_sv):
@@ -575,9 +579,15 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
             did = row[ix_d].strip()
             if did and did not in doc_cat:
                 v = row[ix_v].strip()
+                tsg = row[ix_tsg].strip() if ix_tsg >= 0 and len(row) > ix_tsg else ""
+                if tsg in ("0", "\\N", "NULL", "None"):
+                    tsg = ""
+                hsg = row[ix_hsg].strip() if ix_hsg >= 0 and len(row) > ix_hsg else ""
+                if hsg in ("0", "\\N", "NULL", "None"):
+                    hsg = ""
                 hc = parse_hot_cat(row[ix_hc]) if ix_hc >= 0 and len(row) > ix_hc else ""
                 sv = row[ix_sv].strip()
-                sub = doc_sg.get(did) or hc or sv
+                sub = doc_sg.get(did) or tsg or hsg or hc or sv
                 doc_cat[did] = (v, sub)
     for did, sg in doc_sg.items():
         if did not in doc_cat:
@@ -585,17 +595,22 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
 
     def load_deals(path):
         out = []
-        with open(path, encoding="utf-8", errors="replace", newline="") as f:
+        has_solo_jds = False
+        with open(path, encoding="utf-8-sig", errors="replace", newline="") as f:
             for row in csv.DictReader(f):
                 dc = to_float(row.get("dc_genio"))
                 if dc <= 0 or str(row.get("fresh") or "").strip() not in ("0", "1"):
                     continue
                 fl = int(to_float(row.get("jda_flag")) or 0)
                 tname = (row.get("final_team_type_name") or "").strip()
+                if fl == 10 or tname.upper() == "ANONYMOUS":
+                    continue
                 me_c = (row.get("me") or "").strip()
                 tme_c = (row.get("tme") or "").strip()
-                if tname.upper() != "JDA" and not me_c and not tme_c:
+                if tname.upper() != "JDA" and me_c in ("", "999999999", "\\N") and tme_c in ("", "999999999", "\\N"):
                     continue
+                if tname.upper() != "JDA" and fl == 0:
+                    has_solo_jds = True
                 ds = (row.get("dealclosed_date") or "").strip()[:10]
                 if len(ds) == 10:
                     out.append((
@@ -603,9 +618,9 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
                         (row.get("pincode") or "").strip(), (row.get("branch_main_remote") or "").strip(),
                         (row.get("fresh") or "").strip(), fl, tname, me_c, tme_c, dc, to_float(row.get("rv_3yr")),
                     ))
-        return out
+        return out, has_solo_jds
 
-    ly_rows, ty_rows = load_deals(f25), load_deals(f26)
+    (ly_rows, ly_jds), (ty_rows, ty_jds) = load_deals(f25), load_deals(f26)
     fetched = set()
     for rows in (ly_rows, ty_rows):
         if rows:
@@ -613,8 +628,11 @@ def seed_cat_cache_from_csv(cache, pin_area, areas, name_map=None, seed_dir=None
             for d in iter_dates(datetime.date.fromisoformat(ds_list[0]), datetime.date.fromisoformat(ds_list[-1])):
                 fetched.add(d.isoformat())
     matched, n_deals = merge_raw_rows_into_cache(cache, ly_rows + ty_rows, doc_cat, pin_area, areas, fetched, name_map=name_map)
-    log(f"Seeded {CAT_CACHE_PATH} from CSVs ({base_dir}): {len(fetched)} days, {n_deals} JDA+JDS deals (SUM dc_genio), "
-        f"{len(cache['emps'])} emps ({matched}/{n_deals} cat-matched)")
+    if ly_jds and ty_jds:
+        cache["jds_full"] = True
+        cache["sql_full_jds"] = True
+    log(f"Seeded {CAT_CACHE_PATH} from CSVs ({os.path.basename(f25)}, {os.path.basename(f26)}): {len(fetched)} days, "
+        f"{n_deals} distinct docids, {len(cache['emps'])} emps ({matched}/{n_deals} cat-matched, jds_full={cache['jds_full']})")
     return True
 
 
@@ -653,7 +671,9 @@ def update_cat_cache_sql(cache, env, pin_area, areas, ty_start, ty_end, ly_start
                                   AND sales_branch = %s
                                   AND dc_genio > 0
                                   AND fresh IN (0, 1)
-                                  AND (TRIM(IFNULL(me, '')) != '' OR TRIM(IFNULL(tme, '')) != '')""", (a, b, BRANCH))
+                                  AND IFNULL(jda_flag, 0) != 10
+                                  AND UPPER(TRIM(IFNULL(final_team_type_name, ''))) != 'ANONYMOUS'
+                                  AND NOT (TRIM(IFNULL(me, '')) IN ('', '999999999') AND TRIM(IFNULL(tme, '')) IN ('', '999999999'))""", (a, b, BRANCH))
                 for day, docid, pin, mr, fresh, flag, tname, me, tme, dc, rv in cur.fetchall():
                     ds = day.isoformat() if hasattr(day, "isoformat") else str(day)[:10]
                     raw_rows.append((ds, docid, pin, mr, fresh, int(flag or 0), tname, me, tme, to_float(dc), to_float(rv)))
