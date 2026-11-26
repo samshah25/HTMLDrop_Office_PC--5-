@@ -110,4 +110,8 @@ One-time setup on the PC that hosts the dashboard:
   3. Allow port 8170 in Windows Firewall: click Allow if Windows asks, or as administrator:
        netsh advfirewall firewall add rule name="JD dashboard usage recorder" dir=in action=allow protocol=TCP localport=8170
   Check:  python usage_recorder.py --status      Remove:  python usage_recorder.py --uninstall
+  After unzipping a newer kit nothing needs to be run: every main.py refresh (08:00, 14:30) checks the recorder, replaces a
+  running copy older than the kit's usage_recorder.py and restarts a stopped one (refresh_log.txt says what it did).
+  To switch over at once instead:  python usage_recorder.py --install
+  (26 Nov 2026: notes from the full_sk page were refused before; refused notes now go to usage\recorder_log.txt.)
 The usage page (http://<this PC>:8170/usage) needs a key that only the dashboard owner has.

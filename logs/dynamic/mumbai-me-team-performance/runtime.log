@@ -344,3 +344,65 @@
 [2026-11-26 13:02:11]    [13:02:11] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (27s). Saved cache\hr.pkl
 [2026-11-26 13:02:12]    ok (163s)
 [2026-11-26 13:02:12] -- fetch_history.py
+
+[2026-11-26T13:19:37] Running data generation (main.py)...
+[2026-11-26 13:19:42] ===== ME dashboards refresh =====
+[2026-11-26 13:19:42] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-26 13:19:42] Note: the previous run (started 2026-11-26 12:58:21) never finished; it stopped during fetch_history.py without an error. Usually the PC slept or shut down, or Windows stopped the task at its time limit.
+[2026-11-26 13:19:42] -- fetch_data.py
+[2026-11-26 13:20:07]    [13:20:03] mumbai: 54,311 appointments given and 6,350 not counted, 2026-04-01 to 2026-11-24 (20s)
+[2026-11-26 13:20:07]    [13:20:06] Saved cache\raw.pkl
+[2026-11-26 13:20:07]    ok (24s)
+[2026-11-26 13:20:07] -- fetch_api.py
+[2026-11-26 13:20:53]    [13:20:11] Appointment table runs to 2026-11-24; building 2026-11-25 to 2026-11-25 from the allocation API (cut-off 2026-11-26 00:00:00)
+[2026-11-26 13:20:53]    [13:20:16]   mumbai partition: 55,636 records since 2026-10-12 (4s)
+[2026-11-26 13:20:53]    [13:20:49]   remote: 441 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   delhi: 59 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   bangalore: 34 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   pune: 64 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   chennai: 8 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   hyderabad: 26 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:49]   kolkata: 11 appointments by Mumbai TMEs
+[2026-11-26 13:20:53]    [13:20:52] Provisional appointments given: 2026-11-25 285 (396 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-26 13:20:53]    ok (46s)
+[2026-11-26 13:20:53] -- fetch_deals.py
+[2026-11-26 13:23:36]    [13:23:09] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,624.96 since 2026-04-01 to 2026-11-25, 16,753 deal rows, 168 MEs (8s)
+[2026-11-26 13:23:36]    [13:23:09] Deals dump runs to 2026-11-25; the rolling table added 0 deal rows (nothing newer)
+[2026-11-26 13:23:36]    [13:23:09] Deals for 53,567 businesses: 14,322 deal rows since 2026-03-30 (133s). Saved cache\deals.pkl
+[2026-11-26 13:23:36]    [13:23:36] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (27s). Saved cache\hr.pkl
+[2026-11-26 13:23:36]    ok (164s)
+[2026-11-26 13:23:36] -- fetch_history.py
+
+[2026-11-26T13:24:49] Running data generation (main.py)...
+[2026-11-26 13:24:55] ===== ME dashboards refresh =====
+[2026-11-26 13:24:55] Private files (logins, data, unlocked pages, keys) in C:\ProgramData\ME_dashboard_private; moved there from the kit folder: environment.py, vault_keys.json
+[2026-11-26 13:24:55] Note: the previous run (started 2026-11-26 13:19:42) never finished; it stopped during fetch_history.py without an error. Usually the PC slept or shut down, or Windows stopped the task at its time limit.
+[2026-11-26 13:25:09]    Usage recorder: an older version is running; starting the current version.
+[2026-11-26 13:25:09]    Stopped the running recorder (1 process).
+[2026-11-26 13:25:09]    Started: it is running on port 8170. Usage page: http://<this PC>:8170/usage
+[2026-11-26 13:25:09]    If other PCs cannot reach it, allow port 8170 in Windows Firewall (see the top of this file).
+[2026-11-26 13:25:10] -- fetch_data.py
+[2026-11-26 13:25:39]    [13:25:35] mumbai: 54,311 appointments given and 6,350 not counted, 2026-04-01 to 2026-11-24 (24s)
+[2026-11-26 13:25:39]    [13:25:39] Saved cache\raw.pkl
+[2026-11-26 13:25:39]    ok (29s)
+[2026-11-26 13:25:39] -- fetch_api.py
+[2026-11-26 13:26:21]    [13:25:44] Appointment table runs to 2026-11-24; building 2026-11-25 to 2026-11-25 from the allocation API (cut-off 2026-11-26 00:00:00)
+[2026-11-26 13:26:21]    [13:25:50]   mumbai partition: 55,636 records since 2026-10-12 (5s)
+[2026-11-26 13:26:21]    [13:26:17]   remote: 441 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   delhi: 59 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   bangalore: 34 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   pune: 64 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   ahmedabad: 16 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   chennai: 8 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   hyderabad: 26 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:17]   kolkata: 11 appointments by Mumbai TMEs
+[2026-11-26 13:26:21]    [13:26:20] Provisional appointments given: 2026-11-25 285 (396 rows incl. not counted). Saved cache\api_rows.pkl
+[2026-11-26 13:26:21]    ok (42s)
+[2026-11-26 13:26:21] -- fetch_deals.py
+[2026-11-26 13:29:06]    [13:28:39] Deals closed, Sales MIS rule (JDS-ME, Mumbai MEs): 13,624.96 since 2026-04-01 to 2026-11-25, 16,753 deal rows, 168 MEs (8s)
+[2026-11-26 13:29:06]    [13:28:39] Deals dump runs to 2026-11-25; the rolling table added 0 deal rows (nothing newer)
+[2026-11-26 13:29:06]    [13:28:39] Deals for 53,567 businesses: 14,322 deal rows since 2026-03-30 (135s). Saved cache\deals.pkl
+[2026-11-26 13:29:06]    [13:29:06] HR for 1,395 MEs and 967 more TMEs: 2,231 with days present, 2,360 with joining dates (27s). Saved cache\hr.pkl
+[2026-11-26 13:29:06]    ok (165s)
+[2026-11-26 13:29:06] -- fetch_history.py

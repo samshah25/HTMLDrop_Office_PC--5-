@@ -208,6 +208,21 @@ def run_soft(step_name, *args):
     log(f"   ok ({time.time() - t0:.0f}s)" if p.returncode == 0 else f"   {step_name} did not finish (exit {p.returncode}); the pages keep the calls they had.")
 
 
+def usage_recorder():
+    """the dashboard's usage recorder (usage_recorder.py at the kit top, 23 Nov 2026): at every refresh, replace a running
+    copy older than the kit's file (so a newly unzipped kit takes over by itself) and restart a stopped one. Only in the
+    shared kit, only where it was installed; it never stops the refresh."""
+    rec = os.path.join(HERE, "usage_recorder.py")
+    if not kitpaths.SHARED_KIT or not os.path.isfile(rec):
+        return
+    try:
+        p = subprocess.run([sys.executable, rec, "--ensure"], cwd=HERE, capture_output=True, text=True, timeout=90)
+        for line in (p.stdout + p.stderr).strip().splitlines():
+            log("   " + line)
+    except Exception as e:
+        log(f"   usage recorder check skipped: {e}")
+
+
 # the steps find environment.py next to main.py as well as in pipeline
 ENV = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONPATH=os.pathsep.join(x for x in (kitpaths.PRIVATE, HERE, PIPE, os.environ.get("PYTHONPATH", "")) if x))
 if kitpaths.PRIVATE:
@@ -225,6 +240,7 @@ if __name__ == "__main__":
     if prev:
         log(f"Note: the previous run (started {prev[0]}) never finished; it stopped during {prev[1]} without an error. "
             "Usually the PC slept or shut down, or Windows stopped the task at its time limit.")
+    usage_recorder()
     if not build_only:
         e240, e216 = env_file("ME_DB_ENV", "db_240.env"), env_file("ME_DEALS_DB_ENV", "db_216.env")
         missing = [n for n, p, k in (("server 240 (DB_240)", e240, "DB_240"), ("server 216 (DB_216)", e216, "DB_216")) if not p and not in_settings(k)]

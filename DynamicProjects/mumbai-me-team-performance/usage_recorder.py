@@ -5,7 +5,11 @@ signs in: page opened, each button / tab clicked and list changed (labels only, 
 minute while the tab is in front and in use. The recorder runs on the PC that hosts the dashboard, on port 8170, and keeps
 the notes in the private folder (C:\\ProgramData\\ME_dashboard_private\\usage\\, one file a month), never in the kit folder.
 
-    python usage_recorder.py --install     start it now and at every Windows sign-in (a shortcut in the Startup folder)
+    python usage_recorder.py --install     start it now and at every Windows sign-in (a shortcut in the Startup folder);
+                                           a running copy is replaced, so run this again after unzipping a new kit
+    python usage_recorder.py --restart     replace a running copy with this file's version (no Startup change)
+    python usage_recorder.py --ensure      what main.py runs at every refresh: replaces an older running copy, restarts a
+                                           stopped one (only once installed), else does nothing
     python usage_recorder.py --uninstall   remove that shortcut (stop a running one in Task Manager: pythonw.exe)
     python usage_recorder.py --status      is it running?
     python usage_recorder.py               run it in this window (Ctrl+C stops it)
@@ -48,6 +52,7 @@ WEEKLY = os.path.join(USAGE, "weekly")
 KEYFILE = os.path.join(USAGE, "usage_key.txt")             # set by --set-key; else the key below
 KEY_SHA256 = "e29a9293d2679ffc1bfe38019d8fbe11d247c2e51a88d3c2c797876c44f0ddd2"   # only the key's fingerprint, not the key
 PORT = int(os.environ.get("ME_USAGE_PORT") or 8170)
+VERSION = hashlib.sha256(open(os.path.abspath(__file__), "rb").read()).hexdigest()[:12]   # /health tells it; main.py --ensure compares
 COOKIE = "jdme_usage"
 FIELDS = ["time", "ip", "dashboard", "login", "name", "page", "event", "detail", "visit"]
 EVENTS = {"sign-in", "reopen", "open", "click", "change", "active"}
@@ -91,21 +96,34 @@ def clean(s, n):
 
 
 # ---------------------------------------------------------------- notes in, rows out
+REJECTED = set()   # (day, reason, login): each kind of refused note is logged once a day, so a refusal never goes unnoticed
+
+
+def refused(reason, login, ip):
+    k = (dt.date.today(), reason, login)
+    if k not in REJECTED:
+        REJECTED.add(k)
+        log(f"note refused ({reason}) login {login!r} from {ip}")
+    return False
+
+
 def record(ip, d):
     e = d.get("e")
-    if e not in EVENTS:
-        return False
     dash, login, page, vid = str(d.get("d", "")), str(d.get("u", "")).lower(), str(d.get("p", "")), str(d.get("vid", ""))
-    if not (re.fullmatch(r"[a-z]{2,20}", dash) and re.fullmatch(r"[a-z0-9._-]{1,40}", login)
-            and re.fullmatch(r"[A-Za-z0-9]{1,20}", page) and re.fullmatch(r"[a-z0-9]{4,16}", vid)):
-        return False
+    if e not in EVENTS:
+        return refused(f"event {str(e)[:20]!r}", login[:40], ip)
+    # page: "full", "full_sk" (the full page with the skewness card, 25 Nov 2026) or a manager code
+    for ok, what in ((re.fullmatch(r"[a-z]{2,20}", dash), "dashboard"), (re.fullmatch(r"[a-z0-9._-]{1,40}", login), "login"),
+                     (re.fullmatch(r"[A-Za-z0-9_-]{1,30}", page), f"page {page[:30]!r}"), (re.fullmatch(r"[a-z0-9]{4,16}", vid), "visit id")):
+        if not ok:
+            return refused(what, login[:40], ip)
     now = time.time()
     with LOCK:
         q = HITS[ip]
         while q and now - q[0] > 60:
             q.popleft()
         if len(q) >= 300:            # at most 300 notes a minute from one PC
-            return False
+            return refused("over 300 a minute", login, ip)
         q.append(now)
         os.makedirs(USAGE, exist_ok=True)
         path = os.path.join(USAGE, f"usage_{dt.date.today():%Y-%m}.csv")
@@ -174,7 +192,7 @@ def summary(rows):
 
 
 def page_kind(page):
-    return "Whole dashboard" if page == "full" else "Manager page" if page else ""
+    return "Whole dashboard" if page.startswith("full") else "Manager page" if page else ""
 
 
 # ---------------------------------------------------------------- the usage page
@@ -364,7 +382,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         u = urllib.parse.urlsplit(self.path)
         q = urllib.parse.parse_qs(u.query)
         if u.path == "/health":
-            return self.send(200, "ok", "text/plain; charset=utf-8")
+            return self.send(200, f"ok {VERSION}", "text/plain; charset=utf-8")
         if u.path in ("/", "/usage", "/usage.csv") or u.path.startswith("/weekly/"):
             if not self.signed_in(q):
                 return self.send(200 if u.path in ("/", "/usage") else 403, KEYFORM.format(css=CSS, err=""))
@@ -414,31 +432,75 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send(404, "", "text/plain")
 
 
-def running():
+def running_version():
+    """None = not running; '' = a recorder from before 26 Nov (no version); else its version"""
     try:
-        return urllib.request.urlopen(f"http://127.0.0.1:{PORT}/health", timeout=3).read() == b"ok"
+        t = urllib.request.urlopen(f"http://127.0.0.1:{PORT}/health", timeout=3).read().decode("ascii", "replace").split()
+        return (t[1] if len(t) > 1 else "") if t and t[0] == "ok" else None
     except Exception:
-        return False
+        return None
 
 
-def install():
+def running():
+    return running_version() is not None
+
+
+def ensure():
+    """main.py runs this at every refresh (26 Nov 2026): after a new kit is unzipped the running copy is replaced by the
+    new version, and a stopped recorder is started again - but only on a PC where it was installed (Startup shortcut)"""
+    v = running_version()
+    if v == VERSION:
+        return print("Usage recorder: running, current version.")
+    if v is None and not os.path.exists(STARTUP):
+        return print("Usage recorder: not installed on this PC (python usage_recorder.py --install); left as it is.")
+    print("Usage recorder: " + ("not running" if v is None else "an older version is running") + "; starting the current version.")
+    install(startup=False)
+
+
+def exe_and_me():
     pyw = os.path.join(os.path.dirname(sys.executable), "pythonw.exe")
-    exe = pyw if os.path.exists(pyw) else sys.executable
-    me = os.path.abspath(__file__)
-    os.makedirs(os.path.dirname(STARTUP), exist_ok=True)
-    with open(STARTUP, "w", encoding="utf-8") as f:
-        f.write(f'@echo off\r\ncd /d "{HERE}"\r\nstart "" "{exe}" "{me}"\r\n')
-    print(f"Added to the Startup folder: it starts at every Windows sign-in ({STARTUP}).")
+    return (pyw if os.path.exists(pyw) else sys.executable), os.path.abspath(__file__)
+
+
+def stop_running():
+    """end every running copy of this recorder (python / pythonw whose command line names usage_recorder.py), not this one"""
+    ps = ("Get-CimInstance Win32_Process | Where-Object { $_.Name -match '^pythonw?\\.exe$|^py\\.exe$' -and "
+          "$_.CommandLine -like '*usage_recorder.py*' -and $_.ProcessId -ne %d -and $_.ProcessId -ne %d } | "
+          "ForEach-Object { Stop-Process -Id $_.ProcessId -Force; $_.ProcessId }" % (os.getpid(), os.getppid()))
+    r = subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, text=True)
+    ids = r.stdout.split()
+    if ids:
+        print(f"Stopped the running recorder ({len(ids)} process{'es' if len(ids) > 1 else ''}).")
+        time.sleep(2)
+    return ids
+
+
+def install(startup=True):
+    """--install: Startup shortcut + (re)start; --restart: (re)start only. Both replace a running copy, so a new kit's
+    usage_recorder.py takes over at once."""
+    exe, me = exe_and_me()
+    if startup:
+        os.makedirs(os.path.dirname(STARTUP), exist_ok=True)
+        with open(STARTUP, "w", encoding="utf-8") as f:
+            f.write(f'@echo off\r\ncd /d "{HERE}"\r\nstart "" "{exe}" "{me}"\r\n')
+        print(f"Added to the Startup folder: it starts at every Windows sign-in ({STARTUP}).")
+    stop_running()
     if running():
-        print(f"It is already running on port {PORT}.")
-        return
-    subprocess.Popen([exe, me], cwd=HERE, creationflags=getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-                     close_fds=True)
+        sys.exit(f"Port {PORT} is still in use by another program; the recorder was not started.")
+    flags = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+    for extra in (0x01000000, 0):   # CREATE_BREAKAWAY_FROM_JOB first, so a scheduled refresh ending does not end the recorder
+        try:
+            subprocess.Popen([exe, me], cwd=HERE, creationflags=flags | extra, close_fds=True,
+                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            break
+        except OSError:
+            if not extra:
+                raise
     for _ in range(10):
         time.sleep(1)
         if running():
             print(f"Started: it is running on port {PORT}. Usage page: http://<this PC>:{PORT}/usage")
-            print("If other PCs cannot reach it, allow port 8170 in Windows Firewall (see the top of this file).")
+            print(f"If other PCs cannot reach it, allow port {PORT} in Windows Firewall (see the top of this file).")
             return
     print(f"It did not answer on port {PORT}; see {os.path.join(USAGE, 'recorder_log.txt')}, or run  python usage_recorder.py  to see the error.")
 
@@ -447,6 +509,10 @@ def main():
     a = sys.argv[1:]
     if "--install" in a:
         return install()
+    if "--restart" in a:
+        return install(startup=False)
+    if "--ensure" in a:
+        return ensure()
     if "--uninstall" in a:
         if os.path.exists(STARTUP):
             os.remove(STARTUP)

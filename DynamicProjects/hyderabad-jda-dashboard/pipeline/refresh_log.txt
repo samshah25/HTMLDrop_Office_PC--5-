@@ -64,3 +64,20 @@
 2026-11-26 16:01:56  Seeded C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\cat_deals_cache.json.gz from CSVs (C:\Users\hp\Downloads): 474 days, 13221.0 JDA+JDS deals (SUM dc_genio), 908 emps (13102.0/13221.0 cat-matched)
 2026-11-26 16:01:57  Categories (cache): 26 categories, 1080 sub-categories, 908 emps, 14633 agg rows | LY 2025-04-01..2025-11-22, TY 2026-04-01..2026-11-24, common 04-01..11-22
 2026-11-26 16:01:58  Updated cat_deals in C:\Users\hp\Downloads\HTML_DROP\HTMLDrop_Office_PC--5-\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json (26 categories, 1080 sub-categories, 908 emps)
+2026-11-26 16:12:54  === Hyderabad dashboard refresh: 2026-04-21 to 2026-11-25 ===
+2026-11-26 16:12:54  1947 Hyderabad-branch pincodes in 82 areas
+2026-11-26 16:13:37  Presentations: 213 days with Hyderabad JDA presentations, 36016 rep-days, 568 reps (saved 203, fetched 14, not in feed 2)
+2026-11-26 16:13:41  Sales 2026-04-21..2026-04-30: 336 JDA deal rows
+2026-11-26 16:13:44  Sales 2026-05-01..2026-05-31: 1092 JDA deal rows
+2026-11-26 16:13:46  Sales 2026-06-01..2026-06-30: 1168 JDA deal rows
+2026-11-26 16:13:48  Sales 2026-07-01..2026-07-31: 1260 JDA deal rows
+2026-11-26 16:13:51  Sales 2026-08-01..2026-08-31: 1180 JDA deal rows
+2026-11-26 16:13:54  Sales 2026-09-01..2026-09-30: 1293 JDA deal rows
+2026-11-26 16:13:56  Sales 2026-10-01..2026-10-31: 1136 JDA deal rows
+2026-11-26 16:13:58  Sales 2026-11-01..2026-11-25: 952 JDA deal rows
+2026-11-26 16:14:11  HR: 4261 branch field JDAs on the HR list ({'left': 4106, 'working': 155}); HR details for 568 of 568 people who presented
+2026-11-26 16:14:11  HR sections of team_type JDA in branch cities (only sections with 'facing' count): {'JDA Customer Facing': 4158, 'JDA CUSTOMER FACING': 50, 'JDA Team Leader + Cust. Facing': 48, 'JDA Sales Manager': 41, 'JDA Customer Retention': 10, 'JDA TEAM LEADER + CUST. FACING': 5, 'JDA SALES MANAGER': 2}
+2026-11-26 16:14:23  Categories (incremental SQL): fetched 3 LY + 14 TY days (2 chunk(s), 1869.0 JDA deals from 1934 rows, 1742.0 cat-matched, 1758 docids); pruned 0 old days
+2026-11-26 16:14:23  Categories HR names: resolved 596 of 597 missing emp codes
+2026-11-26 16:14:25  Categories (sql): 26 categories, 1347 sub-categories, 1182 emps, 16046 agg rows | LY 2025-04-01..2025-11-25, TY 2026-04-01..2026-11-25, common 04-01..11-25
+2026-11-26 16:14:32  Wrote C:\Users\10179794\Documents\HTMLDrop_Office_PC (5)\DynamicProjects\hyderabad-jda-dashboard\pipeline\hyd_data.json: 213 days, 604 reps, 94 managers, 36016 rep-days
