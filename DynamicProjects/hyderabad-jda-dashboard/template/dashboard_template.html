@@ -556,7 +556,7 @@ tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
     <button class="nav-btn" data-page="managers" title="Managers &amp; tenure"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></svg>Managers</button>
     <button class="nav-btn" data-page="actions" title="Action list: absenteeism, zero sale, low output"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5M12 17.5v.5"/></svg>Actions<span class="badge" id="actBadge" hidden></span></button>
     <button class="nav-btn" data-page="field" title="Field discipline: start, finish, gaps, pacing"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Field</button>
-    <button class="nav-btn" data-page="categories" title="Category &amp; sub-category deals (YoY comparison)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Categories</button>
+    <button class="nav-btn" data-page="categories" title="Category &amp; sub-category total docids (YoY comparison)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>Categories</button>
     <div class="rail-foot">
       <span class="live-dot" id="liveDot"></span>
       <button type="button" class="rail-ic" id="themeBtn" title="Switch light / dark" aria-label="Switch light or dark"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
@@ -1880,13 +1880,13 @@ function pageCategories() {
     ? ((b.ly >= 10 || b.ty >= 10 ? 1 : 0) - (a.ly >= 10 || a.ty >= 10 ? 1 : 0)) || ((a.yoy || 9) - (b.yoy || 9))
     : a.diff - b.diff);
 
-  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) for ' + catTeamLbl() + ' deals from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
-    <div class="h-txt"><div class="eyebrow">${esc(catTeamLbl())} · ${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 && S.catTeam !== 'jds' ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
-    <h2>Category-wise deals (YoY)</h2></div>
+  let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Total DocIDs (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) for ' + catTeamLbl() + ' from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
+    <div class="h-txt"><div class="eyebrow">${esc(catTeamLbl())} · ${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 && S.catTeam === 'jda' ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
+    <h2>Category-wise total docids (YoY)</h2></div>
     <div class="h-chips">
-      <div class="hc"><b>${fmtDeals(totTy)}</b><span>Total deals (${fyTyLbl})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
-      <div class="hc"><b>${fmtDeals(totLy)}</b><span>Total deals (${fyLyLbl})</span><em>Previous year · same dates</em></div>
-      <div class="hc"><b>${yoyPct == null ? '—' : (yoyPct > 0 ? '+' : '') + nf(yoyPct, 1) + '%'}</b><span>YoY change</span><em>${fmtDelta(netDiff)} deals (${nf(badCats.length)} bad · ${nf(goodCats.length)} good)</em></div>
+      <div class="hc"><b>${fmtDeals(totTy)}</b><span>Total docids (${fyTyLbl})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
+      <div class="hc"><b>${fmtDeals(totLy)}</b><span>Total docids (${fyLyLbl})</span><em>Previous year · same dates</em></div>
+      <div class="hc"><b>${yoyPct == null ? '—' : (yoyPct > 0 ? '+' : '') + nf(yoyPct, 1) + '%'}</b><span>YoY change</span><em>${fmtDelta(netDiff)} docids (${nf(badCats.length)} bad · ${nf(goodCats.length)} good)</em></div>
     </div></section>`;
 
   // Controls toolbar
@@ -1902,17 +1902,17 @@ function pageCategories() {
       </select>
     </div>
     <div class="cat-grp">
-      <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All deals'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-catfresh="${k}" aria-pressed="${S.catFresh === k}">${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All docids'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-catfresh="${k}" aria-pressed="${S.catFresh === k}">${l}</button>`).join('')}</div>
     </div>
   </div>`;
 
   if (S.catTeam !== 'jda' && !CATD.jds_full) {
-    h += note(`Showing joint JDS deals from the offline CSV seed (which was exported with <code>jda_flag IN (1,2)</code>). Run <b>python main.py</b> on the office PC with <code>db_216.env</code> to pull all solo &amp; joint JDS (TME &amp; ME) deals directly from SQL.`);
+    h += note(`Showing joint JDS docids from the offline CSV seed (which was exported with <code>jda_flag IN (1,2)</code>). Run <b>python main.py</b> on the office PC with <code>db_216.env</code> to pull all solo &amp; joint JDS (TME &amp; ME) docids directly from SQL.`);
   }
   if (S.mgr >= 0 && S.catTeam !== 'jda') {
-    h += note(`Manager filter (<b>${esc(mgrName(S.mgr))}</b>) applies to JDA reporting lines only; showing all Hyderabad ${esc(catTeamLbl())} deals.`);
+    h += note(`Manager filter (<b>${esc(mgrName(S.mgr))}</b>) applies to JDA reporting lines only; showing all Hyderabad ${esc(catTeamLbl())} docids.`);
   } else if (S.mgr >= 0 && mgrF) {
-    h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active deal-securing employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} deals secured by these employees.`);
+    h += note(`Filtered to <b>${esc(mgrName(S.mgr))}'s team</b> (${nf(emps.length)} active employees across ${nf(mgrF.nMgr)} manager/TL${mgrF.nMgr === 1 ? '' : 's'} in this reporting line). Last year's baseline counts ${fyLyLbl} docids secured by these employees.`);
   }
 
   // Category / Who secured unified single-frame table
@@ -1923,10 +1923,10 @@ function pageCategories() {
   };
 
   h += secTitle(
-    cview === 'category' ? `All categories · ${catTeamLbl()} (${fyLyLbl} vs ${fyTyLbl})` : `Who secured deals (by ${catTeamShort()})`,
+    cview === 'category' ? `All categories · ${catTeamLbl()} (${fyLyLbl} vs ${fyTyLbl})` : `Who secured docids (by ${catTeamShort()})`,
     cview === 'category'
-      ? `sorted by ${fyLyLbl} deals descending · click a category for sales groups & who secured · click ▸ to expand inline`
-      : 'every employee who secured deals in this period · click ▸ to see their categories · search by name, Emp ID or category'
+      ? `sorted by ${fyLyLbl} docids descending · click a category for sales groups & who secured · click ▸ to expand inline`
+      : 'every employee who secured docids in this period · click ▸ to see their categories · search by name, Emp ID or category'
   );
 
   if (cview === 'category') {
@@ -1949,7 +1949,7 @@ function pageCategories() {
       const list = [...(subMatch ? c.subs.filter(x => x.name.toLowerCase().includes(q)) : c.subs)].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
       return list.map(x => `<tr class="perf-sub">
         <td></td>
-        <td class="sub-name">${hasEmps ? `<button type="button" class="rep" data-catsub="${c.ci}|${x.si}" title="Click to see who secured deals in ${esc(x.name)}">${esc(x.name)}</button>` : esc(x.name)}</td>
+        <td class="sub-name">${hasEmps ? `<button type="button" class="rep" data-catsub="${c.ci}|${x.si}" title="Click to see who secured docids in ${esc(x.name)}">${esc(x.name)}</button>` : esc(x.name)}</td>
         <td>${verdictPill(x.verdict)}</td>
         <td class="num">${fmtDeals(x.ly)}</td>
         <td class="num"><b>${fmtDeals(x.ty)}</b></td>
@@ -1965,8 +1965,8 @@ function pageCategories() {
       { k: 'tog', label: '', csv: false, html: c => `<button type="button" class="team-toggle${openSet.has(c.ci) ? ' open' : ''}" data-cattog="${c.ci}" aria-expanded="${openSet.has(c.ci)}">${openSet.has(c.ci) ? '▾' : '▸'} ${c.nSub}</button>` },
       { k: 'name', label: 'Category', search: c => c.name + ' ' + c.subNames, html: c => `<button type="button" class="rep" data-cat="${c.ci}">${esc(c.name)}</button>`, csv: c => c.name, totalHtml: () => '<b>Total</b>' },
       { k: 'verdict', label: 'Status', help: 'Status', html: c => verdictPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => verdictPill(t.verdict) },
-      { k: 'ly', label: `${fyLyLbl} Deals`, num: true, fmt: fmtDeals, csv: c => c.ly },
-      { k: 'ty', label: `${fyTyLbl} Deals`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
+      { k: 'ly', label: `${fyLyLbl} DocIDs`, num: true, fmt: fmtDeals, csv: c => c.ly },
+      { k: 'ty', label: `${fyTyLbl} DocIDs`, num: true, html: c => `<b>${fmtDeals(c.ty)}</b>`, csv: c => c.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
       { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, csv: c => c.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
       { k: 'rvLy', label: `${fyLyLbl} RV`, num: true, fmt: fmtRv, csv: c => c.rvLy },
@@ -2001,14 +2001,14 @@ function pageCategories() {
       { k: 'label', label: 'Employee', search: e => e.label + ' ' + e.code + ' ' + e.catNames, html: e => empCell(e, true), csv: e => e.label, totalHtml: () => '<b>Total</b>' },
       { k: 'code', label: 'Emp ID', search: e => e.code, fmt: v => v || '—', totalHtml: () => '' },
       { k: 'verdict', label: 'Status', help: 'Status', html: e => verdictPill(e.verdict), sortv: e => ({ good: 2, flat: 1, bad: 0 }[e.verdict]), csv: e => e.verdict.toUpperCase(), totalHtml: t => verdictPill(t.verdict) },
-      { k: 'ly', label: `${fyLyLbl} Deals`, num: true, fmt: fmtDeals, csv: e => e.ly },
-      { k: 'ty', label: `${fyTyLbl} Deals`, num: true, html: e => `<b>${fmtDeals(e.ty)}</b>`, csv: e => e.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
+      { k: 'ly', label: `${fyLyLbl} DocIDs`, num: true, fmt: fmtDeals, csv: e => e.ly },
+      { k: 'ty', label: `${fyTyLbl} DocIDs`, num: true, html: e => `<b>${fmtDeals(e.ty)}</b>`, csv: e => e.ty, totalHtml: t => `<b>${fmtDeals(t.ty)}</b>` },
       { k: 'diff', label: 'Net Δ', num: true, html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span>`, csv: e => e.diff, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
       { k: 'yoy', label: 'YoY %', num: true, sortv: e => e.yoy == null ? -999 : (isFinite(e.yoy) ? e.yoy : 999), html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(e.ty, e.ly)}</span>`, csv: e => fmtYoy(e.ty, e.ly), totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(t.ty, t.ly)}</span>` },
       { k: 'topCats', label: 'Top categories secured', wrap: true, fmt: v => v || '—', totalHtml: () => '' },
       { k: 'rvLy', label: `${fyLyLbl} RV`, num: true, fmt: fmtRv, csv: e => e.rvLy },
       { k: 'rvTy', label: `${fyTyLbl} RV`, num: true, fmt: fmtRv, csv: e => e.rvTy },
-    ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
+    ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured docids', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
   // Category-wise Top 10 YoY Chart (2025 vs 2026, driven by selected tenure & filters, without Others)
@@ -2039,7 +2039,7 @@ function pageCategories() {
 
     const barTop = `<div class="cat-leg">
       <div class="cat-leg-items">
-        <span class="cat-leg-it"><i style="background:var(--axis)"></i>${fyLyLbl} deals</span>
+        <span class="cat-leg-it"><i style="background:var(--axis)"></i>${fyLyLbl} docids</span>
         <span class="cat-leg-it"><i style="background:#10b981"></i>${fyTyLbl} up vs ${fyLyLbl}</span>
         <span class="cat-leg-it"><i style="background:#ef4444"></i>${fyTyLbl} down vs ${fyLyLbl}</span>
       </div>
@@ -2047,7 +2047,7 @@ function pageCategories() {
 
     let chartBody = '';
     if (!top10.length) {
-      chartBody = '<div class="empty">No category deals in the selected period and filter.</div>';
+      chartBody = '<div class="empty">No category docids in the selected period and filter.</div>';
     } else {
       const Wc = 1100, Hc = 320, padL = 48, padR = 14, padT = 48, padB = 60, iw = Wc - padL - padR, ih = Hc - padT - padB;
       const maxV = niceMax(Math.max(...top10.flatMap(c => [c.ly, c.ty]), 1));
@@ -2077,7 +2077,7 @@ function pageCategories() {
         lines.forEach((ln, li) => {
           svg += `<text x="${cx}" y="${padT + ih + 30 + li * 13}" text-anchor="middle" class="${li === 0 ? 'lbl-strong' : ''}" style="font-size:10.5px">${esc(ln)}</text>`;
         });
-        const tip = `<div class="tt-t">${esc(c.name)} · ${esc(W.label)}</div>${fyLyLbl} deals: <b>${fmtDeals(c.ly)}</b><br>${fyTyLbl} deals: <b>${fmtDeals(c.ty)}</b><br>Diff vs ${fyLyLbl}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${fyLyLbl} RV: <b>${fmtRv(c.rvLy)}</b> · ${fyTyLbl} RV: <b>${fmtRv(c.rvTy)}</b> (${fmtYoy(c.rvTy, c.rvLy)})`;
+        const tip = `<div class="tt-t">${esc(c.name)} · ${esc(W.label)}</div>${fyLyLbl} docids: <b>${fmtDeals(c.ly)}</b><br>${fyTyLbl} docids: <b>${fmtDeals(c.ty)}</b><br>Diff vs ${fyLyLbl}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${fyLyLbl} RV: <b>${fmtRv(c.rvLy)}</b> · ${fyTyLbl} RV: <b>${fmtRv(c.rvTy)}</b> (${fmtYoy(c.rvTy, c.rvLy)})`;
         svg += `<rect class="hit" x="${padL + i * gw}" y="4" width="${gw}" height="${Hc - 8}" data-tip="${esc(tip)}" data-cat="${c.ci}" style="cursor:pointer"/>`;
       });
       svg += `<line x1="${padL}" x2="${Wc - padR}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
@@ -2091,7 +2091,7 @@ function pageCategories() {
     )}</div>`;
   }
 
-  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>; <b>JDA</b> = JDA + JDA(B2B) [<code>jda_flag 1,2,3</code>], <b>JDS</b> = TME &amp; ME teams, <b>All</b> = JDA + JDS + Self Signup) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
+  h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (total docids = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>; <b>JDA</b> = JDA + JDA(B2B) [<code>jda_flag 1,2,3</code>], <b>JDS</b> = TME &amp; ME teams, <b>All</b> = JDA + JDS + Self Signup) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
 }
 
@@ -2100,7 +2100,7 @@ function downloadDrawerSecuredCsv() {
   if (!lastDrawerSecured) return;
   const { title, rows, tyLbl, lyLbl, showSub } = lastDrawerSecured;
   const cell = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const hdr = ['Emp Name', 'Emp ID', `LY Deals (${lyLbl})`, `TY Deals (${tyLbl})`, 'Net Delta', 'YoY %', `LY RV (${lyLbl})`, `TY RV (${tyLbl})`, ...(showSub ? ['Top Sub-category'] : [])];
+  const hdr = ['Emp Name', 'Emp ID', `LY DocIDs (${lyLbl})`, `TY DocIDs (${tyLbl})`, 'Net Delta', 'YoY %', `LY RV (${lyLbl})`, `TY RV (${tyLbl})`, ...(showSub ? ['Top Sub-category'] : [])];
   const lines = [hdr.map(cell).join(',')];
   for (const e of rows) {
     const r = [e.label, e.code, e.ly, e.ty, e.diff, fmtYoy(e.ty, e.ly), e.rvLy, e.rvTy, ...(showSub ? [e.topSub] : [])];
@@ -2161,13 +2161,13 @@ function openCat(ci, si = -1, tab = null) {
 
   const subq = (S.catDr.subq || '').trim().toLowerCase();
   const subsView = [...(subq ? c.subs.filter(x => x.name.toLowerCase().includes(subq)) : c.subs)].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
-  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${nf(subsView.length)}${subq ? ' of ' + nf(c.nSub) : ''})</h3><div class="cap">${hasEmps ? `Sorted by ${fyLyLbl} deals descending · click any sub-category to see who secured those deals` : `Sorted by ${fyLyLbl} deals descending`} · ${esc(W.label)}</div></div></div>
+  const subCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#0d9488"></i>Sub-categories (${nf(subsView.length)}${subq ? ' of ' + nf(c.nSub) : ''})</h3><div class="cap">${hasEmps ? `Sorted by ${fyLyLbl} docids descending · click any sub-category to see who secured those docids` : `Sorted by ${fyLyLbl} docids descending`} · ${esc(W.label)}</div></div></div>
     ${c.nSub > 8 ? `<label class="search dr-search">${icon('search')}<input type="search" id="catDrSubQ" placeholder="Search sub-category (sales group)" value="${esc(S.catDr.subq || '')}"></label>` : ''}
     <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Sub-category</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">YoY</th><th>Status</th></tr></thead>
     <tbody>${subsView.length ? subsView.map(x => `<tr class="${hasEmps ? 'click-row' : ''}"${hasEmps ? ` data-catsub="${ci}|${x.si}"` : ''}><td class="wrap"><b>${esc(x.name)}</b></td><td class="num">${fmtDeals(x.ly)}</td><td class="num"><b>${fmtDeals(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td><td>${verdictPill(x.verdict)}</td></tr>`).join('') : `<tr><td colspan="6" class="empty">No sub-categories match.</td></tr>`}</tbody></table></div>
   </div>`;
 
-  const empCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#6366f1"></i>Who secured (${nf(securedView.length)} ${catTeamShort()}s)</h3><div class="cap">${isSub ? esc(sub.name) : esc(c.name)} · sorted by TY deals · click a name for profile</div></div>
+  const empCard = `<div class="card"><div class="c-head"><div><h3><i class="dot" style="background:#6366f1"></i>Who secured (${nf(securedView.length)} ${catTeamShort()}s)</h3><div class="cap">${isSub ? esc(sub.name) : esc(c.name)} · sorted by TY docids · click a name for profile</div></div>
     <button type="button" class="btn" data-catdrcsv="1">${icon('dl')}Excel</button></div>
     <label class="search dr-search">${icon('search')}<input type="search" id="catDrQ" placeholder="Search Emp Name or Emp ID" value="${esc(S.catDr.q || '')}"></label>
     <div style="overflow-x:auto"><table class="cat-sub-tbl"><thead><tr><th>Employee (ID)</th><th class="num">${fyLyLbl}</th><th class="num">${fyTyLbl}</th><th class="num">Δ</th><th class="num">${fyLyLbl} RV</th><th class="num">${fyTyLbl} RV</th>${!isSub ? '<th>Top sub-cat</th>' : ''}</tr></thead>
