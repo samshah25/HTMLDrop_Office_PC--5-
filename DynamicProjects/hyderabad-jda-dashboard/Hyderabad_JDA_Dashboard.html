@@ -500,6 +500,12 @@ tr.perf-sub button.rep { font-weight: 500; color: var(--ink-2); }
 .dr-search { width: 100%; margin: 6px 0 4px; }
 .dr-search input { width: 100%; }
 #tw-cat-emp td:first-child, #tw-cat-emp th:first-child { width: 1%; }
+.cat-leg { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.cat-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2); border-radius: 99px; padding: 3px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all .12s; }
+.cat-chip i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex: none; }
+.cat-chip:hover { border-color: var(--brand); color: var(--ink); }
+.cat-chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.cat-chip.dim { opacity: .4; }
 
 @media (max-width: 1600px) { .upd { display: none; } }
 @media (max-width: 1400px) { .crumb-pre { display: none; } .mgr-btn { max-width: 190px; } .top { gap: 10px; } }
@@ -676,6 +682,7 @@ const S = {
   catOpen: null,    // Set of expanded category indexes in Category view
   catEmpOpen: null, // Set of expanded emp indexes in Who secured (by JDA) view
   catDr: { ci: -1, si: -1, tab: 'sub', q: '', subq: '' }, // active Category / Sub-category drawer state
+  catChartCat: -1,  // -1 = all Top 10 stacked, >=0 = isolated category ci in monthly stacked chart
 };
 if (!['today', 'territory', 'managers', 'actions', 'field', 'categories'].includes(S.page)) S.page = 'today';
 if (!CITY_OPTS.some(o => o[0] === S.city)) S.city = 'all';
@@ -1704,7 +1711,7 @@ function computeCatAgg(winOverride) {
   const eLy = Array.from({ length: nE }, () => new Set()), eTy = Array.from({ length: nE }, () => new Set());
   const eRvLy = new Float64Array(nE), eRvTy = new Float64Array(nE);
   const eCats = Array.from({ length: nE }, () => new Map()); // ei -> Map(ci -> {ly:Set, ty:Set, rvLy, rvTy})
-  const mLyS = new Map(), mTyS = new Map();
+  const mLyS = new Map(), mTyS = new Map(), mcLyS = new Map(), mcTyS = new Map();
   const totLyS = new Set(), totTyS = new Set();
   let rvLy = 0, rvTy = 0;
   for (const r of CATD.rows) {
@@ -1715,10 +1722,14 @@ function computeCatAgg(winOverride) {
     if (S.catFresh !== 'all' && fr !== +S.catFresh) continue;
     // Monthly series always spans full common_start_k..common_end_k so same-day partial month is fair
     if (k >= CATD.common_start_k && k <= CATD.common_end_k) {
-      const fm = Math.floor(k / 100);
+      const fm = Math.floor(k / 100), ci0 = CATD.subcats[si][0];
       const mp = yr === 1 ? mTyS : mLyS;
       let st = mp.get(fm); if (!st) { st = new Set(); mp.set(fm, st); }
       st.add(di);
+      const mcp = yr === 1 ? mcTyS : mcLyS;
+      const mk = fm + '|' + ci0;
+      let cst = mcp.get(mk); if (!cst) { cst = new Set(); mcp.set(mk, cst); }
+      cst.add(di);
     }
     if (k < W.a || k > W.b) continue;
     const ci = CATD.subcats[si][0];
@@ -1784,7 +1795,7 @@ function computeCatAgg(winOverride) {
       cats: clist, nCat: clist.length, topCats, catNames: clist.map(x => x.name).join(' '),
     });
   }
-  return { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy };
+  return { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy, mcLyS, mcTyS };
 }
 function computeSecuredBy(ci, si) {
   const W = catWindow(), hasEmps = Array.isArray(CATD.emps) && CATD.emps.length > 0;
@@ -1850,7 +1861,7 @@ function pageCategories() {
     return hero('categories', 'Category-wise deals (YoY)', 'No category YoY data loaded yet.')
       + note('Run <b>python main.py</b> (with <code>db_216.env</code> or CSVs in <code>pipeline\\category_data\\</code>) to populate category-wise deals from <code>ops_analytics.tbl_modified_deal_level_data</code> and <code>vertical_owner.tbl_company_vertical_mapping_SB</code>.');
   }
-  const { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy } = computeCatAgg();
+  const { W, cats, emps, hasEmps, mgrF, totLy, totTy, rvLy, rvTy, mLy, mTy, mcLyS, mcTyS } = computeCatAgg();
   const realCats = cats.filter(c => c.name !== 'Unmapped' && c.name !== 'No Category');
   const goodCats = realCats.filter(c => c.verdict === 'good');
   const badCats = realCats.filter(c => c.verdict === 'bad');
@@ -1872,8 +1883,7 @@ function pageCategories() {
 
   let h = `<section class="hero hero-categories" data-tip="${esc('<div class=tt-t>Category-wise Deals (YoY)</div>Comparing exact same dates in ' + fyTyLbl + ' vs ' + fyLyLbl + ' by COUNT(DISTINCT docid) from ops_analytics.tbl_modified_deal_level_data mapped via vertical_owner.tbl_company_vertical_mapping_SB.')}">
     <div class="h-txt"><div class="eyebrow">${esc(periodStr)} · ${esc(scopeLabel())}${S.mgr >= 0 ? ' · ' + esc(mgrName(S.mgr)) + "'s team" : ''}</div>
-    <h2>Category-wise deals (YoY)</h2>
-    <p>All categories in one view, sorted by ${fyLyLbl} deals (highest first). Click any category for its sales groups &amp; who secured them.</p></div>
+    <h2>Category-wise deals (YoY)</h2></div>
     <div class="h-chips">
       <div class="hc"><b>${fmtDeals(totTy)}</b><span>Total deals (${fyTyLbl})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
       <div class="hc"><b>${fmtDeals(totLy)}</b><span>Total deals (${fyLyLbl})</span><em>Previous year · same dates</em></div>
@@ -1996,23 +2006,65 @@ function pageCategories() {
     ], emps, { sort: 'ty', noun: 'employees', title: 'Who secured deals', after: empSubRows, total: totRow, empty: 'No employees match this filter.' });
   }
 
-  // Monthly TY vs LY grouped chart below the unified table
-  const eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
-  const monItems = fms.map(fm => ({
-    fm,
-    label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''),
-    full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay} same days)` : ''),
-    ly: mLy.get(fm) || 0,
-    ty: mTy.get(fm) || 0,
-    sel: S.catWin === 'month' && S.catMonth === fm,
-  }));
-  h += `<div style="margin-top:20px">${card(
-    `Monthly JDA deals: ${fyTyLbl} vs ${fyLyLbl} (same dates)`,
-    `Click any month bar to filter the table to that month · * latest month compares 1–${eDay} in both years`,
-    groupedBarChart(monItems, { h: 225, W: 1100, tyLbl: fyTyLbl, lyLbl: fyLyLbl }),
-    '#6366f1',
-    `<div class="legend"><span><i style="background:var(--axis)"></i>${fyLyLbl}</span><span><i style="background:#10b981"></i>${fyTyLbl} (up)</span><span><i style="background:#6366f1"></i>${fyTyLbl} (down)</span></div>`
-  )}</div>`;
+  // Stacked Monthly Bars: Top 10 Categories (2025 left vs 2026 right, clickable legend chips to isolate)
+  {
+    const TOP10_PAL = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316', '#3b82f6', '#eab308'];
+    const top10 = [...realCats].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
+    const eFm = Math.floor(CATD.common_end_k / 100), eDay = CATD.common_end_k % 100;
+    const mcVal = (map, fm, ci) => { const s = map.get(fm + '|' + ci); return s ? s.size : 0; };
+    const series = top10.map((c, idx) => ({ ci: c.ci, name: c.name, color: TOP10_PAL[idx] }));
+    const iso = series.some(s => s.ci === S.catChartCat) ? S.catChartCat : -1;
+    const legHtml = `<div class="cat-leg">
+      <button type="button" class="cat-chip${iso === -1 ? ' on' : ''}" data-catchart="-1">All Top 10</button>
+      ${series.map(s => `<button type="button" class="cat-chip${iso === s.ci ? ' on' : (iso !== -1 ? ' dim' : '')}" data-catchart="${s.ci}"><i style="background:${s.color}"></i>${esc(s.name)}</button>`).join('')}
+    </div>`;
+
+    const W = 1100, H = 265, padL = 48, padR = 14, padB = 34, padT = 22, iw = W - padL - padR, ih = H - padB - padT;
+    const activeSeries = iso === -1 ? series : series.filter(s => s.ci === iso);
+    const mData = fms.map(fm => {
+      const lyParts = activeSeries.map(s => ({ s, v: mcVal(mcLyS, fm, s.ci) }));
+      const tyParts = activeSeries.map(s => ({ s, v: mcVal(mcTyS, fm, s.ci) }));
+      const lyTot = lyParts.reduce((a, x) => a + x.v, 0), tyTot = tyParts.reduce((a, x) => a + x.v, 0);
+      return { fm, label: MON[fyMonNum(fm) - 1] + (fm === eFm ? '*' : ''), full: MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay})` : ''), lyParts, tyParts, lyTot, tyTot };
+    });
+    const maxV = niceMax(Math.max(...mData.flatMap(x => [x.lyTot, x.tyTot]), 1));
+    const gw = iw / Math.max(mData.length, 1), inner = Math.min(gw * 0.72, 66), bw = Math.max(10, (inner - 6) / 2);
+    let svg = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">`;
+    for (const t of [0, .5, 1].map(f => f * maxV)) {
+      const y = padT + ih - t / maxV * ih;
+      svg += `<line x1="${padL}" x2="${W - padR}" y1="${y}" y2="${y}" stroke="var(--grid)" ${t ? 'stroke-dasharray="4 4"' : ''}/><text x="${padL - 8}" y="${y + 4}" text-anchor="end">${fmtDeals(t)}</text>`;
+    }
+    mData.forEach((m, i) => {
+      const cx = padL + i * gw + gw / 2, x1 = cx - bw - 3, x2 = cx + 3;
+      let yCur = padT + ih;
+      for (const p of m.lyParts) {
+        if (!p.v) continue;
+        const sh = p.v / maxV * ih; yCur -= sh;
+        const tySame = m.tyParts.find(x => x.s.ci === p.s.ci)?.v || 0;
+        const tip = `<div class="tt-t">${esc(m.full)} · ${esc(p.s.name)}</div>${fyLyLbl}: <b>${fmtDeals(p.v)}</b> (${m.lyTot ? pct(p.v / m.lyTot) : '—'})<br>${fyTyLbl}: <b>${fmtDeals(tySame)}</b><br>YoY: <b>${fmtDelta(tySame - p.v)} (${fmtYoy(tySame, p.v)})</b>`;
+        svg += `<rect x="${x1}" y="${yCur}" width="${bw}" height="${Math.max(sh, 0.8)}" fill="${p.s.color}" opacity="0.58" stroke="var(--surface)" stroke-width="0.6" data-tip="${esc(tip)}" data-cat="${p.s.ci}" style="cursor:pointer"/>`;
+      }
+      if (m.lyTot > 0) svg += `<text x="${x1 + bw / 2}" y="${padT + ih - m.lyTot / maxV * ih - 5}" text-anchor="middle" style="font-size:10px;fill:var(--ink-3)">${fmtDeals(m.lyTot)}</text>`;
+      yCur = padT + ih;
+      for (const p of m.tyParts) {
+        if (!p.v) continue;
+        const sh = p.v / maxV * ih; yCur -= sh;
+        const lySame = m.lyParts.find(x => x.s.ci === p.s.ci)?.v || 0;
+        const tip = `<div class="tt-t">${esc(m.full)} · ${esc(p.s.name)}</div>${fyLyLbl}: <b>${fmtDeals(lySame)}</b><br>${fyTyLbl}: <b>${fmtDeals(p.v)}</b> (${m.tyTot ? pct(p.v / m.tyTot) : '—'})<br>YoY: <b>${fmtDelta(p.v - lySame)} (${fmtYoy(p.v, lySame)})</b>`;
+        svg += `<rect x="${x2}" y="${yCur}" width="${bw}" height="${Math.max(sh, 0.8)}" fill="${p.s.color}" stroke="var(--surface)" stroke-width="0.6" data-tip="${esc(tip)}" data-cat="${p.s.ci}" style="cursor:pointer"/>`;
+      }
+      if (m.tyTot > 0) svg += `<text x="${x2 + bw / 2}" y="${padT + ih - m.tyTot / maxV * ih - 5}" text-anchor="middle" class="lbl-strong" style="font-size:10.5px">${fmtDeals(m.tyTot)}</text>`;
+      svg += `<text x="${x1 + bw / 2}" y="${H - 18}" text-anchor="middle" style="font-size:9.5px;fill:var(--ink-3)">${fyLyLbl.slice(2)}</text>`;
+      svg += `<text x="${x2 + bw / 2}" y="${H - 18}" text-anchor="middle" style="font-size:9.5px;fill:var(--ink-2);font-weight:700">${fyTyLbl.slice(2)}</text>`;
+      svg += `<text x="${cx}" y="${H - 4}" text-anchor="middle" class="lbl-strong">${esc(m.label)}</text>`;
+    });
+    svg += `<line x1="${padL}" x2="${W - padR}" y1="${padT + ih}" y2="${padT + ih}" stroke="var(--axis)"/></svg>`;
+    h += `<div style="margin-top:20px">${card(
+      `Monthly JDA deals: Top 10 categories (${fyLyLbl} vs ${fyTyLbl})`,
+      `Click any legend chip to isolate a category · hover a slice for exact YoY · click a slice to open its sales groups · * latest month compares 1–${eDay}`,
+      legHtml + svg, '#6366f1'
+    )}</div>`;
+  }
 
   h += note(`Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (deals = <b>COUNT(DISTINCT docid)</b>, Hyderabad branch, <code>fresh IN (0,1)</code>, <code>jda_flag IN (1,2)</code>) mapped to categories via <b>vertical_owner.tbl_company_vertical_mapping_SB</b>, sub-categories via primary <b>sales_group</b> (with <code>hot_cat_info</code> fallback for newer listings), and employee names via <b>db_paidcontracts.hr_all_daily_copy_ganesh</b> (${CATD.source === 'sql' ? 'incremental SQL refresh' : 'pre-aggregated daily cache'}). Same-period range: ${CATD.ly_start}..${CATD.ly_end} vs ${CATD.ty_start}..${CATD.ty_end}.`);
   return h;
@@ -2302,7 +2354,7 @@ function setup() {
     const pick = e.target.closest('[data-mgrpick]');
     if (pick) { S.mgr = +pick.dataset.mgrpick; S.treeOpen = null; closeMgrPop(); render(); return; }
     if (!e.target.closest('#mgrPop')) closeMgrPop();
-    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon]');
+    const t = e.target.closest('[data-page],[data-scope],[data-rep],[data-sort],[data-csv],[data-act],[data-terr],[data-tree],[data-treeall],[data-mview],[data-day],[data-drill],[data-cat],[data-catsub],[data-catdrtab],[data-catdrcsv],[data-catview],[data-cattog],[data-catall],[data-catemptog],[data-catempall],[data-catwin],[data-catfresh],[data-catrank],[data-catst],[data-catmon],[data-catchart]');
     if (!t) { if (e.target.id === 'drawerBg') closeRep(); return; }
     const ds = t.dataset;
     if (ds.scope) { const b = AREA_BTNS.find(x => x[0] === ds.scope); S.city = b[2]; S.st = b[3]; store.set('city', S.city); store.set('st', S.st); render(); }
@@ -2322,6 +2374,7 @@ function setup() {
     else if (ds.catfresh) { S.catFresh = ds.catfresh; render(); }
     else if (ds.catrank) { S.catRank = ds.catrank; render(); }
     else if (ds.catst) { S.catStatus = ds.catst; render(); }
+    else if (ds.catchart != null) { const v = +ds.catchart; S.catChartCat = (S.catChartCat === v && v !== -1) ? -1 : v; render(); }
     else if (ds.sort) { const [id, k] = ds.sort.split('|'); const st = tableState[id]; if (k === 'exp' || k === 'strip' || k === 'tog') return; if (st.sort === k) st.dir *= -1; else { st.sort = k; st.dir = -1; } render(); }
     else if (ds.csv) downloadCsv(ds.csv);
     else if (ds.act) { S.act = ds.act; render(); }
@@ -2366,7 +2419,7 @@ function setup() {
     tip.innerHTML = t.dataset.tip; tip.style.display = 'block';
     const w = tip.offsetWidth, hgt = tip.offsetHeight;
     tip.style.left = Math.min(e.clientX + 14, innerWidth - w - 8) + 'px';
-    tip.style.top = (e.clientY + 16 + hgt > innerHeight ? e.clientY - hgt - 10 : e.clientY + 16) + 'px';
+    tip.style.top = Math.max(8, e.clientY + 16 + hgt > innerHeight ? e.clientY - hgt - 10 : e.clientY + 16) + 'px';
   });
 }
 setup();
