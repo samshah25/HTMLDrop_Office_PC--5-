@@ -7,7 +7,7 @@
 <script>
 try { document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('hydjds.color-scheme') ?? 'light dark'; } catch (e) {}
 </script>
-<title>Hyderabad JDS Command Center</title>
+<title>Hyderabad JDS — Category Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +26,6 @@ try { document.querySelector('meta[name="color-scheme"]').content = localStorage
   --accent-solid: #0f766e;
   --accent-soft: light-dark(#e6f6f3, #112d2c);
   --amber: light-dark(#d97706, #fbbf24);
-  --amber-soft: light-dark(#fef3c7, #33250c);
   --grid: light-dark(#e9efec, #1b2932);
   --axis: light-dark(#c5d1cc, #334855);
   --good: #10b981;
@@ -149,7 +148,7 @@ select.ctl {
 
 /* ---------- Hero Banner ---------- */
 .hero {
-  background: linear-gradient(125deg, #0d3b38 0%, #0f6b64 56%, #b45309 100%);
+  background: linear-gradient(125deg, #0d3b38 0%, #0f6b64 58%, #b45309 100%);
   color: #fff; border-radius: 20px; padding: 22px 26px;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px;
   margin-bottom: 18px; box-shadow: 0 18px 36px -22px rgba(13,59,56,.75);
@@ -170,9 +169,7 @@ select.ctl {
 .hk span { display: block; font-size: 11.5px; font-weight: 600; opacity: .92; margin-top: 2px; }
 .hk em { display: block; font-style: normal; font-size: 11px; opacity: .82; margin-top: 2px; }
 
-/* ---------- Cards & Grids ---------- */
-.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+/* ---------- Cards ---------- */
 .card {
   background: var(--surface); border: 1px solid var(--line);
   border-radius: 16px; padding: 16px 18px; box-shadow: var(--shadow);
@@ -185,19 +182,6 @@ select.ctl {
 .c-head h2 { margin: 0; font-size: 15.5px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 .c-head h2 .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
 .c-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
-.sec-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 18px 0 10px; }
-.sec-row h2 { margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-.sec-row h2::before { content: ''; width: 4px; height: 18px; border-radius: 4px; background: linear-gradient(#0f766e, #f59e0b); }
-.sec-row small { color: var(--ink-3); font-size: 12px; font-weight: 500; }
-
-/* ---------- Commercial Mix Bars ---------- */
-.mix-card h3 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--ink-2); display: flex; justify-content: space-between; }
-.mix-bar { height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; display: flex; margin: 8px 0; }
-.mix-a { background: var(--accent-solid); }
-.mix-b { background: #f59e0b; }
-.mix-row { display: flex; justify-content: space-between; font-size: 12px; gap: 8px; }
-.mix-row b { font-weight: 700; }
-.mix-foot { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--ink-3); display: flex; justify-content: space-between; }
 
 /* ---------- SVG Charts ---------- */
 .chart-leg { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
@@ -217,7 +201,7 @@ svg.chart rect.hit:hover { fill: color-mix(in srgb, var(--accent) 8%, transparen
   background: var(--surface-2); border: 1px solid var(--line);
   border-radius: 10px; padding: 5px 10px;
 }
-.search-box input { border: 0; background: transparent; outline: none; width: 200px; font-size: 13px; }
+.search-box input { border: 0; background: transparent; outline: none; width: 210px; font-size: 13px; }
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
   border: 1px solid var(--line); background: var(--surface);
@@ -287,6 +271,24 @@ svg.chart rect.hit:hover { fill: color-mix(in srgb, var(--accent) 8%, transparen
 .exp-btn:hover { border-color: var(--accent); color: var(--accent); }
 .exp-btn.open { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
+/* Matrix heatmap cell */
+.mx-cell {
+  border: 0; background: transparent; cursor: pointer;
+  display: inline-flex; flex-direction: column; align-items: flex-end;
+  padding: 3px 7px; border-radius: 7px; width: 100%; text-align: right;
+  transition: transform .1s;
+}
+.mx-cell:hover { outline: 1.5px solid var(--accent); }
+.mx-cell.up { background: var(--good-bg); }
+.mx-cell.dn { background: var(--bad-bg); }
+.mx-cell.up2 { background: color-mix(in srgb, var(--good) 26%, var(--surface)); }
+.mx-cell.dn2 { background: color-mix(in srgb, var(--bad) 24%, var(--surface)); }
+.mx-cell b { font-size: 12.5px; color: var(--ink); line-height: 1.2; }
+.mx-cell small { font-size: 10.5px; font-weight: 700; line-height: 1.15; }
+
+/* Inline driver tag */
+.drv { font-size: 11.5px; white-space: nowrap; max-width: 190px; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: bottom; }
+
 @container (width < 600px) {
   .table-wrapper table, .table-wrapper thead, .table-wrapper tbody, .table-wrapper tfoot,
   .table-wrapper tr, .table-wrapper th, .table-wrapper td { display: block; }
@@ -314,8 +316,6 @@ svg.chart rect.hit:hover { fill: color-mix(in srgb, var(--accent) 8%, transparen
 .pill.good { background: var(--good-bg); color: var(--good-ink); }
 .pill.bad { background: var(--bad-bg); color: var(--bad-ink); }
 .pill.flat { background: var(--flat-bg); color: var(--ink-3); }
-.pill.ts { background: var(--accent-soft); color: var(--accent); }
-.pill.ap { background: var(--amber-soft); color: var(--amber); }
 .ok-t { color: var(--good-ink); font-weight: 700; }
 .lo-t { color: var(--bad-ink); font-weight: 700; }
 .muted { color: var(--ink-3); }
@@ -329,7 +329,7 @@ svg.chart rect.hit:hover { fill: color-mix(in srgb, var(--accent) 8%, transparen
 
 /* ---------- Native Modal Dialog (modern-web-guidance: light-dismiss-a-dialog) ---------- */
 dialog#detailDlg {
-  width: min(760px, calc(100vw - 24px));
+  width: min(820px, calc(100vw - 24px));
   max-height: calc(100vh - 32px);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -363,25 +363,21 @@ dialog#detailDlg::backdrop {
   cursor: pointer; margin-bottom: 6px;
 }
 .dlg-body { padding: 16px 20px 22px; overflow-y: auto; max-height: calc(100vh - 140px); display: flex; flex-direction: column; gap: 14px; }
+.dlg-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 
 /* ---------- Tooltip ---------- */
 #tip {
   position: fixed; z-index: 60; pointer-events: none;
   background: #0f1d1c; color: #f0f7f6;
   border: 1px solid rgba(255,255,255,.14); border-radius: 10px;
-  padding: 8px 11px; font-size: 12px; line-height: 1.45; max-width: 300px;
+  padding: 8px 11px; font-size: 12px; line-height: 1.45; max-width: 320px;
   box-shadow: 0 14px 32px -10px rgba(0,0,0,.5); display: none;
 }
 #tip .tt-t { font-weight: 800; color: #5eead4; margin-bottom: 3px; }
 
-@media (max-width: 1040px) {
-  .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid2 { grid-template-columns: 1fr; }
-}
 @media (max-width: 680px) {
   .topbar, .ribbon, .wrap { padding-inline: 14px; }
   .ribbon { position: static; }
-  .grid4 { grid-template-columns: 1fr; }
   .stamp { display: none; }
 }
 </style>
@@ -393,15 +389,16 @@ dialog#detailDlg::backdrop {
     <div class="brand-mark">JDS</div>
     <div class="brand-txt">
       <b>Hyderabad JDS</b>
-      <span>Inside Sales (TME) &amp; Field (ME) · YoY</span>
+      <span>Category &amp; Sales Group Intelligence · YoY</span>
     </div>
   </div>
   <nav class="nav-tabs" aria-label="Dashboard sections">
-    <button type="button" class="nav-tab" data-tab="overview">Overview</button>
-    <button type="button" class="nav-tab" data-tab="channels">Channels</button>
     <button type="button" class="nav-tab" data-tab="categories">Categories</button>
-    <button type="button" class="nav-tab" data-tab="areas">Areas</button>
-    <button type="button" class="nav-tab" data-tab="people">People (TME / ME)</button>
+    <button type="button" class="nav-tab" data-tab="salesgroups">Sales Groups</button>
+    <button type="button" class="nav-tab" data-tab="seasonality">Seasonality</button>
+    <button type="button" class="nav-tab" data-tab="geo">By Area</button>
+    <button type="button" class="nav-tab" data-tab="matrix">By Channel</button>
+    <button type="button" class="nav-tab" data-tab="people">Who Secured</button>
   </nav>
   <div class="top-right">
     <span class="stamp" id="dataStamp"></span>
@@ -432,8 +429,7 @@ const fmtN = v => v == null || isNaN(v) ? '—' : nf(v, 0);
 const fmtDelta = v => v == null || isNaN(v) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + fmtN(Math.abs(v));
 const fmtYoy = (ty, ly) => ly > 0 ? (((ty - ly) / ly * 100) > 0 ? '+' : '') + nf((ty - ly) / ly * 100, 1) + '%' : (ty > 0 ? 'NEW' : '—');
 const yoyRatio = (ty, ly) => ly > 0 ? (ty - ly) / ly : (ty > 0 ? Infinity : null);
-const fmtPct = v => v == null || !isFinite(v) ? '—' : nf(v * 100, 1) + '%';
-const fmtMoney = v => {
+const fmtRv = v => {
   if (v == null || !isFinite(v)) return '—';
   const a = Math.abs(v), sg = v < 0 ? '−' : '';
   if (a >= 1e7) return sg + '₹' + nf(a / 1e7, 2) + ' Cr';
@@ -452,8 +448,8 @@ const niceMax = v => {
 };
 const verdict = (ty, ly) => {
   const d = ty - ly, p = ly > 0 ? d / ly : null;
-  if ((p != null && p >= 0.05) || d >= 15 || (ly === 0 && ty >= 5)) return 'good';
-  if ((p != null && p <= -0.05) || d <= -15 || (ty === 0 && ly >= 5)) return 'bad';
+  if ((p != null && p >= 0.05) || d >= 10 || (ly === 0 && ty >= 3)) return 'good';
+  if ((p != null && p <= -0.05) || d <= -10 || (ty === 0 && ly >= 3)) return 'bad';
   return 'flat';
 };
 const vPill = v => v === 'good' ? '<span class="pill good">Good</span>' : v === 'bad' ? '<span class="pill bad">Bad</span>' : '<span class="pill flat">Flat</span>';
@@ -521,28 +517,31 @@ if (dlg && !('closedBy' in HTMLDialogElement.prototype)) {
 
 // ---------- State ----------
 const S = {
-  tab: (location.hash.slice(1) || 'overview'),
+  tab: (location.hash.slice(1) || 'categories'),
   win: 'ytd',      // ytd | qtd | mtd | d30 | month
   month: 0,
   scope: 'all',    // all | main | remote | TS | AP
   fresh: 'all',    // all | 1 | 0
-  ecs: 'all',      // all | 1 | 0
-  b2b: 'all',      // all | 1 | 0
   ch: -1,          // -1 = all channels, >=0 channel index
+  catFilter: -1,   // -1 = all categories (used in Sales Groups & Who Secured tabs)
   catSt: 'all',    // all | bad | flat | good
+  sgSt: 'all',     // all | bad | flat | good
+  seaMode: 'pct',  // pct | delta (Seasonality cell sub-label)
+  geoView: 'top',  // top | ts | ap (Category × Area slice)
+  geoMode: 'delta', // delta | pct
   catOpen: new Set(),
   peopleRole: 'tme', // tme | me
   peopleOpen: new Set(),
   sort: {
-    channels: { k: 'ly', dir: -1 },
     cats: { k: 'ly', dir: -1 },
-    areas: { k: 'ly', dir: -1 },
+    sgs: { k: 'ly', dir: -1 },
+    channels: { k: 'ly', dir: -1 },
     people: { k: 'ty', dir: -1 },
   },
-  q: { channels: '', cats: '', areas: '', people: '' },
+  q: { cats: '', sgs: '', channels: '', people: '' },
   dlg: null,
 };
-if (!['overview', 'channels', 'categories', 'areas', 'people'].includes(S.tab)) S.tab = 'overview';
+if (!['categories', 'salesgroups', 'seasonality', 'geo', 'matrix', 'people'].includes(S.tab)) S.tab = 'categories';
 
 // ---------- Filtering & Aggregation ----------
 function monthsList() {
@@ -598,94 +597,86 @@ function empLabel(ei) {
 
 function aggregate() {
   const W = activeWindow();
-  const nC = D.cats.length, nS = D.subcats.length, nCh = D.channels.length, nA = D.areas.length, nE = D.emps.length;
+  const nC = D.cats.length, nS = D.subcats.length, nCh = D.channels.length, nE = D.emps.length;
   const totLy = new Set(), totTy = new Set();
-  const ecsLy = new Set(), ecsTy = new Set();
-  const frLy = new Set(), frTy = new Set();
-  const b2bLy = new Set(), b2bTy = new Set();
-  const mainLy = new Set(), mainTy = new Set();
-  let rvLy = 0, rvTy = 0, colLy = 0, colTy = 0;
+  let rvLy = 0, rvTy = 0;
 
-  const mLy = new Map(), mTy = new Map();
   const chLy = Array.from({ length: nCh }, () => new Set()), chTy = Array.from({ length: nCh }, () => new Set());
-  const chEcsTy = Array.from({ length: nCh }, () => new Set()), chFrTy = Array.from({ length: nCh }, () => new Set());
-  const chRvLy = new Float64Array(nCh), chRvTy = new Float64Array(nCh), chColTy = new Float64Array(nCh);
+  const chRvLy = new Float64Array(nCh), chRvTy = new Float64Array(nCh);
 
   const cLy = Array.from({ length: nC }, () => new Set()), cTy = Array.from({ length: nC }, () => new Set());
-  const cEcsTy = Array.from({ length: nC }, () => new Set());
   const cRvLy = new Float64Array(nC), cRvTy = new Float64Array(nC);
 
   const sLy = Array.from({ length: nS }, () => new Set()), sTy = Array.from({ length: nS }, () => new Set());
   const sRvLy = new Float64Array(nS), sRvTy = new Float64Array(nS);
+  const sChTy = Array.from({ length: nS }, () => new Map());
 
-  const aLy = Array.from({ length: nA }, () => new Set()), aTy = Array.from({ length: nA }, () => new Set());
-  const aEcsTy = Array.from({ length: nA }, () => new Set());
-  const aRvLy = new Float64Array(nA), aRvTy = new Float64Array(nA);
+  // Category x Channel, Category x Month (full common range), and Category x Area matrices
+  const mxLy = new Map(), mxTy = new Map();
+  const cmLy = new Map(), cmTy = new Map();
+  const caLy = new Map(), caTy = new Map();
+  const aLy = Array.from({ length: D.areas.length }, () => new Set()), aTy = Array.from({ length: D.areas.length }, () => new Set());
 
-  const roleIdx = S.peopleRole === 'me' ? 8 : 7; // r[7]=tme_i, r[8]=me_i
+  const roleIdx = S.peopleRole === 'me' ? 8 : 7;
   const eLy = Array.from({ length: nE }, () => new Set()), eTy = Array.from({ length: nE }, () => new Set());
-  const eEcsTy = Array.from({ length: nE }, () => new Set());
   const eRvLy = new Float64Array(nE), eRvTy = new Float64Array(nE);
   const eChCnt = Array.from({ length: nE }, () => new Map());
   const eCats = Array.from({ length: nE }, () => new Map());
 
+  const catOnlyFilter = (S.tab === 'salesgroups' || S.tab === 'people') ? S.catFilter : -1;
+
   for (const r of D.rows) {
     // [yr, mmdd, di, ai, si, chi, flags, tme_i, me_i, rv, coll]
-    const [yr, k, di, ai, si, chi, flags, tmeI, meI, rv, coll] = r;
+    const [yr, k, di, ai, si, chi, flags, tmeI, meI, rv] = r;
     if (!scopeOk(ai)) continue;
     if (S.ch >= 0 && chi !== S.ch) continue;
-    const fr = flags & 1, ec = (flags >> 1) & 1, bb = (flags >> 2) & 1;
+    const fr = flags & 1;
     if (S.fresh !== 'all' && fr !== +S.fresh) continue;
-    if (S.ecs !== 'all' && ec !== +S.ecs) continue;
-    if (S.b2b !== 'all' && bb !== +S.b2b) continue;
 
+    const ci = D.subcats[si][0];
+    // Seasonality matrix spans full common_start_k..common_end_k regardless of selected tenure window
     if (k >= M.common_start_k && k <= M.common_end_k) {
-      const fm = Math.floor(k / 100);
-      const mp = yr === 1 ? mTy : mLy;
-      let st = mp.get(fm); if (!st) { st = new Set(); mp.set(fm, st); }
-      st.add(di);
+      const cmk = ci + '|' + Math.floor(k / 100);
+      const cmp = yr === 1 ? cmTy : cmLy;
+      let cs = cmp.get(cmk); if (!cs) { cs = new Set(); cmp.set(cmk, cs); } cs.add(di);
     }
     if (k < W.a || k > W.b) continue;
 
-    const ci = D.subcats[si][0];
+    const mk = ci + '|' + chi;
+    const ak = ci + '|' + ai;
     const ei = roleIdx === 8 ? meI : tmeI;
-    const isMain = D.areas[ai] && D.areas[ai].main === 1;
 
     if (yr === 1) {
-      totTy.add(di); rvTy += rv; colTy += coll;
-      if (ec) ecsTy.add(di);
-      if (fr) frTy.add(di);
-      if (bb) b2bTy.add(di);
-      if (isMain) mainTy.add(di);
-
-      chTy[chi].add(di); chRvTy[chi] += rv; chColTy[chi] += coll;
-      if (ec) chEcsTy[chi].add(di);
-      if (fr) chFrTy[chi].add(di);
-
-      cTy[ci].add(di); cRvTy[ci] += rv; if (ec) cEcsTy[ci].add(di);
+      if (catOnlyFilter < 0 || ci === catOnlyFilter) {
+        totTy.add(di); rvTy += rv;
+      }
+      chTy[chi].add(di); chRvTy[chi] += rv;
+      cTy[ci].add(di); cRvTy[ci] += rv;
       sTy[si].add(di); sRvTy[si] += rv;
-      aTy[ai].add(di); aRvTy[ai] += rv; if (ec) aEcsTy[ai].add(di);
+      sChTy[si].set(chi, (sChTy[si].get(chi) || 0) + 1);
+      aTy[ai].add(di);
+      let ms = mxTy.get(mk); if (!ms) { ms = new Set(); mxTy.set(mk, ms); } ms.add(di);
+      let as = caTy.get(ak); if (!as) { as = new Set(); caTy.set(ak, as); } as.add(di);
 
-      if (ei >= 0) {
-        eTy[ei].add(di); eRvTy[ei] += rv; if (ec) eEcsTy[ei].add(di);
+      if (ei >= 0 && (catOnlyFilter < 0 || ci === catOnlyFilter)) {
+        eTy[ei].add(di); eRvTy[ei] += rv;
         eChCnt[ei].set(chi, (eChCnt[ei].get(chi) || 0) + 1);
         let cv = eCats[ei].get(ci);
         if (!cv) { cv = { ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0 }; eCats[ei].set(ci, cv); }
         cv.ty.add(di); cv.rvTy += rv;
       }
     } else {
-      totLy.add(di); rvLy += rv; colLy += coll;
-      if (ec) ecsLy.add(di);
-      if (fr) frLy.add(di);
-      if (bb) b2bLy.add(di);
-      if (isMain) mainLy.add(di);
-
+      if (catOnlyFilter < 0 || ci === catOnlyFilter) {
+        totLy.add(di); rvLy += rv;
+      }
       chLy[chi].add(di); chRvLy[chi] += rv;
       cLy[ci].add(di); cRvLy[ci] += rv;
       sLy[si].add(di); sRvLy[si] += rv;
-      aLy[ai].add(di); aRvLy[ai] += rv;
+      aLy[ai].add(di);
+      let ms = mxLy.get(mk); if (!ms) { ms = new Set(); mxLy.set(mk, ms); } ms.add(di);
+      let as = caLy.get(ak); if (!as) { as = new Set(); caLy.set(ak, as); } as.add(di);
 
-      if (ei >= 0) {
+      if (ei >= 0 && (catOnlyFilter < 0 || ci === catOnlyFilter)) {
         eLy[ei].add(di); eRvLy[ei] += rv;
         eChCnt[ei].set(chi, (eChCnt[ei].get(chi) || 0) + 1);
         let cv = eCats[ei].get(ci);
@@ -695,27 +686,20 @@ function aggregate() {
     }
   }
 
-  const channels = [];
-  for (let i = 0; i < nCh; i++) {
-    const ly = chLy[i].size, ty = chTy[i].size;
-    if (!ly && !ty) continue;
-    channels.push({
-      i, name: D.channels[i], ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
-      rvLy: chRvLy[i], rvTy: chRvTy[i], rvYoy: yoyRatio(chRvTy[i], chRvLy[i]),
-      colTy: chColTy[i], ecsPct: ty ? chEcsTy[i].size / ty : 0, frPct: ty ? chFrTy[i].size / ty : 0,
-      verdict: verdict(ty, ly),
-    });
-  }
-
   const subsByCat = Array.from({ length: nC }, () => []);
+  const allSubs = [];
   for (let si = 0; si < nS; si++) {
     const [ci, name] = D.subcats[si];
     const ly = sLy[si].size, ty = sTy[si].size;
     if (!ly && !ty) continue;
-    subsByCat[ci].push({
-      si, ci, name, ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
-      rvLy: sRvLy[si], rvTy: sRvTy[si], rvYoy: yoyRatio(sRvTy[si], sRvLy[si]), verdict: verdict(ty, ly),
-    });
+    const topCh = [...sChTy[si].entries()].sort((a, b) => b[1] - a[1])[0];
+    const item = {
+      si, ci, catName: D.cats[ci], name, ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
+      rvLy: sRvLy[si], rvTy: sRvTy[si], rvYoy: yoyRatio(sRvTy[si], sRvLy[si]),
+      topCh: topCh ? D.channels[topCh[0]] : '—', verdict: verdict(ty, ly),
+    };
+    subsByCat[ci].push(item);
+    allSubs.push(item);
   }
   subsByCat.forEach(l => l.sort((a, b) => b.ly - a.ly || b.ty - a.ty));
 
@@ -724,23 +708,35 @@ function aggregate() {
     const ly = cLy[ci].size, ty = cTy[ci].size;
     if (!ly && !ty) continue;
     const subs = subsByCat[ci];
+    const topGain = [...subs].filter(x => x.diff > 0).sort((a, b) => b.diff - a.diff)[0] || null;
+    const topDrop = [...subs].filter(x => x.diff < 0).sort((a, b) => a.diff - b.diff)[0] || null;
     cats.push({
       ci, name: D.cats[ci], ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
       rvLy: cRvLy[ci], rvTy: cRvTy[ci], rvYoy: yoyRatio(cRvTy[ci], cRvLy[ci]),
-      ecsPct: ty ? cEcsTy[ci].size / ty : 0, verdict: verdict(ty, ly),
-      subs, nSub: subs.length, subNames: subs.map(x => x.name).join(' '),
+      verdict: verdict(ty, ly), subs, nSub: subs.length,
+      subNames: subs.map(x => x.name).join(' '),
+      topGain, topDrop,
     });
   }
 
-  const areas = [];
-  for (let ai = 0; ai < nA; ai++) {
-    const ly = aLy[ai].size, ty = aTy[ai].size;
+  const channels = [];
+  for (let i = 0; i < nCh; i++) {
+    const ly = chLy[i].size, ty = chTy[i].size;
     if (!ly && !ty) continue;
-    areas.push({
-      ai, name: D.areas[ai].name, state: D.areas[ai].state, main: D.areas[ai].main,
-      ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
-      rvLy: aRvLy[ai], rvTy: aRvTy[ai], rvYoy: yoyRatio(aRvTy[ai], aRvLy[ai]),
-      ecsPct: ty ? aEcsTy[ai].size / ty : 0, verdict: verdict(ty, ly),
+    // Top gaining & dropping category inside this channel
+    let bestC = null, worstC = null;
+    for (const c of cats) {
+      const mk = c.ci + '|' + i;
+      const l = mxLy.get(mk) ? mxLy.get(mk).size : 0;
+      const t = mxTy.get(mk) ? mxTy.get(mk).size : 0;
+      const d = t - l;
+      if (d > 0 && (!bestC || d > bestC.d)) bestC = { name: c.name, d };
+      if (d < 0 && (!worstC || d < worstC.d)) worstC = { name: c.name, d };
+    }
+    channels.push({
+      i, name: D.channels[i], ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
+      rvLy: chRvLy[i], rvTy: chRvTy[i], rvYoy: yoyRatio(chRvTy[i], chRvLy[i]),
+      verdict: verdict(ty, ly), bestC, worstC,
     });
   }
 
@@ -759,21 +755,22 @@ function aggregate() {
     people.push({
       ei, ...info, ch: topCh ? D.channels[topCh[0]] : '—',
       ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly),
-      rvLy: eRvLy[ei], rvTy: eRvTy[ei], ecsPct: ty ? eEcsTy[ei].size / ty : 0,
-      verdict: verdict(ty, ly), cats: clist, nCat: clist.length, topCats,
-      catNames: clist.map(x => x.name).join(' '),
+      rvLy: eRvLy[ei], rvTy: eRvTy[ei], verdict: verdict(ty, ly),
+      cats: clist, nCat: clist.length, topCats, catNames: clist.map(x => x.name).join(' '),
     });
   }
 
-  return {
-    W, totLy: totLy.size, totTy: totTy.size, rvLy, rvTy, colLy, colTy,
-    ecsLy: ecsLy.size, ecsTy: ecsTy.size, frLy: frLy.size, frTy: frTy.size,
-    b2bLy: b2bLy.size, b2bTy: b2bTy.size, mainLy: mainLy.size, mainTy: mainTy.size,
-    mLy, mTy, channels, cats, areas, people,
-  };
+  const areas = [];
+  for (let ai = 0; ai < D.areas.length; ai++) {
+    const ly = aLy[ai].size, ty = aTy[ai].size;
+    if (!ly && !ty) continue;
+    areas.push({ ai, name: D.areas[ai].name, state: D.areas[ai].state, main: D.areas[ai].main, ly, ty, diff: ty - ly });
+  }
+
+  return { W, totLy: totLy.size, totTy: totTy.size, rvLy, rvTy, cats, allSubs, channels, areas, mxLy, mxTy, cmLy, cmTy, caLy, caTy, people };
 }
 
-// ---------- Reusable YoY Grouped Bar Chart (with 2025 / 2026 under bars & diff pills above) ----------
+// ---------- YoY Grouped Bar Chart (2025 / 2026 under bars, diff pills above) ----------
 function yoyBarChart(items, { height = 315, clickAttr = '', clickKey = '' } = {}) {
   if (!items.length) return '<div class="empty">No docids in the selected period and filter.</div>';
   const Wc = 1100, Hc = height, padL = 52, padR = 14, padT = 48, padB = 60, iw = Wc - padL - padR, ih = Hc - padT - padB;
@@ -861,7 +858,7 @@ function renderTable(id, cols, rows, { title, caption, totalRow, afterRow, noCap
   }).join('');
 
   const body = sorted.length ? sorted.map(r => {
-    const cells = cols.map((c, idx) => {
+    const cells = cols.map(c => {
       const content = c.html ? c.html(r) : esc(c.fmt ? c.fmt(r[c.k], r) : r[c.k]);
       if (c.rowHdr) return `<th scope="row">${content}</th>`;
       return `<td class="${c.num ? 'num' : ''}" data-lbl="${esc(c.label)}">${content}</td>`;
@@ -886,12 +883,12 @@ function renderTable(id, cols, rows, { title, caption, totalRow, afterRow, noCap
   </div>`;
 }
 
-// ---------- Filter Ribbon ----------
+// ---------- Filter Ribbon (Clean — Tenure, Area, Channel, Fresh/Renewal only) ----------
 function renderRibbon() {
   const fms = monthsList();
   const wins = [['ytd', 'YTD'], ['qtd', 'QTD'], ['mtd', 'MTD'], ['d30', 'Last 30d']];
   const scopes = [['all', 'Branch'], ['main', 'Main'], ['remote', 'Remote'], ['TS', 'Telangana'], ['AP', 'Andhra']];
-  const hasFilter = S.win !== 'ytd' || S.scope !== 'all' || S.fresh !== 'all' || S.ecs !== 'all' || S.b2b !== 'all' || S.ch !== -1;
+  const hasFilter = S.win !== 'ytd' || S.scope !== 'all' || S.fresh !== 'all' || S.ch !== -1 || S.catFilter !== -1;
   $('#ribbon').innerHTML = `
     <div class="seg" role="group" aria-label="Period">${wins.map(([k, l]) => `<button type="button" data-win="${k}" aria-pressed="${S.win === k}">${l}</button>`).join('')}</div>
     <select class="ctl" id="monthSel" aria-label="Pick month">
@@ -900,139 +897,35 @@ function renderRibbon() {
     </select>
     <div class="seg" role="group" aria-label="Geography">${scopes.map(([k, l]) => `<button type="button" data-scope="${k}" aria-pressed="${S.scope === k}">${l}</button>`).join('')}</div>
     <select class="ctl" id="chSel" aria-label="Filter by JDS channel">
-      <option value="-1"${S.ch === -1 ? ' selected' : ''}>All Channels (${D.channels.length})</option>
+      <option value="-1"${S.ch === -1 ? ' selected' : ''}>All JDS Channels (${D.channels.length})</option>
       ${D.channels.map((c, i) => `<option value="${i}"${S.ch === i ? ' selected' : ''}>${esc(c)}</option>`).join('')}
     </select>
-    <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-fresh="${k}" aria-pressed="${S.fresh === k}">${l}</button>`).join('')}</div>
-    <div class="seg" role="group" aria-label="ECS filter">${[['all', 'All ECS'], ['1', 'ECS'], ['0', 'Non-ECS']].map(([k, l]) => `<button type="button" data-ecs="${k}" aria-pressed="${S.ecs === k}">${l}</button>`).join('')}</div>
-    <div class="seg" role="group" aria-label="B2B or B2C">${[['all', 'B2B+B2C'], ['1', 'B2B'], ['0', 'B2C']].map(([k, l]) => `<button type="button" data-b2b="${k}" aria-pressed="${S.b2b === k}">${l}</button>`).join('')}</div>
+    <div class="seg" role="group" aria-label="Fresh or renewal">${[['all', 'All docids'], ['1', 'Fresh'], ['0', 'Renewal']].map(([k, l]) => `<button type="button" data-fresh="${k}" aria-pressed="${S.fresh === k}">${l}</button>`).join('')}</div>
     ${hasFilter ? '<button type="button" class="reset-btn" id="resetBtn">Reset filters</button>' : ''}
   `;
 }
 
 // ---------- Hero ----------
 function renderHero(agg, title) {
-  const { W, totLy, totTy, rvLy, rvTy, colLy, colTy, ecsLy, ecsTy } = agg;
-  const ecsPctTy = totTy ? ecsTy / totTy : 0, ecsPctLy = totLy ? ecsLy / totLy : 0;
-  const ecsDiffPts = (ecsPctTy - ecsPctLy) * 100;
+  const { W, totLy, totTy, rvLy, rvTy } = agg;
+  const diff = totTy - totLy;
   const chTag = S.ch >= 0 ? ' · ' + D.channels[S.ch] : '';
+  const catTag = (S.tab === 'salesgroups' || S.tab === 'people') && S.catFilter >= 0 ? ' · ' + D.cats[S.catFilter] : '';
   return `<section class="hero">
     <div>
-      <div class="hero-meta">Hyderabad JDS (TME &amp; ME) · ${esc(W.label)} · ${esc(scopeLabel())}${esc(chTag)}</div>
+      <div class="hero-meta">Hyderabad JDS (TME &amp; ME) · ${esc(W.label)} · ${esc(scopeLabel())}${esc(chTag)}${esc(catTag)}</div>
       <h1>${esc(title)}</h1>
     </div>
     <div class="h-kpis">
-      <div class="hk"><b>${fmtN(totTy)}</b><span>Total DocIDs (${TY})</span><em>${LY}: ${fmtN(totLy)} · ${fmtDelta(totTy - totLy)} (${fmtYoy(totTy, totLy)})</em></div>
-      <div class="hk"><b>${fmtMoney(rvTy)}</b><span>3-Yr RV (${TY})</span><em>${LY}: ${fmtMoney(rvLy)} (${fmtYoy(rvTy, rvLy)})</em></div>
-      <div class="hk"><b>${fmtMoney(colTy)}</b><span>Collection (${TY})</span><em>${LY}: ${fmtMoney(colLy)} (${fmtYoy(colTy, colLy)})</em></div>
-      <div class="hk"><b>${fmtPct(ecsPctTy)}</b><span>ECS Mix (${TY})</span><em>${LY}: ${fmtPct(ecsPctLy)} (${ecsDiffPts >= 0 ? '+' : ''}${nf(ecsDiffPts, 1)} pp)</em></div>
+      <div class="hk"><b>${fmtN(totTy)}</b><span>Total DocIDs (${TY})</span><em>This year · ${fyKeyLabel(W.a)} – ${fyKeyLabel(W.b)}</em></div>
+      <div class="hk"><b>${fmtN(totLy)}</b><span>Total DocIDs (${LY})</span><em>Previous year · same dates</em></div>
+      <div class="hk"><b>${fmtYoy(totTy, totLy)}</b><span>YoY Change</span><em>${fmtDelta(diff)} docids</em></div>
+      <div class="hk"><b>${fmtRv(rvTy)}</b><span>RV (${TY})</span><em>${LY}: ${fmtRv(rvLy)} (${fmtYoy(rvTy, rvLy)})</em></div>
     </div>
   </section>`;
 }
 
-function mixCard(title, aLbl, bLbl, aTy, totTy, aLy, totLy) {
-  const bTy = Math.max(0, totTy - aTy);
-  const pTy = totTy ? aTy / totTy : 0, pLy = totLy ? aLy / totLy : 0;
-  const pp = (pTy - pLy) * 100;
-  return `<div class="card mix-card">
-    <h3><span>${esc(title)}</span><span class="${pp >= 0 ? 'ok-t' : 'lo-t'}">${pp >= 0 ? '+' : ''}${nf(pp, 1)} pp YoY</span></h3>
-    <div class="mix-bar"><div class="mix-a" style="width:${(pTy * 100).toFixed(1)}%"></div><div class="mix-b" style="width:${((1 - pTy) * 100).toFixed(1)}%"></div></div>
-    <div class="mix-row"><span><b>${esc(aLbl)}</b> ${fmtN(aTy)} (${fmtPct(pTy)})</span><span><b>${esc(bLbl)}</b> ${fmtN(bTy)} (${fmtPct(1 - pTy)})</span></div>
-    <div class="mix-foot"><span>${LY} ${esc(aLbl)}: ${fmtN(aLy)} (${fmtPct(pLy)})</span><span>Δ ${fmtDelta(aTy - aLy)}</span></div>
-  </div>`;
-}
-
-// ---------- Tab Renderers ----------
-function renderOverview(agg) {
-  const fms = monthsList();
-  const eFm = Math.floor(M.common_end_k / 100), eDay = M.common_end_k % 100;
-  const sFm = Math.floor(M.common_start_k / 100), sDay = M.common_start_k % 100;
-  const monItems = fms.map(fm => {
-    const ly = agg.mLy.get(fm) ? agg.mLy.get(fm).size : 0;
-    const ty = agg.mTy.get(fm) ? agg.mTy.get(fm).size : 0;
-    const note = fm === eFm ? ` (1–${eDay})` : (fm === sFm && sDay > 1 ? ` (${sDay}–end)` : '');
-    const full = MONTHS[fyMonNum(fm) - 1] + note;
-    return {
-      fm, label: MON[fyMonNum(fm) - 1] + (note ? '*' : ''), ly, ty,
-      tip: `<div class="tt-t">${esc(full)}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(ty - ly)} (${fmtYoy(ty, ly)})</b>`,
-    };
-  });
-
-  const topCh = [...agg.channels].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 8);
-  const topCat = [...agg.cats].filter(c => c.name !== 'Unmapped' && !/^others?$/i.test(c.name)).sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 8);
-
-  return renderHero(agg, 'JDS Commercial Pulse')
-    + `<div class="grid4" style="margin-bottom:16px">
-        ${mixCard('ECS vs Non-ECS', 'ECS', 'Non-ECS', agg.ecsTy, agg.totTy, agg.ecsLy, agg.totLy)}
-        ${mixCard('Fresh vs Renewal', 'Fresh', 'Renewal', agg.frTy, agg.totTy, agg.frLy, agg.totLy)}
-        ${mixCard('B2B vs B2C', 'B2B', 'B2C', agg.b2bTy, agg.totTy, agg.b2bLy, agg.totLy)}
-        ${mixCard('Main vs Remote', 'Main Hyd', 'Remote', agg.mainTy, agg.totTy, agg.mainLy, agg.totLy)}
-      </div>`
-    + `<div class="card">
-        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Monthly Total DocIDs (${LY} vs ${TY})</h2>
-        <div class="c-sub">Same calendar dates every month · click any month to focus filters on that month · * partial boundary month</div></div></div>
-        ${yoyBarChart(monItems, { clickAttr: 'data-pickmon', clickKey: 'fm' })}
-      </div>`
-    + `<div class="grid2" style="margin-top:16px">
-        <div class="card">
-          <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>Top JDS Channels · ${esc(agg.W.label)}</h2>
-          <div class="c-sub">Sorted by ${LY} docids · click a channel to drill down</div></div></div>
-          ${topCh.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);gap:10px">
-            <button type="button" class="link-btn" data-opench="${c.i}">${esc(c.name)}</button>
-            <span style="display:flex;align-items:center;gap:10px;font-size:12.5px">
-              <span class="muted">${fmtN(c.ly)} →</span> <b>${fmtN(c.ty)}</b>
-              <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="min-width:84px;text-align:right">${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</span>
-            </span>
-          </div>`).join('') || '<div class="empty">No channels.</div>'}
-        </div>
-        <div class="card">
-          <div class="c-head"><div><h2><i class="dot" style="background:#10b981"></i>Top Categories · ${esc(agg.W.label)}</h2>
-          <div class="c-sub">Sorted by ${LY} docids · click a category for sales groups &amp; reps</div></div></div>
-          ${topCat.map(c => `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);gap:10px">
-            <button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button>
-            <span style="display:flex;align-items:center;gap:10px;font-size:12.5px">
-              <span class="muted">${fmtN(c.ly)} →</span> <b>${fmtN(c.ty)}</b>
-              <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="min-width:84px;text-align:right">${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</span>
-            </span>
-          </div>`).join('') || '<div class="empty">No categories.</div>'}
-        </div>
-      </div>`;
-}
-
-function renderChannels(agg) {
-  const topCh = [...agg.channels].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
-  const chItems = topCh.map(c => ({
-    i: c.i, label: c.name, ly: c.ly, ty: c.ty,
-    tip: `<div class="tt-t">${esc(c.name)} · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(c.ly)}</b><br>${TY} docids: <b>${fmtN(c.ty)}</b><br>YoY: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${TY} RV: <b>${fmtMoney(c.rvTy)}</b> · ECS: <b>${fmtPct(c.ecsPct)}</b>`,
-  }));
-  const tot = {
-    name: 'Total', verdict: verdict(agg.totTy, agg.totLy), ly: agg.totLy, ty: agg.totTy,
-    diff: agg.totTy - agg.totLy, rvLy: agg.rvLy, rvTy: agg.rvTy, colTy: agg.colTy,
-    ecsPct: agg.totTy ? agg.ecsTy / agg.totTy : 0, frPct: agg.totTy ? agg.frTy / agg.totTy : 0,
-  };
-  return renderHero(agg, 'JDS Channel Performance (YoY)')
-    + `<div class="card">
-        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Channel Comparison (${LY} vs ${TY}) · ${esc(agg.W.label)}</h2>
-        <div class="c-sub">Click any channel bar or row to inspect its categories &amp; top TMEs/MEs</div></div></div>
-        ${yoyBarChart(chItems, { clickAttr: 'data-opench', clickKey: 'i' })}
-      </div>`
-    + `<div class="card" style="margin-top:16px">
-        ${renderTable('channels', [
-          { k: 'name', label: 'Channel', rowHdr: true, html: c => `<button type="button" class="link-btn" data-opench="${c.i}">${esc(c.name)}</button>`, totalHtml: () => 'Total' },
-          { k: 'verdict', label: 'Status', html: c => vPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => vPill(t.verdict) },
-          { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
-          { k: 'ty', label: `${TY} DocIDs`, num: true, html: c => `<b>${fmtN(c.ty)}</b>`, totalHtml: t => `<b>${fmtN(t.ty)}</b>` },
-          { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
-          { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => fmtYoy(t.ty, t.ly) },
-          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtMoney },
-          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtMoney },
-          { k: 'colTy', label: `${TY} Coll.`, num: true, fmt: fmtMoney },
-          { k: 'ecsPct', label: 'ECS %', num: true, fmt: fmtPct, csv: c => fmtPct(c.ecsPct) },
-          { k: 'frPct', label: 'Fresh %', num: true, fmt: fmtPct, csv: c => fmtPct(c.frPct) },
-        ], agg.channels, { title: 'JDS Channels YoY', totalRow: tot, noCap: true })}
-      </div>`;
-}
-
+// ---------- Tab 1: Categories (Default) ----------
 function renderCategories(agg) {
   const list = S.catSt === 'all' ? agg.cats : agg.cats.filter(c => c.verdict === S.catSt);
   const allOpen = list.length && list.every(c => S.catOpen.has(c.ci));
@@ -1055,24 +948,24 @@ function renderCategories(agg) {
       <td class="num" data-lbl="${TY} DocIDs"><b>${fmtN(x.ty)}</b></td>
       <td class="num" data-lbl="Net Δ"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td>
       <td class="num" data-lbl="YoY %"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span></td>
-      <td class="num muted" data-lbl="${LY} RV">${fmtMoney(x.rvLy)}</td>
-      <td class="num muted" data-lbl="${TY} RV">${fmtMoney(x.rvTy)}</td>
+      <td class="num muted" data-lbl="${LY} RV">${fmtRv(x.rvLy)}</td>
+      <td class="num muted" data-lbl="${TY} RV">${fmtRv(x.rvTy)}</td>
       <td class="num muted" data-lbl="RV YoY %">${fmtYoy(x.rvTy, x.rvLy)}</td>
-      <td class="num muted" data-lbl="ECS %">—</td>
+      <td class="muted" data-lbl="Top Channel">${esc(x.topCh)}</td>
+      <td class="muted">—</td>
     </tr>`).join('');
   };
 
   const tot = {
     name: 'Total', verdict: verdict(agg.totTy, agg.totLy), ly: agg.totLy, ty: agg.totTy,
     diff: agg.totTy - agg.totLy, rvLy: agg.rvLy, rvTy: agg.rvTy,
-    ecsPct: agg.totTy ? agg.ecsTy / agg.totTy : 0,
   };
 
   const top10 = [...agg.cats].filter(c => c.name !== 'Unmapped' && c.name !== 'No Category' && !/^others?$/i.test(c.name))
     .sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10)
     .map(c => ({
       ci: c.ci, label: c.name, ly: c.ly, ty: c.ty,
-      tip: `<div class="tt-t">${esc(c.name)} · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(c.ly)}</b><br>${TY} docids: <b>${fmtN(c.ty)}</b><br>Diff vs ${LY}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${LY} RV: <b>${fmtMoney(c.rvLy)}</b> · ${TY} RV: <b>${fmtMoney(c.rvTy)}</b>`,
+      tip: `<div class="tt-t">${esc(c.name)} · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(c.ly)}</b><br>${TY} docids: <b>${fmtN(c.ty)}</b><br>Diff vs ${LY}: <b>${fmtDelta(c.diff)} (${fmtYoy(c.ty, c.ly)})</b><br>${LY} RV: <b>${fmtRv(c.rvLy)}</b> · ${TY} RV: <b>${fmtRv(c.rvTy)}</b>`,
     }));
 
   return renderHero(agg, 'Category-wise Total DocIDs (YoY)')
@@ -1085,55 +978,264 @@ function renderCategories(agg) {
           { k: 'ty', label: `${TY} DocIDs`, num: true, html: c => `<b>${fmtN(c.ty)}</b>`, totalHtml: t => `<b>${fmtN(t.ty)}</b>` },
           { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
           { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => fmtYoy(t.ty, t.ly) },
-          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtMoney },
-          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtMoney },
+          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtRv },
+          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtRv },
           { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: c => c.rvYoy == null ? -999 : (isFinite(c.rvYoy) ? c.rvYoy : 999), fmt: (v, c) => fmtYoy(c.rvTy, c.rvLy), csv: c => fmtYoy(c.rvTy, c.rvLy), totalHtml: t => fmtYoy(t.rvTy, t.rvLy) },
-          { k: 'ecsPct', label: 'ECS %', num: true, fmt: fmtPct, csv: c => fmtPct(c.ecsPct) },
+          { k: 'topGain', label: 'Top Growing Sales Group', noSort: true, html: c => c.topGain ? `<button type="button" class="link-btn ok-t drv" data-opensub="${c.ci}|${c.topGain.si}" title="${esc(c.topGain.name)} (+${fmtN(c.topGain.diff)})">${esc(c.topGain.name)} (+${fmtN(c.topGain.diff)})</button>` : '<span class="muted">—</span>', csv: c => c.topGain ? `${c.topGain.name} (+${c.topGain.diff})` : '' },
+          { k: 'topDrop', label: 'Biggest Drop Sales Group', noSort: true, html: c => c.topDrop ? `<button type="button" class="link-btn lo-t drv" data-opensub="${c.ci}|${c.topDrop.si}" title="${esc(c.topDrop.name)} (${fmtDelta(c.topDrop.diff)})">${esc(c.topDrop.name)} (${fmtDelta(c.topDrop.diff)})</button>` : '<span class="muted">—</span>', csv: c => c.topDrop ? `${c.topDrop.name} (${c.topDrop.diff})` : '' },
         ], list, { title: 'JDS Categories YoY', totalRow: tot, afterRow: subRows, noCap: true, extraLeft: stBar })}
       </div>`
     + `<div class="card" style="margin-top:16px">
         <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>Top 10 categories vs ${LY} · ${esc(agg.W.label)}</h2>
-        <div class="c-sub">Updates with the selected tenure &amp; filters · click any category bar for its sales groups &amp; who secured</div></div></div>
+        <div class="c-sub">Updates with the selected tenure &amp; filters · click any category bar to inspect its sales groups, channels, areas &amp; reps</div></div></div>
         ${yoyBarChart(top10, { clickAttr: 'data-opencat', clickKey: 'ci' })}
       </div>`;
 }
 
-function renderAreas(agg) {
-  const top10 = [...agg.areas].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10).map(a => ({
-    label: a.name, ly: a.ly, ty: a.ty,
-    tip: `<div class="tt-t">${esc(a.name)} (${a.state}) · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(a.ly)}</b><br>${TY} docids: <b>${fmtN(a.ty)}</b><br>YoY: <b>${fmtDelta(a.diff)} (${fmtYoy(a.ty, a.ly)})</b><br>${TY} RV: <b>${fmtMoney(a.rvTy)}</b>`,
-  }));
-  const tot = {
-    name: 'Total', state: '', verdict: verdict(agg.totTy, agg.totLy), ly: agg.totLy, ty: agg.totTy,
-    diff: agg.totTy - agg.totLy, rvLy: agg.rvLy, rvTy: agg.rvTy, ecsPct: agg.totTy ? agg.ecsTy / agg.totTy : 0,
-  };
-  return renderHero(agg, 'Telangana & Andhra Pradesh Areas (YoY)')
+// ---------- Tab 2: Sales Groups (Deep Inside Categories) ----------
+function renderSalesGroups(agg) {
+  const base = S.catFilter >= 0 ? agg.allSubs.filter(s => s.ci === S.catFilter) : agg.allSubs;
+  const list = S.sgSt === 'all' ? base : base.filter(s => s.verdict === S.sgSt);
+  const catOpts = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const controls = `<select class="ctl" id="catSel" aria-label="Filter by category">
+    <option value="-1"${S.catFilter === -1 ? ' selected' : ''}>All Categories (${agg.cats.length})</option>
+    ${catOpts.map(c => `<option value="${c.ci}"${S.catFilter === c.ci ? ' selected' : ''}>${esc(c.name)} (${c.nSub} sales groups)</option>`).join('')}
+  </select>
+  <div class="seg" role="group" aria-label="Status filter">
+    ${[['all', `All (${base.length})`], ['bad', `Bad (${base.filter(x => x.verdict === 'bad').length})`],
+       ['flat', `Flat (${base.filter(x => x.verdict === 'flat').length})`], ['good', `Good (${base.filter(x => x.verdict === 'good').length})`]]
+      .map(([k, l]) => `<button type="button" data-sgst="${k}" aria-pressed="${S.sgSt === k}">${l}</button>`).join('')}
+  </div>`;
+
+  const top10 = [...base].filter(x => x.name !== 'Unmapped' && !/^others?$/i.test(x.name))
+    .sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10)
+    .map(x => ({
+      key: `${x.ci}|${x.si}`, label: x.name, ly: x.ly, ty: x.ty,
+      tip: `<div class="tt-t">${esc(x.name)} (${esc(x.catName)})</div>${LY} docids: <b>${fmtN(x.ly)}</b><br>${TY} docids: <b>${fmtN(x.ty)}</b><br>Diff vs ${LY}: <b>${fmtDelta(x.diff)} (${fmtYoy(x.ty, x.ly)})</b><br>${LY} RV: <b>${fmtRv(x.rvLy)}</b> · ${TY} RV: <b>${fmtRv(x.rvTy)}</b>`,
+    }));
+
+  const title = S.catFilter >= 0 ? `Inside ${D.cats[S.catFilter]} — Sales Groups (YoY)` : 'All Sales Groups Across Categories (YoY)';
+  return renderHero(agg, title)
     + `<div class="card">
-        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Top 10 Areas (${LY} vs ${TY}) · ${esc(agg.W.label)}</h2>
-        <div class="c-sub">Hyderabad main city, 8 Telangana districts, and Andhra Pradesh cities</div></div></div>
-        ${yoyBarChart(top10)}
+        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Top 10 Sales Groups${S.catFilter >= 0 ? ' in ' + esc(D.cats[S.catFilter]) : ''} vs ${LY} · ${esc(agg.W.label)}</h2>
+        <div class="c-sub">Click any sales group bar or row to see its monthly trend, channel mix, areas &amp; who secured</div></div></div>
+        ${yoyBarChart(top10, { clickAttr: 'data-opensub', clickKey: 'key' })}
       </div>`
     + `<div class="card" style="margin-top:16px">
-        ${renderTable('areas', [
-          { k: 'name', label: 'Area / District', rowHdr: true, totalHtml: () => 'Total' },
-          { k: 'state', label: 'State', html: a => `<span class="pill ${a.state === 'TS' ? 'ts' : a.state === 'AP' ? 'ap' : 'flat'}">${a.state === 'TS' ? 'Telangana' : a.state === 'AP' ? 'Andhra' : 'Other'}</span>`, csv: a => a.state },
-          { k: 'verdict', label: 'Status', html: a => vPill(a.verdict), sortv: a => ({ good: 2, flat: 1, bad: 0 }[a.verdict]), csv: a => a.verdict.toUpperCase(), totalHtml: t => vPill(t.verdict) },
+        ${renderTable('sgs', [
+          { k: 'name', label: 'Sales Group', rowHdr: true, search: x => x.name + ' ' + x.catName + ' ' + x.topCh, html: x => `<button type="button" class="link-btn" data-opensub="${x.ci}|${x.si}">${esc(x.name)}</button>` },
+          { k: 'catName', label: 'Category', html: x => `<button type="button" class="link-btn muted" data-jumpcat="${x.ci}">${esc(x.catName)}</button>` },
+          { k: 'verdict', label: 'Status', html: x => vPill(x.verdict), sortv: x => ({ good: 2, flat: 1, bad: 0 }[x.verdict]), csv: x => x.verdict.toUpperCase() },
           { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
-          { k: 'ty', label: `${TY} DocIDs`, num: true, html: a => `<b>${fmtN(a.ty)}</b>`, totalHtml: t => `<b>${fmtN(t.ty)}</b>` },
-          { k: 'diff', label: 'Net Δ', num: true, html: a => `<span class="${a.diff > 0 ? 'ok-t' : a.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(a.diff)}</span>`, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
-          { k: 'yoy', label: 'YoY %', num: true, sortv: a => a.yoy == null ? -999 : (isFinite(a.yoy) ? a.yoy : 999), html: a => `<span class="${a.diff > 0 ? 'ok-t' : a.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(a.ty, a.ly)}</span>`, csv: a => fmtYoy(a.ty, a.ly), totalHtml: t => fmtYoy(t.ty, t.ly) },
-          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtMoney },
-          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtMoney },
-          { k: 'ecsPct', label: 'ECS %', num: true, fmt: fmtPct, csv: a => fmtPct(a.ecsPct) },
-        ], agg.areas, { title: 'JDS Areas YoY', totalRow: tot })}
+          { k: 'ty', label: `${TY} DocIDs`, num: true, html: x => `<b>${fmtN(x.ty)}</b>` },
+          { k: 'diff', label: 'Net Δ', num: true, html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span>` },
+          { k: 'yoy', label: 'YoY %', num: true, sortv: x => x.yoy == null ? -999 : (isFinite(x.yoy) ? x.yoy : 999), html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span>`, csv: x => fmtYoy(x.ty, x.ly) },
+          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtRv },
+          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtRv },
+          { k: 'rvYoy', label: 'RV YoY %', num: true, sortv: x => x.rvYoy == null ? -999 : (isFinite(x.rvYoy) ? x.rvYoy : 999), fmt: (v, x) => fmtYoy(x.rvTy, x.rvLy), csv: x => fmtYoy(x.rvTy, x.rvLy) },
+          { k: 'topCh', label: 'Top Channel' },
+        ], list, { title: S.catFilter >= 0 ? `Sales Groups - ${D.cats[S.catFilter]}` : 'All JDS Sales Groups', extraLeft: controls })}
       </div>`;
 }
 
+// ---------- Tab 3: Category × Month Seasonality Heatmap ----------
+function renderSeasonality(agg) {
+  const fms = monthsList();
+  const sFm = Math.floor(M.common_start_k / 100), sDay = M.common_start_k % 100;
+  const eFm = Math.floor(M.common_end_k / 100), eDay = M.common_end_k % 100;
+  const mLbl = fm => MON[fyMonNum(fm) - 1] + ((fm === sFm && sDay > 1) || fm === eFm ? '*' : '');
+  const mFull = fm => MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay})` : (fm === sFm && sDay > 1 ? ` (${sDay}–end)` : ''));
+
+  // Sort categories by full-common-range 2025 DocIDs descending
+  const catList = D.cats.map((name, ci) => {
+    let lySum = 0, tySum = 0;
+    for (const fm of fms) {
+      const k = ci + '|' + fm;
+      lySum += agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0;
+      tySum += agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
+    }
+    return { ci, name, lySum, tySum };
+  }).filter(c => c.lySum || c.tySum).sort((a, b) => b.lySum - a.lySum || b.tySum - a.tySum);
+
+  csvStore['seasonality'] = {
+    title: 'JDS Category Seasonality (YoY)',
+    hdr: ['Category', ...fms.flatMap(fm => [`${MON[fyMonNum(fm) - 1]} ${LY}`, `${MON[fyMonNum(fm) - 1]} ${TY}`, `${MON[fyMonNum(fm) - 1]} YoY%`])],
+    rows: catList.map(c => [c.name, ...fms.flatMap(fm => {
+      const k = c.ci + '|' + fm;
+      const ly = agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0, ty = agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
+      return [ly, ty, fmtYoy(ty, ly)];
+    })]),
+  };
+
+  const hdrs = `<th>Category</th>${fms.map(fm => `<th class="num" title="${esc(mFull(fm))}">${esc(mLbl(fm))}</th>`).join('')}`;
+  const rows = catList.map(c => {
+    const cells = fms.map(fm => {
+      const k = c.ci + '|' + fm;
+      const ly = agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0;
+      const ty = agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
+      if (!ly && !ty) return '<td class="num muted">—</td>';
+      const d = ty - ly, ratio = ly > 0 ? d / ly : (ty > 0 ? 1 : 0);
+      const cls = ratio >= 0.15 ? 'up2' : d > 0 ? 'up' : (ratio <= -0.15 ? 'dn2' : d < 0 ? 'dn' : '');
+      const sub = S.seaMode === 'delta' ? fmtDelta(d) : (ly > 0 ? `${d > 0 ? '+' : ''}${Math.round(ratio * 100)}%` : 'NEW');
+      const tip = `<div class="tt-t">${esc(c.name)} · ${esc(mFull(fm))}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
+      return `<td class="num" data-lbl="${esc(MON[fyMonNum(fm) - 1])}"><button type="button" class="mx-cell ${cls}" data-opencatmon="${c.ci}|${fm}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${esc(sub)}</small></button></td>`;
+    }).join('');
+    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>${cells}</tr>`;
+  }).join('');
+
+  return renderHero(agg, 'Category Seasonality — Month-by-Month Heatmap')
+    + `<div class="card">
+        <div class="c-head">
+          <div><h2><i class="dot" style="background:#0f766e"></i>Categories × Months (${TY} DocIDs &amp; YoY)</h2>
+          <div class="c-sub">Spot whether a category drop happened in one month or is a steady slide · click any cell to open that Category in that Month · * partial boundary month (${M.common_start}..${M.common_end})</div></div>
+          <div class="tbl-bar-l">
+            <div class="seg" role="group" aria-label="Cell label">
+              <button type="button" data-seamode="pct" aria-pressed="${S.seaMode === 'pct'}">Show YoY %</button>
+              <button type="button" data-seamode="delta" aria-pressed="${S.seaMode === 'delta'}">Show Net Δ</button>
+            </div>
+            <button type="button" class="btn btn-primary" data-csv="seasonality">Export CSV</button>
+          </div>
+        </div>
+        <div tabindex="0" role="region" aria-label="Category by Month Seasonality Heatmap" class="table-wrapper no-cap">
+          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
+        </div>
+      </div>`;
+}
+
+// ---------- Tab 4: Category × Area (Geography Matrix) ----------
+function renderGeo(agg) {
+  let cols = [];
+  if (S.geoView === 'ts') {
+    cols = agg.areas.filter(a => a.state === 'TS').sort((a, b) => (b.main - a.main) || (b.ly - a.ly) || (b.ty - a.ty)).slice(0, 10);
+  } else if (S.geoView === 'ap') {
+    cols = agg.areas.filter(a => a.state === 'AP').sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
+  } else {
+    cols = [...agg.areas].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
+  }
+  const sortedCats = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+
+  csvStore['geo_matrix'] = {
+    title: `JDS Category by Area (${S.geoView.toUpperCase()})`,
+    hdr: ['Category', `Total ${LY}`, `Total ${TY}`, ...cols.flatMap(a => [`${a.name} ${LY}`, `${a.name} ${TY}`, `${a.name} Δ`])],
+    rows: sortedCats.map(c => [c.name, c.ly, c.ty, ...cols.flatMap(a => {
+      const k = c.ci + '|' + a.ai;
+      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0, ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
+      return [ly, ty, ty - ly];
+    })]),
+  };
+
+  const hdrs = `<th>Category</th><th class="num">Total ${TY} (Δ)</th>${cols.map(a => `<th class="num">${esc(a.name)}</th>`).join('')}`;
+  const rows = sortedCats.map(c => {
+    const cells = cols.map(a => {
+      const k = c.ci + '|' + a.ai;
+      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0;
+      const ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
+      if (!ly && !ty) return '<td class="num muted">—</td>';
+      const d = ty - ly, ratio = ly > 0 ? d / ly : (ty > 0 ? 1 : 0);
+      const cls = ratio >= 0.15 ? 'up2' : d > 0 ? 'up' : (ratio <= -0.15 ? 'dn2' : d < 0 ? 'dn' : '');
+      const sub = S.geoMode === 'pct' ? (ly > 0 ? `${d > 0 ? '+' : ''}${Math.round(ratio * 100)}%` : 'NEW') : fmtDelta(d);
+      const tip = `<div class="tt-t">${esc(c.name)} × ${esc(a.name)} (${a.state})</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
+      return `<td class="num" data-lbl="${esc(a.name)}"><button type="button" class="mx-cell ${cls}" data-opencatarea="${c.ci}|${a.ai}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${esc(sub)}</small></button></td>`;
+    }).join('');
+    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>
+      <td class="num" data-lbl="Total"><b>${fmtN(c.ty)}</b> <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="font-size:11.5px">(${fmtDelta(c.diff)})</span></td>${cells}</tr>`;
+  }).join('');
+
+  const topAreasChart = cols.map(a => ({
+    label: a.name, ly: a.ly, ty: a.ty,
+    tip: `<div class="tt-t">${esc(a.name)} (${a.state}) · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(a.ly)}</b><br>${TY} docids: <b>${fmtN(a.ty)}</b><br>YoY: <b>${fmtDelta(a.diff)} (${fmtYoy(a.ty, a.ly)})</b>`,
+  }));
+
+  return renderHero(agg, 'Category × Geography (Telangana & Andhra Pradesh)')
+    + `<div class="card">
+        <div class="c-head">
+          <div><h2><i class="dot" style="background:#0f766e"></i>Categories × Areas (${TY} DocIDs &amp; YoY)</h2>
+          <div class="c-sub">See which districts &amp; cities each category is winning or losing · click any cell to inspect Sales Groups, Channels &amp; Reps in that area</div></div>
+          <div class="tbl-bar-l">
+            <div class="seg" role="group" aria-label="Area slice">
+              <button type="button" data-geoview="top" aria-pressed="${S.geoView === 'top'}">Top 10 Overall</button>
+              <button type="button" data-geoview="ts" aria-pressed="${S.geoView === 'ts'}">Telangana Districts</button>
+              <button type="button" data-geoview="ap" aria-pressed="${S.geoView === 'ap'}">Andhra Cities</button>
+            </div>
+            <div class="seg" role="group" aria-label="Cell label">
+              <button type="button" data-geomode="delta" aria-pressed="${S.geoMode === 'delta'}">Net Δ</button>
+              <button type="button" data-geomode="pct" aria-pressed="${S.geoMode === 'pct'}">YoY %</button>
+            </div>
+            <button type="button" class="btn btn-primary" data-csv="geo_matrix">Export CSV</button>
+          </div>
+        </div>
+        <div tabindex="0" role="region" aria-label="Category by Area Matrix" class="table-wrapper no-cap">
+          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
+        </div>
+      </div>`
+    + `<div class="card" style="margin-top:16px">
+        <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>${S.geoView === 'ts' ? 'Telangana Districts' : S.geoView === 'ap' ? 'Top 10 Andhra Pradesh Cities' : 'Top 10 Areas'} · ${esc(agg.W.label)}</h2></div></div>
+        ${yoyBarChart(topAreasChart)}
+      </div>`;
+}
+
+// ---------- Tab 5: Category × Channel Matrix ----------
+function renderMatrix(agg) {
+  const topChs = [...agg.channels].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 7);
+  const sortedCats = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const hdrs = `<th>Category</th><th class="num">Total ${TY} (Δ)</th>${topChs.map(ch => `<th class="num">${esc(ch.name)}</th>`).join('')}`;
+  const rows = sortedCats.map(c => {
+    const cells = topChs.map(ch => {
+      const mk = c.ci + '|' + ch.i;
+      const ly = agg.mxLy.get(mk) ? agg.mxLy.get(mk).size : 0;
+      const ty = agg.mxTy.get(mk) ? agg.mxTy.get(mk).size : 0;
+      if (!ly && !ty) return '<td class="num muted">—</td>';
+      const d = ty - ly;
+      const cls = d > 0 ? 'up' : (d < 0 ? 'dn' : '');
+      const tip = `<div class="tt-t">${esc(c.name)} × ${esc(ch.name)}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
+      return `<td class="num" data-lbl="${esc(ch.name)}"><button type="button" class="mx-cell ${cls}" data-opencatch="${c.ci}|${ch.i}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${fmtDelta(d)}</small></button></td>`;
+    }).join('');
+    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>
+      <td class="num" data-lbl="Total"><b>${fmtN(c.ty)}</b> <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="font-size:11.5px">(${fmtDelta(c.diff)})</span></td>${cells}</tr>`;
+  }).join('');
+
+  const tot = {
+    name: 'Total', verdict: verdict(agg.totTy, agg.totLy), ly: agg.totLy, ty: agg.totTy,
+    diff: agg.totTy - agg.totLy, rvLy: agg.rvLy, rvTy: agg.rvTy,
+  };
+
+  return renderHero(agg, 'Category × JDS Channel Breakdown')
+    + `<div class="card">
+        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Category × Channel Matrix (${TY} DocIDs &amp; YoY Δ)</h2>
+        <div class="c-sub">Green = growing vs ${LY} · Red = dropping vs ${LY} · Click any cell to inspect sales groups &amp; reps inside that Category × Channel</div></div></div>
+        <div tabindex="0" role="region" aria-label="Category by Channel Matrix" class="table-wrapper no-cap">
+          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
+        </div>
+      </div>`
+    + `<div class="card" style="margin-top:16px">
+        <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>JDS Channel Summary &amp; Category Drivers</h2></div></div>
+        ${renderTable('channels', [
+          { k: 'name', label: 'JDS Channel', rowHdr: true, totalHtml: () => 'Total' },
+          { k: 'verdict', label: 'Status', html: c => vPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => vPill(t.verdict) },
+          { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
+          { k: 'ty', label: `${TY} DocIDs`, num: true, html: c => `<b>${fmtN(c.ty)}</b>`, totalHtml: t => `<b>${fmtN(t.ty)}</b>` },
+          { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
+          { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => fmtYoy(t.ty, t.ly) },
+          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtRv },
+          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtRv },
+          { k: 'bestC', label: 'Top Growing Category', noSort: true, html: c => c.bestC ? `<span class="ok-t">${esc(c.bestC.name)} (+${fmtN(c.bestC.d)})</span>` : '<span class="muted">—</span>', csv: c => c.bestC ? `${c.bestC.name} (+${c.bestC.d})` : '' },
+          { k: 'worstC', label: 'Biggest Drop Category', noSort: true, html: c => c.worstC ? `<span class="lo-t">${esc(c.worstC.name)} (${fmtDelta(c.worstC.d)})</span>` : '<span class="muted">—</span>', csv: c => c.worstC ? `${c.worstC.name} (${c.worstC.d})` : '' },
+        ], agg.channels, { title: 'JDS Channels YoY', totalRow: tot, noCap: true })}
+      </div>`;
+}
+
+// ---------- Tab 4: Who Secured (TME / ME, filterable by Category) ----------
 function renderPeople(agg) {
-  const roleToggle = `<div class="seg" role="group" aria-label="Role">
+  const catOpts = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const controls = `<div class="seg" role="group" aria-label="Role">
     <button type="button" data-role="tme" aria-pressed="${S.peopleRole === 'tme'}">TMEs (Inside Sales)</button>
     <button type="button" data-role="me" aria-pressed="${S.peopleRole === 'me'}">MEs (Field Sales)</button>
-  </div>`;
+  </div>
+  <select class="ctl" id="catSel" aria-label="Filter by category">
+    <option value="-1"${S.catFilter === -1 ? ' selected' : ''}>All Categories</option>
+    ${catOpts.map(c => `<option value="${c.ci}"${S.catFilter === c.ci ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}
+  </select>`;
+
   const subRows = e => !S.peopleOpen.has(e.ei) ? '' : e.cats.map(c => `<tr class="sub-row">
     <td></td>
     <th scope="row" class="sub-ind"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>
@@ -1143,9 +1245,8 @@ function renderPeople(agg) {
     <td class="num"><b>${fmtN(c.ty)}</b></td>
     <td class="num"><span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span></td>
     <td class="num"><span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span></td>
-    <td class="num muted">${fmtMoney(c.rvLy)}</td>
-    <td class="num muted">${fmtMoney(c.rvTy)}</td>
-    <td class="muted">—</td>
+    <td class="num muted">${fmtRv(c.rvLy)}</td>
+    <td class="num muted">${fmtRv(c.rvTy)}</td>
     <td class="muted">—</td>
   </tr>`).join('');
 
@@ -1160,34 +1261,34 @@ function renderPeople(agg) {
           { k: 'ty', label: `${TY} DocIDs`, num: true, html: e => `<b>${fmtN(e.ty)}</b>` },
           { k: 'diff', label: 'Net Δ', num: true, html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span>` },
           { k: 'yoy', label: 'YoY %', num: true, sortv: e => e.yoy == null ? -999 : (isFinite(e.yoy) ? e.yoy : 999), html: e => `<span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(e.ty, e.ly)}</span>`, csv: e => fmtYoy(e.ty, e.ly) },
-          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtMoney },
-          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtMoney },
-          { k: 'ecsPct', label: 'ECS %', num: true, fmt: fmtPct, csv: e => fmtPct(e.ecsPct) },
+          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtRv },
+          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtRv },
           { k: 'topCats', label: 'Top Categories Secured' },
-        ], agg.people, { title: `JDS ${S.peopleRole.toUpperCase()} Scorecard`, afterRow: subRows, extraLeft: roleToggle })}
+        ], agg.people, { title: `JDS ${S.peopleRole.toUpperCase()} Who Secured`, afterRow: subRows, extraLeft: controls })}
       </div>`;
 }
 
-// ---------- Drill-down Native <dialog> ----------
+// ---------- Deep Category / Sales Group Native <dialog> ----------
 function openDialog(cfg) {
   S.dlg = cfg;
-  const W = activeWindow();
+  const W = cfg.fm != null
+    ? { a: Math.max(M.common_start_k, cfg.fm * 100 + 1), b: Math.min(M.common_end_k, cfg.fm * 100 + 31), label: MONTHS[fyMonNum(cfg.fm) - 1] }
+    : activeWindow();
   const fms = monthsList();
   const mLy = new Map(), mTy = new Map();
-  const subMap = new Map(), empMap = new Map(), catMap = new Map();
+  const totLyS = new Set(), totTyS = new Set();
+  const subMap = new Map(), chMap = new Map(), areaMap = new Map(), empMap = new Map();
   const roleIdx = (cfg.role || 'tme') === 'me' ? 8 : 7;
 
   for (const r of D.rows) {
     const [yr, k, di, ai, si, chi, flags, tmeI, meI, rv] = r;
     if (!scopeOk(ai)) continue;
     if (S.ch >= 0 && chi !== S.ch) continue;
-    const fr = flags & 1, ec = (flags >> 1) & 1, bb = (flags >> 2) & 1;
-    if (S.fresh !== 'all' && fr !== +S.fresh) continue;
-    if (S.ecs !== 'all' && ec !== +S.ecs) continue;
-    if (S.b2b !== 'all' && bb !== +S.b2b) continue;
+    if (cfg.ch != null && chi !== cfg.ch) continue;
+    if (cfg.ai != null && ai !== cfg.ai) continue;
+    if (S.fresh !== 'all' && (flags & 1) !== +S.fresh) continue;
 
-    if (cfg.kind === 'ch' && chi !== cfg.id) continue;
-    if (cfg.kind === 'cat' && D.subcats[si][0] !== cfg.id) continue;
+    if (cfg.kind === 'cat' && D.subcats[si][0] !== cfg.ci) continue;
     if (cfg.kind === 'sub' && si !== cfg.si) continue;
 
     if (k >= M.common_start_k && k <= M.common_end_k) {
@@ -1197,16 +1298,18 @@ function openDialog(cfg) {
       st.add(di);
     }
     if (k < W.a || k > W.b) continue;
+    (yr === 1 ? totTyS : totLyS).add(di);
 
-    const ci = D.subcats[si][0];
-    if (cfg.kind === 'ch') {
-      let c = catMap.get(ci); if (!c) { c = { ci, name: D.cats[ci], ly: new Set(), ty: new Set(), rvTy: 0 }; catMap.set(ci, c); }
-      (yr === 1 ? c.ty : c.ly).add(di); if (yr === 1) c.rvTy += rv;
-    }
     if (cfg.kind === 'cat') {
-      let s = subMap.get(si); if (!s) { s = { si, name: D.subcats[si][1], ly: new Set(), ty: new Set(), rvTy: 0 }; subMap.set(si, s); }
-      (yr === 1 ? s.ty : s.ly).add(di); if (yr === 1) s.rvTy += rv;
+      let s = subMap.get(si); if (!s) { s = { si, name: D.subcats[si][1], ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0 }; subMap.set(si, s); }
+      (yr === 1 ? s.ty : s.ly).add(di); if (yr === 1) s.rvTy += rv; else s.rvLy += rv;
     }
+    let ch = chMap.get(chi); if (!ch) { ch = { chi, name: D.channels[chi], ly: new Set(), ty: new Set(), rvTy: 0 }; chMap.set(chi, ch); }
+    (yr === 1 ? ch.ty : ch.ly).add(di); if (yr === 1) ch.rvTy += rv;
+
+    let ar = areaMap.get(ai); if (!ar) { ar = { ai, name: D.areas[ai].name, state: D.areas[ai].state, ly: new Set(), ty: new Set(), rvTy: 0 }; areaMap.set(ai, ar); }
+    (yr === 1 ? ar.ty : ar.ly).add(di); if (yr === 1) ar.rvTy += rv;
+
     const ei = roleIdx === 8 ? meI : tmeI;
     if (ei >= 0) {
       let e = empMap.get(ei); if (!e) { e = { ei, ...empLabel(ei), ly: new Set(), ty: new Set(), rvLy: 0, rvTy: 0 }; empMap.set(ei, e); }
@@ -1214,65 +1317,54 @@ function openDialog(cfg) {
     }
   }
 
-  const title = cfg.kind === 'ch' ? D.channels[cfg.id] : cfg.kind === 'cat' ? D.cats[cfg.id] : D.subcats[cfg.si][1];
-  const totLy = [...mLy.values()].length ? (() => {
-    const s = new Set();
-    for (const r of D.rows) {
-      const [yr, k, di, ai, si, chi, flags] = r;
-      if (yr !== 0 || k < W.a || k > W.b || !scopeOk(ai) || (S.ch >= 0 && chi !== S.ch)) continue;
-      if ((S.fresh !== 'all' && (flags & 1) !== +S.fresh) || (S.ecs !== 'all' && ((flags >> 1) & 1) !== +S.ecs) || (S.b2b !== 'all' && ((flags >> 2) & 1) !== +S.b2b)) continue;
-      if (cfg.kind === 'ch' && chi !== cfg.id) continue;
-      if (cfg.kind === 'cat' && D.subcats[si][0] !== cfg.id) continue;
-      if (cfg.kind === 'sub' && si !== cfg.si) continue;
-      s.add(di);
-    }
-    return s.size;
-  })() : 0;
-  const totTy = (() => {
-    const s = new Set();
-    for (const r of D.rows) {
-      const [yr, k, di, ai, si, chi, flags] = r;
-      if (yr !== 1 || k < W.a || k > W.b || !scopeOk(ai) || (S.ch >= 0 && chi !== S.ch)) continue;
-      if ((S.fresh !== 'all' && (flags & 1) !== +S.fresh) || (S.ecs !== 'all' && ((flags >> 1) & 1) !== +S.ecs) || (S.b2b !== 'all' && ((flags >> 2) & 1) !== +S.b2b)) continue;
-      if (cfg.kind === 'ch' && chi !== cfg.id) continue;
-      if (cfg.kind === 'cat' && D.subcats[si][0] !== cfg.id) continue;
-      if (cfg.kind === 'sub' && si !== cfg.si) continue;
-      s.add(di);
-    }
-    return s.size;
-  })();
-  const vd = verdict(totTy, totLy);
-
+  const totLy = totLyS.size, totTy = totTyS.size, vd = verdict(totTy, totLy);
+  const suffix = (cfg.ch != null ? ` × ${D.channels[cfg.ch]}` : '')
+    + (cfg.ai != null ? ` × ${D.areas[cfg.ai].name}` : '')
+    + (cfg.fm != null ? ` · ${MONTHS[fyMonNum(cfg.fm) - 1]}` : '');
+  const title = (cfg.kind === 'cat' ? D.cats[cfg.ci] : D.subcats[cfg.si][1]) + suffix;
   const monItems = fms.map(fm => {
     const ly = mLy.get(fm) ? mLy.get(fm).size : 0, ty = mTy.get(fm) ? mTy.get(fm).size : 0;
     return { label: MON[fyMonNum(fm) - 1], ly, ty, tip: `<div class="tt-t">${MONTHS[fyMonNum(fm) - 1]}</div>${LY}: <b>${fmtN(ly)}</b><br>${TY}: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(ty - ly)} (${fmtYoy(ty, ly)})</b>` };
   });
 
-  const empRows = [...empMap.values()].map(e => ({ ...e, ly: e.ly.size, ty: e.ty.size, diff: e.ty.size - e.ly.size })).sort((a, b) => b.ty - a.ty || b.ly - a.ly);
+  const subRows = [...subMap.values()].map(x => ({ ...x, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size })).sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const chRows = [...chMap.values()].map(x => ({ ...x, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size })).sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const arRows = [...areaMap.values()].map(x => ({ ...x, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size })).sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const empRows = [...empMap.values()].map(x => ({ ...x, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size })).sort((a, b) => b.ty - a.ty || b.ly - a.ly);
+
   csvStore['dlg_emp'] = {
     title: `${title} - Who secured (${(cfg.role || 'tme').toUpperCase()})`,
     hdr: ['Employee', 'Emp ID', `${LY} DocIDs`, `${TY} DocIDs`, 'Net Delta', 'YoY %', `${LY} RV`, `${TY} RV`],
     rows: empRows.map(e => [e.label, e.code, e.ly, e.ty, e.diff, fmtYoy(e.ty, e.ly), e.rvLy, e.rvTy]),
   };
 
-  const tab = cfg.tab || (cfg.kind === 'sub' ? 'emp' : 'breakdown');
-  const breakdownRows = cfg.kind === 'ch'
-    ? [...catMap.values()].map(x => ({ id: x.ci, name: x.name, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size, rvTy: x.rvTy, attr: `data-opencat="${x.ci}"` })).sort((a, b) => b.ly - a.ly || b.ty - a.ty)
-    : [...subMap.values()].map(x => ({ id: x.si, name: x.name, ly: x.ly.size, ty: x.ty.size, diff: x.ty.size - x.ly.size, rvTy: x.rvTy, attr: `data-opensub="${cfg.id}|${x.si}"` })).sort((a, b) => b.ly - a.ly || b.ty - a.ty);
-
-  const listHtml = tab === 'emp'
-    ? `<div class="tbl-bar">
+  const tab = cfg.tab || (cfg.kind === 'cat' ? 'subs' : 'ch');
+  let bodyTbl = '';
+  if (tab === 'subs') {
+    bodyTbl = `<div tabindex="0" role="region" aria-label="Sales groups" class="table-wrapper" style="max-block-size:320px">
+      <table><thead><tr><th>Sales Group</th><th class="num">${LY}</th><th class="num">${TY}</th><th class="num">Δ</th><th class="num">YoY</th><th class="num">${TY} RV</th></tr></thead>
+      <tbody>${subRows.slice(0, 120).map(x => `<tr><th scope="row"><button type="button" class="link-btn" data-opensub="${cfg.ci}|${x.si}">${esc(x.name)}</button></th><td class="num">${fmtN(x.ly)}</td><td class="num"><b>${fmtN(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num">${fmtYoy(x.ty, x.ly)}</td><td class="num muted">${fmtRv(x.rvTy)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No sales groups.</td></tr>'}</tbody></table>
+    </div>`;
+  } else if (tab === 'ch') {
+    bodyTbl = `<div tabindex="0" role="region" aria-label="Channel split" class="table-wrapper" style="max-block-size:320px">
+      <table><thead><tr><th>JDS Channel</th><th class="num">${LY}</th><th class="num">${TY}</th><th class="num">Δ</th><th class="num">YoY</th><th class="num">${TY} RV</th></tr></thead>
+      <tbody>${chRows.map(x => `<tr><th scope="row">${esc(x.name)}</th><td class="num">${fmtN(x.ly)}</td><td class="num"><b>${fmtN(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num">${fmtYoy(x.ty, x.ly)}</td><td class="num muted">${fmtRv(x.rvTy)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No channels.</td></tr>'}</tbody></table>
+    </div>`;
+  } else if (tab === 'area') {
+    bodyTbl = `<div tabindex="0" role="region" aria-label="Area split" class="table-wrapper" style="max-block-size:320px">
+      <table><thead><tr><th>Area / District</th><th>State</th><th class="num">${LY}</th><th class="num">${TY}</th><th class="num">Δ</th><th class="num">YoY</th></tr></thead>
+      <tbody>${arRows.slice(0, 60).map(x => `<tr><th scope="row">${esc(x.name)}</th><td class="muted">${x.state === 'TS' ? 'Telangana' : x.state === 'AP' ? 'Andhra' : 'Other'}</td><td class="num">${fmtN(x.ly)}</td><td class="num"><b>${fmtN(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num">${fmtYoy(x.ty, x.ly)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No areas.</td></tr>'}</tbody></table>
+    </div>`;
+  } else {
+    bodyTbl = `<div class="dlg-bar">
         <div class="seg"><button type="button" data-dlgrole="tme" aria-pressed="${(cfg.role || 'tme') === 'tme'}">TMEs</button><button type="button" data-dlgrole="me" aria-pressed="${cfg.role === 'me'}">MEs</button></div>
         <button type="button" class="btn btn-primary" data-csv="dlg_emp">Export CSV</button>
       </div>
-      <div tabindex="0" role="region" aria-label="Who secured docids" class="table-wrapper" style="max-block-size:320px">
+      <div tabindex="0" role="region" aria-label="Who secured docids" class="table-wrapper" style="max-block-size:300px">
         <table><thead><tr><th>Employee</th><th class="num">${LY}</th><th class="num">${TY}</th><th class="num">Δ</th><th class="num">YoY</th><th class="num">${TY} RV</th></tr></thead>
-        <tbody>${empRows.slice(0, 80).map(e => `<tr><th scope="row">${esc(e.label)}<span class="emp-code">${esc(e.code)}</span></th><td class="num">${fmtN(e.ly)}</td><td class="num"><b>${fmtN(e.ty)}</b></td><td class="num"><span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span></td><td class="num">${fmtYoy(e.ty, e.ly)}</td><td class="num muted">${fmtMoney(e.rvTy)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No employees found.</td></tr>'}</tbody></table>
-      </div>`
-    : `<div tabindex="0" role="region" aria-label="Breakdown table" class="table-wrapper" style="max-block-size:320px">
-        <table><thead><tr><th>${cfg.kind === 'ch' ? 'Category' : 'Sales Group'}</th><th class="num">${LY}</th><th class="num">${TY}</th><th class="num">Δ</th><th class="num">YoY</th><th class="num">${TY} RV</th></tr></thead>
-        <tbody>${breakdownRows.slice(0, 100).map(x => `<tr><th scope="row"><button type="button" class="link-btn" ${x.attr}>${esc(x.name)}</button></th><td class="num">${fmtN(x.ly)}</td><td class="num"><b>${fmtN(x.ty)}</b></td><td class="num"><span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span></td><td class="num">${fmtYoy(x.ty, x.ly)}</td><td class="num muted">${fmtMoney(x.rvTy)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No items found.</td></tr>'}</tbody></table>
+        <tbody>${empRows.slice(0, 80).map(e => `<tr><th scope="row">${esc(e.label)}<span class="emp-code">${esc(e.code)}</span></th><td class="num">${fmtN(e.ly)}</td><td class="num"><b>${fmtN(e.ty)}</b></td><td class="num"><span class="${e.diff > 0 ? 'ok-t' : e.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(e.diff)}</span></td><td class="num">${fmtYoy(e.ty, e.ly)}</td><td class="num muted">${fmtRv(e.rvTy)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No employees found.</td></tr>'}</tbody></table>
       </div>`;
+  }
 
   dlg.innerHTML = `<div class="dlg-head ${vd}">
       <div>
@@ -1284,12 +1376,17 @@ function openDialog(cfg) {
       <button type="button" class="dlg-x" data-dlgclose="1" aria-label="Close dialog">✕</button>
     </div>
     <div class="dlg-body">
-      <div>${yoyBarChart(monItems, { height: 220 })}</div>
-      ${cfg.kind !== 'sub' ? `<div class="seg" style="align-self:flex-start">
-        <button type="button" data-dlgtab="breakdown" aria-pressed="${tab === 'breakdown'}">${cfg.kind === 'ch' ? 'Top Categories' : 'Sales Groups'} (${breakdownRows.length})</button>
-        <button type="button" data-dlgtab="emp" aria-pressed="${tab === 'emp'}">Who secured (${empRows.length})</button>
-      </div>` : ''}
-      ${listHtml}
+      <div>${yoyBarChart(monItems, { height: 210 })}</div>
+      <div class="dlg-bar">
+        <div class="seg">
+          ${cfg.kind === 'cat' ? `<button type="button" data-dlgtab="subs" aria-pressed="${tab === 'subs'}">Sales Groups (${subRows.length})</button>` : ''}
+          <button type="button" data-dlgtab="ch" aria-pressed="${tab === 'ch'}">By Channel (${chRows.length})</button>
+          <button type="button" data-dlgtab="area" aria-pressed="${tab === 'area'}">By Area (${arRows.length})</button>
+          <button type="button" data-dlgtab="emp" aria-pressed="${tab === 'emp'}">Who Secured (${empRows.length})</button>
+        </div>
+        ${cfg.kind === 'cat' ? `<button type="button" class="btn" data-jumpcat="${cfg.ci}">Open full Sales Groups tab →</button>` : ''}
+      </div>
+      ${bodyTbl}
     </div>`;
   if (!dlg.open) dlg.showModal();
 }
@@ -1300,10 +1397,11 @@ function render() {
   renderRibbon();
   const agg = aggregate();
   let html = '';
-  if (S.tab === 'overview') html = renderOverview(agg);
-  else if (S.tab === 'channels') html = renderChannels(agg);
-  else if (S.tab === 'categories') html = renderCategories(agg);
-  else if (S.tab === 'areas') html = renderAreas(agg);
+  if (S.tab === 'categories') html = renderCategories(agg);
+  else if (S.tab === 'salesgroups') html = renderSalesGroups(agg);
+  else if (S.tab === 'seasonality') html = renderSeasonality(agg);
+  else if (S.tab === 'geo') html = renderGeo(agg);
+  else if (S.tab === 'matrix') html = renderMatrix(agg);
   else html = renderPeople(agg);
   html += `<div class="note">Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (Hyderabad JDS — TME &amp; ME only, excluding JDA, JDA-B2B &amp; Self Signup; total docids = <b>COUNT(DISTINCT docid)</b>) mapped via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> &amp; <b>db_paidcontracts.hr_all_daily_copy_ganesh</b>. Same-period range: ${M.ly_start}..${M.ly_end} vs ${M.ty_start}..${M.ty_end} (common: ${M.common_start}..${M.common_end}).</div>`;
   $('#app').innerHTML = html;
@@ -1311,18 +1409,19 @@ function render() {
 
 // ---------- Events ----------
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-win],[data-scope],[data-fresh],[data-ecs],[data-b2b],[data-catst],[data-cattog],[data-catall],[data-ptog],[data-role],[data-sort],[data-csv],[data-pickmon],[data-opench],[data-opencat],[data-opensub],[data-dlgtab],[data-dlgrole],[data-dlgclose],#resetBtn');
+  const t = e.target.closest('[data-tab],[data-win],[data-scope],[data-fresh],[data-catst],[data-sgst],[data-seamode],[data-geoview],[data-geomode],[data-cattog],[data-catall],[data-ptog],[data-role],[data-sort],[data-csv],[data-opencat],[data-opensub],[data-opencatch],[data-opencatmon],[data-opencatarea],[data-jumpcat],[data-dlgtab],[data-dlgrole],[data-dlgclose],#resetBtn');
   if (!t) return;
   const ds = t.dataset;
-  if (t.id === 'resetBtn') { S.win = 'ytd'; S.month = 0; S.scope = 'all'; S.fresh = 'all'; S.ecs = 'all'; S.b2b = 'all'; S.ch = -1; render(); return; }
+  if (t.id === 'resetBtn') { S.win = 'ytd'; S.month = 0; S.scope = 'all'; S.fresh = 'all'; S.ch = -1; S.catFilter = -1; render(); return; }
   if (ds.tab) { S.tab = ds.tab; history.replaceState(null, '', '#' + ds.tab); window.scrollTo(0, 0); render(); }
   else if (ds.win) { S.win = ds.win; S.month = 0; render(); }
-  else if (ds.pickmon) { S.win = 'month'; S.month = +ds.pickmon; render(); }
   else if (ds.scope) { S.scope = ds.scope; render(); }
   else if (ds.fresh) { S.fresh = ds.fresh; render(); }
-  else if (ds.ecs) { S.ecs = ds.ecs; render(); }
-  else if (ds.b2b) { S.b2b = ds.b2b; render(); }
   else if (ds.catst) { S.catSt = ds.catst; render(); }
+  else if (ds.sgst) { S.sgSt = ds.sgst; render(); }
+  else if (ds.seamode) { S.seaMode = ds.seamode; render(); }
+  else if (ds.geoview) { S.geoView = ds.geoview; render(); }
+  else if (ds.geomode) { S.geoMode = ds.geomode; render(); }
   else if (ds.cattog != null) { const ci = +ds.cattog; S.catOpen.has(ci) ? S.catOpen.delete(ci) : S.catOpen.add(ci); render(); }
   else if (ds.catall) { S.catOpen = ds.catall === 'open' ? new Set(aggregate().cats.map(c => c.ci)) : new Set(); render(); }
   else if (ds.ptog != null) { const ei = +ds.ptog; S.peopleOpen.has(ei) ? S.peopleOpen.delete(ei) : S.peopleOpen.add(ei); render(); }
@@ -1334,9 +1433,12 @@ document.addEventListener('click', e => {
     render();
   }
   else if (ds.csv) downloadCsv(ds.csv);
-  else if (ds.opench != null) openDialog({ kind: 'ch', id: +ds.opench, tab: 'breakdown', role: 'tme' });
-  else if (ds.opencat != null) openDialog({ kind: 'cat', id: +ds.opencat, tab: 'breakdown', role: 'tme' });
-  else if (ds.opensub) { const [ci, si] = ds.opensub.split('|').map(Number); openDialog({ kind: 'sub', ci, si, tab: 'emp', role: 'tme' }); }
+  else if (ds.opencat != null) openDialog({ kind: 'cat', ci: +ds.opencat, tab: 'subs', role: 'tme' });
+  else if (ds.opensub) { const [ci, si] = ds.opensub.split('|').map(Number); openDialog({ kind: 'sub', ci, si, tab: 'ch', role: 'tme' }); }
+  else if (ds.opencatch) { const [ci, ch] = ds.opencatch.split('|').map(Number); openDialog({ kind: 'cat', ci, ch, tab: 'subs', role: 'tme' }); }
+  else if (ds.opencatmon) { const [ci, fm] = ds.opencatmon.split('|').map(Number); openDialog({ kind: 'cat', ci, fm, tab: 'subs', role: 'tme' }); }
+  else if (ds.opencatarea) { const [ci, ai] = ds.opencatarea.split('|').map(Number); openDialog({ kind: 'cat', ci, ai, tab: 'subs', role: 'tme' }); }
+  else if (ds.jumpcat != null) { if (dlg.open) dlg.close(); S.tab = 'salesgroups'; S.catFilter = +ds.jumpcat; S.sgSt = 'all'; history.replaceState(null, '', '#salesgroups'); window.scrollTo(0, 0); render(); }
   else if (ds.dlgtab && S.dlg) openDialog({ ...S.dlg, tab: ds.dlgtab });
   else if (ds.dlgrole && S.dlg) openDialog({ ...S.dlg, role: ds.dlgrole, tab: 'emp' });
   else if (ds.dlgclose) dlg.close();
@@ -1345,6 +1447,7 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   if (e.target.id === 'monthSel') { const v = +e.target.value; if (v) { S.win = 'month'; S.month = v; } else { S.win = 'ytd'; S.month = 0; } render(); }
   else if (e.target.id === 'chSel') { S.ch = +e.target.value; render(); }
+  else if (e.target.id === 'catSel') { S.catFilter = +e.target.value; render(); }
 });
 
 document.addEventListener('input', e => {

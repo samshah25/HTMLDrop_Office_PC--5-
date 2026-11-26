@@ -28,6 +28,7 @@ REF_PATH = os.path.join(PIPE_DIR, "pincode_city_data_city_branch.xlsx")
 ENV_PATH = os.path.join(PIPE_DIR, "db_216.env")
 PRIVATE_ENV = os.path.join(os.path.expanduser("~"), ".hyd_jds_dashboard", "db_216.env")
 SHARED_ENV = os.path.join(os.path.expanduser("~"), ".hyd_jda_dashboard", "db_216.env")
+SIBLING_ENV = os.path.normpath(os.path.join(PIPE_DIR, "..", "..", "hyderabad-jda-dashboard", "pipeline", "db_216.env"))
 CACHE_PATH = os.path.join(PIPE_DIR, "jds_cache.json.gz")
 OUT_PATH = os.path.join(PIPE_DIR, "jds_data.json")
 LOG_PATH = os.path.join(PIPE_DIR, "refresh_log.txt")
@@ -90,7 +91,7 @@ def log(msg):
 
 
 def find_env():
-    for p in (ENV_PATH, PRIVATE_ENV, SHARED_ENV):
+    for p in (ENV_PATH, PRIVATE_ENV, SHARED_ENV, SIBLING_ENV):
         if os.path.exists(p):
             return p
     return None
@@ -677,8 +678,7 @@ def build_json_from_cache(cache, areas, ty_start, ty_end, ly_start, ly_end, sour
 def load_known_names():
     """Opportunistically pick up employee names from sibling JDA dashboard JSON if present offline."""
     names = {}
-    sib = os.path.normpath(os.path.join(PIPE_DIR, "..", "..", "HTMLDrop_Office_PC--5-",
-                                        "DynamicProjects", "hyderabad-jda-dashboard", "pipeline", "hyd_data.json"))
+    sib = os.path.normpath(os.path.join(PIPE_DIR, "..", "..", "hyderabad-jda-dashboard", "pipeline", "hyd_data.json"))
     if os.path.exists(sib):
         try:
             with open(sib, encoding="utf-8") as f:
