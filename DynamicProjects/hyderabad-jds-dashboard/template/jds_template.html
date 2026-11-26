@@ -397,7 +397,6 @@ dialog#detailDlg::backdrop {
     <button type="button" class="nav-tab" data-tab="salesgroups">Sales Groups</button>
     <button type="button" class="nav-tab" data-tab="seasonality">Seasonality</button>
     <button type="button" class="nav-tab" data-tab="geo">By Area</button>
-    <button type="button" class="nav-tab" data-tab="matrix">By Channel</button>
     <button type="button" class="nav-tab" data-tab="people">Who Secured</button>
   </nav>
   <div class="top-right">
@@ -541,7 +540,7 @@ const S = {
   q: { cats: '', sgs: '', channels: '', people: '' },
   dlg: null,
 };
-if (!['categories', 'salesgroups', 'seasonality', 'geo', 'matrix', 'people'].includes(S.tab)) S.tab = 'categories';
+if (!['categories', 'salesgroups', 'seasonality', 'geo', 'people'].includes(S.tab)) S.tab = 'categories';
 
 // ---------- Filtering & Aggregation ----------
 function monthsList() {
@@ -1174,57 +1173,7 @@ function renderGeo(agg) {
       </div>`;
 }
 
-// ---------- Tab 5: Category × Channel Matrix ----------
-function renderMatrix(agg) {
-  const topChs = [...agg.channels].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 7);
-  const sortedCats = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
-  const hdrs = `<th>Category</th><th class="num">Total ${TY} (Δ)</th>${topChs.map(ch => `<th class="num">${esc(ch.name)}</th>`).join('')}`;
-  const rows = sortedCats.map(c => {
-    const cells = topChs.map(ch => {
-      const mk = c.ci + '|' + ch.i;
-      const ly = agg.mxLy.get(mk) ? agg.mxLy.get(mk).size : 0;
-      const ty = agg.mxTy.get(mk) ? agg.mxTy.get(mk).size : 0;
-      if (!ly && !ty) return '<td class="num muted">—</td>';
-      const d = ty - ly;
-      const cls = d > 0 ? 'up' : (d < 0 ? 'dn' : '');
-      const tip = `<div class="tt-t">${esc(c.name)} × ${esc(ch.name)}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
-      return `<td class="num" data-lbl="${esc(ch.name)}"><button type="button" class="mx-cell ${cls}" data-opencatch="${c.ci}|${ch.i}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${fmtDelta(d)}</small></button></td>`;
-    }).join('');
-    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>
-      <td class="num" data-lbl="Total"><b>${fmtN(c.ty)}</b> <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="font-size:11.5px">(${fmtDelta(c.diff)})</span></td>${cells}</tr>`;
-  }).join('');
-
-  const tot = {
-    name: 'Total', verdict: verdict(agg.totTy, agg.totLy), ly: agg.totLy, ty: agg.totTy,
-    diff: agg.totTy - agg.totLy, rvLy: agg.rvLy, rvTy: agg.rvTy,
-  };
-
-  return renderHero(agg, 'Category × JDS Channel Breakdown')
-    + `<div class="card">
-        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Category × Channel Matrix (${TY} DocIDs &amp; YoY Δ)</h2>
-        <div class="c-sub">Green = growing vs ${LY} · Red = dropping vs ${LY} · Click any cell to inspect sales groups &amp; reps inside that Category × Channel</div></div></div>
-        <div tabindex="0" role="region" aria-label="Category by Channel Matrix" class="table-wrapper no-cap">
-          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
-        </div>
-      </div>`
-    + `<div class="card" style="margin-top:16px">
-        <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>JDS Channel Summary &amp; Category Drivers</h2></div></div>
-        ${renderTable('channels', [
-          { k: 'name', label: 'JDS Channel', rowHdr: true, totalHtml: () => 'Total' },
-          { k: 'verdict', label: 'Status', html: c => vPill(c.verdict), sortv: c => ({ good: 2, flat: 1, bad: 0 }[c.verdict]), csv: c => c.verdict.toUpperCase(), totalHtml: t => vPill(t.verdict) },
-          { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
-          { k: 'ty', label: `${TY} DocIDs`, num: true, html: c => `<b>${fmtN(c.ty)}</b>`, totalHtml: t => `<b>${fmtN(t.ty)}</b>` },
-          { k: 'diff', label: 'Net Δ', num: true, html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span>`, totalHtml: t => `<span class="${t.diff > 0 ? 'ok-t' : t.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(t.diff)}</span>` },
-          { k: 'yoy', label: 'YoY %', num: true, sortv: c => c.yoy == null ? -999 : (isFinite(c.yoy) ? c.yoy : 999), html: c => `<span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(c.ty, c.ly)}</span>`, csv: c => fmtYoy(c.ty, c.ly), totalHtml: t => fmtYoy(t.ty, t.ly) },
-          { k: 'rvLy', label: `${LY} RV`, num: true, fmt: fmtRv },
-          { k: 'rvTy', label: `${TY} RV`, num: true, fmt: fmtRv },
-          { k: 'bestC', label: 'Top Growing Category', noSort: true, html: c => c.bestC ? `<span class="ok-t">${esc(c.bestC.name)} (+${fmtN(c.bestC.d)})</span>` : '<span class="muted">—</span>', csv: c => c.bestC ? `${c.bestC.name} (+${c.bestC.d})` : '' },
-          { k: 'worstC', label: 'Biggest Drop Category', noSort: true, html: c => c.worstC ? `<span class="lo-t">${esc(c.worstC.name)} (${fmtDelta(c.worstC.d)})</span>` : '<span class="muted">—</span>', csv: c => c.worstC ? `${c.worstC.name} (${c.worstC.d})` : '' },
-        ], agg.channels, { title: 'JDS Channels YoY', totalRow: tot, noCap: true })}
-      </div>`;
-}
-
-// ---------- Tab 4: Who Secured (TME / ME, filterable by Category) ----------
+// ---------- Tab 5: Who Secured (TME / ME, filterable by Category) ----------
 function renderPeople(agg) {
   const catOpts = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
   const controls = `<div class="seg" role="group" aria-label="Role">
@@ -1401,7 +1350,6 @@ function render() {
   else if (S.tab === 'salesgroups') html = renderSalesGroups(agg);
   else if (S.tab === 'seasonality') html = renderSeasonality(agg);
   else if (S.tab === 'geo') html = renderGeo(agg);
-  else if (S.tab === 'matrix') html = renderMatrix(agg);
   else html = renderPeople(agg);
   html += `<div class="note">Source: <b>ops_analytics.tbl_modified_deal_level_data</b> (Hyderabad JDS — TME &amp; ME only, excluding JDA, JDA-B2B &amp; Self Signup; total docids = <b>COUNT(DISTINCT docid)</b>) mapped via <b>vertical_owner.tbl_company_vertical_mapping_SB</b> &amp; <b>db_paidcontracts.hr_all_daily_copy_ganesh</b>. Same-period range: ${M.ly_start}..${M.ly_end} vs ${M.ty_start}..${M.ty_end} (common: ${M.common_start}..${M.common_end}).</div>`;
   $('#app').innerHTML = html;
