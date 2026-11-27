@@ -271,20 +271,64 @@ svg.chart rect.hit:hover { fill: color-mix(in srgb, var(--accent) 8%, transparen
 .exp-btn:hover { border-color: var(--accent); color: var(--accent); }
 .exp-btn.open { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-/* Matrix heatmap cell */
-.mx-cell {
-  border: 0; background: transparent; cursor: pointer;
-  display: inline-flex; flex-direction: column; align-items: flex-end;
-  padding: 3px 7px; border-radius: 7px; width: 100%; text-align: right;
+/* Story cards, chips, dot-strip & Master-Detail Explorer */
+.chip-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.chip-btn {
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2);
+  border-radius: 99px; padding: 4px 11px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .12s; white-space: nowrap;
+}
+.chip-btn:hover { border-color: var(--accent); color: var(--ink); }
+.chip-btn[aria-pressed="true"] { background: var(--accent-solid); border-color: var(--accent-solid); color: #fff; }
+.story-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+.story-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+.story-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow); border-top: 3px solid var(--accent-solid);
+}
+.story-card.good { border-top-color: #10b981; }
+.story-card.bad { border-top-color: #ef4444; }
+.story-card.warn { border-top-color: #f59e0b; }
+.story-card h3 { margin: 0 0 4px; font-size: 13.5px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.story-card .st-sub { font-size: 11.5px; color: var(--ink-3); margin-bottom: 10px; }
+.story-card .st-big { font-size: 22px; font-weight: 800; line-height: 1.15; margin: 4px 0 2px; }
+.story-list { display: flex; flex-direction: column; gap: 6px; }
+.story-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 12.5px; padding: 5px 8px; border-radius: 8px; background: var(--surface-2);
+}
+.dot-strip { display: inline-flex; align-items: center; gap: 4px; }
+.mdot {
+  width: 24px; height: 22px; border-radius: 6px; border: 0; cursor: pointer;
+  font-size: 9.5px; font-weight: 800; display: inline-grid; place-items: center;
   transition: transform .1s;
 }
-.mx-cell:hover { outline: 1.5px solid var(--accent); }
-.mx-cell.up { background: var(--good-bg); }
-.mx-cell.dn { background: var(--bad-bg); }
-.mx-cell.up2 { background: color-mix(in srgb, var(--good) 26%, var(--surface)); }
-.mx-cell.dn2 { background: color-mix(in srgb, var(--bad) 24%, var(--surface)); }
-.mx-cell b { font-size: 12.5px; color: var(--ink); line-height: 1.2; }
-.mx-cell small { font-size: 10.5px; font-weight: 700; line-height: 1.15; }
+.mdot:hover { transform: scale(1.12); outline: 1.5px solid var(--accent); }
+.mdot.up { background: var(--good-bg); color: var(--good-ink); }
+.mdot.up2 { background: #10b981; color: #fff; }
+.mdot.dn { background: var(--bad-bg); color: var(--bad-ink); }
+.mdot.dn2 { background: #ef4444; color: #fff; }
+.mdot.fl { background: var(--flat-bg); color: var(--ink-3); }
+.split-geo { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 16px; }
+.geo-list {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 12px; box-shadow: var(--shadow); max-height: 760px; overflow-y: auto;
+}
+.geo-grp { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin: 10px 6px 5px; }
+.geo-grp:first-child { margin-top: 2px; }
+.geo-item {
+  width: 100%; border: 1px solid transparent; background: transparent; border-radius: 10px;
+  padding: 7px 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  text-align: left; font-size: 12.5px; transition: all .12s;
+}
+.geo-item:hover { background: var(--surface-2); }
+.geo-item[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.geo-item b { font-weight: 700; color: var(--ink); }
+.geo-item small { font-size: 11px; font-weight: 700; }
+@media (max-width: 960px) {
+  .story-grid, .story-grid2, .split-geo { grid-template-columns: 1fr; }
+  .geo-list { max-height: 280px; }
+}
 
 /* Inline driver tag */
 .drv { font-size: 11.5px; white-space: nowrap; max-width: 190px; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: bottom; }
@@ -525,19 +569,21 @@ const S = {
   catFilter: -1,   // -1 = all categories (used in Sales Groups & Who Secured tabs)
   catSt: 'all',    // all | bad | flat | good
   sgSt: 'all',     // all | bad | flat | good
-  seaMode: 'pct',  // pct | delta (Seasonality cell sub-label)
-  geoView: 'top',  // top | ts | ap (Category × Area slice)
-  geoMode: 'delta', // delta | pct
+  seaCat: -1,      // -1 = All Categories, >=0 = selected Category in Seasonality chart
+  seaFull: false,  // false = clean dot scorecard, true = full monthly numbers table
+  geoExplorer: 'area', // area (Pick Area -> see Categories) | cat (Pick Category -> see Areas)
+  geoArea: -1,     // selected area index in Area -> Categories mode (-1 = top area / Hyderabad)
+  geoCat: -1,      // selected category index in Category -> Areas mode (-1 = top category)
   catOpen: new Set(),
   peopleRole: 'tme', // tme | me
   peopleOpen: new Set(),
   sort: {
     cats: { k: 'ly', dir: -1 },
     sgs: { k: 'ly', dir: -1 },
-    channels: { k: 'ly', dir: -1 },
+    geo_tbl: { k: 'ly', dir: -1 },
     people: { k: 'ty', dir: -1 },
   },
-  q: { cats: '', sgs: '', channels: '', people: '' },
+  q: { cats: '', sgs: '', geo_tbl: '', people: '' },
   dlg: null,
 };
 if (!['categories', 'salesgroups', 'seasonality', 'geo', 'people'].includes(S.tab)) S.tab = 'categories';
@@ -1037,140 +1083,308 @@ function renderSalesGroups(agg) {
       </div>`;
 }
 
-// ---------- Tab 3: Category × Month Seasonality Heatmap ----------
+// ---------- Tab 3: Seasonality (Story-first Monthly Trend + Momentum Scorecard) ----------
 function renderSeasonality(agg) {
   const fms = monthsList();
   const sFm = Math.floor(M.common_start_k / 100), sDay = M.common_start_k % 100;
   const eFm = Math.floor(M.common_end_k / 100), eDay = M.common_end_k % 100;
-  const mLbl = fm => MON[fyMonNum(fm) - 1] + ((fm === sFm && sDay > 1) || fm === eFm ? '*' : '');
+  const mShort = fm => MON[fyMonNum(fm) - 1];
+  const mLbl = fm => mShort(fm) + ((fm === sFm && sDay > 1) || fm === eFm ? '*' : '');
   const mFull = fm => MONTHS[fyMonNum(fm) - 1] + (fm === eFm ? ` (1–${eDay})` : (fm === sFm && sDay > 1 ? ` (${sDay}–end)` : ''));
 
-  // Sort categories by full-common-range 2025 DocIDs descending
-  const catList = D.cats.map((name, ci) => {
-    let lySum = 0, tySum = 0;
-    for (const fm of fms) {
+  // Build per-category monthly series across full common range
+  const catSeries = D.cats.map((name, ci) => {
+    let lySum = 0, tySum = 0, upMo = 0, dnMo = 0, activeMo = 0;
+    let best = null, worst = null;
+    const months = fms.map(fm => {
       const k = ci + '|' + fm;
-      lySum += agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0;
-      tySum += agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
-    }
-    return { ci, name, lySum, tySum };
+      const ly = agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0;
+      const ty = agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
+      const d = ty - ly;
+      lySum += ly; tySum += ty;
+      if (ly || ty) {
+        activeMo++;
+        if (d > 0) upMo++; else if (d < 0) dnMo++;
+        if (!best || d > best.d) best = { fm, d, ly, ty };
+        if (!worst || d < worst.d) worst = { fm, d, ly, ty };
+      }
+      return { fm, ly, ty, d };
+    });
+    const last2 = months.slice(-2);
+    const recUp = last2.length === 2 && last2.every(x => x.d > 0);
+    let trend = 'Mixed';
+    if (activeMo && upMo / activeMo >= 0.6) trend = 'Growing';
+    else if (activeMo && dnMo / activeMo >= 0.6 && !recUp) trend = 'Sliding';
+    else if (recUp) trend = 'Recovering';
+    return { ci, name, lySum, tySum, diff: tySum - lySum, upMo, dnMo, activeMo, trend, best, worst, months };
   }).filter(c => c.lySum || c.tySum).sort((a, b) => b.lySum - a.lySum || b.tySum - a.tySum);
+
+  // Selected category for big Monthly Trend Chart (-1 = All Categories)
+  const selC = S.seaCat >= 0 ? catSeries.find(c => c.ci === S.seaCat) : null;
+  const chartItems = fms.map((fm, idx) => {
+    let ly = 0, ty = 0;
+    if (selC) { ly = selC.months[idx].ly; ty = selC.months[idx].ty; }
+    else {
+      // Exact distinct docids across all categories for this month
+      const sL = new Set(), sT = new Set();
+      for (const c of catSeries) {
+        const k = c.ci + '|' + fm;
+        if (agg.cmLy.get(k)) agg.cmLy.get(k).forEach(d => sL.add(d));
+        if (agg.cmTy.get(k)) agg.cmTy.get(k).forEach(d => sT.add(d));
+      }
+      ly = sL.size; ty = sT.size;
+    }
+    return {
+      key: selC ? `${selC.ci}|${fm}` : null,
+      fm, label: mLbl(fm), ly, ty,
+      tip: `<div class="tt-t">${selC ? esc(selC.name) + ' · ' : 'All JDS · '}${esc(mFull(fm))}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(ty - ly)} (${fmtYoy(ty, ly)})</b>`,
+    };
+  });
+
+  const growers = catSeries.filter(c => c.trend === 'Growing');
+  const mixed = catSeries.filter(c => c.trend === 'Recovering' || c.trend === 'Mixed');
+  const sliders = catSeries.filter(c => c.trend === 'Sliding');
+
+  const chips = `<div class="chip-bar">
+    <button type="button" class="chip-btn" data-seacat="-1" aria-pressed="${!selC}">All Categories</button>
+    ${catSeries.slice(0, 10).map(c => `<button type="button" class="chip-btn" data-seacat="${c.ci}" aria-pressed="${selC && selC.ci === c.ci}">${esc(c.name)}</button>`).join('')}
+    <select class="ctl" id="seaCatSel" aria-label="Pick any category">
+      <option value="-1"${!selC ? ' selected' : ''}>More categories…</option>
+      ${catSeries.map(c => `<option value="${c.ci}"${selC && selC.ci === c.ci ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}
+    </select>
+  </div>`;
 
   csvStore['seasonality'] = {
     title: 'JDS Category Seasonality (YoY)',
-    hdr: ['Category', ...fms.flatMap(fm => [`${MON[fyMonNum(fm) - 1]} ${LY}`, `${MON[fyMonNum(fm) - 1]} ${TY}`, `${MON[fyMonNum(fm) - 1]} YoY%`])],
-    rows: catList.map(c => [c.name, ...fms.flatMap(fm => {
-      const k = c.ci + '|' + fm;
-      const ly = agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0, ty = agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
-      return [ly, ty, fmtYoy(ty, ly)];
-    })]),
+    hdr: ['Category', 'Trend', 'Months Up', ...fms.flatMap(fm => [`${mShort(fm)} ${LY}`, `${mShort(fm)} ${TY}`, `${mShort(fm)} YoY%`])],
+    rows: catSeries.map(c => [c.name, c.trend, `${c.upMo}/${c.activeMo}`, ...c.months.flatMap(x => [x.ly, x.ty, fmtYoy(x.ty, x.ly)])]),
   };
 
-  const hdrs = `<th>Category</th>${fms.map(fm => `<th class="num" title="${esc(mFull(fm))}">${esc(mLbl(fm))}</th>`).join('')}`;
-  const rows = catList.map(c => {
-    const cells = fms.map(fm => {
-      const k = c.ci + '|' + fm;
-      const ly = agg.cmLy.get(k) ? agg.cmLy.get(k).size : 0;
-      const ty = agg.cmTy.get(k) ? agg.cmTy.get(k).size : 0;
-      if (!ly && !ty) return '<td class="num muted">—</td>';
-      const d = ty - ly, ratio = ly > 0 ? d / ly : (ty > 0 ? 1 : 0);
-      const cls = ratio >= 0.15 ? 'up2' : d > 0 ? 'up' : (ratio <= -0.15 ? 'dn2' : d < 0 ? 'dn' : '');
-      const sub = S.seaMode === 'delta' ? fmtDelta(d) : (ly > 0 ? `${d > 0 ? '+' : ''}${Math.round(ratio * 100)}%` : 'NEW');
-      const tip = `<div class="tt-t">${esc(c.name)} · ${esc(mFull(fm))}</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
-      return `<td class="num" data-lbl="${esc(MON[fyMonNum(fm) - 1])}"><button type="button" class="mx-cell ${cls}" data-opencatmon="${c.ci}|${fm}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${esc(sub)}</small></button></td>`;
-    }).join('');
-    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>${cells}</tr>`;
-  }).join('');
+  const trendPill = t => t === 'Growing' ? '<span class="pill good">Growing</span>'
+    : t === 'Sliding' ? '<span class="pill bad">Sliding</span>'
+    : t === 'Recovering' ? '<span class="pill good">Recovering</span>'
+    : '<span class="pill flat">Mixed</span>';
 
-  return renderHero(agg, 'Category Seasonality — Month-by-Month Heatmap')
-    + `<div class="card">
-        <div class="c-head">
-          <div><h2><i class="dot" style="background:#0f766e"></i>Categories × Months (${TY} DocIDs &amp; YoY)</h2>
-          <div class="c-sub">Spot whether a category drop happened in one month or is a steady slide · click any cell to open that Category in that Month · * partial boundary month (${M.common_start}..${M.common_end})</div></div>
-          <div class="tbl-bar-l">
-            <div class="seg" role="group" aria-label="Cell label">
-              <button type="button" data-seamode="pct" aria-pressed="${S.seaMode === 'pct'}">Show YoY %</button>
-              <button type="button" data-seamode="delta" aria-pressed="${S.seaMode === 'delta'}">Show Net Δ</button>
-            </div>
-            <button type="button" class="btn btn-primary" data-csv="seasonality">Export CSV</button>
-          </div>
-        </div>
-        <div tabindex="0" role="region" aria-label="Category by Month Seasonality Heatmap" class="table-wrapper no-cap">
-          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
-        </div>
+  const scoreTable = !S.seaFull
+    ? `<div tabindex="0" role="region" aria-label="Category Monthly Pulse Scorecard" class="table-wrapper no-cap">
+        <table><thead><tr>
+          <th>Category</th><th>Trend</th><th>Monthly Pulse (${mShort(fms[0])} → ${mShort(fms[fms.length - 1])})</th>
+          <th class="num">Months Up</th><th>Best Month</th><th>Worst Month</th><th class="num">Total Δ</th>
+        </tr></thead><tbody>${catSeries.map(c => {
+          const dots = `<div class="dot-strip">${c.months.map(x => {
+            const ratio = x.ly > 0 ? x.d / x.ly : (x.ty > 0 ? 1 : 0);
+            const cls = ratio >= 0.15 ? 'up2' : x.d > 0 ? 'up' : (ratio <= -0.15 ? 'dn2' : x.d < 0 ? 'dn' : 'fl');
+            const tip = `<div class="tt-t">${esc(c.name)} · ${esc(mFull(x.fm))}</div>${LY}: <b>${fmtN(x.ly)}</b> → ${TY}: <b>${fmtN(x.ty)}</b><br>YoY: <b>${fmtDelta(x.d)} (${fmtYoy(x.ty, x.ly)})</b>`;
+            return `<button type="button" class="mdot ${cls}" data-opencatmon="${c.ci}|${x.fm}" data-tip="${esc(tip)}">${mShort(x.fm).slice(0, 1)}</button>`;
+          }).join('')}</div>`;
+          return `<tr>
+            <th scope="row"><button type="button" class="link-btn" data-seacat="${c.ci}" title="Plot ${esc(c.name)} in chart above">${esc(c.name)}</button></th>
+            <td data-lbl="Trend">${trendPill(c.trend)}</td>
+            <td data-lbl="Monthly Pulse">${dots}</td>
+            <td class="num" data-lbl="Months Up"><b>${c.upMo}</b> / ${c.activeMo}</td>
+            <td data-lbl="Best Month">${c.best && c.best.d > 0 ? `<button type="button" class="link-btn ok-t" data-opencatmon="${c.ci}|${c.best.fm}">${mShort(c.best.fm)} (${fmtDelta(c.best.d)})</button>` : '<span class="muted">—</span>'}</td>
+            <td data-lbl="Worst Month">${c.worst && c.worst.d < 0 ? `<button type="button" class="link-btn lo-t" data-opencatmon="${c.ci}|${c.worst.fm}">${mShort(c.worst.fm)} (${fmtDelta(c.worst.d)})</button>` : '<span class="muted">—</span>'}</td>
+            <td class="num" data-lbl="Total Δ"><span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(c.diff)}</span></td>
+          </tr>`;
+        }).join('')}</tbody></table>
+      </div>`
+    : `<div tabindex="0" role="region" aria-label="Full Monthly Numbers Table" class="table-wrapper no-cap">
+        <table><thead><tr><th>Category</th>${fms.map(fm => `<th class="num" title="${esc(mFull(fm))}">${esc(mLbl(fm))}</th>`).join('')}</tr></thead>
+        <tbody>${catSeries.map(c => `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>${c.months.map(x => {
+          if (!x.ly && !x.ty) return '<td class="num muted">—</td>';
+          const tip = `<div class="tt-t">${esc(c.name)} · ${esc(mFull(x.fm))}</div>${LY}: <b>${fmtN(x.ly)}</b> → ${TY}: <b>${fmtN(x.ty)}</b> (${fmtYoy(x.ty, x.ly)})`;
+          return `<td class="num" data-lbl="${esc(mShort(x.fm))}"><button type="button" class="link-btn" data-opencatmon="${c.ci}|${x.fm}" data-tip="${esc(tip)}">${fmtN(x.ty)} <span class="${x.d > 0 ? 'ok-t' : x.d < 0 ? 'lo-t' : 'muted'}" style="font-size:11px">(${fmtDelta(x.d)})</span></button></td>`;
+        }).join('')}</tr>`).join('')}</tbody></table>
       </div>`;
-}
 
-// ---------- Tab 4: Category × Area (Geography Matrix) ----------
-function renderGeo(agg) {
-  let cols = [];
-  if (S.geoView === 'ts') {
-    cols = agg.areas.filter(a => a.state === 'TS').sort((a, b) => (b.main - a.main) || (b.ly - a.ly) || (b.ty - a.ty)).slice(0, 10);
-  } else if (S.geoView === 'ap') {
-    cols = agg.areas.filter(a => a.state === 'AP').sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
-  } else {
-    cols = [...agg.areas].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10);
-  }
-  const sortedCats = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
-
-  csvStore['geo_matrix'] = {
-    title: `JDS Category by Area (${S.geoView.toUpperCase()})`,
-    hdr: ['Category', `Total ${LY}`, `Total ${TY}`, ...cols.flatMap(a => [`${a.name} ${LY}`, `${a.name} ${TY}`, `${a.name} Δ`])],
-    rows: sortedCats.map(c => [c.name, c.ly, c.ty, ...cols.flatMap(a => {
-      const k = c.ci + '|' + a.ai;
-      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0, ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
-      return [ly, ty, ty - ly];
-    })]),
-  };
-
-  const hdrs = `<th>Category</th><th class="num">Total ${TY} (Δ)</th>${cols.map(a => `<th class="num">${esc(a.name)}</th>`).join('')}`;
-  const rows = sortedCats.map(c => {
-    const cells = cols.map(a => {
-      const k = c.ci + '|' + a.ai;
-      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0;
-      const ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
-      if (!ly && !ty) return '<td class="num muted">—</td>';
-      const d = ty - ly, ratio = ly > 0 ? d / ly : (ty > 0 ? 1 : 0);
-      const cls = ratio >= 0.15 ? 'up2' : d > 0 ? 'up' : (ratio <= -0.15 ? 'dn2' : d < 0 ? 'dn' : '');
-      const sub = S.geoMode === 'pct' ? (ly > 0 ? `${d > 0 ? '+' : ''}${Math.round(ratio * 100)}%` : 'NEW') : fmtDelta(d);
-      const tip = `<div class="tt-t">${esc(c.name)} × ${esc(a.name)} (${a.state})</div>${LY} docids: <b>${fmtN(ly)}</b><br>${TY} docids: <b>${fmtN(ty)}</b><br>YoY: <b>${fmtDelta(d)} (${fmtYoy(ty, ly)})</b>`;
-      return `<td class="num" data-lbl="${esc(a.name)}"><button type="button" class="mx-cell ${cls}" data-opencatarea="${c.ci}|${a.ai}" data-tip="${esc(tip)}"><b>${fmtN(ty)}</b><small class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}">${esc(sub)}</small></button></td>`;
-    }).join('');
-    return `<tr><th scope="row"><button type="button" class="link-btn" data-opencat="${c.ci}">${esc(c.name)}</button></th>
-      <td class="num" data-lbl="Total"><b>${fmtN(c.ty)}</b> <span class="${c.diff > 0 ? 'ok-t' : c.diff < 0 ? 'lo-t' : 'muted'}" style="font-size:11.5px">(${fmtDelta(c.diff)})</span></td>${cells}</tr>`;
-  }).join('');
-
-  const topAreasChart = cols.map(a => ({
-    label: a.name, ly: a.ly, ty: a.ty,
-    tip: `<div class="tt-t">${esc(a.name)} (${a.state}) · ${esc(agg.W.label)}</div>${LY} docids: <b>${fmtN(a.ly)}</b><br>${TY} docids: <b>${fmtN(a.ty)}</b><br>YoY: <b>${fmtDelta(a.diff)} (${fmtYoy(a.ty, a.ly)})</b>`,
-  }));
-
-  return renderHero(agg, 'Category × Geography (Telangana & Andhra Pradesh)')
+  return renderHero(agg, 'Category Seasonality — Monthly Trends')
     + `<div class="card">
-        <div class="c-head">
-          <div><h2><i class="dot" style="background:#0f766e"></i>Categories × Areas (${TY} DocIDs &amp; YoY)</h2>
-          <div class="c-sub">See which districts &amp; cities each category is winning or losing · click any cell to inspect Sales Groups, Channels &amp; Reps in that area</div></div>
-          <div class="tbl-bar-l">
-            <div class="seg" role="group" aria-label="Area slice">
-              <button type="button" data-geoview="top" aria-pressed="${S.geoView === 'top'}">Top 10 Overall</button>
-              <button type="button" data-geoview="ts" aria-pressed="${S.geoView === 'ts'}">Telangana Districts</button>
-              <button type="button" data-geoview="ap" aria-pressed="${S.geoView === 'ap'}">Andhra Cities</button>
-            </div>
-            <div class="seg" role="group" aria-label="Cell label">
-              <button type="button" data-geomode="delta" aria-pressed="${S.geoMode === 'delta'}">Net Δ</button>
-              <button type="button" data-geomode="pct" aria-pressed="${S.geoMode === 'pct'}">YoY %</button>
-            </div>
-            <button type="button" class="btn btn-primary" data-csv="geo_matrix">Export CSV</button>
-          </div>
+        <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Monthly Trend: ${selC ? esc(selC.name) : 'All Categories'} (${LY} vs ${TY})</h2>
+        <div class="c-sub">Pick any category below to compare its month-by-month shape · * partial boundary month (${M.common_start}..${M.common_end})</div></div></div>
+        ${chips}
+        ${yoyBarChart(chartItems, selC ? { clickAttr: 'data-opencatmon', clickKey: 'key' } : {})}
+      </div>`
+    + `<div class="story-grid">
+        <div class="story-card good">
+          <h3><span>Consistent Growers</span><span class="pill good">${growers.length} categories</span></h3>
+          <div class="st-sub">Up YoY in at least 60% of months</div>
+          <div class="story-list">${growers.slice(0, 5).map(c => `<div class="story-item"><button type="button" class="link-btn" data-seacat="${c.ci}">${esc(c.name)}</button><span class="ok-t">${c.upMo}/${c.activeMo} mo · ${fmtDelta(c.diff)}</span></div>`).join('') || '<span class="muted">None</span>'}</div>
         </div>
-        <div tabindex="0" role="region" aria-label="Category by Area Matrix" class="table-wrapper no-cap">
-          <table><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>
+        <div class="story-card warn">
+          <h3><span>Recovering / Mixed</span><span class="pill flat">${mixed.length} categories</span></h3>
+          <div class="st-sub">Alternating months or rebounding recently</div>
+          <div class="story-list">${mixed.slice(0, 5).map(c => `<div class="story-item"><button type="button" class="link-btn" data-seacat="${c.ci}">${esc(c.name)}</button><span class="${c.diff >= 0 ? 'ok-t' : 'lo-t'}">${c.upMo}/${c.activeMo} mo · ${fmtDelta(c.diff)}</span></div>`).join('') || '<span class="muted">None</span>'}</div>
+        </div>
+        <div class="story-card bad">
+          <h3><span>Steady Slide</span><span class="pill bad">${sliders.length} categories</span></h3>
+          <div class="st-sub">Down YoY in at least 60% of months</div>
+          <div class="story-list">${sliders.slice(0, 5).map(c => `<div class="story-item"><button type="button" class="link-btn" data-seacat="${c.ci}">${esc(c.name)}</button><span class="lo-t">${c.dnMo}/${c.activeMo} down · ${fmtDelta(c.diff)}</span></div>`).join('') || '<span class="muted">None</span>'}</div>
         </div>
       </div>`
     + `<div class="card" style="margin-top:16px">
-        <div class="c-head"><div><h2><i class="dot" style="background:#f59e0b"></i>${S.geoView === 'ts' ? 'Telangana Districts' : S.geoView === 'ap' ? 'Top 10 Andhra Pradesh Cities' : 'Top 10 Areas'} · ${esc(agg.W.label)}</h2></div></div>
-        ${yoyBarChart(topAreasChart)}
+        <div class="c-head">
+          <div><h2><i class="dot" style="background:#f59e0b"></i>Monthly Pulse by Category</h2>
+          <div class="c-sub">Green dot = up vs ${LY} · Red dot = down vs ${LY} · Click any category to plot it above, or click any month dot to drill into that month</div></div>
+          <div class="tbl-bar-l">
+            <button type="button" class="btn" data-seafull="1">${S.seaFull ? 'Switch to simple pulse view' : 'Show full monthly numbers'}</button>
+            <button type="button" class="btn btn-primary" data-csv="seasonality">Export CSV</button>
+          </div>
+        </div>
+        ${scoreTable}
       </div>`;
+}
+
+// ---------- Tab 4: By Area (Intuitive Master–Detail Explorer: Area -> Categories OR Category -> Areas) ----------
+function renderGeo(agg) {
+  const mainAreas = agg.areas.filter(a => a.main === 1);
+  const tsRemote = agg.areas.filter(a => a.state === 'TS' && a.main === 0).sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const apAreas = agg.areas.filter(a => a.state === 'AP').sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+  const orderedAreas = [...mainAreas, ...tsRemote, ...apAreas];
+  const sortedCats = [...agg.cats].sort((a, b) => b.ly - a.ly || b.ty - a.ty);
+
+  const modeBar = `<div class="tbl-bar" style="margin-bottom:4px">
+    <div class="seg" role="group" aria-label="Geography exploration mode">
+      <button type="button" data-geoexp="area" aria-pressed="${S.geoExplorer === 'area'}">Pick an Area → see its Categories</button>
+      <button type="button" data-geoexp="cat" aria-pressed="${S.geoExplorer === 'cat'}">Pick a Category → see where it wins/loses</button>
+    </div>
+  </div>`;
+
+  // Compute 3-region summary cards (scoped to selected Category in 'cat' mode, or Whole Branch in 'area' mode)
+  const regionCards = (filterCi = -1) => {
+    const W = agg.W;
+    const reg = { main: { ly: new Set(), ty: new Set() }, ts: { ly: new Set(), ty: new Set() }, ap: { ly: new Set(), ty: new Set() } };
+    for (const r of D.rows) {
+      const [yr, k, di, ai, si, chi, flags] = r;
+      if (k < W.a || k > W.b || !scopeOk(ai)) continue;
+      if (S.ch >= 0 && chi !== S.ch) continue;
+      if (S.fresh !== 'all' && (flags & 1) !== +S.fresh) continue;
+      if (filterCi >= 0 && D.subcats[si][0] !== filterCi) continue;
+      const a = D.areas[ai];
+      const bkt = a.main === 1 ? reg.main : (a.state === 'TS' ? reg.ts : (a.state === 'AP' ? reg.ap : null));
+      if (bkt) (yr === 1 ? bkt.ty : bkt.ly).add(di);
+    }
+    const cardHtml = (title, sub, bkt) => {
+      const ly = bkt.ly.size, ty = bkt.ty.size, d = ty - ly;
+      return `<div class="story-card ${d > 0 ? 'good' : d < 0 ? 'bad' : ''}">
+        <h3><span>${esc(title)}</span>${vPill(verdict(ty, ly))}</h3>
+        <div class="st-big">${fmtN(ty)} <span class="${d > 0 ? 'ok-t' : d < 0 ? 'lo-t' : 'muted'}" style="font-size:13.5px">${fmtDelta(d)} (${fmtYoy(ty, ly)})</span></div>
+        <div class="st-sub" style="margin:0">${LY}: ${fmtN(ly)} docids · ${esc(sub)}</div>
+      </div>`;
+    };
+    return `<div class="story-grid" style="margin-top:0">
+      ${cardHtml('Main City (Hyderabad)', 'Core metro market', reg.main)}
+      ${cardHtml('Telangana Remote', '8 Telangana districts', reg.ts)}
+      ${cardHtml('Andhra Pradesh', 'AP cities under Hyd branch', reg.ap)}
+    </div>`;
+  };
+
+  if (S.geoExplorer === 'area') {
+    const selArea = orderedAreas.find(a => a.ai === S.geoArea) || orderedAreas[0];
+    if (!selArea) return renderHero(agg, 'Categories by Area') + '<div class="empty">No areas match this filter.</div>';
+
+    // Build all categories inside selArea
+    const areaCats = sortedCats.map(c => {
+      const k = c.ci + '|' + selArea.ai;
+      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0;
+      const ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
+      return { ci: c.ci, name: c.name, ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly), verdict: verdict(ty, ly) };
+    }).filter(x => x.ly || x.ty);
+
+    const winners = [...areaCats].filter(x => x.diff > 0).sort((a, b) => b.diff - a.diff).slice(0, 4);
+    const droppers = [...areaCats].filter(x => x.diff < 0).sort((a, b) => a.diff - b.diff).slice(0, 4);
+    const top10 = [...areaCats].filter(x => x.name !== 'Unmapped' && !/^others?$/i.test(x.name))
+      .sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10)
+      .map(x => ({
+        key: `${x.ci}|${selArea.ai}`, label: x.name, ly: x.ly, ty: x.ty,
+        tip: `<div class="tt-t">${esc(x.name)} in ${esc(selArea.name)}</div>${LY}: <b>${fmtN(x.ly)}</b> → ${TY}: <b>${fmtN(x.ty)}</b><br>YoY: <b>${fmtDelta(x.diff)} (${fmtYoy(x.ty, x.ly)})</b>`,
+      }));
+
+    const renderGrp = (label, arr) => arr.length ? `<div class="geo-grp">${esc(label)}</div>${arr.map(a => `
+      <button type="button" class="geo-item" data-geoarea="${a.ai}" aria-pressed="${a.ai === selArea.ai}">
+        <span><b>${esc(a.name)}</b><span class="emp-code">${LY}: ${fmtN(a.ly)} → ${TY}: ${fmtN(a.ty)}</span></span>
+        <small class="${a.diff > 0 ? 'ok-t' : a.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(a.ty, a.ly)}</small>
+      </button>`).join('')}` : '';
+
+    return renderHero(agg, `Categories Inside ${selArea.name}`)
+      + modeBar
+      + regionCards(-1)
+      + `<div class="split-geo">
+          <aside class="geo-list" aria-label="Select an area">
+            ${renderGrp('Main City', mainAreas)}
+            ${renderGrp('Telangana Districts', tsRemote)}
+            ${renderGrp('Andhra Pradesh Cities', apAreas.slice(0, 25))}
+          </aside>
+          <div>
+            <div class="card">
+              <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Top 10 Categories in ${esc(selArea.name)} · ${esc(agg.W.label)}</h2>
+              <div class="c-sub">${LY}: <b>${fmtN(selArea.ly)}</b> → ${TY}: <b>${fmtN(selArea.ty)}</b> (${fmtDelta(selArea.diff)}, ${fmtYoy(selArea.ty, selArea.ly)}) · Click any bar to see its sales groups &amp; reps in ${esc(selArea.name)}</div></div></div>
+              ${yoyBarChart(top10, { clickAttr: 'data-opencatarea', clickKey: 'key' })}
+              <div class="story-grid2">
+                <div class="story-card good">
+                  <h3><span>Growing in ${esc(selArea.name)}</span></h3>
+                  <div class="story-list">${winners.map(x => `<div class="story-item"><button type="button" class="link-btn" data-opencatarea="${x.ci}|${selArea.ai}">${esc(x.name)}</button><span class="ok-t">${fmtDelta(x.diff)} (${fmtYoy(x.ty, x.ly)})</span></div>`).join('') || '<span class="muted">No growing categories</span>'}</div>
+                </div>
+                <div class="story-card bad">
+                  <h3><span>Dropping in ${esc(selArea.name)}</span></h3>
+                  <div class="story-list">${droppers.map(x => `<div class="story-item"><button type="button" class="link-btn" data-opencatarea="${x.ci}|${selArea.ai}">${esc(x.name)}</button><span class="lo-t">${fmtDelta(x.diff)} (${fmtYoy(x.ty, x.ly)})</span></div>`).join('') || '<span class="muted">No dropping categories</span>'}</div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+              ${renderTable('geo_tbl', [
+                { k: 'name', label: 'Category', rowHdr: true, html: x => `<button type="button" class="link-btn" data-opencatarea="${x.ci}|${selArea.ai}">${esc(x.name)}</button>` },
+                { k: 'verdict', label: 'Status', html: x => vPill(x.verdict), sortv: x => ({ good: 2, flat: 1, bad: 0 }[x.verdict]), csv: x => x.verdict.toUpperCase() },
+                { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
+                { k: 'ty', label: `${TY} DocIDs`, num: true, html: x => `<b>${fmtN(x.ty)}</b>` },
+                { k: 'diff', label: 'Net Δ', num: true, html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span>` },
+                { k: 'yoy', label: 'YoY %', num: true, sortv: x => x.yoy == null ? -999 : (isFinite(x.yoy) ? x.yoy : 999), html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span>`, csv: x => fmtYoy(x.ty, x.ly) },
+              ], areaCats, { title: `Categories in ${selArea.name}` })}
+            </div>
+          </div>
+        </div>`;
+  } else {
+    const selCat = sortedCats.find(c => c.ci === S.geoCat) || sortedCats[0];
+    if (!selCat) return renderHero(agg, 'Where Categories Win or Lose') + '<div class="empty">No categories match this filter.</div>';
+
+    const catAreas = orderedAreas.map(a => {
+      const k = selCat.ci + '|' + a.ai;
+      const ly = agg.caLy.get(k) ? agg.caLy.get(k).size : 0;
+      const ty = agg.caTy.get(k) ? agg.caTy.get(k).size : 0;
+      return { ai: a.ai, name: a.name, state: a.state, main: a.main, ly, ty, diff: ty - ly, yoy: yoyRatio(ty, ly), verdict: verdict(ty, ly) };
+    }).filter(x => x.ly || x.ty);
+
+    const top10 = [...catAreas].sort((a, b) => b.ly - a.ly || b.ty - a.ty).slice(0, 10).map(a => ({
+      key: `${selCat.ci}|${a.ai}`, label: a.name, ly: a.ly, ty: a.ty,
+      tip: `<div class="tt-t">${esc(selCat.name)} in ${esc(a.name)} (${a.state})</div>${LY}: <b>${fmtN(a.ly)}</b> → ${TY}: <b>${fmtN(a.ty)}</b><br>YoY: <b>${fmtDelta(a.diff)} (${fmtYoy(a.ty, a.ly)})</b>`,
+    }));
+
+    const chips = `<div class="chip-bar">
+      ${sortedCats.slice(0, 10).map(c => `<button type="button" class="chip-btn" data-geocat="${c.ci}" aria-pressed="${c.ci === selCat.ci}">${esc(c.name)}</button>`).join('')}
+      <select class="ctl" id="geoCatSel" aria-label="Pick any category">
+        ${sortedCats.map(c => `<option value="${c.ci}"${c.ci === selCat.ci ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>`;
+
+    return renderHero(agg, `Where ${selCat.name} Is Winning & Losing`)
+      + modeBar
+      + `<div class="card" style="margin-bottom:16px">
+          <div class="c-head"><div><h2><i class="dot" style="background:#0f766e"></i>Select Category to Map Across Telangana &amp; Andhra</h2></div></div>
+          ${chips}
+          ${regionCards(selCat.ci)}
+          <div style="margin-top:16px">${yoyBarChart(top10, { clickAttr: 'data-opencatarea', clickKey: 'key' })}</div>
+        </div>`
+      + `<div class="card">
+          ${renderTable('geo_tbl', [
+            { k: 'name', label: 'Area / District', rowHdr: true, html: x => `<button type="button" class="link-btn" data-opencatarea="${selCat.ci}|${x.ai}">${esc(x.name)}</button>` },
+            { k: 'state', label: 'Region', html: x => x.main ? '<span class="pill good">Main City</span>' : x.state === 'TS' ? '<span class="pill flat">Telangana</span>' : '<span class="pill flat">Andhra</span>', csv: x => x.main ? 'Main' : x.state },
+            { k: 'verdict', label: 'Status', html: x => vPill(x.verdict), sortv: x => ({ good: 2, flat: 1, bad: 0 }[x.verdict]), csv: x => x.verdict.toUpperCase() },
+            { k: 'ly', label: `${LY} DocIDs`, num: true, fmt: fmtN },
+            { k: 'ty', label: `${TY} DocIDs`, num: true, html: x => `<b>${fmtN(x.ty)}</b>` },
+            { k: 'diff', label: 'Net Δ', num: true, html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtDelta(x.diff)}</span>` },
+            { k: 'yoy', label: 'YoY %', num: true, sortv: x => x.yoy == null ? -999 : (isFinite(x.yoy) ? x.yoy : 999), html: x => `<span class="${x.diff > 0 ? 'ok-t' : x.diff < 0 ? 'lo-t' : 'muted'}">${fmtYoy(x.ty, x.ly)}</span>`, csv: x => fmtYoy(x.ty, x.ly) },
+          ], catAreas, { title: `${selCat.name} by Area` })}
+        </div>`;
+  }
 }
 
 // ---------- Tab 5: Who Secured (TME / ME, filterable by Category) ----------
@@ -1357,19 +1571,21 @@ function render() {
 
 // ---------- Events ----------
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-win],[data-scope],[data-fresh],[data-catst],[data-sgst],[data-seamode],[data-geoview],[data-geomode],[data-cattog],[data-catall],[data-ptog],[data-role],[data-sort],[data-csv],[data-opencat],[data-opensub],[data-opencatch],[data-opencatmon],[data-opencatarea],[data-jumpcat],[data-dlgtab],[data-dlgrole],[data-dlgclose],#resetBtn');
+  const t = e.target.closest('[data-tab],[data-win],[data-scope],[data-fresh],[data-catst],[data-sgst],[data-seacat],[data-seafull],[data-geoexp],[data-geoarea],[data-geocat],[data-cattog],[data-catall],[data-ptog],[data-role],[data-sort],[data-csv],[data-opencat],[data-opensub],[data-opencatch],[data-opencatmon],[data-opencatarea],[data-jumpcat],[data-dlgtab],[data-dlgrole],[data-dlgclose],#resetBtn');
   if (!t) return;
   const ds = t.dataset;
-  if (t.id === 'resetBtn') { S.win = 'ytd'; S.month = 0; S.scope = 'all'; S.fresh = 'all'; S.ch = -1; S.catFilter = -1; render(); return; }
+  if (t.id === 'resetBtn') { S.win = 'ytd'; S.month = 0; S.scope = 'all'; S.fresh = 'all'; S.ch = -1; S.catFilter = -1; S.seaCat = -1; render(); return; }
   if (ds.tab) { S.tab = ds.tab; history.replaceState(null, '', '#' + ds.tab); window.scrollTo(0, 0); render(); }
   else if (ds.win) { S.win = ds.win; S.month = 0; render(); }
   else if (ds.scope) { S.scope = ds.scope; render(); }
   else if (ds.fresh) { S.fresh = ds.fresh; render(); }
   else if (ds.catst) { S.catSt = ds.catst; render(); }
   else if (ds.sgst) { S.sgSt = ds.sgst; render(); }
-  else if (ds.seamode) { S.seaMode = ds.seamode; render(); }
-  else if (ds.geoview) { S.geoView = ds.geoview; render(); }
-  else if (ds.geomode) { S.geoMode = ds.geomode; render(); }
+  else if (ds.seacat != null) { S.seaCat = +ds.seacat; render(); }
+  else if (ds.seafull) { S.seaFull = !S.seaFull; render(); }
+  else if (ds.geoexp) { S.geoExplorer = ds.geoexp; render(); }
+  else if (ds.geoarea != null) { S.geoArea = +ds.geoarea; render(); }
+  else if (ds.geocat != null) { S.geoCat = +ds.geocat; render(); }
   else if (ds.cattog != null) { const ci = +ds.cattog; S.catOpen.has(ci) ? S.catOpen.delete(ci) : S.catOpen.add(ci); render(); }
   else if (ds.catall) { S.catOpen = ds.catall === 'open' ? new Set(aggregate().cats.map(c => c.ci)) : new Set(); render(); }
   else if (ds.ptog != null) { const ei = +ds.ptog; S.peopleOpen.has(ei) ? S.peopleOpen.delete(ei) : S.peopleOpen.add(ei); render(); }
@@ -1396,6 +1612,8 @@ document.addEventListener('change', e => {
   if (e.target.id === 'monthSel') { const v = +e.target.value; if (v) { S.win = 'month'; S.month = v; } else { S.win = 'ytd'; S.month = 0; } render(); }
   else if (e.target.id === 'chSel') { S.ch = +e.target.value; render(); }
   else if (e.target.id === 'catSel') { S.catFilter = +e.target.value; render(); }
+  else if (e.target.id === 'seaCatSel') { S.seaCat = +e.target.value; render(); }
+  else if (e.target.id === 'geoCatSel') { S.geoCat = +e.target.value; render(); }
 });
 
 document.addEventListener('input', e => {
